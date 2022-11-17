@@ -1,0 +1,67 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
+
+class UserAuthController extends Controller
+{
+  /**
+     * Display the login view.
+     *
+     * @return \Inertia\Response
+     */
+    public function create()
+    {
+			if(Auth::check()) {
+				return redirect()->route('dashboard');
+			}
+			return Inertia::render('Auth/LoginPage', [
+					'canResetPassword' => Route::has('password.request'),
+					'status' => session('status'),
+			]);
+    }
+
+    public function store(Request $request)
+    {
+			$credentials = $request->all();
+			
+			if(filter_var($credentials['email'], FILTER_VALIDATE_EMAIL)) {
+				$fields = ['email' => $credentials['email'], 'password' => $credentials['password'], 'deleted' => 0];
+			} else {
+				$fields = ['username' => $credentials['email'], 'password' => $credentials['password'], 'deleted' => 0];
+			}
+
+			if(Auth::attempt($fields)) {
+				$request->session()->regenerate();
+				return redirect()->intended(RouteServiceProvider::DASHBOARD);
+			}
+
+			return back()->withErrors(['general' => 'Invalid credentials']);
+    }
+
+    public function destroy(Request $request)
+    {
+			Auth::guard('web')->logout();
+			
+			$request->session()->invalidate();
+			
+			$request->session()->regenerateToken();
+      return redirect()->route('login');
+    }
+
+		public function register() {
+			if(Auth::check()) {
+				return redirect()->route('dashboard');
+			}
+			return Inertia::render('Auth/RegisterPage', [
+					'canResetPassword' => Route::has('password.request'),
+					'status' => session('status'),
+			]);
+		}
+}
