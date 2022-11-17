@@ -3,7 +3,7 @@ import { memo } from 'react';
 // @mui
 import { Typography } from '@mui/material';
 // components
-import { StyledControlPanel } from '@/components/map';
+import { StyledControlPanel } from '@/Components/map';
 
 // ----------------------------------------------------------------------
 

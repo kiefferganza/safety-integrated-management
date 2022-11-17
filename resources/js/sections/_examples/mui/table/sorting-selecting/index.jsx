@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 // @mui
 import { Table, Tooltip, Checkbox, TableRow, TableBody, TableCell, IconButton, TableContainer } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
 import {
 	useTable,
 	emptyRows,
@@ -12,7 +12,7 @@ import {
 	TableHeadCustom,
 	TableSelectedAction,
 	TablePaginationCustom,
-} from '@/components/table';
+} from '@/Components/table';
 //
 import SortingSelectingToolbar from './SortingSelectingToolbar';
 

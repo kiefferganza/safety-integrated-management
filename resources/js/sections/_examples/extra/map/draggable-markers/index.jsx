@@ -1,7 +1,7 @@
 import { useState, useCallback, memo } from 'react';
 import Map from 'react-map-gl';
 // components
-import { MapMarker, MapControl } from '@/components/map';
+import { MapMarker, MapControl } from '@/Components/map';
 //
 import ControlPanel from './ControlPanel';
 

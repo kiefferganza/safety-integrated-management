@@ -4,8 +4,8 @@ import { Draggable } from 'react-beautiful-dnd';
 // @mui
 import { Paper, Typography, Box, Checkbox } from '@mui/material';
 // components
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
 //
 import KanbanDetails from './details/KanbanDetails';
 

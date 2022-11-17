@@ -24,12 +24,12 @@ import { fTimestamp } from '../../utils/formatTime';
 // _mock_
 import { _invoices } from '@/_mock/arrays';
 // components
-import Label from '@/components/label';
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import ConfirmDialog from '@/components/confirm-dialog';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
-import { useSettingsContext } from '@/components/settings';
+import Label from '@/Components/label';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import ConfirmDialog from '@/Components/confirm-dialog';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
 import {
 	useTable,
 	getComparator,
@@ -39,7 +39,7 @@ import {
 	TableHeadCustom,
 	TableSelectedAction,
 	TablePaginationCustom,
-} from '@/components/table';
+} from '@/Components/table';
 // sections
 import InvoiceAnalytic from '@/sections/@dashboard/invoice/InvoiceAnalytic';
 import { InvoiceTableRow, InvoiceTableToolbar } from '@/sections/@dashboard/invoice/list';

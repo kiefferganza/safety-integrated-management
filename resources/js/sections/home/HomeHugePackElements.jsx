@@ -40,14 +40,14 @@ import { PATH_PAGE } from '@/routes/paths';
 // _mock
 import _mock from '../../_mock';
 // components
-import Label from '@/components/label';
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import MenuPopover from '@/components/menu-popover';
-import BadgeStatus from '@/components/badge-status';
-import { MotionViewport, varFade } from '@/components/animate';
-import { CustomAvatar, CustomAvatarGroup } from '@/components/custom-avatar';
+import Label from '@/Components/label';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import MenuPopover from '@/Components/menu-popover';
+import BadgeStatus from '@/Components/badge-status';
+import { MotionViewport, varFade } from '@/Components/animate';
+import { CustomAvatar, CustomAvatarGroup } from '@/Components/custom-avatar';
 
 // ----------------------------------------------------------------------
 

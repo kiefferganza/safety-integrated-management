@@ -7,11 +7,11 @@ import { Stack, Button, TableRow, Checkbox, MenuItem, TableCell, IconButton, Lin
 import { fDate } from '../../../../utils/formatTime';
 import { fCurrency } from '../../../../utils/formatNumber';
 // components
-import Label from '@/components/label';
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
-import MenuPopover from '@/components/menu-popover';
-import ConfirmDialog from '@/components/confirm-dialog';
+import Label from '@/Components/label';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
+import MenuPopover from '@/Components/menu-popover';
+import ConfirmDialog from '@/Components/confirm-dialog';
 
 // ----------------------------------------------------------------------
 

@@ -4,8 +4,8 @@ import { forwardRef } from 'react';
 // @mui
 import { Link as MuiLink, CardActionArea } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
-import Image from '@/components/image';
+import Iconify from '@/Components/iconify';
+import Image from '@/Components/image';
 //
 import { ListItem } from './styles';
 import { Link } from '@inertiajs/inertia-react';

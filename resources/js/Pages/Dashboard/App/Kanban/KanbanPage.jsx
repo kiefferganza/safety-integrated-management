@@ -10,8 +10,8 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
 import { hideScrollbarX } from '@/utils/cssStyles';
 // components
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
-import { SkeletonKanbanColumn } from '@/components/skeleton';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import { SkeletonKanbanColumn } from '@/Components/skeleton';
 // sections
 import { KanbanColumn, KanbanColumnAdd } from '@/sections/@dashboard/kanban';
 

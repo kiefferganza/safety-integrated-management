@@ -7,10 +7,10 @@ import { Box, Paper, AppBar, Drawer, Button, Toolbar, Divider, ListItemButton } 
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // components
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
-import TextMaxLine from '@/components/text-max-line';
-import { MotionViewport, varFade } from '@/components/animate';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
+import TextMaxLine from '@/Components/text-max-line';
+import { MotionViewport, varFade } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 

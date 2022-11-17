@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import { Avatar, Divider, Collapse, Typography, Stack } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 //
 import ChatRoomCollapseButton from './ChatRoomCollapseButton';
 

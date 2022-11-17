@@ -11,9 +11,9 @@ import { PATH_MINIMAL_ON_STORE } from '@/routes/paths';
 // _mock_
 import { _homePlans } from '@/_mock/arrays';
 // components
-import SvgColor from '@/components/svg-color';
-import Iconify from '@/components/iconify';
-import { varFade, MotionViewport } from '@/components/animate';
+import SvgColor from '@/Components/svg-color';
+import Iconify from '@/Components/iconify';
+import { varFade, MotionViewport } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 

@@ -19,9 +19,9 @@ import { NAV } from '../../../config';
 // utils
 import { fDateTime } from '../../../utils/formatTime';
 // components
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import { ColorMultiPicker } from '@/components/color-utils';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import { ColorMultiPicker } from '@/Components/color-utils';
 
 // ----------------------------------------------------------------------
 

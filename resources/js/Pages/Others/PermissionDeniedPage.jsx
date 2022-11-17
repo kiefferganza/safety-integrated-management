@@ -5,8 +5,8 @@ import { Box, Card, Container, Typography, CardHeader, ToggleButton, ToggleButto
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import { useSettingsContext } from '@/components/settings';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // auth
 import RoleBasedGuard from '@/auth/RoleBasedGuard';
 import { Head } from '@inertiajs/inertia-react';

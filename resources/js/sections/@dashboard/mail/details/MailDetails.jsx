@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
 // components
-import Markdown from '@/components/markdown';
-import Scrollbar from '@/components/scrollbar';
+import Markdown from '@/Components/markdown';
+import Scrollbar from '@/Components/scrollbar';
 //
 import MailDetailsReplyInput from './MailDetailsReplyInput';
 import MailDetailsAttachments from './MailDetailsAttachments';

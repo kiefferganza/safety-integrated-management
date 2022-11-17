@@ -7,9 +7,9 @@ import { bgGradient } from '../../utils/cssStyles';
 // routes
 import { PATH_FREE_VERSION, PATH_MINIMAL_ON_STORE } from '@/routes/paths';
 // components
-import Iconify from '@/components/iconify';
-import Image from '@/components/image';
-import { MotionViewport, varFade } from '@/components/animate';
+import Iconify from '@/Components/iconify';
+import Image from '@/Components/image';
+import { MotionViewport, varFade } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 

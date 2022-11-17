@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 // @mui
 import { Card, Button, Typography, Box, Stack } from '@mui/material';
 // components
-import Label from '@/components/label';
-import Iconify from '@/components/iconify';
+import Label from '@/Components/label';
+import Iconify from '@/Components/iconify';
 // assets
 import { PlanFreeIcon, PlanStarterIcon, PlanPremiumIcon } from '../../assets/icons';
 

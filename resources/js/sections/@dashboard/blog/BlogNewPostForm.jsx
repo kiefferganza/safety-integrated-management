@@ -9,14 +9,14 @@ import { Grid, Card, Chip, Stack, Button, TextField, Typography } from '@mui/mat
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import { useSnackbar } from '@/components/snackbar';
+import { useSnackbar } from '@/Components/snackbar';
 import FormProvider, {
 	RHFSwitch,
 	RHFEditor,
 	RHFUpload,
 	RHFTextField,
 	RHFAutocomplete,
-} from '@/components/hook-form';
+} from '@/Components/hook-form';
 //
 import BlogNewPostPreview from './BlogNewPostPreview';
 

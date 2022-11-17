@@ -12,7 +12,7 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 // mock
 import { _invoiceAddressFrom } from '../../../../_mock/arrays';
 // components
-import FormProvider from '@/components/hook-form';
+import FormProvider from '@/Components/hook-form';
 //
 import InvoiceNewEditDetails from './InvoiceNewEditDetails';
 import InvoiceNewEditAddress from './InvoiceNewEditAddress';

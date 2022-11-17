@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import { Table, Tooltip, TableBody, IconButton, TableContainer, Box } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 import {
 	emptyRows,
 	TableNoData,
@@ -10,7 +10,7 @@ import {
 	TableHeadCustom,
 	TableSelectedAction,
 	TablePaginationCustom,
-} from '@/components/table';
+} from '@/Components/table';
 //
 import FileTableRow from '../item/FileTableRow';
 

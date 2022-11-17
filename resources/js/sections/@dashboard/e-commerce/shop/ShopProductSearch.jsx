@@ -9,10 +9,10 @@ import axios from '../../../../utils/axios';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
-import { CustomTextField } from '@/components/custom-input';
-import SearchNotFound from '@/components/search-not-found';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
+import { CustomTextField } from '@/Components/custom-input';
+import SearchNotFound from '@/Components/search-not-found';
 
 // ----------------------------------------------------------------------
 

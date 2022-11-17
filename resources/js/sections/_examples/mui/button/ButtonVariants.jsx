@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from '@mui/material';
 import { LoadingButton, Masonry } from '@mui/lab';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 //
 import { Block } from '../../Block';
 

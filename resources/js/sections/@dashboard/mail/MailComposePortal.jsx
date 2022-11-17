@@ -5,8 +5,8 @@ import { Paper, Stack, Portal, Button, Divider, Backdrop, InputBase, IconButton,
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // components
-import Iconify from '@/components/iconify';
-import Editor from '@/components/editor';
+import Iconify from '@/Components/iconify';
+import Editor from '@/Components/editor';
 
 // ----------------------------------------------------------------------
 

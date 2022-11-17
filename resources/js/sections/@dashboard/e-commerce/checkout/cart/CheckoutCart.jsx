@@ -5,8 +5,8 @@ import { Grid, Card, Button, CardHeader, Typography } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import Iconify from '@/components/iconify';
-import EmptyContent from '@/components/empty-content';
+import Iconify from '@/Components/iconify';
+import EmptyContent from '@/Components/empty-content';
 //
 import CheckoutSummary from '../CheckoutSummary';
 import CheckoutCartProductList from './CheckoutCartProductList';

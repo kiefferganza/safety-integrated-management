@@ -2,7 +2,7 @@ import { useState } from 'react';
 // @mui
 import { Grid, List, Card, Button, Checkbox, ListItemIcon, ListItemText, ListItemButton } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 

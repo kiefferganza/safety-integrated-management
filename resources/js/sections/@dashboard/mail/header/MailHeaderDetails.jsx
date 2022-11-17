@@ -8,8 +8,8 @@ import useResponsive from '@/hooks/useResponsive';
 // utils
 import { fDateTime } from '../../../../utils/formatTime';
 // components
-import { CustomAvatar } from '@/components/custom-avatar';
-import Iconify from '@/components/iconify';
+import { CustomAvatar } from '@/Components/custom-avatar';
+import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 

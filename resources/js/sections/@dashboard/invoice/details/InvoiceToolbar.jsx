@@ -6,7 +6,7 @@ import { Box, Stack, Button, Dialog, Tooltip, IconButton, DialogActions, Circula
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 //
 import InvoicePDF from './InvoicePDF';
 

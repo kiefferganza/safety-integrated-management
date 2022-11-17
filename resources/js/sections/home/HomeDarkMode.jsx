@@ -3,10 +3,10 @@ import { m } from 'framer-motion';
 import { styled, alpha } from '@mui/material/styles';
 import { Container, Typography, Stack, IconButton } from '@mui/material';
 // components
-import { useSettingsContext } from '@/components/settings';
-import SvgColor from '@/components/svg-color';
-import Image from '@/components/image';
-import { MotionViewport, varFade } from '@/components/animate';
+import { useSettingsContext } from '@/Components/settings';
+import SvgColor from '@/Components/svg-color';
+import Image from '@/Components/image';
+import { MotionViewport, varFade } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 

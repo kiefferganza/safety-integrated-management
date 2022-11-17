@@ -19,8 +19,8 @@ import {
 	decreaseQuantity,
 } from '../../redux/slices/product';
 // components
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
-import { useSettingsContext } from '@/components/settings';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
 	CheckoutCart,

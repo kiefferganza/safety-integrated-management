@@ -26,11 +26,11 @@ import { fTimestamp } from '../../../../utils/formatTime';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // components
-import Iconify from '@/components/iconify';
-import { useSnackbar } from '@/components/snackbar';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
-import { useSettingsContext } from '@/components/settings';
-import { useDateRangePicker } from '@/components/date-range-picker';
+import Iconify from '@/Components/iconify';
+import { useSnackbar } from '@/Components/snackbar';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
+import { useDateRangePicker } from '@/Components/date-range-picker';
 // sections
 import {
 	CalendarForm,

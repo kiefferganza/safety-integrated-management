@@ -9,8 +9,8 @@ import { fDate } from '../../../utils/formatTime';
 // _mock
 import { _socials } from '../../../_mock/arrays';
 // components
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 

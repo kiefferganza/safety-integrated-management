@@ -10,8 +10,8 @@ import axios from '../../../../utils/axios';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
 //
 import ChatNavList from './ChatNavList';
 import ChatNavSearch from './ChatNavSearch';

@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 // @mui
 import { Link, Button, Divider, Typography, Stack } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
-import { DialogAnimate } from '@/components/animate';
+import Iconify from '@/Components/iconify';
+import { DialogAnimate } from '@/Components/animate';
 // assets
 import { OrderCompleteIllustration } from '../../../../assets/illustrations';
 

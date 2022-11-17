@@ -37,11 +37,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 // redux
 import { store, persistor } from './redux/store';
 // components
-import { SettingsProvider } from './components/settings';
-import { StyledChart } from './components/chart';
-import SnackbarProvider from './components/snackbar';
-import { ThemeSettings } from './components/settings';
-import { MotionLazyContainer } from './components/animate';
+import { SettingsProvider } from './Components/settings';
+import { StyledChart } from './Components/chart';
+import SnackbarProvider from './Components/snackbar';
+import { ThemeSettings } from './Components/settings';
+import { MotionLazyContainer } from './Components/animate';
 
 // theme
 import ThemeProvider from './theme';

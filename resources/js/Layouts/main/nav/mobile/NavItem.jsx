@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import { Link as MuiLink, ListItemText, ListItemIcon } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 //
 import { ListItem } from './styles';
 import { Link } from '@inertiajs/inertia-react';

@@ -10,10 +10,10 @@ import { fCurrency } from '../../../../utils/formatNumber';
 import { useDispatch } from '../../../../redux/store';
 import { addToCart } from '../../../../redux/slices/product';
 // components
-import Iconify from '@/components/iconify';
-import Label from '@/components/label';
-import Image from '@/components/image';
-import { ColorPreview } from '@/components/color-utils';
+import Iconify from '@/Components/iconify';
+import Label from '@/Components/label';
+import Image from '@/Components/image';
+import { ColorPreview } from '@/Components/color-utils';
 import { Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

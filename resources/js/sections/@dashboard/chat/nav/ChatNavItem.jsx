@@ -3,8 +3,8 @@ import { formatDistanceToNowStrict } from 'date-fns';
 // @mui
 import { Badge, Stack, Typography, ListItemText, ListItemButton, ListItemAvatar } from '@mui/material';
 // components
-import { CustomAvatar, CustomAvatarGroup } from '@/components/custom-avatar';
-import BadgeStatus from '@/components/badge-status';
+import { CustomAvatar, CustomAvatarGroup } from '@/Components/custom-avatar';
+import BadgeStatus from '@/Components/badge-status';
 
 // ----------------------------------------------------------------------
 

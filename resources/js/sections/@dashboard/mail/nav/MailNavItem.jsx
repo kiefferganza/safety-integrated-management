@@ -8,7 +8,7 @@ import useActiveLink from '@/hooks/useActiveLink';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 

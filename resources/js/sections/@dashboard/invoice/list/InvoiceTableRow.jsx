@@ -17,11 +17,11 @@ import {
 import { fDate } from '../../../../utils/formatTime';
 import { fCurrency } from '../../../../utils/formatNumber';
 // components
-import Label from '@/components/label';
-import Iconify from '@/components/iconify';
-import { CustomAvatar } from '@/components/custom-avatar';
-import MenuPopover from '@/components/menu-popover';
-import ConfirmDialog from '@/components/confirm-dialog';
+import Label from '@/Components/label';
+import Iconify from '@/Components/iconify';
+import { CustomAvatar } from '@/Components/custom-avatar';
+import MenuPopover from '@/Components/menu-popover';
+import ConfirmDialog from '@/Components/confirm-dialog';
 
 // ----------------------------------------------------------------------
 

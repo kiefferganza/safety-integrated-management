@@ -10,9 +10,9 @@ import useResponsive from '@/hooks/useResponsive';
 // config
 import { HEADER, NAV } from '../../../config';
 // components
-import Logo from '@/components/logo';
-import Iconify from '@/components/iconify';
-import { useSettingsContext } from '@/components/settings';
+import Logo from '@/Components/logo';
+import Iconify from '@/Components/iconify';
+import { useSettingsContext } from '@/Components/settings';
 //
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';

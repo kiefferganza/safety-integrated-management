@@ -9,9 +9,9 @@ import { fDate } from '../../../../utils/formatTime';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import Label from '@/components/label';
-import { CustomAvatar } from '@/components/custom-avatar';
-import Iconify from '@/components/iconify';
+import Label from '@/Components/label';
+import { CustomAvatar } from '@/Components/custom-avatar';
+import Iconify from '@/Components/iconify';
 //
 import MailItemAction from './MailItemAction';
 

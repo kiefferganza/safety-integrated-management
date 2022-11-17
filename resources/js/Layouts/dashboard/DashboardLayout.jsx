@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // components
-import { useSettingsContext } from '@/components/settings';
+import { useSettingsContext } from '@/Components/settings';
 //
 import Main from './Main';
 import Header from './header';

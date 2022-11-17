@@ -6,7 +6,7 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // components
-import { SkeletonConversationItem } from '@/components/skeleton';
+import { SkeletonConversationItem } from '@/Components/skeleton';
 //
 import ChatNavItem from './ChatNavItem';
 

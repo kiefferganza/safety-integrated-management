@@ -13,8 +13,8 @@ import { HEADER } from '../../config';
 // routes
 import { PATH_DOCS, PATH_MINIMAL_ON_STORE } from '@/routes/paths';
 // components
-import Logo from '@/components/logo';
-import Label from '@/components/label';
+import Logo from '@/Components/logo';
+import Label from '@/Components/label';
 //
 import navConfig from './nav/config';
 import NavMobile from './nav/mobile';

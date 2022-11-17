@@ -8,12 +8,12 @@ import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 import { fDateTime } from '../../../../utils/formatTime';
 import { fData } from '../../../../utils/formatNumber';
 // components
-import Iconify from '@/components/iconify';
-import MenuPopover from '@/components/menu-popover';
-import { useSnackbar } from '@/components/snackbar';
-import TextMaxLine from '@/components/text-max-line';
-import FileThumbnail from '@/components/file-thumbnail';
-import ConfirmDialog from '@/components/confirm-dialog';
+import Iconify from '@/Components/iconify';
+import MenuPopover from '@/Components/menu-popover';
+import { useSnackbar } from '@/Components/snackbar';
+import TextMaxLine from '@/Components/text-max-line';
+import FileThumbnail from '@/Components/file-thumbnail';
+import ConfirmDialog from '@/Components/confirm-dialog';
 //
 import FileShareDialog from '../portal/FileShareDialog';
 import FileDetailsDrawer from '../portal/FileDetailsDrawer';

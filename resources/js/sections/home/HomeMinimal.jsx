@@ -3,8 +3,8 @@ import { m } from 'framer-motion';
 import { alpha, styled } from '@mui/material/styles';
 import { Box, Card, Container, Typography, Stack } from '@mui/material';
 // components
-import Image from '@/components/image';
-import { MotionViewport, varFade } from '@/components/animate';
+import Image from '@/Components/image';
+import { MotionViewport, varFade } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 
@@ -85,8 +85,8 @@ export default function HomeMinimal () {
 									...(index === 1 && {
 										boxShadow: (theme) => ({
 											md: `-40px 40px 80px ${theme.palette.mode === 'light'
-													? alpha(theme.palette.grey[500], 0.16)
-													: alpha(theme.palette.common.black, 0.4)
+												? alpha(theme.palette.grey[500], 0.16)
+												: alpha(theme.palette.common.black, 0.4)
 												}`,
 										}),
 									}),

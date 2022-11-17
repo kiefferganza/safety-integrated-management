@@ -19,8 +19,8 @@ import {
 	FormControlLabel,
 } from '@mui/material';
 // components
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
 // section
 import { PaymentNewCardDialog } from '../../../../payment';
 

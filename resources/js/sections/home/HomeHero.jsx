@@ -12,9 +12,9 @@ import { textGradient, bgGradient } from '../../utils/cssStyles';
 // config
 import { HEADER } from '../../config';
 // components
-import SvgColor from '@/components/svg-color';
-import Iconify from '@/components/iconify';
-import { MotionContainer, varFade } from '@/components/animate';
+import SvgColor from '@/Components/svg-color';
+import Iconify from '@/Components/iconify';
+import { MotionContainer, varFade } from '@/Components/animate';
 import { Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

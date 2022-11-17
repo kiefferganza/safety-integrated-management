@@ -2,7 +2,7 @@
 import { styled, alpha } from '@mui/material/styles';
 import { Box, Link as MuiLink, Typography } from '@mui/material';
 // components
-import { CustomAvatar } from '@/components/custom-avatar';
+import { CustomAvatar } from '@/Components/custom-avatar';
 import { Link, usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

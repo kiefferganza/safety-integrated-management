@@ -5,8 +5,8 @@ import { Box, Typography } from '@mui/material';
 // utils
 import { bgBlur } from '../../../../utils/cssStyles';
 // components
-import Image from '@/components/image';
-import { CustomAvatar } from '@/components/custom-avatar';
+import Image from '@/Components/image';
+import { CustomAvatar } from '@/Components/custom-avatar';
 import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

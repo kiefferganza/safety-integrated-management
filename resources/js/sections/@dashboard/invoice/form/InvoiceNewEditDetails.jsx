@@ -7,8 +7,8 @@ import { Box, Stack, Button, Divider, Typography, InputAdornment, MenuItem } fro
 // utils
 import { fNumber, fCurrency } from '../../../../utils/formatNumber';
 // components
-import Iconify from '@/components/iconify';
-import { RHFSelect, RHFTextField } from '@/components/hook-form';
+import Iconify from '@/Components/iconify';
+import { RHFSelect, RHFTextField } from '@/Components/hook-form';
 
 // ----------------------------------------------------------------------
 

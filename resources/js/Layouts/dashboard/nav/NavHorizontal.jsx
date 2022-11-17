@@ -8,7 +8,7 @@ import { HEADER } from '../../../config';
 // utils
 import { bgBlur } from '../../../utils/cssStyles';
 // components
-import { NavSectionHorizontal } from '@/components/nav-section';
+import { NavSectionHorizontal } from '@/Components/nav-section';
 //
 import navConfig from './config';
 

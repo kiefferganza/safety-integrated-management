@@ -8,8 +8,8 @@ import { LoadingButton } from '@mui/lab';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import { useSnackbar } from '@/components/snackbar';
-import FormProvider, { RHFCodes } from '@/components/hook-form';
+import { useSnackbar } from '@/Components/snackbar';
+import FormProvider, { RHFCodes } from '@/Components/hook-form';
 
 // ----------------------------------------------------------------------
 

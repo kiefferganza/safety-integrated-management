@@ -6,8 +6,8 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 // _mock_
 import { _invoices } from '@/_mock/arrays';
 // components
-import { useSettingsContext } from '@/components/settings';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
 import InvoiceNewEditForm from '@/sections/@dashboard/invoice/form';
 import { Head } from '@inertiajs/inertia-react';

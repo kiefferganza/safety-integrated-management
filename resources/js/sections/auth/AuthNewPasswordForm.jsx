@@ -9,9 +9,9 @@ import { LoadingButton } from '@mui/lab';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import Iconify from '@/components/iconify';
-import { useSnackbar } from '@/components/snackbar';
-import FormProvider, { RHFTextField, RHFCodes } from '@/components/hook-form';
+import Iconify from '@/Components/iconify';
+import { useSnackbar } from '@/Components/snackbar';
+import FormProvider, { RHFTextField, RHFCodes } from '@/Components/hook-form';
 
 // ----------------------------------------------------------------------
 

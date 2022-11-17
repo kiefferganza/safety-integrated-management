@@ -7,11 +7,11 @@ import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 // utils
 import { fData } from '../../../../utils/formatNumber';
 // components
-import Iconify from '@/components/iconify';
-import MenuPopover from '@/components/menu-popover';
-import TextMaxLine from '@/components/text-max-line';
-import { useSnackbar } from '@/components/snackbar';
-import ConfirmDialog from '@/components/confirm-dialog';
+import Iconify from '@/Components/iconify';
+import MenuPopover from '@/Components/menu-popover';
+import TextMaxLine from '@/Components/text-max-line';
+import { useSnackbar } from '@/Components/snackbar';
+import ConfirmDialog from '@/Components/confirm-dialog';
 //
 import FileShareDialog from '../portal/FileShareDialog';
 import FileDetailsDrawer from '../portal/FileDetailsDrawer';

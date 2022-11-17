@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { Card, Stack, Divider, Checkbox, MenuItem, CardHeader, IconButton, FormControlLabel } from '@mui/material';
 // components
 import { useState } from 'react';
-import Iconify from '@/components/iconify';
-import MenuPopover from '@/components/menu-popover';
+import Iconify from '@/Components/iconify';
+import MenuPopover from '@/Components/menu-popover';
 
 // ----------------------------------------------------------------------
 

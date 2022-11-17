@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 // @mui
 import { Stack, LinearProgress } from '@mui/material';
 // components
-import Scrollbar from '@/components/scrollbar';
-import EmptyContent from '@/components/empty-content';
+import Scrollbar from '@/Components/scrollbar';
+import EmptyContent from '@/Components/empty-content';
 //
 import MailItem from './MailItem';
 

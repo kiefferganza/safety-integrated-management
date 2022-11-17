@@ -2,10 +2,10 @@ import { useState } from 'react';
 // @mui
 import { List, Stack, Select, Divider, Tooltip, MenuItem, Typography, IconButton } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
-import { CustomAvatar } from '@/components/custom-avatar';
-import MenuPopover from '@/components/menu-popover';
-import BadgeStatus from '@/components/badge-status';
+import Iconify from '@/Components/iconify';
+import { CustomAvatar } from '@/Components/custom-avatar';
+import MenuPopover from '@/Components/menu-popover';
+import BadgeStatus from '@/Components/badge-status';
 import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

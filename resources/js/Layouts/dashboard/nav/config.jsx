@@ -1,9 +1,9 @@
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import Label from '@/components/label';
-import Iconify from '@/components/iconify';
-import SvgColor from '@/components/svg-color';
+import Label from '@/Components/label';
+import Iconify from '@/Components/iconify';
+import SvgColor from '@/Components/svg-color';
 
 // ----------------------------------------------------------------------
 

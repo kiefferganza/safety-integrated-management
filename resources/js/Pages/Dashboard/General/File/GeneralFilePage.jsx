@@ -9,10 +9,10 @@ import useResponsive from '@/hooks/useResponsive';
 // _mock
 import { _folders, _files } from '@/_mock/arrays';
 // components
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import { UploadBox } from '@/components/upload';
-import { useSettingsContext } from '@/components/settings';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import { UploadBox } from '@/Components/upload';
+import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
 	FileGeneralWidget,

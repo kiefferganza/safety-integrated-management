@@ -20,9 +20,9 @@ import {
 import { fDate } from '../../../../../utils/formatTime';
 import { fShortenNumber } from '../../../../../utils/formatNumber';
 // components
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
-import { CustomAvatar, CustomAvatarGroup } from '@/components/custom-avatar';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
+import { CustomAvatar, CustomAvatarGroup } from '@/Components/custom-avatar';
 import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

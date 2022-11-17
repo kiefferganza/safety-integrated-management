@@ -3,7 +3,7 @@ import Map, { Layer, Source } from 'react-map-gl';
 // @mui
 import { useTheme } from '@mui/material/styles';
 // components
-import { MapControl } from '@/components/map';
+import { MapControl } from '@/Components/map';
 
 // ----------------------------------------------------------------------
 

@@ -7,10 +7,10 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
 import axios from '@/utils/axios';
 // components
-import Markdown from '@/components/markdown';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
-import { useSettingsContext } from '@/components/settings';
-import { SkeletonPostDetails } from '@/components/skeleton';
+import Markdown from '@/Components/markdown';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
+import { SkeletonPostDetails } from '@/Components/skeleton';
 // sections
 import {
 	BlogPostHero,

@@ -7,9 +7,9 @@ import useResponsive from '@/hooks/useResponsive';
 // routes
 import { PATH_ZONE_ON_STORE } from '@/routes/paths';
 // components
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
-import { MotionViewport, varFade } from '@/components/animate';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
+import { MotionViewport, varFade } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 

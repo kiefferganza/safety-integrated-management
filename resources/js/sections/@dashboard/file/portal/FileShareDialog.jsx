@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 // @mui
 import { List, Stack, Dialog, Button, TextField, DialogTitle, DialogActions, DialogContent } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
 //
 import FileInvitedItem from '../FileInvitedItem';
 

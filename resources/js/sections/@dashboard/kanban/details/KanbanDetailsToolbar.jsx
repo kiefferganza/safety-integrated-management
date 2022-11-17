@@ -5,8 +5,8 @@ import { Stack, Button, Tooltip, IconButton } from '@mui/material';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // components
-import Iconify from '@/components/iconify';
-import ConfirmDialog from '@/components/confirm-dialog';
+import Iconify from '@/Components/iconify';
+import ConfirmDialog from '@/Components/confirm-dialog';
 
 // ----------------------------------------------------------------------
 

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link, Stack, Alert, IconButton, InputAdornment, TextField, Checkbox, FormControlLabel } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 import { useForm } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

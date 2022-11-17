@@ -9,13 +9,13 @@ import { fTimestamp } from '../../utils/formatTime';
 // _mock_
 import { _allFiles } from '@/_mock/arrays';
 // components
-import Iconify from '@/components/iconify';
-import ConfirmDialog from '@/components/confirm-dialog';
-import { fileFormat } from '@/components/file-thumbnail';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
-import { useSettingsContext } from '@/components/settings';
-import { useTable, getComparator } from '@/components/table';
-import DateRangePicker, { useDateRangePicker } from '@/components/date-range-picker';
+import Iconify from '@/Components/iconify';
+import ConfirmDialog from '@/Components/confirm-dialog';
+import { fileFormat } from '@/Components/file-thumbnail';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
+import { useTable, getComparator } from '@/Components/table';
+import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
 // sections
 import {
 	FileListView,

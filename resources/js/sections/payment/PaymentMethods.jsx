@@ -3,7 +3,7 @@ import { useState } from 'react';
 // @mui
 import { Box, Stack, Paper, Radio, Button, TextField, Typography, RadioGroup, FormControlLabel } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 //
 import PaymentNewCardDialog from './PaymentNewCardDialog';
 

@@ -19,9 +19,9 @@ import {
 import { fData } from '../../../../utils/formatNumber';
 import { fDateTime } from '../../../../utils/formatTime';
 // components
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import FileThumbnail, { fileFormat } from '@/components/file-thumbnail';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import FileThumbnail, { fileFormat } from '@/Components/file-thumbnail';
 //
 import FileShareDialog from './FileShareDialog';
 import FileInvitedItem from '../FileInvitedItem';

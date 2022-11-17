@@ -3,9 +3,9 @@ import { useState } from 'react';
 // @mui
 import { Stack, Dialog, Button, TextField, Typography, ListItemButton, InputAdornment } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import SearchNotFound from '@/components/search-not-found';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import SearchNotFound from '@/Components/search-not-found';
 
 // ----------------------------------------------------------------------
 

@@ -7,9 +7,9 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 // _mock_
 import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from '@/_mock/arrays';
 // components
-import Iconify from '@/components/iconify';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
-import { useSettingsContext } from '@/components/settings';
+import Iconify from '@/Components/iconify';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
 	Profile,

@@ -5,8 +5,8 @@ import { PATH_PAGE } from '@/routes/paths';
 // _mock
 import { _socials } from '@/_mock/arrays';
 // components
-import Logo from '@/components/logo';
-import Iconify from '@/components/iconify';
+import Logo from '@/Components/logo';
+import Iconify from '@/Components/iconify';
 import { Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

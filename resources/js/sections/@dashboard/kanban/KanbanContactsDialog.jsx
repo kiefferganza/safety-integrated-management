@@ -18,9 +18,9 @@ import {
 // _mock_
 import { _contacts } from '../../../_mock/arrays';
 // components
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import SearchNotFound from '@/components/search-not-found';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import SearchNotFound from '@/Components/search-not-found';
 
 // ----------------------------------------------------------------------
 

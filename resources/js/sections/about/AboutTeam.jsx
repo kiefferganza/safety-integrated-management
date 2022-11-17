@@ -7,10 +7,10 @@ import { Box, Stack, Card, Button, Container, Typography, IconButton } from '@mu
 // _mock_
 import { _carouselsMembers, _socials } from '@/_mock/arrays';
 // components
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
-import Carousel, { CarouselArrows } from '@/components/carousel';
-import { MotionViewport, varFade } from '@/components/animate';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
+import Carousel, { CarouselArrows } from '@/Components/carousel';
+import { MotionViewport, varFade } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 

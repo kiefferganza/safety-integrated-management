@@ -21,11 +21,11 @@ import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 import { fDate } from '../../../../utils/formatTime';
 import { fData } from '../../../../utils/formatNumber';
 // components
-import Iconify from '@/components/iconify';
-import MenuPopover from '@/components/menu-popover';
-import { useSnackbar } from '@/components/snackbar';
-import ConfirmDialog from '@/components/confirm-dialog';
-import FileThumbnail from '@/components/file-thumbnail';
+import Iconify from '@/Components/iconify';
+import MenuPopover from '@/Components/menu-popover';
+import { useSnackbar } from '@/Components/snackbar';
+import ConfirmDialog from '@/Components/confirm-dialog';
+import FileThumbnail from '@/Components/file-thumbnail';
 //
 import FileShareDialog from '../portal/FileShareDialog';
 import FileDetailsDrawer from '../portal/FileDetailsDrawer';

@@ -21,10 +21,10 @@ import {
 // config
 import { NAV } from '../../../../config';
 // components
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import { ColorMultiPicker } from '@/components/color-utils';
-import { RHFMultiCheckbox, RHFRadioGroup, RHFSlider } from '@/components/hook-form';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import { ColorMultiPicker } from '@/Components/color-utils';
+import { RHFMultiCheckbox, RHFRadioGroup, RHFSlider } from '@/Components/hook-form';
 
 // ----------------------------------------------------------------------
 

@@ -11,8 +11,8 @@ import { fData } from '../../../../utils/formatNumber';
 // assets
 import { countries } from '../../../../assets/data';
 // components
-import { useSnackbar } from '@/components/snackbar';
-import FormProvider, { RHFSwitch, RHFSelect, RHFTextField, RHFUploadAvatar } from '@/components/hook-form';
+import { useSnackbar } from '@/Components/snackbar';
+import FormProvider, { RHFSwitch, RHFSelect, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
 import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

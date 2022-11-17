@@ -11,8 +11,8 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { fTimestamp } from '../../../../utils/formatTime';
 import { fData } from '../../../../utils/formatNumber';
 // components
-import Iconify from '@/components/iconify';
-import FormProvider, { RHFEditor, RHFCheckbox, RHFTextField } from '@/components/hook-form';
+import Iconify from '@/Components/iconify';
+import FormProvider, { RHFEditor, RHFCheckbox, RHFTextField } from '@/Components/hook-form';
 
 // ----------------------------------------------------------------------
 

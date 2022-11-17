@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useState, useCallback, memo } from 'react';
 import Map from 'react-map-gl';
 // components
-import { MapControl } from '@/components/map';
+import { MapControl } from '@/Components/map';
 //
 import ControlPanel from './ControlPanel';
 

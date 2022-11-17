@@ -5,8 +5,8 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 // _mock_
 import { _userCards } from '@/_mock/arrays';
 // components
-import { useSettingsContext } from '@/components/settings';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
 import { UserCard } from '@/sections/@dashboard/user/cards';
 

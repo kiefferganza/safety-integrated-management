@@ -13,10 +13,10 @@ import {
 	FormControlLabel,
 } from '@mui/material';
 // components
-import { useSettingsContext } from '@/components/settings';
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
-import { MotionViewport, varFade } from '@/components/animate';
+import { useSettingsContext } from '@/Components/settings';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
+import { MotionViewport, varFade } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 

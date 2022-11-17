@@ -9,7 +9,7 @@ import {
 	_ecommerceLatestProducts,
 } from '../../../../_mock/arrays';
 // components
-import { useSettingsContext } from '@/components/settings';
+import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
 	EcommerceNewProducts,

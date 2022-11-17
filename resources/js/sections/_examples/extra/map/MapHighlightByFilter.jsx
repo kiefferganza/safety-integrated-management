@@ -4,7 +4,7 @@ import Map, { Layer, Source } from 'react-map-gl';
 import { useTheme } from '@mui/material/styles';
 import { Typography } from '@mui/material';
 // components
-import { MapPopup, MapControl } from '@/components/map';
+import { MapPopup, MapControl } from '@/Components/map';
 
 // ----------------------------------------------------------------------
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import { Box, Step, Stack, Stepper, StepLabel, StepConnector as MUIStepConnector } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 

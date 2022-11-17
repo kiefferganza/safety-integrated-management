@@ -6,7 +6,7 @@ import { HEADER } from '../../config';
 // utils
 import { bgBlur } from '../../utils/cssStyles';
 // components
-import Logo from '@/components/logo';
+import Logo from '@/Components/logo';
 import { Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

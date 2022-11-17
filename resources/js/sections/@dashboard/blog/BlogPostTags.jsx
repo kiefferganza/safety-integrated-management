@@ -4,8 +4,8 @@ import { Chip, Avatar, Checkbox, Stack, FormControlLabel } from '@mui/material';
 // utils
 import { fShortenNumber } from '../../../utils/formatNumber';
 // components
-import Iconify from '@/components/iconify';
-import { CustomAvatarGroup } from '@/components/custom-avatar';
+import Iconify from '@/Components/iconify';
+import { CustomAvatarGroup } from '@/Components/custom-avatar';
 
 // ----------------------------------------------------------------------
 

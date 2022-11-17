@@ -7,9 +7,9 @@ import { Box, Card, Paper, Button, Typography, CardContent } from '@mui/material
 // utils
 import { bgGradient } from '../../../../utils/cssStyles';
 // components
-import Image from '@/components/image';
-import { MotionContainer, varFade } from '@/components/animate';
-import Carousel, { CarouselArrowIndex } from '@/components/carousel';
+import Image from '@/Components/image';
+import { MotionContainer, varFade } from '@/Components/animate';
+import Carousel, { CarouselArrowIndex } from '@/Components/carousel';
 
 // ----------------------------------------------------------------------
 

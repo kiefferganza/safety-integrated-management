@@ -4,7 +4,7 @@ import { memo } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import { Switch, InputBase, Typography } from '@mui/material';
 // components
-import { StyledControlPanel } from '@/components/map';
+import { StyledControlPanel } from '@/Components/map';
 
 // ----------------------------------------------------------------------
 

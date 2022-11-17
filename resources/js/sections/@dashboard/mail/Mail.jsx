@@ -7,8 +7,8 @@ import { getMail, getLabels, getMails } from '../../../redux/slices/mail';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import { useSettingsContext } from '@/components/settings';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
 import MailNav from './nav/MailNav';
 import MailList from './list/MailList';

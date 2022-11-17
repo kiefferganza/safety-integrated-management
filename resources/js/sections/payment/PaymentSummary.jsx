@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { Switch, Divider, Typography, Stack, Box } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
-import Label from '@/components/label';
-import Iconify from '@/components/iconify';
+import Label from '@/Components/label';
+import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 

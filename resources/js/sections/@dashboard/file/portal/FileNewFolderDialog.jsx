@@ -3,8 +3,8 @@ import { useEffect, useState, useCallback } from 'react';
 // @mui
 import { Stack, Dialog, Button, TextField, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
-import { Upload } from '@/components/upload';
+import Iconify from '@/Components/iconify';
+import { Upload } from '@/Components/upload';
 
 // ----------------------------------------------------------------------
 

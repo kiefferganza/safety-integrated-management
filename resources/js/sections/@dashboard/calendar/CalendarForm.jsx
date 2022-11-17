@@ -10,9 +10,9 @@ import { Box, Stack, Button, Tooltip, TextField, IconButton, DialogActions } fro
 import { LoadingButton } from '@mui/lab';
 import { MobileDateTimePicker } from '@mui/x-date-pickers';
 // components
-import Iconify from '@/components/iconify';
-import { ColorSinglePicker } from '@/components/color-utils';
-import FormProvider, { RHFTextField, RHFSwitch } from '@/components/hook-form';
+import Iconify from '@/Components/iconify';
+import { ColorSinglePicker } from '@/Components/color-utils';
+import FormProvider, { RHFTextField, RHFSwitch } from '@/Components/hook-form';
 
 // ----------------------------------------------------------------------
 

@@ -9,7 +9,7 @@ import { getProducts } from '@/redux/slices/product';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import { useSettingsContext } from '@/components/settings';
+import { useSettingsContext } from '@/Components/settings';
 import {
 	useTable,
 	getComparator,
@@ -20,11 +20,11 @@ import {
 	TableHeadCustom,
 	TableSelectedAction,
 	TablePaginationCustom,
-} from '@/components/table';
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
-import ConfirmDialog from '@/components/confirm-dialog';
+} from '@/Components/table';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import ConfirmDialog from '@/Components/confirm-dialog';
 // sections
 import { ProductTableRow, ProductTableToolbar } from '@/sections/@dashboard/e-commerce/list';
 import { Head } from '@inertiajs/inertia-react';

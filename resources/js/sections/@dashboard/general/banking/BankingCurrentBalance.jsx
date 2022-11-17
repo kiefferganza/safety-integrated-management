@@ -7,10 +7,10 @@ import { Box, Typography, Stack, MenuItem, IconButton, alpha } from '@mui/materi
 import { bgGradient } from '../../../../utils/cssStyles';
 import { fCurrency } from '../../../../utils/formatNumber';
 // components
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
-import MenuPopover from '@/components/menu-popover';
-import Carousel, { CarouselDots } from '@/components/carousel';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
+import MenuPopover from '@/Components/menu-popover';
+import Carousel, { CarouselDots } from '@/Components/carousel';
 
 // ----------------------------------------------------------------------
 

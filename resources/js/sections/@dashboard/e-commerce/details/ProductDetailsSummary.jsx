@@ -12,11 +12,11 @@ import { fShortenNumber, fCurrency } from '../../../../utils/formatNumber';
 // _mock
 import { _socials } from '../../../../_mock/arrays';
 // components
-import Label from '@/components/label';
-import Iconify from '@/components/iconify';
-import { IncrementerButton } from '@/components/custom-input';
-import { ColorSinglePicker } from '@/components/color-utils';
-import FormProvider, { RHFSelect } from '@/components/hook-form';
+import Label from '@/Components/label';
+import Iconify from '@/Components/iconify';
+import { IncrementerButton } from '@/Components/custom-input';
+import { ColorSinglePicker } from '@/Components/color-utils';
+import FormProvider, { RHFSelect } from '@/Components/hook-form';
 
 // ----------------------------------------------------------------------
 

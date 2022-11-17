@@ -7,9 +7,9 @@ import useResponsive from '@/hooks/useResponsive';
 // config
 import { NAV } from '../../../../config';
 // components
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import { SkeletonMailNavItem } from '@/components/skeleton';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import { SkeletonMailNavItem } from '@/Components/skeleton';
 //
 import MailNavItem from './MailNavItem';
 

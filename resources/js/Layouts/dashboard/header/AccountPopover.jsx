@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
 // components
-import { CustomAvatar } from '@/components/custom-avatar';
-import { useSnackbar } from '@/components/snackbar';
-import MenuPopover from '@/components/menu-popover';
-import { IconButtonAnimate } from '@/components/animate';
+import { CustomAvatar } from '@/Components/custom-avatar';
+import { useSnackbar } from '@/Components/snackbar';
+import MenuPopover from '@/Components/menu-popover';
+import { IconButtonAnimate } from '@/Components/animate';
 import { Link, usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

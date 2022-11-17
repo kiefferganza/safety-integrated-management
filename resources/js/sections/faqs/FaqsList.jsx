@@ -3,7 +3,7 @@ import { Accordion, Typography, AccordionSummary, AccordionDetails } from '@mui/
 // _mock_
 import { _faqs } from '@/_mock/arrays';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 

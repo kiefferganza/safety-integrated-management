@@ -4,7 +4,7 @@ import { Grid, Container } from '@mui/material';
 // _mock_
 import { _bookings, _bookingNew, _bookingsOverview, _bookingReview } from '../../../../_mock/arrays';
 // components
-import { useSettingsContext } from '@/components/settings';
+import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
 	BookingDetails,

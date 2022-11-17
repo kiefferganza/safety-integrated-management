@@ -23,10 +23,10 @@ import { fToNow } from '../../../utils/formatTime';
 // _mock_
 import { _notifications } from '../../../_mock/arrays';
 // components
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import MenuPopover from '@/components/menu-popover';
-import { IconButtonAnimate } from '@/components/animate';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import MenuPopover from '@/Components/menu-popover';
+import { IconButtonAnimate } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 

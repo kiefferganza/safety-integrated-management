@@ -8,7 +8,7 @@ import {
 	_bankingCreditCard,
 	_bankingRecentTransitions,
 } from '../../../../_mock/arrays';
-import { useSettingsContext } from '@/components/settings';
+import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
 	BankingContacts,

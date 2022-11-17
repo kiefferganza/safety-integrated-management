@@ -2,7 +2,7 @@ import { m } from 'framer-motion';
 // @mui
 import { Button, Typography, TextField, Stack } from '@mui/material';
 // components
-import { MotionViewport, varFade } from '@/components/animate';
+import { MotionViewport, varFade } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 

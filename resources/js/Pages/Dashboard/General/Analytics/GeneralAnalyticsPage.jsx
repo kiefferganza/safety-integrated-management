@@ -5,7 +5,7 @@ import { Grid, Container, Typography } from '@mui/material';
 // _mock_
 import { _analyticPost, _analyticOrderTimeline, _analyticTraffic } from '@/_mock/arrays';
 // components
-import { useSettingsContext } from '@/components/settings';
+import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
 	AnalyticsTasks,

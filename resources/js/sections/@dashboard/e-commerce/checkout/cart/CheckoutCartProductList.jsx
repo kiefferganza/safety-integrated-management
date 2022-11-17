@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 // @mui
 import { Table, TableBody, TableContainer } from '@mui/material';
 // components
-import Scrollbar from '@/components/scrollbar';
-import { TableHeadCustom } from '@/components/table';
+import Scrollbar from '@/Components/scrollbar';
+import { TableHeadCustom } from '@/Components/table';
 //
 import CheckoutCartProduct from './CheckoutCartProduct';
 

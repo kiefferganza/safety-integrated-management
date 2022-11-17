@@ -3,8 +3,8 @@ import { useState } from 'react';
 // @mui
 import { Avatar, Button, Divider, Tooltip, ListItem, MenuItem, ListItemText, ListItemAvatar } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
-import MenuPopover from '@/components/menu-popover';
+import Iconify from '@/Components/iconify';
+import MenuPopover from '@/Components/menu-popover';
 
 // ----------------------------------------------------------------------
 

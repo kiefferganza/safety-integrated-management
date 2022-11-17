@@ -11,9 +11,9 @@ import { getProducts } from '@/redux/slices/product';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import FormProvider from '@/components/hook-form';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
-import { useSettingsContext } from '@/components/settings';
+import FormProvider from '@/Components/hook-form';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
 	ShopTagFiltered,

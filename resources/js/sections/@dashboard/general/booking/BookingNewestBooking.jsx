@@ -6,10 +6,10 @@ import { Box, Stack, Paper, Avatar, Typography, CardHeader } from '@mui/material
 // utils
 import { fDateTime } from '../../../../utils/formatTime';
 // components
-import Label from '@/components/label';
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
-import Carousel, { CarouselArrows } from '@/components/carousel';
+import Label from '@/Components/label';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
+import Carousel, { CarouselArrows } from '@/Components/carousel';
 
 // ----------------------------------------------------------------------
 

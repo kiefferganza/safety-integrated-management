@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState, useRef } from 'react';
 //
-import Scrollbar from '@/components/scrollbar';
-import Lightbox from '@/components/lightbox';
+import Scrollbar from '@/Components/scrollbar';
+import Lightbox from '@/Components/lightbox';
 import ChatMessageItem from './ChatMessageItem';
 
 // ----------------------------------------------------------------------

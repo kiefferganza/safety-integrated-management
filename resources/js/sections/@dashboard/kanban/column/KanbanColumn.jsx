@@ -7,8 +7,8 @@ import { Paper, Stack, Button } from '@mui/material';
 import { useDispatch } from '../../../../redux/store';
 import { deleteColumn, updateColumn, addTask, deleteTask } from '../../../../redux/slices/kanban';
 // components
-import Iconify from '@/components/iconify';
-import { useSnackbar } from '@/components/snackbar';
+import Iconify from '@/Components/iconify';
+import { useSnackbar } from '@/Components/snackbar';
 //
 import KanbanTaskAdd from '../KanbanTaskAdd';
 import KanbanTaskCard from '../KanbanTaskCard';

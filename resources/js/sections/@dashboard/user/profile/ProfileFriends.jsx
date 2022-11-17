@@ -6,10 +6,10 @@ import { Box, Card, Link, Stack, Avatar, MenuItem, IconButton, Typography, Input
 // _mock
 import { _socials } from '../../../../_mock/arrays';
 // components
-import Iconify from '@/components/iconify';
-import MenuPopover from '@/components/menu-popover';
-import { CustomTextField } from '@/components/custom-input';
-import SearchNotFound from '@/components/search-not-found';
+import Iconify from '@/Components/iconify';
+import MenuPopover from '@/Components/menu-popover';
+import { CustomTextField } from '@/Components/custom-input';
+import SearchNotFound from '@/Components/search-not-found';
 
 // ----------------------------------------------------------------------
 

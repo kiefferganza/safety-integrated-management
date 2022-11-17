@@ -3,7 +3,7 @@ import { Link as MuiLink, Typography } from '@mui/material';
 // routes
 import { PATH_AUTH } from '@/routes/paths';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 // sections
 import AuthNewPasswordForm from '../../sections/auth/AuthNewPasswordForm';
 // assets

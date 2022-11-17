@@ -3,10 +3,10 @@ import { useState } from 'react';
 // @mui
 import { Stack, Avatar, Button, Checkbox, TableRow, MenuItem, TableCell, IconButton, Typography } from '@mui/material';
 // components
-import Label from '@/components/label';
-import Iconify from '@/components/iconify';
-import MenuPopover from '@/components/menu-popover';
-import ConfirmDialog from '@/components/confirm-dialog';
+import Label from '@/Components/label';
+import Iconify from '@/Components/iconify';
+import MenuPopover from '@/Components/menu-popover';
+import ConfirmDialog from '@/Components/confirm-dialog';
 
 // ----------------------------------------------------------------------
 

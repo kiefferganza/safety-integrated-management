@@ -3,8 +3,8 @@ import { m } from 'framer-motion';
 import { styled, alpha } from '@mui/material/styles';
 import { Container, InputAdornment, Stack, TextField } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
-import { MotionContainer, TextAnimate, varFade } from '@/components/animate';
+import Iconify from '@/Components/iconify';
+import { MotionContainer, TextAnimate, varFade } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 

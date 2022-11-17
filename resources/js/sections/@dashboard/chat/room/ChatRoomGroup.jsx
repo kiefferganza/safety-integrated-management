@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 // @mui
 import { Box, ListItemText, ListItemAvatar, ListItemButton } from '@mui/material';
 // components
-import { CustomAvatar } from '@/components/custom-avatar';
-import Scrollbar from '@/components/scrollbar';
-import BadgeStatus from '@/components/badge-status';
+import { CustomAvatar } from '@/Components/custom-avatar';
+import Scrollbar from '@/Components/scrollbar';
+import BadgeStatus from '@/Components/badge-status';
 //
 import ChatRoomParticipantInfoDialog from './ChatRoomParticipantInfoDialog';
 import ChatRoomCollapseButton from './ChatRoomCollapseButton';

@@ -11,10 +11,10 @@ import useResponsive from '@/hooks/useResponsive';
 import { fDate } from '../../../utils/formatTime';
 import { fShortenNumber } from '../../../utils/formatNumber';
 // components
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
-import TextMaxLine from '@/components/text-max-line';
-import SvgColor from '@/components/svg-color';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
+import TextMaxLine from '@/Components/text-max-line';
+import SvgColor from '@/Components/svg-color';
 import { Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

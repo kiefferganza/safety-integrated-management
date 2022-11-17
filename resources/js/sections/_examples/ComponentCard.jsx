@@ -4,9 +4,9 @@ import { m } from 'framer-motion';
 import { alpha } from '@mui/material/styles';
 import { Link, Paper, Typography, CardActionArea } from '@mui/material';
 // components
-import Image from '@/components/image';
+import Image from '@/Components/image';
 
-import { varHover, varTranHover } from '@/components/animate';
+import { varHover, varTranHover } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 

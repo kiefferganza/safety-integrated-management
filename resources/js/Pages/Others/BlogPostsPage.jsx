@@ -7,10 +7,10 @@ import axios from '@/utils/axios';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import Iconify from '@/components/iconify';
-import { SkeletonPostItem } from '@/components/skeleton';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
-import { useSettingsContext } from '@/components/settings';
+import Iconify from '@/Components/iconify';
+import { SkeletonPostItem } from '@/Components/skeleton';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
 // sections
 import { BlogPostCard, BlogPostsSort, BlogPostsSearch } from '@/sections/@dashboard/blog';
 import { Head, Link } from '@inertiajs/inertia-react';

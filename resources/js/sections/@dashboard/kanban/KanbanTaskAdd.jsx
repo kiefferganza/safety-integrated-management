@@ -5,8 +5,8 @@ import { Box, Paper, Stack, Tooltip, Checkbox, IconButton, InputBase, ClickAwayL
 // utils
 import uuidv4 from '../../../utils/uuidv4';
 // components
-import Iconify from '@/components/iconify';
-import DateRangePicker, { useDateRangePicker } from '@/components/date-range-picker';
+import Iconify from '@/Components/iconify';
+import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
 //
 import KanbanContactsDialog from './KanbanContactsDialog';
 

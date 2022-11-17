@@ -6,8 +6,8 @@ import { Card, Chip, Stack, Avatar, Rating, Button, CardHeader, Typography } fro
 // utils
 import { fDateTime } from '../../../../utils/formatTime';
 // components
-import Iconify from '@/components/iconify';
-import Carousel, { CarouselArrows } from '@/components/carousel';
+import Iconify from '@/Components/iconify';
+import Carousel, { CarouselArrows } from '@/Components/carousel';
 
 // ----------------------------------------------------------------------
 

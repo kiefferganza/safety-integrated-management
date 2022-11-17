@@ -4,9 +4,9 @@ import { useState, useRef } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import { Stack, Drawer, Avatar, Tooltip, Divider, TextField, Box, IconButton } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import DateRangePicker, { useDateRangePicker } from '@/components/date-range-picker';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
 //
 import KanbanInputName from '../KanbanInputName';
 import KanbanDetailsToolbar from './KanbanDetailsToolbar';

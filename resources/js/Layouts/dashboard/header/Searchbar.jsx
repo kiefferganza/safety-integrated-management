@@ -9,9 +9,9 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import { bgBlur } from '../../../utils/cssStyles';
 import flattenArray from '../../../utils/flattenArray';
 // components
-import Iconify from '@/components/iconify';
-import { IconButtonAnimate } from '@/components/animate';
-import SearchNotFound from '@/components/search-not-found';
+import Iconify from '@/Components/iconify';
+import { IconButtonAnimate } from '@/Components/animate';
+import SearchNotFound from '@/Components/search-not-found';
 //
 import NavConfig from '../nav/config';
 

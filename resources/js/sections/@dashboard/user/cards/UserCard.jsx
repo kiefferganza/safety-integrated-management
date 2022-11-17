@@ -7,9 +7,9 @@ import { fShortenNumber } from '../../../../utils/formatNumber';
 // _mock
 import { _socials } from '../../../../_mock/arrays';
 // components
-import Image from '@/components/image';
-import Iconify from '@/components/iconify';
-import SvgColor from '@/components/svg-color';
+import Image from '@/Components/image';
+import Iconify from '@/Components/iconify';
+import SvgColor from '@/Components/svg-color';
 
 // ----------------------------------------------------------------------
 

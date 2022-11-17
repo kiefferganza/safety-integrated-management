@@ -23,11 +23,11 @@ import {
 // utils
 import { fCurrency } from '../../../../utils/formatNumber';
 // components
-import Label from '@/components/label';
-import Iconify from '@/components/iconify';
-import Scrollbar from '@/components/scrollbar';
-import MenuPopover from '@/components/menu-popover';
-import { TableHeadCustom } from '@/components/table';
+import Label from '@/Components/label';
+import Iconify from '@/Components/iconify';
+import Scrollbar from '@/Components/scrollbar';
+import MenuPopover from '@/Components/menu-popover';
+import { TableHeadCustom } from '@/Components/table';
 
 // ----------------------------------------------------------------------
 

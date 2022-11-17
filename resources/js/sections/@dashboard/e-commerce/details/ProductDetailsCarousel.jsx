@@ -6,9 +6,9 @@ import { Box } from '@mui/material';
 // utils
 import { bgGradient } from '../../../../utils/cssStyles';
 // components
-import Image from '@/components/image';
-import Lightbox from '@/components/lightbox';
-import Carousel, { CarouselArrowIndex } from '@/components/carousel';
+import Image from '@/Components/image';
+import Lightbox from '@/Components/lightbox';
+import Carousel, { CarouselArrowIndex } from '@/Components/carousel';
 
 // ----------------------------------------------------------------------
 

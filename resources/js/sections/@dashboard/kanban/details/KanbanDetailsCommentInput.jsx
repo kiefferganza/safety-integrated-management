@@ -1,8 +1,8 @@
 // @mui
 import { Stack, Paper, Button, Tooltip, IconButton, InputBase } from '@mui/material';
 // components
-import Iconify from '@/components/iconify';
-import { CustomAvatar } from '@/components/custom-avatar';
+import Iconify from '@/Components/iconify';
+import { CustomAvatar } from '@/Components/custom-avatar';
 import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

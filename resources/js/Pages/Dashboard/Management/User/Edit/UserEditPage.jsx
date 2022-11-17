@@ -6,8 +6,8 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 // _mock_
 import { _userList } from '@/_mock/arrays';
 // components
-import { useSettingsContext } from '@/components/settings';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
 import UserNewEditForm from '@/sections/@dashboard/user/UserNewEditForm';
 

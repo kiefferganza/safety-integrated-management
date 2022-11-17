@@ -8,7 +8,7 @@ import { Box, Stack, Dialog, Button, DialogTitle, DialogContent, DialogActions }
 import { LoadingButton } from '@mui/lab';
 // assets
 import { countries } from '../../../../../assets/data';
-import FormProvider, { RHFCheckbox, RHFSelect, RHFTextField, RHFRadioGroup } from '@/components/hook-form';
+import FormProvider, { RHFCheckbox, RHFSelect, RHFTextField, RHFRadioGroup } from '@/Components/hook-form';
 
 // ----------------------------------------------------------------------
 

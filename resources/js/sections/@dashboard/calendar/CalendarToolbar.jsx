@@ -6,7 +6,7 @@ import { fDate } from '../../../utils/formatTime';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // components
-import Iconify from '@/components/iconify';
+import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 

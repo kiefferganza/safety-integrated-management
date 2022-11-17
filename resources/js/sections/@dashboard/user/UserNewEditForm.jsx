@@ -14,9 +14,9 @@ import { fData } from '../../../utils/formatNumber';
 // assets
 import { countries } from '../../../assets/data';
 // components
-import Label from '@/components/label';
-import { useSnackbar } from '@/components/snackbar';
-import FormProvider, { RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '@/components/hook-form';
+import Label from '@/Components/label';
+import { useSnackbar } from '@/Components/snackbar';
+import FormProvider, { RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
 
 // ----------------------------------------------------------------------
 

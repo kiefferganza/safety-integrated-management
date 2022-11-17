@@ -9,10 +9,10 @@ import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 import { fData } from '../../../../utils/formatNumber';
 import { fDateTime } from '../../../../utils/formatTime';
 // components
-import Iconify from '@/components/iconify';
-import { useSnackbar } from '@/components/snackbar';
-import MenuPopover from '@/components/menu-popover';
-import FileThumbnail from '@/components/file-thumbnail';
+import Iconify from '@/Components/iconify';
+import { useSnackbar } from '@/Components/snackbar';
+import MenuPopover from '@/Components/menu-popover';
+import FileThumbnail from '@/Components/file-thumbnail';
 //
 import { FileShareDialog, FileDetailsDrawer } from '../../file';
 

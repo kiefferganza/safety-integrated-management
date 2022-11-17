@@ -9,7 +9,7 @@ import { bgBlur } from '../../utils/cssStyles';
 // routes
 import { PATH_PAGE } from '@/routes/paths';
 // components
-import Logo from '@/components/logo';
+import Logo from '@/Components/logo';
 import { Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------

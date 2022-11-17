@@ -8,11 +8,11 @@ import { getProduct, addToCart, gotoStep } from '../../redux/slices/product';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import Iconify from '@/components/iconify';
-import Markdown from '@/components/markdown';
-import CustomBreadcrumbs from '@/components/custom-breadcrumbs';
-import { useSettingsContext } from '@/components/settings';
-import { SkeletonProductDetails } from '@/components/skeleton';
+import Iconify from '@/Components/iconify';
+import Markdown from '@/Components/markdown';
+import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import { useSettingsContext } from '@/Components/settings';
+import { SkeletonProductDetails } from '@/Components/skeleton';
 // sections
 import {
 	ProductDetailsSummary,

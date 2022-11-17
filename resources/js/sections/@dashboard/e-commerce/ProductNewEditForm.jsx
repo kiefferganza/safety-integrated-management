@@ -10,7 +10,7 @@ import { Card, Chip, Grid, Stack, TextField, Typography, InputAdornment, Box } f
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-import { useSnackbar } from '@/components/snackbar';
+import { useSnackbar } from '@/Components/snackbar';
 import FormProvider, {
 	RHFSwitch,
 	RHFSelect,
@@ -19,7 +19,7 @@ import FormProvider, {
 	RHFTextField,
 	RHFRadioGroup,
 	RHFAutocomplete,
-} from '@/components/hook-form';
+} from '@/Components/hook-form';
 
 // ----------------------------------------------------------------------
 

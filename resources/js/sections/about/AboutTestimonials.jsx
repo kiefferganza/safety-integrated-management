@@ -9,8 +9,8 @@ import useResponsive from '@/hooks/useResponsive';
 import { bgBlur, bgGradient } from '../../utils/cssStyles';
 import { fDate } from '../../utils/formatTime';
 // components
-import Iconify from '@/components/iconify';
-import { MotionViewport, varFade } from '@/components/animate';
+import Iconify from '@/Components/iconify';
+import { MotionViewport, varFade } from '@/Components/animate';
 
 // ----------------------------------------------------------------------
 
