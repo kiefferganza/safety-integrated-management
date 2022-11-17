@@ -2,7 +2,7 @@ import { Link } from '@inertiajs/inertia-react';
 // @mui
 import { Stack, Typography, Link as MuiLink } from '@mui/material';
 // layouts
-import LoginLayout from '@/Layout/login';
+import LoginLayout from '@/Layouts/login/LoginLayout';
 //
 // import AuthWithSocial from './AuthWithSocial';
 import AuthRegisterForm from './AuthRegisterForm';
