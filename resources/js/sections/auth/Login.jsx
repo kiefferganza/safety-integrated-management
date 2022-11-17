@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/inertia-react';
 import { Tooltip, Stack, Typography, Link as MuiLink, Box } from '@mui/material';
 // hooks
 // layouts
-import LoginLayout from '../../layouts/login';
+import LoginLayout from '@/layouts/login';
 //
 import AuthLoginForm from './AuthLoginForm';
 // import AuthWithSocial from './AuthWithSocial';
