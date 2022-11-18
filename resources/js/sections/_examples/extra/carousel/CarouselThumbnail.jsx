@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import { Box } from '@mui/material';
 // utils
-import { bgGradient } from '../../../../utils/cssStyles';
+import { bgGradient } from '@/utils/cssStyles';
 // components
 import Image from '@/Components/image';
 import Carousel, { CarouselArrowIndex } from '@/Components/carousel';

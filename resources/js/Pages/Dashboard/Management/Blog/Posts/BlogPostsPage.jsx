@@ -54,7 +54,7 @@ export default function BlogPostsPage () {
 	return (
 		<>
 			<Head>
-				<title> Blog: Posts</title>
+				<title>Posts</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
@@ -76,7 +76,7 @@ export default function BlogPostsPage () {
 					action={
 						<Button
 							href={PATH_DASHBOARD.blog.new}
-							component={Link}
+							component={Link} preserveScroll
 							variant="contained"
 							startIcon={<Iconify icon="eva:plus-fill" />}
 						>

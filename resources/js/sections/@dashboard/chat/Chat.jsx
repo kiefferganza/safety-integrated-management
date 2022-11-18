@@ -40,7 +40,8 @@ export default function Chat () {
 	// const { pathname } = useLocation();
 	const pathname = "";
 
-	const { conversationKey = '' } = useParams();
+	// const { conversationKey = '' } = useParams();
+	const conversationKey = '';
 
 	const { contacts, recipients, participants, activeConversationId, conversations } = useSelector(
 		(state) => state.chat

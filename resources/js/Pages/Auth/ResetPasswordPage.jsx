@@ -35,7 +35,7 @@ export default function ResetPasswordPage () {
 
 			<MuiLink
 				href={PATH_AUTH.login}
-				component={Link}
+				component={Link} preserveScroll
 				color="inherit"
 				variant="subtitle2"
 				sx={{

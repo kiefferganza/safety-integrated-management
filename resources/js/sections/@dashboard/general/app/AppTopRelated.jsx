@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import { Box, Card, Rating, CardHeader, Typography, Stack } from '@mui/material';
 // utils
-import { fCurrency, fShortenNumber } from '../../../../utils/formatNumber';
+import { fCurrency, fShortenNumber } from '@/utils/formatNumber';
 // components
 import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';

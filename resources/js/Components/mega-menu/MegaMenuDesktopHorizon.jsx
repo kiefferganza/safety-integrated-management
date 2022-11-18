@@ -82,7 +82,7 @@ function MegaMenuItem ({ parent }) {
 											key={link.title}
 											noWrap
 											underline="none"
-											component={Link}
+											component={Link} preserveScroll
 											href={link.path}
 											sx={{
 												fontSize: 13,
@@ -103,7 +103,7 @@ function MegaMenuItem ({ parent }) {
 							<Stack spacing={3}>
 								<MuiLink
 									href={more?.path}
-									component={Link}
+									component={Link} preserveScroll
 									sx={{ typography: 'body2', display: 'inline-flex', fontSize: 13 }}
 								>
 									{more?.title}
@@ -144,7 +144,7 @@ function ParentItem ({ title, path = '', open, hasSub, ...other }) {
 	return (
 		<MuiLink
 			href={path}
-			component={Link}
+			component={Link} preserveScroll
 			underline="none"
 			color="inherit"
 			variant="subtitle2"

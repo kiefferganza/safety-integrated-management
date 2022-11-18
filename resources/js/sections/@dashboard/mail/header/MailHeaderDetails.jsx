@@ -6,7 +6,7 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // utils
-import { fDateTime } from '../../../../utils/formatTime';
+import { fDateTime } from '@/utils/formatTime';
 // components
 import { CustomAvatar } from '@/Components/custom-avatar';
 import Iconify from '@/Components/iconify';

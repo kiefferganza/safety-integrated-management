@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import { Card, CardHeader, Typography, Stack } from '@mui/material';
 // utils
-import { fShortenNumber } from '../../../../utils/formatNumber';
+import { fShortenNumber } from '@/utils/formatNumber';
 // components
 import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';

@@ -5,7 +5,7 @@ import { useState, useRef } from 'react';
 import { alpha, useTheme } from '@mui/material/styles';
 import { Box, Card, Paper, Button, Typography, CardContent } from '@mui/material';
 // utils
-import { bgGradient } from '../../../../utils/cssStyles';
+import { bgGradient } from '@/utils/cssStyles';
 // components
 import Image from '@/Components/image';
 import { MotionContainer, varFade } from '@/Components/animate';

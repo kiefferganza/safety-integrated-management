@@ -4,7 +4,7 @@ import flatten from 'lodash/flatten';
 // @mui
 import { Box, Typography, Stack } from '@mui/material';
 // utils
-import { fDateTime } from '../../../../utils/formatTime';
+import { fDateTime } from '@/utils/formatTime';
 // components
 import Scrollbar from '@/Components/scrollbar';
 import FileThumbnail from '@/Components/file-thumbnail';

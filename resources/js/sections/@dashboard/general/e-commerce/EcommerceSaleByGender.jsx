@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { styled, useTheme } from '@mui/material/styles';
 import { Card, CardHeader } from '@mui/material';
 // utils
-import { fNumber } from '../../../../utils/formatNumber';
+import { fNumber } from '@/utils/formatNumber';
 // components
 import Chart, { useChart } from '@/Components/chart';
 

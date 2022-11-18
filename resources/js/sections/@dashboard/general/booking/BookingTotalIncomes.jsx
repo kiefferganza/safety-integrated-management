@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
 import { Card, Typography, Stack } from '@mui/material';
 // utils
-import { fCurrency, fPercent } from '../../../../utils/formatNumber';
+import { fCurrency, fPercent } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 import Chart, { useChart } from '@/Components/chart';

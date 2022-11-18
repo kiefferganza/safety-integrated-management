@@ -5,7 +5,7 @@ import { Container, Typography, Stack } from '@mui/material';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // utils
-import { bgGradient } from '../../utils/cssStyles';
+import { bgGradient } from '@/utils/cssStyles';
 // components
 import Image from '@/Components/image';
 import { MotionContainer, varFade } from '@/Components/animate';

@@ -1,4 +1,3 @@
-
 // @mui
 import { Container } from '@mui/material';
 // routes
@@ -7,39 +6,33 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
-import InvoiceNewEditForm from '@/sections/@dashboard/invoice/form';
+import ProductNewEditForm from '@/sections/@dashboard/e-commerce/ProductNewEditForm';
 import { Head } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceCreatePage () {
+export default function EcommerceProductCreatePage () {
 	const { themeStretch } = useSettingsContext();
 
 	return (
 		<>
 			<Head>
-				<title> Invoices: Create a new invoice | Minimal UI</title>
+				<title>Create a new product</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Create a new invoice"
+					heading="Create a new product"
 					links={[
+						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{
-							name: 'Dashboard',
-							href: PATH_DASHBOARD.root,
+							name: 'E-Commerce',
+							href: PATH_DASHBOARD.eCommerce.root,
 						},
-						{
-							name: 'Invoices',
-							href: PATH_DASHBOARD.invoice.list,
-						},
-						{
-							name: 'New invoice',
-						},
+						{ name: 'New product' },
 					]}
 				/>
-
-				<InvoiceNewEditForm />
+				<ProductNewEditForm />
 			</Container>
 		</>
 	);

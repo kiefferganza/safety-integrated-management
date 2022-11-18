@@ -7,13 +7,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid, Card, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // utils
-import { fData } from '../../../../utils/formatNumber';
+import { fData } from '@/utils/formatNumber';
 // assets
 import { countries } from '../../../../assets/data';
 // components
 import { useSnackbar } from '@/Components/snackbar';
 import FormProvider, { RHFSwitch, RHFSelect, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
 import { usePage } from '@inertiajs/inertia-react';
+import { getCurrentUserImage, getCurrentUserName } from '@/utils/formatName';
 
 // ----------------------------------------------------------------------
 
@@ -27,10 +28,10 @@ export default function AccountGeneral () {
 	});
 
 	const defaultValues = {
-		displayName: user?.displayName || '',
+		displayName: getCurrentUserName(user),
 		email: user?.email || '',
-		photoURL: user?.photoURL || '',
-		phoneNumber: user?.phoneNumber || '',
+		photoURL: getCurrentUserImage(user) ? getCurrentUserImage(user) : '',
+		phoneNumber: user?.phone_no || '',
 		country: user?.country || '',
 		address: user?.address || '',
 		state: user?.state || '',

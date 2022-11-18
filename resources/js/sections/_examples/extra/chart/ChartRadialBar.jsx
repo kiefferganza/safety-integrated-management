@@ -1,7 +1,7 @@
 // @mui
 import { useTheme } from '@mui/material/styles';
 // utils
-import { fNumber } from '../../../../utils/formatNumber';
+import { fNumber } from '@/utils/formatNumber';
 // components
 import Chart, { useChart } from '@/Components/chart';
 

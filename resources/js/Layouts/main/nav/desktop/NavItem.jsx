@@ -41,7 +41,7 @@ export const NavItem = forwardRef(({ item, open, isOffset, active, subItem, isEx
 
 	// Default
 	return (
-		<MuiLink href={path} component={Link} underline="none">
+		<MuiLink href={path} component={Link} preserveScroll underline="none">
 			{renderContent}
 		</MuiLink>
 	);
@@ -65,7 +65,7 @@ NavItemDashboard.propTypes = {
 
 export function NavItemDashboard ({ item, sx, ...other }) {
 	return (
-		<MuiLink href={item.path} component={Link} {...other}>
+		<MuiLink href={item.path} component={Link} preserveScroll {...other}>
 			<CardActionArea
 				sx={{
 					py: 5,

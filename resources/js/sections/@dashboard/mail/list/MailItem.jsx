@@ -5,7 +5,7 @@ import { Box, Tooltip, Typography, Checkbox, Stack } from '@mui/material';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // utils
-import { fDate } from '../../../../utils/formatTime';
+import { fDate } from '@/utils/formatTime';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components

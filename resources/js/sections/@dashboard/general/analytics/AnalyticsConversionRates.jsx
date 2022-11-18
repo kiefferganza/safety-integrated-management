@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import { Box, Card, CardHeader } from '@mui/material';
 // utils
-import { fNumber } from '../../../../utils/formatNumber';
+import { fNumber } from '@/utils/formatNumber';
 // components
 import Chart, { useChart } from '@/Components/chart';
 

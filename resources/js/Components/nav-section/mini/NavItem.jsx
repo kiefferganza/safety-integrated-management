@@ -84,7 +84,7 @@ const NavItem = forwardRef(({ item, depth, open, active, isExternalLink, ...othe
 
 		// Default
 		return (
-			<MuiLink component={Link} to={path} underline="none">
+			<MuiLink component={Link} preserveScroll to={path} underline="none">
 				{renderContent}
 			</MuiLink>
 		);

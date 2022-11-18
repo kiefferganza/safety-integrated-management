@@ -16,8 +16,8 @@ import {
 	Autocomplete,
 } from '@mui/material';
 // utils
-import { fData } from '../../../../utils/formatNumber';
-import { fDateTime } from '../../../../utils/formatTime';
+import { fData } from '@/utils/formatNumber';
+import { fDateTime } from '@/utils/formatTime';
 // components
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';

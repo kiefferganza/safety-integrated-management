@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
 // utils
-import { bgBlur } from '../../../../utils/cssStyles';
+import { bgBlur } from '@/utils/cssStyles';
 // components
 import Image from '@/Components/image';
 import { CustomAvatar } from '@/Components/custom-avatar';

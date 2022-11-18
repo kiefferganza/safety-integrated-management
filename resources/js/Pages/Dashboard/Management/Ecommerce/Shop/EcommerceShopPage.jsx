@@ -86,7 +86,7 @@ export default function EcommerceShopPage () {
 	return (
 		<>
 			<Head>
-				<title> Ecommerce: Shop</title>
+				<title>Shop</title>
 			</Head>
 
 			<FormProvider methods={methods}>

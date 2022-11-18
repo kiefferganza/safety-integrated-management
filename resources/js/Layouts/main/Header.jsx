@@ -7,7 +7,7 @@ import { Box, Button, AppBar, Toolbar, Container, Link } from '@mui/material';
 import useOffSetTop from '@/hooks/useOffSetTop';
 import useResponsive from '@/hooks/useResponsive';
 // utils
-import { bgBlur } from '../../utils/cssStyles';
+import { bgBlur } from '@/utils/cssStyles';
 // config
 import { HEADER } from '../../config';
 // routes

@@ -4,8 +4,8 @@ import { sentenceCase } from 'change-case';
 // @mui
 import { Stack, Button, TableRow, Checkbox, MenuItem, TableCell, IconButton, Link } from '@mui/material';
 // utils
-import { fDate } from '../../../../utils/formatTime';
-import { fCurrency } from '../../../../utils/formatNumber';
+import { fDate } from '@/utils/formatTime';
+import { fCurrency } from '@/utils/formatNumber';
 // components
 import Label from '@/Components/label';
 import Image from '@/Components/image';

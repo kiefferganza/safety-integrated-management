@@ -3,8 +3,6 @@
 import { Container } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
-// _mock_
-import { _invoices } from '@/_mock/arrays';
 // components
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
@@ -14,23 +12,18 @@ import { Head } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceEditPage () {
+export default function InvoiceCreatePage () {
 	const { themeStretch } = useSettingsContext();
-
-	// const { id } = useParams();
-	const id = "";
-
-	const currentInvoice = _invoices.find((invoice) => invoice.id === id);
 
 	return (
 		<>
 			<Head>
-				<title> Invoice: Edit</title>
+				<title>Create a new invoice</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Edit invoice"
+					heading="Create a new invoice"
 					links={[
 						{
 							name: 'Dashboard',
@@ -40,11 +33,13 @@ export default function InvoiceEditPage () {
 							name: 'Invoices',
 							href: PATH_DASHBOARD.invoice.list,
 						},
-						{ name: `INV-${currentInvoice?.invoiceNumber}` },
+						{
+							name: 'New invoice',
+						},
 					]}
 				/>
 
-				<InvoiceNewEditForm isEdit currentInvoice={currentInvoice} />
+				<InvoiceNewEditForm />
 			</Container>
 		</>
 	);

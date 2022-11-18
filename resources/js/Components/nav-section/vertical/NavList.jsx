@@ -18,25 +18,12 @@ NavList.propTypes = {
 export default function NavList ({ data, depth, hasChild }) {
 	// const { pathname } = useLocation();
 
-	const { active, isExternalLink } = useActiveLink(data.path);
+	const { active, isExternalLink } = useActiveLink(data.path, true, hasChild);
 
 	const [open, setOpen] = useState(active);
 
-	console.log({ active, open });
-
-	// useEffect(() => {
-	//   if (!active) {
-	//     handleClose();
-	//   }
-	//   // eslint-disable-next-line react-hooks/exhaustive-deps
-	// }, [pathname]);
-
 	const handleToggle = () => {
 		setOpen(!open);
-	};
-
-	const handleClose = () => {
-		setOpen(false);
 	};
 
 	return (

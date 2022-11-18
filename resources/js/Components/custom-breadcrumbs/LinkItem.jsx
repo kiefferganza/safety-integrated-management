@@ -51,7 +51,7 @@ export default function BreadcrumbsLink ({ link, activeLast, disabled }) {
 
 	if (href) {
 		return (
-			<MuiLink to={href} component={Link} sx={styles}>
+			<MuiLink to={href} component={Link} preserveScroll sx={styles}>
 				{renderContent}
 			</MuiLink>
 		);

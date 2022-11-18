@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { alpha, useTheme } from '@mui/material/styles';
 import { Card, Typography } from '@mui/material';
 // utils
-import { bgGradient } from '../../../../utils/cssStyles';
-import { fShortenNumber } from '../../../../utils/formatNumber';
+import { bgGradient } from '@/utils/cssStyles';
+import { fShortenNumber } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 

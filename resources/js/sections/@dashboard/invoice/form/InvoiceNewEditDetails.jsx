@@ -5,7 +5,7 @@ import { useFormContext, useFieldArray } from 'react-hook-form';
 // @mui
 import { Box, Stack, Button, Divider, Typography, InputAdornment, MenuItem } from '@mui/material';
 // utils
-import { fNumber, fCurrency } from '../../../../utils/formatNumber';
+import { fNumber, fCurrency } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 import { RHFSelect, RHFTextField } from '@/Components/hook-form';

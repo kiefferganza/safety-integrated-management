@@ -5,7 +5,7 @@ import { AppBar, Toolbar, Box, Link as MuiLink } from '@mui/material';
 // config
 import { HEADER } from '../../config';
 // utils
-import { bgBlur } from '../../utils/cssStyles';
+import { bgBlur } from '@/utils/cssStyles';
 // routes
 import { PATH_PAGE } from '@/routes/paths';
 // components
@@ -44,7 +44,7 @@ export default function Header ({ isOffset }) {
 			>
 				<Logo />
 
-				<MuiLink href={PATH_PAGE.faqs} component={Link} variant="subtitle2" color="inherit">
+				<MuiLink href={PATH_PAGE.faqs} component={Link} preserveScroll variant="subtitle2" color="inherit">
 					Need Help?
 				</MuiLink>
 			</Toolbar>

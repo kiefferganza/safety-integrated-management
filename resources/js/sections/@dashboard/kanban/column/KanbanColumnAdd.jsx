@@ -2,8 +2,8 @@ import { useState } from 'react';
 // @mui
 import { Paper, Button, ClickAwayListener, TextField } from '@mui/material';
 // redux
-import { useDispatch } from '../../../../redux/store';
-import { createColumn } from '../../../../redux/slices/kanban';
+import { useDispatch } from '@/redux/store';
+import { createColumn } from '@/redux/slices/kanban';
 // components
 import Iconify from '@/Components/iconify';
 

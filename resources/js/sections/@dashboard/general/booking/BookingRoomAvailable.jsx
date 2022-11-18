@@ -4,7 +4,7 @@ import sumBy from 'lodash/sumBy';
 import { useTheme, alpha } from '@mui/material/styles';
 import { Card, CardHeader, Stack, Box, Typography } from '@mui/material';
 // utils
-import { fNumber } from '../../../../utils/formatNumber';
+import { fNumber } from '@/utils/formatNumber';
 // components
 import Chart, { useChart } from '@/Components/chart';
 

@@ -3,7 +3,7 @@ import { useState } from 'react';
 // @mui
 import { Card, CardHeader, Box } from '@mui/material';
 // utils
-import { fData } from '../../../../utils/formatNumber';
+import { fData } from '@/utils/formatNumber';
 // components
 import { CustomSmallSelect } from '@/Components/custom-input';
 import Chart, { useChart } from '@/Components/chart';

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import { Box, Stack, Link, Card, Button, Divider, Typography, CardHeader } from '@mui/material';
 // utils
-import { fToNow } from '../../../../utils/formatTime';
+import { fToNow } from '@/utils/formatTime';
 // components
 import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';

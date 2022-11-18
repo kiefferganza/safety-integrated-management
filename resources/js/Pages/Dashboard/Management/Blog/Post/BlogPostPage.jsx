@@ -19,6 +19,7 @@ import {
 	BlogPostCommentList,
 	BlogPostCommentForm,
 } from '@/sections/@dashboard/blog';
+import { Head } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -75,9 +76,9 @@ export default function BlogPostPage () {
 
 	return (
 		<>
-			<Helmet>
-				<title>{`Blog: ${post?.title || ''} | Minimal UI`}</title>
-			</Helmet>
+			<Head>
+				<title>{`${post?.title || ''}`}</title>
+			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs

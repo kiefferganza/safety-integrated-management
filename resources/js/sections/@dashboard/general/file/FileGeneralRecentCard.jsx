@@ -6,8 +6,8 @@ import { Box, Stack, Avatar, Divider, Checkbox, MenuItem, Typography, IconButton
 import useResponsive from '@/hooks/useResponsive';
 import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 // utils
-import { fData } from '../../../../utils/formatNumber';
-import { fDateTime } from '../../../../utils/formatTime';
+import { fData } from '@/utils/formatNumber';
+import { fDateTime } from '@/utils/formatTime';
 // components
 import Iconify from '@/Components/iconify';
 import { useSnackbar } from '@/Components/snackbar';

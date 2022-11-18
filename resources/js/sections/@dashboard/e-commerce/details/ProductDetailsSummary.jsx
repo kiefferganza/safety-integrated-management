@@ -8,7 +8,7 @@ import { Box, Link, Stack, Button, Rating, Divider, Typography, IconButton } fro
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
-import { fShortenNumber, fCurrency } from '../../../../utils/formatNumber';
+import { fShortenNumber, fCurrency } from '@/utils/formatNumber';
 // _mock
 import { _socials } from '../../../../_mock/arrays';
 // components

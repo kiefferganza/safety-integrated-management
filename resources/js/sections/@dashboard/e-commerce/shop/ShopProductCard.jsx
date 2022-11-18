@@ -5,10 +5,10 @@ import { Box, Card, Link as MuiLink, Stack, Fab } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
-import { fCurrency } from '../../../../utils/formatNumber';
+import { fCurrency } from '@/utils/formatNumber';
 // redux
-import { useDispatch } from '../../../../redux/store';
-import { addToCart } from '../../../../redux/slices/product';
+import { useDispatch } from '@/redux/store';
+import { addToCart } from '@/redux/slices/product';
 // components
 import Iconify from '@/Components/iconify';
 import Label from '@/Components/label';
@@ -97,7 +97,7 @@ export default function ShopProductCard ({ product }) {
 			</Box>
 
 			<Stack spacing={2.5} sx={{ p: 3 }}>
-				<MuiLink href={linkTo} component={Link} color="inherit" variant="subtitle2" noWrap>
+				<MuiLink href={linkTo} component={Link} preserveScroll color="inherit" variant="subtitle2" noWrap>
 					{name}
 				</MuiLink>
 

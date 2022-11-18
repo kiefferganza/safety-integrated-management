@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { alpha, useTheme, styled } from '@mui/material/styles';
 import { Box, Card, Typography, IconButton } from '@mui/material';
 // utils
-import { bgBlur } from '../../../../utils/cssStyles';
+import { bgBlur } from '@/utils/cssStyles';
 // components
 import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';

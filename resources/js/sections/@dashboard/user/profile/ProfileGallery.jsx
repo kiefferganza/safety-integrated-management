@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Box, Card, IconButton, Typography, Stack } from '@mui/material';
 // utils
-import { fDate } from '../../../../utils/formatTime';
-import { bgBlur } from '../../../../utils/cssStyles';
+import { fDate } from '@/utils/formatTime';
+import { bgBlur } from '@/utils/cssStyles';
 // components
 import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';

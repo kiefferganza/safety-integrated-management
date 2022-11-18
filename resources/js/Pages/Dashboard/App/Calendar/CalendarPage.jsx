@@ -1,3 +1,4 @@
+import '@fullcalendar/react/dist/vdom';
 import FullCalendar from '@fullcalendar/react'; // => request placed at the top
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
@@ -8,7 +9,7 @@ import { useState, useRef, useEffect } from 'react';
 // @mui
 import { Card, Button, Container, DialogTitle, Dialog } from '@mui/material';
 // redux
-import { useDispatch, useSelector } from '../../../../redux/store';
+import { useDispatch, useSelector } from '@/redux/store';
 import {
 	getEvents,
 	createEvent,
@@ -18,11 +19,11 @@ import {
 	selectRange,
 	onOpenModal,
 	onCloseModal,
-} from '../../../../redux/slices/calendar';
+} from '@/redux/slices/calendar';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
-import { fTimestamp } from '../../../../utils/formatTime';
+import { fTimestamp } from '@/utils/formatTime';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // components

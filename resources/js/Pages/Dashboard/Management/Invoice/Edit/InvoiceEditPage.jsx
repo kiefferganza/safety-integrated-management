@@ -9,39 +9,42 @@ import { _invoices } from '@/_mock/arrays';
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
-import InvoiceDetails from '@/sections/@dashboard/invoice/details';
+import InvoiceNewEditForm from '@/sections/@dashboard/invoice/form';
 import { Head } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceDetailsPage () {
+export default function InvoiceEditPage () {
 	const { themeStretch } = useSettingsContext();
 
 	// const { id } = useParams();
-	const id = "";
+	const id = "e99f09a7-dd88-49d5-b1c8-1daf80c2d7b1";
 
 	const currentInvoice = _invoices.find((invoice) => invoice.id === id);
 
 	return (
 		<>
 			<Head>
-				<title> Invoice: View</title>
+				<title>Edit</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Invoice Details"
+					heading="Edit invoice"
 					links={[
-						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
+						{
+							name: 'Dashboard',
+							href: PATH_DASHBOARD.root,
+						},
 						{
 							name: 'Invoices',
-							href: PATH_DASHBOARD.invoice.root,
+							href: PATH_DASHBOARD.invoice.list,
 						},
 						{ name: `INV-${currentInvoice?.invoiceNumber}` },
 					]}
 				/>
 
-				<InvoiceDetails invoice={currentInvoice} />
+				<InvoiceNewEditForm isEdit currentInvoice={currentInvoice} />
 			</Container>
 		</>
 	);

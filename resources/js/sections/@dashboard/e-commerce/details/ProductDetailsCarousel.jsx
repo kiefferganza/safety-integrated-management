@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { alpha, useTheme, styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
 // utils
-import { bgGradient } from '../../../../utils/cssStyles';
+import { bgGradient } from '@/utils/cssStyles';
 // components
 import Image from '@/Components/image';
 import Lightbox from '@/Components/lightbox';

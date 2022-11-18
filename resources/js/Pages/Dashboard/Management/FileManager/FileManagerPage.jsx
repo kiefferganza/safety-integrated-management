@@ -5,7 +5,7 @@ import { Stack, Button, Container } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
-import { fTimestamp } from '../../utils/formatTime';
+import { fTimestamp } from '@/utils/formatTime';
 // _mock_
 import { _allFiles } from '@/_mock/arrays';
 // components
@@ -186,7 +186,7 @@ export default function FileManagerPage () {
 	return (
 		<>
 			<Head>
-				<title> File Manager</title>
+				<title>File Manager</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>

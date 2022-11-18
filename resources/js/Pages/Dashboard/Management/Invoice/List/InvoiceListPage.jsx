@@ -20,7 +20,7 @@ import {
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
-import { fTimestamp } from '../../utils/formatTime';
+import { fTimestamp } from '@/utils/formatTime';
 // _mock_
 import { _invoices } from '@/_mock/arrays';
 // components
@@ -43,7 +43,7 @@ import {
 // sections
 import InvoiceAnalytic from '@/sections/@dashboard/invoice/InvoiceAnalytic';
 import { InvoiceTableRow, InvoiceTableToolbar } from '@/sections/@dashboard/invoice/list';
-import { Head } from '@inertiajs/inertia-react';
+import { Head, Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -222,7 +222,7 @@ export default function InvoiceListPage () {
 	return (
 		<>
 			<Head>
-				<title> Invoice: List | Minimal UI</title>
+				<title>List</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
@@ -244,7 +244,7 @@ export default function InvoiceListPage () {
 					action={
 						<Button
 							to={PATH_DASHBOARD.invoice.new}
-							component={RouterLink}
+							component={Link}
 							variant="contained"
 							startIcon={<Iconify icon="eva:plus-fill" />}
 						>

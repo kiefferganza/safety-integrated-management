@@ -5,7 +5,7 @@ import { Box, Card, Stack, Button, Divider, MenuItem, Checkbox, IconButton } fro
 // hooks
 import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 // utils
-import { fData } from '../../../../utils/formatNumber';
+import { fData } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';

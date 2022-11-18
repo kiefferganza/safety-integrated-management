@@ -18,7 +18,7 @@ export default function UserEditPage () {
 
 	// const { name } = useParams();
 
-	const currentUser = _userList.find((user) => paramCase(user.name) === "name");
+	const currentUser = _userList.find((user) => paramCase(user.name) === "reece-chung");
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'lg'}>

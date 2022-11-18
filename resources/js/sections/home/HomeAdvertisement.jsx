@@ -3,7 +3,7 @@ import { m } from 'framer-motion';
 import { useTheme } from '@mui/material/styles';
 import { Button, Box, Container, Stack } from '@mui/material';
 // utils
-import { bgGradient } from '../../utils/cssStyles';
+import { bgGradient } from '@/utils/cssStyles';
 // routes
 import { PATH_FREE_VERSION, PATH_MINIMAL_ON_STORE } from '@/routes/paths';
 // components

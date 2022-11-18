@@ -5,7 +5,7 @@ import match from 'autosuggest-highlight/match';
 // @mui
 import { Link, Typography, Autocomplete, InputAdornment } from '@mui/material';
 // utils
-import axios from '../../../../utils/axios';
+import axios from '@/utils/axios';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components

@@ -34,7 +34,7 @@ import {
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // utils
-import { bgGradient } from '../../utils/cssStyles';
+import { bgGradient } from '@/utils/cssStyles';
 // routes
 import { PATH_PAGE } from '@/routes/paths';
 // _mock

@@ -14,7 +14,7 @@ import {
 	stepConnectorClasses,
 } from '@mui/material';
 // utils
-import { bgGradient } from '../../../../utils/cssStyles';
+import { bgGradient } from '@/utils/cssStyles';
 // components
 import Iconify from '@/Components/iconify';
 

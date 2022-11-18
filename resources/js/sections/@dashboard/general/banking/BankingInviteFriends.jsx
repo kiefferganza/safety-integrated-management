@@ -5,7 +5,7 @@ import { Box, Stack, Typography, Button, InputBase } from '@mui/material';
 // components
 import Image from '@/Components/image';
 // utils
-import { bgGradient } from '../../../../utils/cssStyles';
+import { bgGradient } from '@/utils/cssStyles';
 
 // ----------------------------------------------------------------------
 

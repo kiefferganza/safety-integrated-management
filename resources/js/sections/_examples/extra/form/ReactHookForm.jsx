@@ -8,8 +8,8 @@ import { Stack, Grid, Button, TextField, Typography, IconButton, InputAdornment,
 import { LoadingButton } from '@mui/lab';
 import { DatePicker } from '@mui/x-date-pickers';
 // utils
-import { fTimestamp } from '../../../../utils/formatTime';
-import { fData } from '../../../../utils/formatNumber';
+import { fTimestamp } from '@/utils/formatTime';
+import { fData } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 import FormProvider, { RHFEditor, RHFCheckbox, RHFTextField } from '@/Components/hook-form';

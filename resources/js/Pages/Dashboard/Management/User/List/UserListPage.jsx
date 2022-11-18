@@ -192,7 +192,7 @@ export default function UserListPage () {
 					action={
 						<Button
 							href={PATH_DASHBOARD.user.new}
-							component={Link}
+							component={Link} preserveScroll
 							variant="contained"
 							startIcon={<Iconify icon="eva:plus-fill" />}
 						>

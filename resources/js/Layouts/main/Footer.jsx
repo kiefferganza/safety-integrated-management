@@ -136,7 +136,7 @@ export default function Footer () {
 										<MuiLink
 											key={link.name}
 											href={link.href}
-											component={Link}
+											component={Link} preserveScroll
 											color="inherit"
 											variant="body2"
 										>

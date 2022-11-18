@@ -169,7 +169,7 @@ function SubMenu ({ parent, pathname }) {
 											{subheader}
 										</Typography>
 										{items.map((link) => (
-											<ListItemButton key={link.title} href={link.path} component={Link} sx={{ px: 1.5 }}>
+											<ListItemButton key={link.title} href={link.path} component={Link} preserveScroll sx={{ px: 1.5 }}>
 												<ListItemIcon
 													sx={{
 														mr: 0.5,
@@ -207,7 +207,7 @@ function SubMenu ({ parent, pathname }) {
 	}
 
 	return (
-		<MuiLink href={path} component={Link} color="inherit" underline="none" sx={{ bgcolor: 'red' }}>
+		<MuiLink href={path} component={Link} preserveScroll color="inherit" underline="none" sx={{ bgcolor: 'red' }}>
 			<ParentItem title={title} icon={icon} />
 		</MuiLink>
 	);

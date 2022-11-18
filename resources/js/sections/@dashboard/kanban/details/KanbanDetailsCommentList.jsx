@@ -3,7 +3,7 @@ import { useState } from 'react';
 // @mui
 import { Stack, Avatar, Typography } from '@mui/material';
 // utils
-import { fToNow } from '../../../../utils/formatTime';
+import { fToNow } from '@/utils/formatTime';
 // components
 import Image from '@/Components/image';
 import Lightbox from '@/Components/lightbox';

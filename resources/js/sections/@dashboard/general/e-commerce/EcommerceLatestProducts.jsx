@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import { Box, Link, Card, CardHeader, Typography, Stack } from '@mui/material';
 // utils
-import { fCurrency } from '../../../../utils/formatNumber';
+import { fCurrency } from '@/utils/formatNumber';
 //
 import Image from '@/Components/image';
 import Scrollbar from '@/Components/scrollbar';

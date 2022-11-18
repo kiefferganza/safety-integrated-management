@@ -4,7 +4,7 @@ import orderBy from 'lodash/orderBy';
 import { alpha } from '@mui/material/styles';
 import { Box, Stack, Card, Avatar, CardHeader, Typography } from '@mui/material';
 // utils
-import { fShortenNumber } from '../../../../utils/formatNumber';
+import { fShortenNumber } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 

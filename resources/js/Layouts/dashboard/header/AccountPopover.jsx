@@ -102,7 +102,7 @@ export default function AccountPopover () {
 
 				<Divider sx={{ borderStyle: 'dashed' }} />
 
-				<MenuItem component={Link} href="/logout" method="POST" sx={{ m: 1 }}>
+				<MenuItem component={Link} preserveScroll href="/logout" method="POST" sx={{ m: 1 }}>
 					Logout
 				</MenuItem>
 			</MenuPopover>

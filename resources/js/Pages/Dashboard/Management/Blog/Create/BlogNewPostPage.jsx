@@ -18,7 +18,7 @@ export default function BlogNewPostPage () {
 	return (
 		<>
 			<Head>
-				<title> Blog: New Post | Minimal UI</title>
+				<title>New Post</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>

@@ -20,7 +20,7 @@ export default function MenuHotProducts ({ tags, ...other }) {
 				<MuiLink
 					href={tag.path}
 					key={tag.name}
-					component={Link}
+					component={Link} preserveScroll
 					underline="none"
 					variant="caption"
 					sx={{

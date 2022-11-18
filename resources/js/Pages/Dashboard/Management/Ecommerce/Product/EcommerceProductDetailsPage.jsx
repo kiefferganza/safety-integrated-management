@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { alpha } from '@mui/material/styles';
 import { Box, Tab, Tabs, Card, Grid, Divider, Container, Typography, Stack } from '@mui/material';
 // redux
-import { useDispatch, useSelector } from '../../redux/store';
-import { getProduct, addToCart, gotoStep } from '../../redux/slices/product';
+import { useDispatch, useSelector } from '@/redux/store';
+import { getProduct, addToCart, gotoStep } from '@/redux/slices/product';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
@@ -20,6 +20,7 @@ import {
 	ProductDetailsCarousel,
 } from '@/sections/@dashboard/e-commerce/details';
 import CartWidget from '@/sections/@dashboard/e-commerce/CartWidget';
+import { Head } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -47,7 +48,7 @@ export default function EcommerceProductDetailsPage () {
 	const { themeStretch } = useSettingsContext();
 
 	// const { name } = useParams();
-	const name = "";
+	const name = "nike-air-force-1-ndestrukt";
 
 	const dispatch = useDispatch();
 
@@ -84,9 +85,9 @@ export default function EcommerceProductDetailsPage () {
 
 	return (
 		<>
-			<Helmet>
-				<title>{`Ecommerce: ${product?.name || ''} | Minimal UI`}</title>
-			</Helmet>
+			<Head>
+				<title>{`${product?.name || ''}`}</title>
+			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs

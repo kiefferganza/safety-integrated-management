@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 // @mui
 import { Stack, InputBase, IconButton, InputAdornment } from '@mui/material';
 // utils
-import uuidv4 from '../../../../utils/uuidv4';
+import uuidv4 from '@/utils/uuidv4';
 // components
 import Iconify from '@/Components/iconify';
 

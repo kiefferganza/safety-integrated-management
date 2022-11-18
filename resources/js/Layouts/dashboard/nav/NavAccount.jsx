@@ -4,6 +4,7 @@ import { Box, Link as MuiLink, Typography } from '@mui/material';
 // components
 import { CustomAvatar } from '@/Components/custom-avatar';
 import { Link, usePage } from '@inertiajs/inertia-react';
+import { getCurrentUserName } from '@/utils/formatName';
 
 // ----------------------------------------------------------------------
 
@@ -21,13 +22,13 @@ export default function NavAccount () {
 	const { auth: { user } } = usePage().props;
 
 	return (
-		<MuiLink href="/user/account" component={Link} underline="none" color="inherit">
+		<MuiLink href="/dashboard/user/account" component={Link} preserveScroll underline="none" color="inherit">
 			<StyledRoot>
-				<CustomAvatar src={`/storage/media/photos/employee/${(user?.employee.img_src || user?.profile_pic)}`} alt={`${user?.firstname || user?.employee?.firstname} ${user?.lastname || user?.employee?.lastname}`} />
+				<CustomAvatar src={`/storage/media/photos/employee/${(user?.employee.img_src || user?.profile_pic)}`} alt={getCurrentUserName(user)} />
 
 				<Box sx={{ ml: 2, minWidth: 0 }}>
 					<Typography variant="subtitle2" noWrap>
-						{`${user?.firstname || user?.employee?.firstname} ${user?.lastname || user?.employee?.lastname}`}
+						{getCurrentUserName(user)}
 					</Typography>
 
 					<Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>

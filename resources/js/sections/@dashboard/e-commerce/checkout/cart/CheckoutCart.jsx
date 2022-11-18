@@ -71,7 +71,7 @@ export default function CheckoutCart ({
 
 				<Button
 					href={PATH_DASHBOARD.eCommerce.root}
-					component={Link}
+					component={Link} preserveScroll
 					color="inherit"
 					startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
 				>

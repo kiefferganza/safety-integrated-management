@@ -18,7 +18,7 @@ export default function Register () {
 				<Stack direction="row" spacing={0.5}>
 					<Typography variant="body2"> Already have an account? </Typography>
 
-					<MuiLink href="/login" component={Link} variant="subtitle2">
+					<MuiLink href="/login" component={Link} preserveScroll variant="subtitle2">
 						Sign in
 					</MuiLink>
 				</Stack>

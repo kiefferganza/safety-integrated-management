@@ -4,7 +4,7 @@ import { Grid, Container } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // redux
-import { useDispatch, useSelector } from '../../redux/store';
+import { useDispatch, useSelector } from '@/redux/store';
 import {
 	resetCart,
 	getCart,
@@ -17,7 +17,7 @@ import {
 	applyDiscount,
 	increaseQuantity,
 	decreaseQuantity,
-} from '../../redux/slices/product';
+} from '@/redux/slices/product';
 // components
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import { useSettingsContext } from '@/Components/settings';
@@ -109,7 +109,7 @@ export default function EcommerceCheckoutPage () {
 	return (
 		<>
 			<Head>
-				<title> Ecommerce: Checkout</title>
+				<title>Checkout</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>

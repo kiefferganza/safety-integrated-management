@@ -6,7 +6,7 @@ import { Box, Stack, Drawer, IconButton } from '@mui/material';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // utils
-import axios from '../../../../utils/axios';
+import axios from '@/utils/axios';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
@@ -125,7 +125,7 @@ export default function ChatNav ({ conversations, activeConversationId }) {
 					</IconButton>
 
 					{!isCollapse && (
-						<IconButton href={PATH_DASHBOARD.chat.new} component={Link}>
+						<IconButton href={PATH_DASHBOARD.chat.new} component={Link} preserveScroll>
 							<Iconify icon="eva:edit-fill" />
 						</IconButton>
 					)}

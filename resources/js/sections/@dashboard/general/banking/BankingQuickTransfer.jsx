@@ -21,7 +21,7 @@ import {
 	DialogActions,
 } from '@mui/material';
 // utils
-import { fCurrency } from '../../../../utils/formatNumber';
+import { fCurrency } from '@/utils/formatNumber';
 // components
 import Carousel, { CarouselArrows } from '@/Components/carousel';
 

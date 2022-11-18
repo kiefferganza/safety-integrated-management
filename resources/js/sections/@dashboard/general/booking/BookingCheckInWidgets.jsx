@@ -5,7 +5,7 @@ import { Card, Typography, Stack, Divider } from '@mui/material';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // utils
-import { fNumber } from '../../../../utils/formatNumber';
+import { fNumber } from '@/utils/formatNumber';
 // components
 import Chart, { useChart } from '@/Components/chart';
 

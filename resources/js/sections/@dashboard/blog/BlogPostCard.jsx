@@ -156,7 +156,7 @@ export function PostContent ({ title, view, comment, share, createdAt, index }) 
 				{fDate(createdAt)}
 			</Typography>
 
-			<MuiLink color="inherit" href={linkTo} component={Link}>
+			<MuiLink color="inherit" href={linkTo} component={Link} preserveScroll>
 				<TextMaxLine variant={isDesktop && latestPostLarge ? 'h5' : 'subtitle2'} line={2} persistent>
 					{title}
 				</TextMaxLine>

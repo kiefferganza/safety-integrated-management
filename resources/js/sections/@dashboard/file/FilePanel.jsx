@@ -51,7 +51,7 @@ export default function FilePanel ({ title, subTitle, link, onOpen, collapse, on
 			{link && (
 				<Button
 					to={link}
-					component={Link}
+					component={Link} preserveScroll
 					size="small"
 					color="inherit"
 					endIcon={<Iconify icon="eva:chevron-right-fill" />}

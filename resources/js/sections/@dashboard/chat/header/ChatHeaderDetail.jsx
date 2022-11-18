@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import { Stack, Box, Link, Typography, IconButton } from '@mui/material';
 // utils
-import { fToNow } from '../../../../utils/formatTime';
+import { fToNow } from '@/utils/formatTime';
 // components
 import Iconify from '@/Components/iconify';
 import BadgeStatus from '@/Components/badge-status';

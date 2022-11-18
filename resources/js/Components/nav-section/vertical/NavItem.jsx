@@ -90,7 +90,7 @@ export default function NavItem ({ item, depth, open, active, isExternalLink, ..
 
 		// Default
 		return (
-			<MuiLink component={Link} href={path} underline="none">
+			<MuiLink component={Link} preserveScroll href={path} underline="none">
 				{renderContent}
 			</MuiLink>
 		);

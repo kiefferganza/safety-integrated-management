@@ -20,7 +20,7 @@ export default function Login () {
 				<Stack direction="row" spacing={0.5}>
 					<Typography variant="body2">New user?</Typography>
 
-					<MuiLink component={Link} href="/register" variant="subtitle2">
+					<MuiLink component={Link} preserveScroll href="/register" variant="subtitle2">
 						Create an account
 					</MuiLink>
 				</Stack>

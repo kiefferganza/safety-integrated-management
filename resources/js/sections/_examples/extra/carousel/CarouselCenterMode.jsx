@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { alpha, useTheme } from '@mui/material/styles';
 import { Box, Paper, Link, CardContent } from '@mui/material';
 // utils
-import { bgGradient } from '../../../../utils/cssStyles';
+import { bgGradient } from '@/utils/cssStyles';
 // components
 import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';

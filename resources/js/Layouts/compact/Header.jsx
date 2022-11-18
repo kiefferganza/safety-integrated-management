@@ -4,7 +4,7 @@ import { AppBar, Toolbar, Box, Link as MuiLink } from '@mui/material';
 // config
 import { HEADER } from '../../config';
 // utils
-import { bgBlur } from '../../utils/cssStyles';
+import { bgBlur } from '@/utils/cssStyles';
 // components
 import Logo from '@/Components/logo';
 import { Link } from '@inertiajs/inertia-react';
@@ -41,7 +41,7 @@ export default function Header ({ isOffset }) {
 			>
 				<Logo />
 
-				<MuiLink href="/" component={Link} variant="subtitle2" color="inherit">
+				<MuiLink href="/" component={Link} preserveScroll variant="subtitle2" color="inherit">
 					Need Help?
 				</MuiLink>
 			</Toolbar>

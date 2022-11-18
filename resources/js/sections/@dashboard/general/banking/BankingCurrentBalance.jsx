@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import { Box, Typography, Stack, MenuItem, IconButton, alpha } from '@mui/material';
 // utils
-import { bgGradient } from '../../../../utils/cssStyles';
-import { fCurrency } from '../../../../utils/formatNumber';
+import { bgGradient } from '@/utils/cssStyles';
+import { fCurrency } from '@/utils/formatNumber';
 // components
 import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';

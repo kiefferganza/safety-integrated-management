@@ -4,8 +4,8 @@ import { paramCase } from 'change-case';
 // @mui
 import { Container } from '@mui/material';
 // redux
-import { useDispatch, useSelector } from '../../redux/store';
-import { getProducts } from '../../redux/slices/product';
+import { useDispatch, useSelector } from '@/redux/store';
+import { getProducts } from '@/redux/slices/product';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
@@ -23,7 +23,7 @@ export default function EcommerceProductEditPage () {
 	const dispatch = useDispatch();
 
 	// const { name } = useParams();
-	const name = "";
+	const name = "nike-air-force-1-ndestrukt";
 
 	const currentProduct = useSelector((state) =>
 		state.product.products.find((product) => paramCase(product.name) === name)
@@ -36,7 +36,7 @@ export default function EcommerceProductEditPage () {
 	return (
 		<>
 			<Head>
-				<title> Ecommerce: Edit product</title>
+				<title>Edit product</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>

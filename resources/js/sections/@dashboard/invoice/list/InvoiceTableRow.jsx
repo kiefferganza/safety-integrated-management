@@ -14,8 +14,8 @@ import {
 	Typography,
 } from '@mui/material';
 // utils
-import { fDate } from '../../../../utils/formatTime';
-import { fCurrency } from '../../../../utils/formatNumber';
+import { fDate } from '@/utils/formatTime';
+import { fCurrency } from '@/utils/formatNumber';
 // components
 import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';

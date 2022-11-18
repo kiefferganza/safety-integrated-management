@@ -8,7 +8,7 @@ import { PATH_DASHBOARD, PATH_FIGMA_PREVIEW, PATH_FREE_VERSION } from '@/routes/
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // utils
-import { textGradient, bgGradient } from '../../utils/cssStyles';
+import { textGradient, bgGradient } from '@/utils/cssStyles';
 // config
 import { HEADER } from '../../config';
 // components
@@ -177,7 +177,7 @@ function Description () {
 					<Stack alignItems="center" spacing={2}>
 						<Button
 							href={PATH_DASHBOARD.root}
-							component={Link}
+							component={Link} preserveScroll
 							color="inherit"
 							size="large"
 							variant="contained"

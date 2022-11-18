@@ -18,8 +18,8 @@ import {
 import useDoubleClick from '@/hooks/useDoubleClick';
 import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 // utils
-import { fDate } from '../../../../utils/formatTime';
-import { fData } from '../../../../utils/formatNumber';
+import { fDate } from '@/utils/formatTime';
+import { fData } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';

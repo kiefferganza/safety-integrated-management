@@ -27,7 +27,7 @@ import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import ConfirmDialog from '@/Components/confirm-dialog';
 // sections
 import { ProductTableRow, ProductTableToolbar } from '@/sections/@dashboard/e-commerce/list';
-import { Head } from '@inertiajs/inertia-react';
+import { Head, Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -190,7 +190,7 @@ export default function EcommerceProductListPage () {
 					action={
 						<Button
 							to={PATH_DASHBOARD.eCommerce.new}
-							component={RouterLink}
+							component={Link} preserveScroll
 							variant="contained"
 							startIcon={<Iconify icon="eva:plus-fill" />}
 						>

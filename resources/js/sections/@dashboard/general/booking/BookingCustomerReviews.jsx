@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Card, Chip, Stack, Avatar, Rating, Button, CardHeader, Typography } from '@mui/material';
 // utils
-import { fDateTime } from '../../../../utils/formatTime';
+import { fDateTime } from '@/utils/formatTime';
 // components
 import Iconify from '@/Components/iconify';
 import Carousel, { CarouselArrows } from '@/Components/carousel';

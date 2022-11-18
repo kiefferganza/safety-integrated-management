@@ -58,7 +58,7 @@ export default function MenuCarousel ({ products, numberShow, sx }) {
 						<Box key={product.name} sx={{ px: 1, textAlign: 'center' }}>
 							<MuiLink
 								href={product.path}
-								component={Link}
+								component={Link} preserveScroll
 								color="inherit"
 								underline="none"
 								sx={{
