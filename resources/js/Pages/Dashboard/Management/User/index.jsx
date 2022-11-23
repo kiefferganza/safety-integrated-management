@@ -6,7 +6,7 @@ const index = ({ auth }) => {
 	return (
 		<>
 			<Head>
-				<title>User: Profile</title>
+				<title>Profile</title>
 			</Head>
 			<DashboardLayout>
 				<UserProfilePage user={auth?.user || {}} />

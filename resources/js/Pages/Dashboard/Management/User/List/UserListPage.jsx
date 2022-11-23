@@ -37,36 +37,30 @@ import {
 // sections
 import { UserTableToolbar, UserTableRow } from '@/sections/@dashboard/user/list';
 import { Link } from '@inertiajs/inertia-react';
+import Label from '@/Components/label';
+import { getCurrentUserName } from '@/utils/formatName';
+import { fDate } from '@/utils/formatTime';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = ['all', 'active', 'banned'];
-
 const ROLE_OPTIONS = [
 	'all',
-	'ux designer',
-	'full stack designer',
-	'backend developer',
-	'project manager',
-	'leader',
-	'ui designer',
-	'ui/ux designer',
-	'front end developer',
-	'full stack developer',
+	'admin',
+	'user',
 ];
 
 const TABLE_HEAD = [
 	{ id: 'name', label: 'Name', align: 'left' },
-	{ id: 'company', label: 'Company', align: 'left' },
-	{ id: 'role', label: 'Role', align: 'left' },
-	{ id: 'isVerified', label: 'Verified', align: 'center' },
+	{ id: 'email', label: 'Email', align: 'left' },
+	{ id: 'date_created', label: 'Date Created', align: 'left' },
+	{ id: 'user_type', label: 'Type', align: 'left' },
 	{ id: 'status', label: 'Status', align: 'left' },
 	{ id: '' },
 ];
 
 // ----------------------------------------------------------------------
 
-export default function UserListPage () {
+export default function UserListPage ({ users }) {
 	const {
 		dense,
 		page,
@@ -88,9 +82,11 @@ export default function UserListPage () {
 
 	const { themeStretch } = useSettingsContext();
 
-	const [tableData, setTableData] = useState(_userList);
+	const [tableData, setTableData] = useState(() => users.map(user => ({ ...user, name: getCurrentUserName(user) })));
 
 	const [openConfirm, setOpenConfirm] = useState(false);
+
+	const [filterCreatedDate, setFilterCreatedDate] = useState(null);
 
 	const [filterName, setFilterName] = useState('');
 
@@ -104,18 +100,35 @@ export default function UserListPage () {
 		filterName,
 		filterRole,
 		filterStatus,
+		filterCreatedDate
 	});
 
 	const dataInPage = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
 	const denseHeight = dense ? 52 : 72;
 
-	const isFiltered = filterName !== '' || filterRole !== 'all' || filterStatus !== 'all';
+	const isFiltered = filterName !== '' || filterRole !== 'all' || filterStatus !== 'all' || filterCreatedDate !== null;
 
 	const isNotFound =
 		(!dataFiltered.length && !!filterName) ||
 		(!dataFiltered.length && !!filterRole) ||
-		(!dataFiltered.length && !!filterStatus);
+		(!dataFiltered.length && !!filterStatus) ||
+		(!dataFiltered.length && !!filterCreatedDate);
+
+
+	const getLengthByStatus = (status) => {
+		if (status === 'active') {
+			return tableData.filter((item) => item.status === 1).length;
+		} else {
+			return tableData.filter((item) => item.status !== 1).length;
+		}
+	}
+
+	const STATUS_OPTIONS = [
+		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
+		{ value: 'active', label: 'Active', color: 'success', count: getLengthByStatus('active') },
+		{ value: 'deactivated', label: 'Deactivated', color: 'error', count: getLengthByStatus('deactivated') }
+	];
 
 	const handleOpenConfirm = () => {
 		setOpenConfirm(true);
@@ -135,10 +148,15 @@ export default function UserListPage () {
 		setFilterName(event.target.value);
 	};
 
-	const handleFilterRole = (event) => {
+	const handleFilterType = (event) => {
 		setPage(0);
 		setFilterRole(event.target.value);
 	};
+
+	const handleFilterCreatedDate = (date) => {
+		setPage(0);
+		setFilterCreatedDate(fDate(date));
+	}
 
 	const handleDeleteRow = (id) => {
 		const deleteRow = tableData.filter((row) => row.id !== id);
@@ -169,10 +187,6 @@ export default function UserListPage () {
 		}
 	};
 
-	const handleEditRow = (id) => {
-		// navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
-	};
-
 	const handleResetFilter = () => {
 		setFilterName('');
 		setFilterRole('all');
@@ -183,7 +197,7 @@ export default function UserListPage () {
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="User List"
+					heading="Your Team"
 					links={[
 						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{ name: 'User', href: PATH_DASHBOARD.user.root },
@@ -211,7 +225,16 @@ export default function UserListPage () {
 						}}
 					>
 						{STATUS_OPTIONS.map((tab) => (
-							<Tab key={tab} label={tab} value={tab} />
+							<Tab
+								key={tab.value}
+								value={tab.value}
+								label={tab.label}
+								icon={
+									<Label color={tab.color} sx={{ mr: 1 }}>
+										{tab.count}
+									</Label>
+								}
+							/>
 						))}
 					</Tabs>
 
@@ -221,10 +244,12 @@ export default function UserListPage () {
 						isFiltered={isFiltered}
 						filterName={filterName}
 						filterRole={filterRole}
+						filterCreatedDate={filterCreatedDate}
 						optionsRole={ROLE_OPTIONS}
 						onFilterName={handleFilterName}
-						onFilterRole={handleFilterRole}
+						onFilterRole={handleFilterType}
 						onResetFilter={handleResetFilter}
+						onFilterCreatedDate={handleFilterCreatedDate}
 					/>
 
 					<TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -267,12 +292,11 @@ export default function UserListPage () {
 								<TableBody>
 									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
 										<UserTableRow
-											key={row.id}
+											key={row.user_id}
 											row={row}
-											selected={selected.includes(row.id)}
-											onSelectRow={() => onSelectRow(row.id)}
-											onDeleteRow={() => handleDeleteRow(row.id)}
-											onEditRow={() => handleEditRow(row.name)}
+											selected={selected.includes(row.user_id)}
+											onSelectRow={() => onSelectRow(row.user_id)}
+											onDeleteRow={() => handleDeleteRow(row.user_id)}
 										/>
 									))}
 
@@ -325,7 +349,7 @@ export default function UserListPage () {
 
 // ----------------------------------------------------------------------
 
-function applyFilter ({ inputData, comparator, filterName, filterStatus, filterRole }) {
+function applyFilter ({ inputData, comparator, filterName, filterStatus, filterRole, filterCreatedDate }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
 
 	stabilizedThis.sort((a, b) => {
@@ -341,11 +365,23 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterR
 	}
 
 	if (filterStatus !== 'all') {
-		inputData = inputData.filter((user) => user.status === filterStatus);
+		if (filterStatus === 'active') {
+			inputData = inputData.filter((user) => user.status === 1);
+		} else {
+			inputData = inputData.filter((user) => user.status !== 1);
+		}
 	}
 
 	if (filterRole !== 'all') {
-		inputData = inputData.filter((user) => user.role === filterRole);
+		if (filterRole === 'admin') {
+			inputData = inputData.filter((user) => user.user_type === 0);
+		} else if (filterRole === 'user') {
+			inputData = inputData.filter((user) => user.user_type === 1);
+		}
+	}
+
+	if (filterCreatedDate !== null) {
+		inputData = inputData.filter((user) => fDate(user.date_created) === filterCreatedDate);
 	}
 
 	return inputData;

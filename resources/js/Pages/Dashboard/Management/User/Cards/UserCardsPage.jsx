@@ -12,7 +12,7 @@ import { UserCard } from '@/sections/@dashboard/user/cards';
 
 // ----------------------------------------------------------------------
 
-export default function UserCardsPage () {
+export default function UserCardsPage ({ users }) {
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -35,8 +35,8 @@ export default function UserCardsPage () {
 					md: 'repeat(3, 1fr)',
 				}}
 			>
-				{_userCards.map((user) => (
-					<UserCard key={user.id} user={user} />
+				{users.map((user, idx) => (
+					<UserCard key={user.user_id} user={user} idx={idx} />
 				))}
 			</Box>
 		</Container>

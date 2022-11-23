@@ -2,14 +2,14 @@ import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
 import UserEditPage from "./UserEditPage";
 
-const index = () => {
+const index = ({ user }) => {
 	return (
 		<>
 			<Head>
 				<title>User: Edit</title>
 			</Head>
 			<DashboardLayout>
-				<UserEditPage />
+				<UserEditPage user={user} />
 			</DashboardLayout>
 		</>
 	)

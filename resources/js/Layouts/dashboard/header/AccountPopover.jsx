@@ -4,10 +4,11 @@ import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
 // components
 import { CustomAvatar } from '@/Components/custom-avatar';
-import { useSnackbar } from '@/Components/snackbar';
 import MenuPopover from '@/Components/menu-popover';
 import { IconButtonAnimate } from '@/Components/animate';
 import { Link, usePage } from '@inertiajs/inertia-react';
+import { getCurrentUserName } from '@/utils/formatName';
+import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
@@ -18,11 +19,11 @@ const OPTIONS = [
 	},
 	{
 		label: 'Profile',
-		linkTo: "/profile"
+		linkTo: "/dashboard/user/profile"
 	},
 	{
 		label: 'Settings',
-		linkTo: "/settings"
+		linkTo: "/dashboard/user/account"
 	},
 ];
 
@@ -30,8 +31,6 @@ const OPTIONS = [
 
 export default function AccountPopover () {
 	const { auth: { user } } = usePage().props;
-
-	const { enqueueSnackbar } = useSnackbar();
 
 	const [openPopover, setOpenPopover] = useState(null);
 
@@ -43,18 +42,9 @@ export default function AccountPopover () {
 		setOpenPopover(null);
 	};
 
-	const handleLogout = async () => {
-		try {
-			handleClosePopover();
-		} catch (error) {
-			console.error(error);
-			enqueueSnackbar('Unable to logout!', { variant: 'error' });
-		}
-	};
-
 	const handleClickItem = (path) => {
 		handleClosePopover();
-		navigate(path);
+		Inertia.visit(path)
 	};
 
 	return (
@@ -76,13 +66,13 @@ export default function AccountPopover () {
 					}),
 				}}
 			>
-				<CustomAvatar src={`/storage/media/photos/employee/${(user?.employee.img_src || user?.profile_pic)}`} alt={`${user?.firstname || user?.employee?.firstname} ${user?.lastname || user?.employee?.lastname}`} />
+				<CustomAvatar src={`/storage/media/photos/employee/${(user?.employee.img_src || user?.profile_pic)}`} alt={getCurrentUserName(user)} />
 			</IconButtonAnimate>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} sx={{ width: 200, p: 0 }}>
 				<Box sx={{ my: 1.5, px: 2.5 }}>
 					<Typography variant="subtitle2" noWrap>
-						{`${user?.firstname || user?.employee?.firstname} ${user?.lastname || user?.employee?.lastname}`}
+						{getCurrentUserName(user)}
 					</Typography>
 
 					<Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>

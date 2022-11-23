@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 require __DIR__.'/example.php';
+require __DIR__.'/dashboard.php';
 
 Route::middleware('auth')->group(function ()
 {

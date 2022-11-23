@@ -3,8 +3,11 @@ import PropTypes from 'prop-types';
 import { Stack, InputAdornment, TextField, MenuItem, Button } from '@mui/material';
 // components
 import Iconify from '@/Components/iconify';
+import { DatePicker } from '@mui/x-date-pickers';
 
 // ----------------------------------------------------------------------
+
+const INPUT_WIDTH = 160;
 
 UserTableToolbar.propTypes = {
 	isFiltered: PropTypes.bool,
@@ -20,10 +23,12 @@ export default function UserTableToolbar ({
 	isFiltered,
 	filterName,
 	filterRole,
+	filterCreatedDate,
 	optionsRole,
 	onFilterName,
 	onFilterRole,
 	onResetFilter,
+	onFilterCreatedDate
 }) {
 	return (
 		<Stack
@@ -73,6 +78,21 @@ export default function UserTableToolbar ({
 					</MenuItem>
 				))}
 			</TextField>
+
+			<DatePicker
+				label="Created Date"
+				value={filterCreatedDate}
+				onChange={onFilterCreatedDate}
+				renderInput={(params) => (
+					<TextField
+						{...params}
+						fullWidth
+						sx={{
+							maxWidth: { md: INPUT_WIDTH },
+						}}
+					/>
+				)}
+			/>
 
 			<TextField
 				fullWidth

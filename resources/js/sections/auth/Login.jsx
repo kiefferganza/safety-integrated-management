@@ -24,14 +24,6 @@ export default function Login () {
 						Create an account
 					</MuiLink>
 				</Stack>
-
-				<Tooltip title="LEFT" placement="left">
-					<Box
-						component="img"
-						src={`/storage/assets/icons/auth/ic_.png`}
-						sx={{ width: 32, height: 32, position: 'absolute', right: 0 }}
-					/>
-				</Tooltip>
 			</Stack>
 
 			<AuthLoginForm />

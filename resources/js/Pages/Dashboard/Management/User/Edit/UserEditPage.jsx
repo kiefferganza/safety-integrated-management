@@ -10,13 +10,12 @@ import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
 import UserNewEditForm from '@/sections/@dashboard/user/UserNewEditForm';
+import { getCurrentUserName } from '@/utils/formatName';
 
 // ----------------------------------------------------------------------
 
-export default function UserEditPage () {
+export default function UserEditPage ({ user }) {
 	const { themeStretch } = useSettingsContext();
-
-	// const { name } = useParams();
 
 	const currentUser = _userList.find((user) => paramCase(user.name) === "reece-chung");
 
@@ -33,11 +32,11 @@ export default function UserEditPage () {
 						name: 'User',
 						href: PATH_DASHBOARD.user.list,
 					},
-					{ name: currentUser?.name },
+					{ name: getCurrentUserName(user) },
 				]}
 			/>
 
-			<UserNewEditForm isEdit currentUser={currentUser} />
+			<UserNewEditForm isEdit currentUser={currentUser} user={user} />
 		</Container>
 	);
 }

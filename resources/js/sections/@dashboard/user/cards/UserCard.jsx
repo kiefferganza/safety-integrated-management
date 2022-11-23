@@ -10,6 +10,7 @@ import { _socials } from '../../../../_mock/arrays';
 import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';
 import SvgColor from '@/Components/svg-color';
+import { randomNumberRange } from '@/_mock';
 
 // ----------------------------------------------------------------------
 
@@ -29,8 +30,8 @@ UserCard.propTypes = {
 	user: PropTypes.object,
 };
 
-export default function UserCard ({ user }) {
-	const { name, cover, role, follower, totalPosts, avatarUrl, following } = user;
+export default function UserCard ({ user, idx }) {
+	const { firstname, lastname, user_type, email, img_src } = user;
 
 	return (
 		<Card sx={{ textAlign: 'center' }}>
@@ -51,8 +52,8 @@ export default function UserCard ({ user }) {
 				/>
 
 				<Avatar
-					alt={name}
-					src={avatarUrl}
+					alt={firstname + " " + lastname}
+					src={img_src ? `/storage/media/photos/employee/${img_src}` : null}
 					sx={{
 						width: 64,
 						height: 64,
@@ -67,18 +68,19 @@ export default function UserCard ({ user }) {
 
 				<StyledOverlay />
 
-				<Image src={cover} alt={cover} ratio="16/9" />
+				<Image src={`https://api-dev-minimal-v4.vercel.app/assets/images/covers/cover_${idx + 1}.jpg`} ratio="16/9" />
 			</Box>
 
 			<Typography variant="subtitle1" sx={{ mt: 6, mb: 0.5 }}>
-				{name}
+				{firstname + " " + lastname}
 			</Typography>
 
 			<Typography variant="body2" sx={{ color: 'text.secondary' }}>
-				{role}
+				{user_type === 0 ? "Admin" : "User"}
 			</Typography>
 
-			<Stack direction="row" alignItems="center" justifyContent="center" sx={{ mt: 1, mb: 3 }}>
+
+			<Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 1 }}>
 				{_socials.map((social) => (
 					<IconButton
 						key={social.name}
@@ -94,6 +96,10 @@ export default function UserCard ({ user }) {
 				))}
 			</Stack>
 
+			<Typography variant="body2" sx={{ color: 'secondary.main', mb: 3 }}>
+				{email}
+			</Typography>
+
 			<Divider sx={{ borderStyle: 'dashed' }} />
 
 			<Box display="grid" gridTemplateColumns="repeat(3, 1fr)" sx={{ py: 3 }}>
@@ -101,7 +107,7 @@ export default function UserCard ({ user }) {
 					<Typography variant="caption" component="div" sx={{ mb: 0.75, color: 'text.disabled' }}>
 						Follower
 					</Typography>
-					<Typography variant="subtitle1">{fShortenNumber(follower)}</Typography>
+					<Typography variant="subtitle1">{fShortenNumber(randomNumberRange(999, 99999))}</Typography>
 				</div>
 
 				<div>
@@ -109,14 +115,14 @@ export default function UserCard ({ user }) {
 						Following
 					</Typography>
 
-					<Typography variant="subtitle1">{fShortenNumber(following)}</Typography>
+					<Typography variant="subtitle1">{fShortenNumber(randomNumberRange(999, 99999))}</Typography>
 				</div>
 
 				<div>
 					<Typography variant="caption" component="div" sx={{ mb: 0.75, color: 'text.disabled' }}>
 						Total Post
 					</Typography>
-					<Typography variant="subtitle1">{fShortenNumber(totalPosts)}</Typography>
+					<Typography variant="subtitle1">{fShortenNumber(randomNumberRange(999, 99999))}</Typography>
 				</div>
 			</Box>
 		</Card>

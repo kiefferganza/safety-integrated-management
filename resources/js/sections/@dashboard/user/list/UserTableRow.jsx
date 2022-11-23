@@ -7,6 +7,9 @@ import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
+import { fDate } from '@/utils/formatTime';
+import { Link } from '@inertiajs/inertia-react';
+import { PATH_DASHBOARD } from '@/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -18,8 +21,8 @@ UserTableRow.propTypes = {
 	onSelectRow: PropTypes.func,
 };
 
-export default function UserTableRow ({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-	const { name, avatarUrl, company, role, isVerified, status } = row;
+export default function UserTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+	const { name, img_src, user_type, email, date_created, status } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -50,7 +53,7 @@ export default function UserTableRow ({ row, selected, onEditRow, onSelectRow, o
 
 				<TableCell>
 					<Stack direction="row" alignItems="center" spacing={2}>
-						<Avatar alt={name} src={avatarUrl} />
+						<Avatar alt={name} src={img_src ? `/storage/media/photos/employee/${img_src}` : null} />
 
 						<Typography variant="subtitle2" noWrap>
 							{name}
@@ -58,31 +61,24 @@ export default function UserTableRow ({ row, selected, onEditRow, onSelectRow, o
 					</Stack>
 				</TableCell>
 
-				<TableCell align="left">{company}</TableCell>
-
-				<TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-					{role}
+				<TableCell align="left">
+					{email}
 				</TableCell>
 
-				<TableCell align="center">
-					<Iconify
-						icon={isVerified ? 'eva:checkmark-circle-fill' : 'eva:clock-outline'}
-						sx={{
-							width: 20,
-							height: 20,
-							color: 'success.main',
-							...(!isVerified && { color: 'warning.main' }),
-						}}
-					/>
+				<TableCell align="left">
+					{fDate(date_created)}
+				</TableCell>
+
+				<TableCell align="left" sx={{ textTransform: 'capitalize' }}>
+					{user_type === 0 ? "Admin" : "User"}
 				</TableCell>
 
 				<TableCell align="left">
 					<Label
 						variant="soft"
-						color={(status === 'banned' && 'error') || 'success'}
-						sx={{ textTransform: 'capitalize' }}
+						color={(status === 0 && 'error') || 'success'}
 					>
-						{status}
+						{status === 1 ? "Active" : "Deactivated"}
 					</Label>
 				</TableCell>
 
@@ -105,12 +101,7 @@ export default function UserTableRow ({ row, selected, onEditRow, onSelectRow, o
 					Delete
 				</MenuItem>
 
-				<MenuItem
-					onClick={() => {
-						onEditRow();
-						handleClosePopover();
-					}}
-				>
+				<MenuItem component={Link} href={PATH_DASHBOARD.user.edit(row.user_id)}>
 					<Iconify icon="eva:edit-fill" />
 					Edit
 				</MenuItem>

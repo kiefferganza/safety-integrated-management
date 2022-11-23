@@ -9,6 +9,8 @@ export const getCurrentUserImage = (user) => {
 		return `/storage/media/photos/employee/${user?.profile_pic}`;
 	} else if (user?.employee?.src) {
 		return `/storage/media/photos/employee/${user.emplyoee.src}`;
+	} else if (user?.employee?.img_src) {
+		return `/storage/media/photos/employee/${user.employee.img_src}`;
 	}
 	return null;
 }

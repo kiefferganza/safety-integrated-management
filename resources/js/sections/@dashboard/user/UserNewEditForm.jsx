@@ -17,6 +17,7 @@ import { countries } from '../../../assets/data';
 import Label from '@/Components/label';
 import { useSnackbar } from '@/Components/snackbar';
 import FormProvider, { RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
+import { getCurrentUserImage, getCurrentUserName } from '@/utils/formatName';
 
 // ----------------------------------------------------------------------
 
@@ -25,8 +26,9 @@ UserNewEditForm.propTypes = {
 	currentUser: PropTypes.object,
 };
 
-export default function UserNewEditForm ({ isEdit = false, currentUser }) {
+export default function UserNewEditForm ({ isEdit = false, currentUser, user }) {
 	// const navigate = useNavigate();
+	console.log(user);
 
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -45,17 +47,17 @@ export default function UserNewEditForm ({ isEdit = false, currentUser }) {
 
 	const defaultValues = useMemo(
 		() => ({
-			name: currentUser?.name || '',
-			email: currentUser?.email || '',
+			name: user ? getCurrentUserName(user) : '',
+			email: user?.email || '',
 			phoneNumber: currentUser?.phoneNumber || '',
 			address: currentUser?.address || '',
 			country: currentUser?.country || '',
 			state: currentUser?.state || '',
 			city: currentUser?.city || '',
 			zipCode: currentUser?.zipCode || '',
-			avatarUrl: currentUser?.avatarUrl || '',
+			avatarUrl: user ? getCurrentUserImage(user) || '' : '',
 			isVerified: currentUser?.isVerified || true,
-			status: currentUser?.status,
+			status: user.status || '',
 			company: currentUser?.company || '',
 			role: currentUser?.role || '',
 		}),
@@ -122,10 +124,10 @@ export default function UserNewEditForm ({ isEdit = false, currentUser }) {
 					<Card sx={{ pt: 10, pb: 5, px: 3 }}>
 						{isEdit && (
 							<Label
-								color={values.status === 'active' ? 'success' : 'error'}
+								color={values.status === 1 ? 'warning' : 'success'}
 								sx={{ textTransform: 'uppercase', position: 'absolute', top: 24, right: 24 }}
 							>
-								{values.status}
+								{values.status === 1 ? "User" : "Admin"}
 							</Label>
 						)}
 
