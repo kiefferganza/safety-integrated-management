@@ -26,26 +26,27 @@ class EmployeeController extends Controller
 		tbl_department.department,
 		tbl_employees.is_deleted,
 		tbl_employees.is_active,
-		tbl_nationalities.`name`"))
+		tbl_nationalities.`name` as nationality"))
 		->join("tbl_department", "tbl_employees.department", "tbl_department.department_id")
 		->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 		->join("tbl_nationalities", "tbl_employees.nationality", "tbl_nationalities.id")
 		->join("users", "users.user_id", "tbl_employees.user_id")
-		->with(["trainings" => fn ($query) => 
-			$query->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
-			->where("is_deleted", 0)
-		])
+		// ->with(["trainings" => fn ($query) => 
+		// 	$query->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
+		// 	->where("is_deleted", 0)
+		// ])
 		->where([
 			["tbl_employees.sub_id", $user->subscriber_id],
 			["tbl_employees.is_deleted", 0]
 		])
 		->get();
-		return Inertia::render('Employees/AllEmployees', [
+
+		return Inertia::render("Dashboard/Management/Employee/List/index", [
 			"employees" => $employees,
-			"companies" => DB::table("tbl_company")->where([["sub_id", $user->subscriber_id], ["is_deleted", 0]])->get(),
-			"departments" => DB::table("tbl_department")->get(),
-			"nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
-			"positions" => Position::get(),
+			// "companies" => DB::table("tbl_company")->where([["sub_id", $user->subscriber_id], ["is_deleted", 0]])->get(),
+			// "departments" => DB::table("tbl_department")->get(),
+			// "nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
+			// "positions" => Position::get(),
 		]);
 	}
 

@@ -42,7 +42,7 @@ export const PATH_DASHBOARD = {
 	permissionDenied: path(ROOTS_DASHBOARD, '/permission-denied'),
 	blank: path(ROOTS_DASHBOARD, '/blank'),
 	general: {
-		employee: path(ROOTS_DASHBOARD, '/employee'),
+		employee: path(ROOTS_DASHBOARD, '/employees'),
 		inventory: path(ROOTS_DASHBOARD, '/inventory'),
 		hse_dashboard: path(ROOTS_DASHBOARD, '/hse-dashboard'),
 		// banking: path(ROOTS_DASHBOARD, '/banking'),
@@ -69,7 +69,7 @@ export const PATH_DASHBOARD = {
 		demoEdit: path(ROOTS_DASHBOARD, `/user/reece-chung/edit`),
 	},
 	employee: {
-		root: path(ROOTS_DASHBOARD, '/employee'),
+		root: path(ROOTS_DASHBOARD, '/employee/list'),
 		new: path(ROOTS_DASHBOARD, '/employee/new'),
 		edit: (name) => path(ROOTS_DASHBOARD, `/employee/${name}/edit`),
 	},
