@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { Link } from '@inertiajs/inertia-react';
+import { PATH_DASHBOARD } from '@/routes/paths';
 // @mui
 import {
-	Link,
+	// Link,
 	Stack,
 	Button,
 	Divider,
@@ -27,13 +29,11 @@ import ConfirmDialog from '@/Components/confirm-dialog';
 EmployeeTableRow.propTypes = {
 	row: PropTypes.object,
 	selected: PropTypes.bool,
-	onEditRow: PropTypes.func,
-	onViewRow: PropTypes.func,
 	onDeleteRow: PropTypes.func,
 	onSelectRow: PropTypes.func,
 };
 
-export default function EmployeeTableRow ({ row, selected, onSelectRow, onViewRow, onEditRow, onDeleteRow, canWrite }) {
+export default function EmployeeTableRow ({ row, selected, onSelectRow, onDeleteRow, canWrite }) {
 	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [openPopover, setOpenPopover] = useState(null);
@@ -104,7 +104,6 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onViewRo
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem
 					onClick={() => {
-						onViewRow();
 						handleClosePopover();
 					}}
 				>
@@ -114,10 +113,8 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onViewRo
 				{canWrite && (
 					<>
 						<MenuItem
-							onClick={() => {
-								onEditRow();
-								handleClosePopover();
-							}}
+							component={Link}
+							href={PATH_DASHBOARD.employee.edit(row.employee_id)}
 						>
 							<Iconify icon="eva:edit-fill" />
 							Edit

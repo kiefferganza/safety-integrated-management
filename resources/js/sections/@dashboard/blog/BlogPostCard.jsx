@@ -8,8 +8,8 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // utils
-import { fDate } from '../../../utils/formatTime';
-import { fShortenNumber } from '../../../utils/formatNumber';
+import { fDate } from '@/utils/formatTime';
+import { fShortenNumber } from '@/utils/formatNumber';
 // components
 import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';

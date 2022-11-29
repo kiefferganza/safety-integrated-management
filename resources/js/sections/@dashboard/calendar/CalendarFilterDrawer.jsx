@@ -17,7 +17,7 @@ import {
 // config
 import { NAV } from '../../../config';
 // utils
-import { fDateTime } from '../../../utils/formatTime';
+import { fDateTime } from '@/utils/formatTime';
 // components
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';

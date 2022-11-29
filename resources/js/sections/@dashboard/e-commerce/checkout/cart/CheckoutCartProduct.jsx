@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import { Box, Stack, Divider, TableRow, TableCell, Typography, IconButton } from '@mui/material';
 // utils
-import { fCurrency } from '../../../../../utils/formatNumber';
+import { fCurrency } from '@/utils/formatNumber';
 // components
 import Image from '@/Components/image';
 import Label from '@/Components/label';

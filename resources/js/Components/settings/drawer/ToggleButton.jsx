@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { alpha, useTheme } from '@mui/material/styles';
 import { Tooltip, Box } from '@mui/material';
 // utils
-import { bgBlur } from '../../../utils/cssStyles';
+import { bgBlur } from '@/utils/cssStyles';
 //
 import { IconButtonAnimate } from '../../animate';
 import SvgColor from '../../svg-color';

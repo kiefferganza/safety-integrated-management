@@ -3,7 +3,7 @@ import { Stack, Box } from '@mui/material';
 // config
 import { NAV } from '../../../config';
 // utils
-import { hideScrollbarX } from '../../../utils/cssStyles';
+import { hideScrollbarX } from '@/utils/cssStyles';
 // components
 import Logo from '@/Components/logo';
 import { NavSectionMini } from '@/Components/nav-section';

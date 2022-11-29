@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
 import { Stack, AppBar, Toolbar, IconButton } from '@mui/material';
 // utils
-import { bgBlur } from '../../../utils/cssStyles';
+import { bgBlur } from '@/utils/cssStyles';
 // hooks
 import useOffSetTop from '@/hooks/useOffSetTop';
 import useResponsive from '@/hooks/useResponsive';

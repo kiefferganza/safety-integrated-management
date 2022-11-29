@@ -3,7 +3,7 @@ import { useState } from 'react';
 // @mui
 import { Box, Paper, Stack, Tooltip, Checkbox, IconButton, InputBase, ClickAwayListener } from '@mui/material';
 // utils
-import uuidv4 from '../../../utils/uuidv4';
+import uuidv4 from '@/utils/uuidv4';
 // components
 import Iconify from '@/Components/iconify';
 import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';

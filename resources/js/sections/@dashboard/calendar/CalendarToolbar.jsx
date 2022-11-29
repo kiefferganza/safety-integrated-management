@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import { Stack, Button, Tooltip, Typography, IconButton, ToggleButton } from '@mui/material';
 // utils
-import { fDate } from '../../../utils/formatTime';
+import { fDate } from '@/utils/formatTime';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // components

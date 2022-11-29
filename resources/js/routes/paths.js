@@ -71,7 +71,7 @@ export const PATH_DASHBOARD = {
 	employee: {
 		root: path(ROOTS_DASHBOARD, '/employee/list'),
 		new: path(ROOTS_DASHBOARD, '/employee/new'),
-		edit: (name) => path(ROOTS_DASHBOARD, `/employee/${name}/edit`),
+		edit: (id) => path(ROOTS_DASHBOARD, `/employee/${id}/edit`),
 	},
 	ppe: {
 		root: path(ROOTS_DASHBOARD, '/ppe'),

@@ -6,7 +6,7 @@ import { AppBar, Box, Toolbar } from '@mui/material';
 // config
 import { HEADER } from '../../../config';
 // utils
-import { bgBlur } from '../../../utils/cssStyles';
+import { bgBlur } from '@/utils/cssStyles';
 // components
 import { NavSectionHorizontal } from '@/Components/nav-section';
 //

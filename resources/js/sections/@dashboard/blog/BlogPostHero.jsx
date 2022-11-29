@@ -5,7 +5,7 @@ import { Box, Avatar, SpeedDial, Typography, SpeedDialAction } from '@mui/materi
 // hooks
 import useResponsive from '@/hooks/useResponsive';
 // utils
-import { fDate } from '../../../utils/formatTime';
+import { fDate } from '@/utils/formatTime';
 // _mock
 import { _socials } from '../../../_mock/arrays';
 // components

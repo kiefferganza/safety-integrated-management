@@ -6,8 +6,8 @@ import { alpha, styled } from '@mui/material/styles';
 import { Box, Slide, Popper, InputBase, InputAdornment, ClickAwayListener } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 // utils
-import { bgBlur } from '../../../utils/cssStyles';
-import flattenArray from '../../../utils/flattenArray';
+import { bgBlur } from '@/utils/cssStyles';
+import flattenArray from '@/utils/flattenArray';
 // components
 import Iconify from '@/Components/iconify';
 import { IconButtonAnimate } from '@/Components/animate';

@@ -17,8 +17,8 @@ import {
 	FormControlLabel,
 } from '@mui/material';
 // utils
-import { fDate } from '../../../../../utils/formatTime';
-import { fShortenNumber } from '../../../../../utils/formatNumber';
+import { fDate } from '@/utils/formatTime';
+import { fShortenNumber } from '@/utils/formatNumber';
 // components
 import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';

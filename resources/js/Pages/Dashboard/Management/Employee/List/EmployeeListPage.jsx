@@ -1,6 +1,5 @@
 
 import { useEffect, useMemo, useState } from 'react';
-import sumBy from 'lodash/sumBy';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import {
@@ -20,7 +19,7 @@ import {
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
-import { fDate, fTimestamp } from '@/utils/formatTime';
+import { fDate } from '@/utils/formatTime';
 // _mock_
 import { _invoices } from '@/_mock/arrays';
 // components
@@ -47,15 +46,6 @@ import { Head, Link } from '@inertiajs/inertia-react';
 import { getFullName } from '@/utils/formatName';
 
 // ----------------------------------------------------------------------
-
-const SERVICE_OPTIONS = [
-	'all',
-	'full stack development',
-	'backend development',
-	'ui design',
-	'ui/ux design',
-	'front end development',
-];
 
 const TABLE_HEAD = [
 	{ id: 'name', label: 'Name', align: 'left' },
@@ -93,7 +83,7 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 		onChangeDense,
 		onChangePage,
 		onChangeRowsPerPage,
-	} = useTable({ defaultOrderBy: 'date_created' });
+	} = useTable();
 
 	const [tableData, setTableData] = useState([]);
 
@@ -220,14 +210,6 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 		}
 	};
 
-	const handleEditRow = (id) => {
-		// navigate(PATH_DASHBOARD.invoice.edit(id));
-	};
-
-	const handleViewRow = (id) => {
-		// navigate(PATH_DASHBOARD.invoice.view(id));
-	};
-
 	const handleResetFilter = () => {
 		setFilterName('');
 		setFilterStatus('all');
@@ -245,7 +227,7 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Invoice List"
+					heading="Employee List"
 					links={[
 						{
 							name: 'Dashboard',
@@ -262,7 +244,7 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 					action={
 						canWrite ? (
 							<Button
-								to={PATH_DASHBOARD.invoice.new}
+								href={PATH_DASHBOARD.employee.new}
 								component={Link}
 								variant="contained"
 								startIcon={<Iconify icon="eva:plus-fill" />}
@@ -417,8 +399,6 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 											row={row}
 											selected={selected.includes(row.id)}
 											onSelectRow={() => onSelectRow(row.id)}
-											onViewRow={() => handleViewRow(row.id)}
-											onEditRow={() => handleEditRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
 											canWrite={canWrite}
 										/>

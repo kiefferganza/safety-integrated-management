@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import { Chip, Avatar, Checkbox, Stack, FormControlLabel } from '@mui/material';
 // utils
-import { fShortenNumber } from '../../../utils/formatNumber';
+import { fShortenNumber } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 import { CustomAvatarGroup } from '@/Components/custom-avatar';

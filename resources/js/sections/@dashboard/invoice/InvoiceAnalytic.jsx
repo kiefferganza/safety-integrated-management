@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import { Stack, Typography, Box, CircularProgress } from '@mui/material';
 // utils
-import { fShortenNumber, fCurrency } from '../../../utils/formatNumber';
+import { fShortenNumber, fCurrency } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 

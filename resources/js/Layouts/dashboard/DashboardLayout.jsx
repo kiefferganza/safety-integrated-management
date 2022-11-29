@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import { Box } from '@mui/material';
 // hooks
@@ -11,11 +11,16 @@ import Header from './header';
 import NavMini from './nav/NavMini';
 import NavVertical from './nav/NavVertical';
 import NavHorizontal from './nav/NavHorizontal';
+import { useSnackbar } from 'notistack';
+import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
 export default function DashboardLayout ({ children }) {
+	const { flash } = usePage().props;
 	const { themeLayout } = useSettingsContext();
+
+	const { enqueueSnackbar } = useSnackbar();
 
 	const isDesktop = useResponsive('up', 'lg');
 
@@ -24,6 +29,13 @@ export default function DashboardLayout ({ children }) {
 	const isNavHorizontal = themeLayout === 'horizontal';
 
 	const isNavMini = themeLayout === 'mini';
+
+	useEffect(() => {
+		if (flash.message) {
+			enqueueSnackbar(flash.message, { variant: flash.type || "default" });
+			flash.message = null;
+		}
+	}, [flash]);
 
 	const handleOpen = () => {
 		setOpen(true);

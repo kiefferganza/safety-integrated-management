@@ -7,6 +7,7 @@ use App\Models\Position;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class EmployeeController extends Controller
@@ -31,10 +32,6 @@ class EmployeeController extends Controller
 		->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 		->join("tbl_nationalities", "tbl_employees.nationality", "tbl_nationalities.id")
 		->join("users", "users.user_id", "tbl_employees.user_id")
-		// ->with(["trainings" => fn ($query) => 
-		// 	$query->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
-		// 	->where("is_deleted", 0)
-		// ])
 		->where([
 			["tbl_employees.sub_id", $user->subscriber_id],
 			["tbl_employees.is_deleted", 0]
@@ -43,33 +40,44 @@ class EmployeeController extends Controller
 
 		return Inertia::render("Dashboard/Management/Employee/List/index", [
 			"employees" => $employees,
-			// "companies" => DB::table("tbl_company")->where([["sub_id", $user->subscriber_id], ["is_deleted", 0]])->get(),
-			// "departments" => DB::table("tbl_department")->get(),
-			// "nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
-			// "positions" => Position::get(),
 		]);
 	}
 
-	public function store(Request $request) {
+
+	public function create() {
 		$user = Auth::user();
 
-		$training = new Employee;
-		$training->user_id = $user->user_id;
-		$training->sub_id = $user->subscriber_id;
-		$training->firstname = $request->firstname;
-		$training->middlename = $request->middlename ? $request->middlename : " ";
-		$training->lastname = $request->lastname;
-		$training->sex = $request->sex;
-		$training->phone_no = $request->phone_no;
-		$training->email = $request->email;
-		$training->company = (int)$request->company;
-		$training->company_type = $request->company_type;
-		$training->position = (int)$request->position;
-		$training->department = (int)$request->department;
-		$training->nationality = (int)$request->nationality;
-		$training->birth_date = $request->birth_date;
-		$training->is_active = 0;
-		$training->is_deleted = 0;
+		return Inertia::render("Dashboard/Management/Employee/Create/index", [
+			"companies" => DB::table("tbl_company")->where([["sub_id", $user->subscriber_id], ["is_deleted", 0]])->get(),
+			"departments" => DB::table("tbl_department")->get(),
+			"nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
+			"positions" => Position::get(),
+		]);
+	}
+
+
+	public function store(Request $request) {
+		dd($request->all());
+		$user = Auth::user();
+		$employee = new Employee;
+		$employee->user_id = $user->user_id;
+		$employee->sub_id = $user->subscriber_id;
+		$employee->firstname = $request->firstname;
+		$employee->middlename = $request->middlename ? $request->middlename : " ";
+		$employee->lastname = $request->lastname;
+		$employee->sex = $request->sex;
+		$employee->phone_no = $request->phone_no;
+		$employee->email = $request->email;
+		$employee->company = (int)$request->company;
+		$employee->company_type = $request->company_type;
+		$employee->position = (int)$request->position;
+		$employee->department = (int)$request->department;
+		$employee->nationality = (int)$request->nationality;
+		$employee->birth_date = $request->birth_date;
+		$employee->is_active = 0;
+		$employee->is_deleted = 0;
+		$employee->sex = $request->sex;
+		$employee->date_created = date("Y-m-d H:i:s");
 
 		if($request->hasFile("img_src")) {
 			$file = $request->file("img_src")->getClientOriginalName();
@@ -77,13 +85,67 @@ class EmployeeController extends Controller
 			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
 			$request->file("img_src")->storeAs('media/photos/employee', $file_name, 'public');
 
-			$training->img_src = $file_name;
+			$employee->img_src = $file_name;
 		}
 
-		$training->save();
+		$employee->save();
 
+		return redirect()->route("management.employee.list")
+		->with("message", "Employee created successfully!")
+		->with("type", "success");
+
+	}
+
+
+	public function update(Employee $employee) {
+		$user = Auth::user();
+
+		return Inertia::render("Dashboard/Management/Employee/Create/index", [
+			"currentEmployee" => $employee,
+			"companies" => DB::table("tbl_company")->where([["sub_id", $user->subscriber_id], ["is_deleted", 0]])->get(),
+			"departments" => DB::table("tbl_department")->get(),
+			"nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
+			"positions" => Position::get(),
+		]);
+	}
+
+
+	public function edit(Request $request, Employee $employee) {
+		$employee->firstname = $request->firstname;
+		$employee->middlename = $request->middlename ? $request->middlename : " ";
+		$employee->lastname = $request->lastname;
+		$employee->sex = $request->sex;
+		$employee->phone_no = $request->phone_no;
+		$employee->email = $request->email;
+		$employee->company = (int)$request->company;
+		$employee->company_type = $request->company_type;
+		$employee->position = (int)$request->position;
+		$employee->department = (int)$request->department;
+		$employee->nationality = (int)$request->nationality;
+		$employee->birth_date = $request->birth_date;
+		$employee->is_active = $request->is_active;
+		$employee->sex = $request->sex;
+		$employee->date_created = date("Y-m-d H:i:s");
+
+		if($request->hasFile("img_src")) {
+			$file = $request->file("img_src")->getClientOriginalName();
+			$extension = pathinfo($file, PATHINFO_EXTENSION);
+			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
+			$request->file("img_src")->storeAs('media/photos/employee', $file_name, 'public');
+
+			if($employee->img_src !== "photo-camera-neon-icon-vector-35706296" || $employee->img_src !== "Picture21" || $employee->img_src !== "Crystal_personal.svg") {
+				if(Storage::exists("public/media/docs/" . $employee->img_src)) {
+					Storage::delete("public/media/docs/" . $employee->img_src);
+				}
+			}
+			
+			$employee->img_src = $file_name;
+		}
+
+		$employee->save();
+		
 		return redirect()->back()
-		->with("message", "Employee added successfully!")
+		->with("message", "Employee updated successfully!")
 		->with("type", "success");
 
 	}

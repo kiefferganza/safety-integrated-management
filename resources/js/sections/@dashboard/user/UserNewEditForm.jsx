@@ -8,7 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Grid, Stack, Switch, Typography, FormControlLabel } from '@mui/material';
 // utils
-import { fData } from '../../../utils/formatNumber';
+import { fData } from '@/utils/formatNumber';
 // routes
 // import { PATH_DASHBOARD } from '@/routes/paths';
 // assets
@@ -28,7 +28,6 @@ UserNewEditForm.propTypes = {
 
 export default function UserNewEditForm ({ isEdit = false, currentUser, user }) {
 	// const navigate = useNavigate();
-	console.log(user);
 
 	const { enqueueSnackbar } = useSnackbar();
 

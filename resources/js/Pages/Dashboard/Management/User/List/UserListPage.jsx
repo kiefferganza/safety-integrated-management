@@ -191,6 +191,7 @@ export default function UserListPage ({ users }) {
 		setFilterName('');
 		setFilterRole('all');
 		setFilterStatus('all');
+		setFilterCreatedDate(null);
 	};
 
 	return (
