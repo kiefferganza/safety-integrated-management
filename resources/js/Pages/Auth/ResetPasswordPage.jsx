@@ -5,6 +5,7 @@ import { Link as MuiLink, Typography } from '@mui/material';
 import { PATH_AUTH } from '@/routes/paths';
 // components
 import Iconify from '@/Components/iconify';
+import Image from '@/Components/image';
 // sections
 import AuthResetPasswordForm from '@/sections/auth/AuthResetPasswordForm';
 // assets
@@ -20,7 +21,14 @@ export default function ResetPasswordPage () {
 				<title> Reset Password | Minimal UI</title>
 			</Head>
 
-			<PasswordIcon sx={{ mb: 5, height: 96 }} />
+			{/* <PasswordIcon sx={{ mb: 5, height: 96 }} /> */}
+			<Image
+				disabledEffect
+				visibleByDefault
+				alt="Fiafi"
+				src={'/storage/assets/Fiafi-logo.png'}
+				sx={{ maxWidth: 180, "& img": { height: "auto" }, margin: "auto", mb: 5 }}
+			/>
 
 			<Typography variant="h3" paragraph>
 				Forgot your password?

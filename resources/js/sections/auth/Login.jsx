@@ -24,7 +24,7 @@ export default function Login () {
 				/>
 			</Box>
 			<Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
-				<Typography variant="h5">Sign in to <br /> Integrated Management System</Typography>
+				<Typography variant="h5">Sign in to <br /> <Box component="span" sx={{ color: "primary.main" }}>I</Box>ntegrated <Box component="span" sx={{ color: "primary.main" }}>M</Box>anagement <Box component="span" sx={{ color: "primary.main" }}>S</Box>ystem</Typography>
 
 				<Stack direction="row" spacing={0.5}>
 					<Typography variant="body2">New user?</Typography>

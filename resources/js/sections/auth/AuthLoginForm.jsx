@@ -77,7 +77,8 @@ export default function AuthLoginForm () {
 
 			<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
 				<FormControlLabel label="Remember me" control={<Checkbox checked={data.remember} onChange={onHandleChange} name="remember" />} />
-				<MuiLink href="/reset-password" component={Link} variant="body2" color="inherit" underline="always">
+				{/* <MuiLink href="/reset-password" component={Link} variant="body2" color="inherit" underline="always"> */}
+				<MuiLink variant="body2" color="inherit" underline="always">
 					Forgot password?
 				</MuiLink>
 			</Stack>
