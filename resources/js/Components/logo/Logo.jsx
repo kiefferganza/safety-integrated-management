@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import { forwardRef } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Box, Link } from '@mui/material';
+import { Box, Link as MuiLink } from '@mui/material';
+import { Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -78,9 +79,9 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
 	}
 
 	return (
-		<Link to="/" sx={{ display: 'contents' }}>
+		<MuiLink href="/" component={Link} sx={{ display: 'contents' }}>
 			{logo}
-		</Link>
+		</MuiLink>
 	);
 });
 

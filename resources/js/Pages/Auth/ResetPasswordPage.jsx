@@ -1,4 +1,4 @@
-
+import CompactLayout from '@/Layouts/compact/CompactLayout';
 // @mui
 import { Link as MuiLink, Typography } from '@mui/material';
 // routes
@@ -6,16 +6,16 @@ import { PATH_AUTH } from '@/routes/paths';
 // components
 import Iconify from '@/Components/iconify';
 // sections
-import AuthResetPasswordForm from '../../sections/auth/AuthResetPasswordForm';
+import AuthResetPasswordForm from '@/sections/auth/AuthResetPasswordForm';
 // assets
-import { PasswordIcon } from '../../assets/icons';
+import { PasswordIcon } from '@/assets/icons';
 import { Head, Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
 export default function ResetPasswordPage () {
 	return (
-		<>
+		<CompactLayout>
 			<Head>
 				<title> Reset Password | Minimal UI</title>
 			</Head>
@@ -35,7 +35,7 @@ export default function ResetPasswordPage () {
 
 			<MuiLink
 				href={PATH_AUTH.login}
-				component={Link} preserveScroll
+				component={Link}
 				color="inherit"
 				variant="subtitle2"
 				sx={{
@@ -48,6 +48,6 @@ export default function ResetPasswordPage () {
 				<Iconify icon="eva:chevron-left-fill" width={16} />
 				Return to sign in
 			</MuiLink>
-		</>
+		</CompactLayout>
 	);
 }

@@ -24,7 +24,7 @@ export default function Login () {
 				/>
 			</Box>
 			<Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
-				<Typography variant="h4">Sign in to IMS</Typography>
+				<Typography variant="h4">Sign in to Integrated Management System</Typography>
 
 				<Stack direction="row" spacing={0.5}>
 					<Typography variant="body2">New user?</Typography>

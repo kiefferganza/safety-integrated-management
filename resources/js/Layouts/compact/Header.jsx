@@ -11,9 +11,9 @@ import { Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
-Header.propTypes = {
-	isOffset: PropTypes.bool,
-};
+// Header.propTypes = {
+// 	isOffset: PropTypes.bool,
+// };
 
 export default function Header ({ isOffset }) {
 	const theme = useTheme();
@@ -53,9 +53,9 @@ export default function Header ({ isOffset }) {
 
 // ----------------------------------------------------------------------
 
-Shadow.propTypes = {
-	sx: PropTypes.object,
-};
+// Shadow.propTypes = {
+// 	sx: PropTypes.object,
+// };
 
 function Shadow ({ sx, ...other }) {
 	return (

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 // @mui
-import { Link, Stack, Alert, IconButton, InputAdornment, TextField, Checkbox, FormControlLabel } from '@mui/material';
+import { Link as MuiLink, Stack, Alert, IconButton, InputAdornment, TextField, Checkbox, FormControlLabel } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '@/Components/iconify';
-import { useForm } from '@inertiajs/inertia-react';
+import { useForm, Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -77,9 +77,9 @@ export default function AuthLoginForm () {
 
 			<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
 				<FormControlLabel label="Remember me" control={<Checkbox checked={data.remember} onChange={onHandleChange} name="remember" />} />
-				<Link to="/" variant="body2" color="inherit" underline="always">
+				<MuiLink href="/reset-password" component={Link} variant="body2" color="inherit" underline="always">
 					Forgot password?
-				</Link>
+				</MuiLink>
 			</Stack>
 
 			<LoadingButton
