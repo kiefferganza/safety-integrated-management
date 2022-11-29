@@ -10,8 +10,15 @@ import AuthRegisterForm from './AuthRegisterForm';
 // ----------------------------------------------------------------------
 
 export default function Register () {
+
+	const title = (
+		<span>
+			Manage the job more effectively with <br /> Integrated Management System
+		</span>
+	)
+
 	return (
-		<LoginLayout title="Manage the job more effectively with Minimal">
+		<LoginLayout title={title}>
 			<Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
 				<Typography variant="h4">Get started absolutely free.</Typography>
 

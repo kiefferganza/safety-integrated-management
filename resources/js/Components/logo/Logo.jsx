@@ -22,7 +22,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
 		<Box
 			component="img"
 			src="/storage/assets/Fiafi-logo.png"
-			sx={{ width: 105, cursor: 'pointer', ...sx }}
+			sx={{ width: 140, cursor: 'pointer', ...sx }}
 		/>
 	);
 

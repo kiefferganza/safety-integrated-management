@@ -7,7 +7,7 @@ import { StyledRoot, StyledSectionBg, StyledSection, StyledContent } from './sty
 // ----------------------------------------------------------------------
 
 LoginLayout.propTypes = {
-	title: PropTypes.string,
+	title: PropTypes.node,
 	children: PropTypes.node,
 	illustration: PropTypes.string,
 };
@@ -25,7 +25,7 @@ export default function LoginLayout ({ children, illustration, title }) {
 				<Typography variant="h3"
 					sx={{
 						mb: 10,
-						maxWidth: 480,
+						maxWidth: 580,
 						textAlign: 'center',
 						color: "#fff"
 					}}>

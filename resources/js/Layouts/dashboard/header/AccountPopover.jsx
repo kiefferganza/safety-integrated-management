@@ -7,7 +7,7 @@ import { CustomAvatar } from '@/Components/custom-avatar';
 import MenuPopover from '@/Components/menu-popover';
 import { IconButtonAnimate } from '@/Components/animate';
 import { Link, usePage } from '@inertiajs/inertia-react';
-import { getCurrentUserName } from '@/utils/formatName';
+import { getCurrentUserImage, getCurrentUserName } from '@/utils/formatName';
 import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
@@ -66,7 +66,7 @@ export default function AccountPopover () {
 					}),
 				}}
 			>
-				<CustomAvatar src={`/storage/media/photos/employee/${(user?.employee.img_src || user?.profile_pic)}`} alt={getCurrentUserName(user)} />
+				<CustomAvatar src={getCurrentUserImage(user)} alt={getCurrentUserName(user)} />
 			</IconButtonAnimate>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} sx={{ width: 200, p: 0 }}>

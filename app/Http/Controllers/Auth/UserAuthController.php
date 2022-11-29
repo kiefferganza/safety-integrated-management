@@ -54,14 +54,4 @@ class UserAuthController extends Controller
 			$request->session()->regenerateToken();
       return redirect()->route('login');
     }
-
-		public function register() {
-			if(Auth::check()) {
-				return redirect()->route('dashboard');
-			}
-			return Inertia::render('Auth/RegisterPage', [
-					'canResetPassword' => Route::has('password.request'),
-					'status' => session('status'),
-			]);
-		}
 }

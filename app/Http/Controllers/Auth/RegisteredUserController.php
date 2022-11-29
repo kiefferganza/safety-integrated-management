@@ -21,7 +21,7 @@ class RegisteredUserController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Auth/Register');
+        return Inertia::render('Auth/RegisterPage');
     }
 
     /**
@@ -35,21 +35,32 @@ class RegisteredUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+						'username' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        ], [
+					'firstname.required' => 'First name must not be empty',
+					'lastname.required' => 'Last name must not be empty',
+					'email.unique' => 'Email is already taken'
+				]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+					'firstname' => $request->firstname,
+					'middlename' => ' ',
+					'lastname' => $request->lastname,
+					'username' => $request->username,
+					'email' => $request->email,
+					'user_type' => 1,
+					'subscriber_id' => 1,
+					'password' => Hash::make($request->password),
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        return redirect(RouteServiceProvider::DASHBOARD);
     }
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 // form
 import { useForm } from 'react-hook-form';
@@ -9,25 +9,33 @@ import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '@/Components/iconify';
 import FormProvider, { RHFTextField } from '@/Components/hook-form';
+import { Inertia } from '@inertiajs/inertia';
+import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
 export default function AuthRegisterForm () {
-
+	const { errors: resErrors } = usePage().props;
+	console.log(resErrors);
 	const [showPassword, setShowPassword] = useState(false);
 
 	const RegisterSchema = Yup.object().shape({
-		firstName: Yup.string().required('First name required'),
-		lastName: Yup.string().required('Last name required'),
-		email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-		password: Yup.string().required('Password is required'),
+		firstname: Yup.string().required('First name must not be empty.'),
+		lastname: Yup.string().required('Last name must not be empty.'),
+		username: Yup.string().required('Username must not be empty.'),
+		email: Yup.string().email('Email must be a valid email address').required('Email must not be empty'),
+		password: Yup.string().required('Password must not be empty'),
+		password_confirmation: Yup.string()
+			.oneOf([Yup.ref('password'), null], 'Password and confirm password must match'),
 	});
 
 	const defaultValues = {
-		firstName: '',
-		lastName: '',
+		firstname: '',
+		lastname: '',
+		username: '',
 		email: '',
 		password: '',
+		password_confirmation: ''
 	};
 
 	const methods = useForm({
@@ -42,11 +50,22 @@ export default function AuthRegisterForm () {
 		formState: { errors, isSubmitting },
 	} = methods;
 
+
+	useEffect(() => {
+		if (Object.keys(resErrors).length !== 0) {
+			for (const key in resErrors) {
+				setError(key, { type: "custom", message: resErrors[key] });
+			}
+		}
+	}, [resErrors]);
+
+
 	const onSubmit = async (data) => {
 		try {
-			// if (register) {
-			//   await register(data.email, data.password, data.firstName, data.lastName);
-			// }
+			Inertia.post(route('register'), data, {
+				preserveScroll: true,
+				preserveState: true
+			});
 		} catch (error) {
 			console.error(error);
 			reset();
@@ -63,15 +82,31 @@ export default function AuthRegisterForm () {
 				{!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
 
 				<Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-					<RHFTextField name="firstName" label="First name" />
-					<RHFTextField name="lastName" label="Last name" />
+					<RHFTextField name="firstname" label="First name" />
+					<RHFTextField name="lastname" label="Last name" />
 				</Stack>
 
 				<RHFTextField name="email" label="Email address" />
+				<RHFTextField name="username" label="Username" />
 
 				<RHFTextField
 					name="password"
 					label="Password"
+					type={showPassword ? 'text' : 'password'}
+					InputProps={{
+						endAdornment: (
+							<InputAdornment position="end">
+								<IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+									<Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+								</IconButton>
+							</InputAdornment>
+						),
+					}}
+				/>
+
+				<RHFTextField
+					name="password_confirmation"
+					label="Confirm Password"
 					type={showPassword ? 'text' : 'password'}
 					InputProps={{
 						endAdornment: (
