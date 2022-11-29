@@ -1,7 +1,7 @@
 // @mui
 import { Link } from '@inertiajs/inertia-react';
-import { Tooltip, Stack, Typography, Link as MuiLink, Box } from '@mui/material';
-// hooks
+import { Stack, Typography, Link as MuiLink, Box } from '@mui/material';
+import Image from '@/Components/image';
 // layouts
 import LoginLayout from '@/Layouts/login/LoginLayout';
 //
@@ -14,8 +14,17 @@ export default function Login () {
 
 	return (
 		<LoginLayout>
+			<Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+				<Image
+					disabledEffect
+					visibleByDefault
+					alt="Fiafi"
+					src={'/storage/assets/Fiafi-logo.png'}
+					sx={{ maxWidth: 140, "& img": { height: "auto" } }}
+				/>
+			</Box>
 			<Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
-				<Typography variant="h4">Sign in to Minimal</Typography>
+				<Typography variant="h4">Sign in to IMS</Typography>
 
 				<Stack direction="row" spacing={0.5}>
 					<Typography variant="body2">New user?</Typography>
