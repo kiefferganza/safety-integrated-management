@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 // @mui
 import { Typography, Stack } from '@mui/material';
-// components
-import Image from '@/Components/image';
 //
 import { StyledRoot, StyledSectionBg, StyledSection, StyledContent } from './styles';
 

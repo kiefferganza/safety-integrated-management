@@ -23,7 +23,7 @@ export default function EmployeeCreatePage () {
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Create a new invoice"
+					heading="Create a new employee"
 					links={[
 						{
 							name: 'Dashboard',
