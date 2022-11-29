@@ -17,7 +17,13 @@ LoginLayout.propTypes = {
 export default function LoginLayout ({ children, illustration, title }) {
 	return (
 		<StyledRoot>
-			<StyledSection sx={{ background: `url(${illustration || '/storage/assets/illustrations/dashboard.png'})` }}>
+			<StyledSection sx={{
+				background: `url(${illustration || '/storage/assets/illustrations/dashboard.png'})`,
+				backgroundPosition: 'center',
+				backgroundRepeat: 'no-repeat',
+				backgroundSize: 'cover',
+			}}
+			>
 				<Typography variant="h3"
 					sx={{
 						mb: 10,
