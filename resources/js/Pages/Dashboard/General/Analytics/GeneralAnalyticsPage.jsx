@@ -1,9 +1,9 @@
 
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Typography } from '@mui/material';
+import { Grid, Container, Button } from '@mui/material';
 // _mock_
-import { _analyticPost, _analyticOrderTimeline, _analyticTraffic } from '@/_mock/arrays';
+import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewProducts } from '@/_mock/arrays';
 // components
 import { useSettingsContext } from '@/Components/settings';
 // sections
@@ -18,21 +18,44 @@ import {
 	AnalyticsCurrentSubject,
 	AnalyticsConversionRates,
 } from '../../../../sections/@dashboard/general/analytics';
+import { AppWelcome } from '@/sections/@dashboard/general/app';
+import { MotivationIllustration } from '@/assets/illustrations';
+import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
+import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
 
 // ----------------------------------------------------------------------
 
-export default function GeneralAnalyticsPage () {
+export default function GeneralAnalyticsPage ({ user }) {
 	const theme = useTheme();
 
 	const { themeStretch } = useSettingsContext();
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
-			<Typography variant="h4" sx={{ mb: 5 }}>
-				Hi, Welcome back
-			</Typography>
 
 			<Grid container spacing={3}>
+
+				<Grid item xs={12} md={8}>
+					<AppWelcome
+						title={`Welcome back! \n ${user?.firstname}`}
+						description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
+						img={
+							<WelcomeIllustration
+								sx={{
+									p: 3,
+									width: 360,
+									margin: { xs: 'auto', md: 'inherit' },
+								}}
+							/>
+						}
+						action={<Button variant="contained">Go Now</Button>}
+					/>
+				</Grid>
+
+				<Grid item xs={12} md={4}>
+					<EcommerceNewProducts list={_ecommerceNewProducts} />
+				</Grid>
+
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="Weekly Sales"

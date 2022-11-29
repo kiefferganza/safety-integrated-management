@@ -211,7 +211,7 @@ function SeoIllustration ({ ...other }) {
 					</linearGradient>
 				</defs>
 
-				<image href="/storage/assets/illustrations/characters/character_3.png" height="300" x="312" y="30" />
+				<image href={`/storage/assets/illustrations/worker-illustration/${theme.palette.primary.name}/standing_1.png`} height="480" x="148" y="-30" />
 			</svg>
 		</Box>
 	);
