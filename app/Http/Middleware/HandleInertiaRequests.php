@@ -50,7 +50,8 @@ class HandleInertiaRequests extends Middleware
 					'user' => fn () => $user
 					? $user->with(["employee" => function($query) {
 						$query->leftJoin("tbl_company", "tbl_employees.company", "tbl_company.company_id")
-						->leftJoin("tbl_department", "tbl_employees.department", "tbl_department.department_id");
+						->leftJoin("tbl_department", "tbl_employees.department", "tbl_department.department_id")
+						->leftJoin("tbl_position", "tbl_employees.position", "tbl_position.position_id");
 					}])->currentUser($user)
 					: null,
 				],

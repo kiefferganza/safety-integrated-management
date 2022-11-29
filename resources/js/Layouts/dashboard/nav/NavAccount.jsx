@@ -20,7 +20,7 @@ const StyledRoot = styled('div')(({ theme }) => ({
 
 export default function NavAccount () {
 	const { auth: { user } } = usePage().props;
-
+	console.log(user);
 	return (
 		<MuiLink href="/dashboard/user/account" component={Link} preserveScroll underline="none" color="inherit">
 			<StyledRoot>
@@ -32,7 +32,7 @@ export default function NavAccount () {
 					</Typography>
 
 					<Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
-						{user?.employee?.position?.position}
+						{user?.employee?.position || user?.position || ""}
 					</Typography>
 				</Box>
 			</StyledRoot>
