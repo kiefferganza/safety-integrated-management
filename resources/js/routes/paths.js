@@ -66,7 +66,6 @@ export const PATH_DASHBOARD = {
 		profile: path(ROOTS_DASHBOARD, '/user/profile'),
 		account: path(ROOTS_DASHBOARD, '/user/account'),
 		edit: (name) => path(ROOTS_DASHBOARD, `/user/${name}/edit`),
-		demoEdit: path(ROOTS_DASHBOARD, `/user/reece-chung/edit`),
 	},
 	employee: {
 		root: path(ROOTS_DASHBOARD, '/employee/list'),
@@ -84,22 +83,61 @@ export const PATH_DASHBOARD = {
 		demoEdit: path(ROOTS_DASHBOARD, '/ppe/product/nike-blazer-low-77-vintage/edit'),
 		demoView: path(ROOTS_DASHBOARD, '/ppe/product/nike-air-force-1-ndestrukt'),
 	},
-	invoice: {
-		root: path(ROOTS_DASHBOARD, '/invoice'),
-		list: path(ROOTS_DASHBOARD, '/invoice/list'),
-		new: path(ROOTS_DASHBOARD, '/invoice/new'),
-		view: (id) => path(ROOTS_DASHBOARD, `/invoice/${id}`),
-		edit: (id) => path(ROOTS_DASHBOARD, `/invoice/${id}/edit`),
-		demoEdit: path(ROOTS_DASHBOARD, '/invoice/e99f09a7-dd88-49d5-b1c8-1daf80c2d7b1/edit'),
-		demoView: path(ROOTS_DASHBOARD, '/invoice/e99f09a7-dd88-49d5-b1c8-1daf80c2d7b5'),
+
+	training: {
+		root: path(ROOTS_DASHBOARD, '/training'),
+		induction: path(ROOTS_DASHBOARD, '/training/induction'),
+		inHouse: path(ROOTS_DASHBOARD, '/training/in-house'),
+		client: path(ROOTS_DASHBOARD, '/training/client'),
+		thirdParty: path(ROOTS_DASHBOARD, '/training/third-party'),
 	},
-	blog: {
-		root: path(ROOTS_DASHBOARD, '/blog'),
-		posts: path(ROOTS_DASHBOARD, '/blog/posts'),
-		new: path(ROOTS_DASHBOARD, '/blog/new'),
-		view: (title) => path(ROOTS_DASHBOARD, `/blog/post/${title}`),
-		demoView: path(ROOTS_DASHBOARD, '/blog/post/apply-these-7-secret-techniques-to-improve-event'),
+
+	// Toolbox Talks
+	toolboxTalks: {
+		root: path(ROOTS_DASHBOARD, '/toolbox-talks'),
+		civil: path(ROOTS_DASHBOARD, '/toolbox-talks/civil'),
+		electrical: path(ROOTS_DASHBOARD, '/toolbox-talks/electrical'),
+		mechanical: path(ROOTS_DASHBOARD, '/toolbox-talks/mechanical'),
+		camp: path(ROOTS_DASHBOARD, '/toolbox-talks/camp'),
+		office: path(ROOTS_DASHBOARD, '/toolbox-talks/office'),
+		manHourReports: path(ROOTS_DASHBOARD, '/toolbox-talks/man-hour-reports'),
+		manDayReports: path(ROOTS_DASHBOARD, '/toolbox-talks/man-day-reports'),
 	},
+
+	// Incident
+	incident: {
+		root: path(ROOTS_DASHBOARD, '/incident'),
+		firstAid: path(ROOTS_DASHBOARD, '/incident/first-aid'),
+		investigation: path(ROOTS_DASHBOARD, '/incident/investigation'),
+		incidentReport: path(ROOTS_DASHBOARD, '/incident/incident-report'),
+	},
+
+
+	inspection: {
+		root: path(ROOTS_DASHBOARD, '/inspection'),
+		safetyObservation: path(ROOTS_DASHBOARD, '/safety-observation'),
+		form: path(ROOTS_DASHBOARD, '/inspection/safety-observation/form'),
+		report: path(ROOTS_DASHBOARD, '/inspection/safety-observation/report'),
+		machineries: path(ROOTS_DASHBOARD, '/inspection/machineries'),
+		toolsAndEquipments: path(ROOTS_DASHBOARD, '/inspection/tools-and-equipments'),
+	}
+
+	// invoice: {
+	// 	root: path(ROOTS_DASHBOARD, '/invoice'),
+	// 	list: path(ROOTS_DASHBOARD, '/invoice/list'),
+	// 	new: path(ROOTS_DASHBOARD, '/invoice/new'),
+	// 	view: (id) => path(ROOTS_DASHBOARD, `/invoice/${id}`),
+	// 	edit: (id) => path(ROOTS_DASHBOARD, `/invoice/${id}/edit`),
+	// 	demoEdit: path(ROOTS_DASHBOARD, '/invoice/e99f09a7-dd88-49d5-b1c8-1daf80c2d7b1/edit'),
+	// 	demoView: path(ROOTS_DASHBOARD, '/invoice/e99f09a7-dd88-49d5-b1c8-1daf80c2d7b5'),
+	// },
+	// blog: {
+	// 	root: path(ROOTS_DASHBOARD, '/blog'),
+	// 	posts: path(ROOTS_DASHBOARD, '/blog/posts'),
+	// 	new: path(ROOTS_DASHBOARD, '/blog/new'),
+	// 	view: (title) => path(ROOTS_DASHBOARD, `/blog/post/${title}`),
+	// 	demoView: path(ROOTS_DASHBOARD, '/blog/post/apply-these-7-secret-techniques-to-improve-event'),
+	// },
 };
 
 export const PATH_DOCS = {
