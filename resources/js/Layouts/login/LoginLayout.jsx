@@ -23,9 +23,7 @@ export default function LoginLayout ({ children, illustration, title }) {
 						mb: 10,
 						maxWidth: 480,
 						textAlign: 'center',
-						// position: 'absolute',
-						// zIndex: 1000,
-
+						color: "#fff"
 					}}>
 					{title || 'Hi, Welcome back'}
 				</Typography>
