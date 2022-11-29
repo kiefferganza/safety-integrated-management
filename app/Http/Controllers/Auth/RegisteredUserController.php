@@ -46,21 +46,22 @@ class RegisteredUserController extends Controller
 					'email.unique' => 'Email is already taken'
 				]);
 
-        $user = User::create([
-					'firstname' => $request->firstname,
-					'middlename' => ' ',
-					'lastname' => $request->lastname,
-					'username' => $request->username,
-					'email' => $request->email,
-					'user_type' => 1,
-					'subscriber_id' => 1,
-					'password' => Hash::make($request->password),
-        ]);
+        // $user = User::create([
+				// 	'firstname' => $request->firstname,
+				// 	'middlename' => ' ',
+				// 	'lastname' => $request->lastname,
+				// 	'username' => $request->username,
+				// 	'email' => $request->email,
+				// 	'user_type' => 1,
+				// 	'subscriber_id' => 1,
+				// 	'password' => Hash::make($request->password),
+        // ]);
 
-        event(new Registered($user));
+        // event(new Registered($user));
 
-        Auth::login($user);
+        // Auth::login($user);
 
-        return redirect(RouteServiceProvider::DASHBOARD);
+        // return redirect(RouteServiceProvider::DASHBOARD);
+				return redirect()->route('login');
     }
 }

@@ -41,6 +41,7 @@ export default function ContactsPopover () {
 						bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.focusOpacity),
 					}),
 				}}
+				disabled
 			>
 				<Iconify icon="eva:people-fill" />
 			</IconButtonAnimate>
