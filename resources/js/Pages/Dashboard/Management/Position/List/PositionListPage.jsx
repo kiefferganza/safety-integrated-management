@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from '@inertiajs/inertia-react';
+import _ from 'lodash';
 // @mui
 import {
 	Card,
@@ -32,6 +32,9 @@ import {
 } from '@/Components/table';
 // sections
 import { PositionTableRow, PositionTableToolbar } from '@/sections/@dashboard/position/list';
+import PositionNew from '@/sections/@dashboard/position/portal/PositionNew';
+import { Inertia } from '@inertiajs/inertia';
+import { useSwal } from '@/hooks/useSwal';
 
 
 const TABLE_HEAD = [
@@ -43,9 +46,14 @@ const TABLE_HEAD = [
 
 
 const PositionListPage = ({ positions }) => {
-
 	const { themeStretch } = useSettingsContext();
 
+	const [openAdd, setOpenAdd] = useState(false);
+	const [openEdit, setOpenEdit] = useState(false);
+	const [positionName, setPositionName] = useState('');
+	const [editPositionData, setEditPositionData] = useState(null);
+
+	const { load, stop } = useSwal();
 	const {
 		dense,
 		page,
@@ -80,7 +88,6 @@ const PositionListPage = ({ positions }) => {
 			setTableData(data);
 		}
 	}, [positions]);
-
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -117,6 +124,48 @@ const PositionListPage = ({ positions }) => {
 		setFilterDate(null);
 	}
 
+	const handleOpenAddPosition = () => setOpenAdd(true);
+	const handleCloseAddPosition = () => {
+		setPositionName("")
+		setOpenAdd(false);
+	}
+	const handleOpenEditPosition = (pos) => {
+		setEditPositionData(pos);
+		setPositionName(pos.position)
+		setOpenEdit(true);
+	}
+	const handleCloseEditPosition = () => {
+		setPositionName("")
+		setEditPositionData(null);
+		setOpenEdit(false);
+	}
+
+	const handlePositionNameChanged = (e) => {
+		setPositionName(_.capitalize(e.target.value));
+	}
+
+	const handleCreatePosition = () => {
+		Inertia.post(route('management.position.new'), { position: positionName }, {
+			onStart: () => {
+				handleCloseAddPosition();
+				load("Adding new position", "Please wait...");
+				setPositionName("");
+			},
+			onFinish: stop
+		});
+	}
+
+	const handleUpdatePosition = () => {
+		Inertia.post(`/dashboard/position/${editPositionData.id}/edit`, { position: positionName }, {
+			onStart: () => {
+				handleCloseEditPosition();
+				load("Updating position", "Please wait...");
+				setPositionName("");
+			},
+			onFinish: stop
+		});
+	}
+
 	const handleOpenConfirm = () => {
 		setOpenConfirm(true);
 	};
@@ -126,10 +175,25 @@ const PositionListPage = ({ positions }) => {
 	};
 
 	const handleDeleteRow = (id) => {
-
+		Inertia.delete(`/dashboard/position/${id}`, {
+			onStart: () => {
+				load("Deleting position", "Please wait...");
+			},
+			onFinish: stop
+		});
 	}
 
-	const handleDeleteRows = (sel) => { }
+	const handleDeleteRows = (sel) => {
+		Inertia.post(route('management.position.delete-multiple'), { ids: sel }, {
+			onStart: () => {
+				load(`Deleting ${selected.length} positions`, "Please wait...");
+			},
+			onFinish: () => {
+				setSelected([]);
+				stop();
+			}
+		});
+	}
 
 	return (
 		<>
@@ -151,10 +215,9 @@ const PositionListPage = ({ positions }) => {
 					]}
 					action={
 						<Button
-							href={PATH_DASHBOARD.position.new}
-							component={Link}
 							variant="contained"
 							startIcon={<Iconify icon="eva:plus-fill" />}
+							onClick={handleOpenAddPosition}
 						>
 							New Position
 						</Button>
@@ -217,6 +280,7 @@ const PositionListPage = ({ positions }) => {
 											selected={selected.includes(row.id)}
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
+											onUpdateRow={() => handleOpenEditPosition(row)}
 										/>
 									))}
 
@@ -238,29 +302,43 @@ const PositionListPage = ({ positions }) => {
 						onChangeDense={onChangeDense}
 					/>
 				</Card>
-				<ConfirmDialog
-					open={openConfirm}
-					onClose={handleCloseConfirm}
-					title="Delete"
-					content={
-						<>
-							Are you sure want to delete <strong> {selected.length} </strong> items?
-						</>
-					}
-					action={
-						<Button
-							variant="contained"
-							color="error"
-							onClick={() => {
-								handleDeleteRows(selected);
-								handleCloseConfirm();
-							}}
-						>
-							Delete
-						</Button>
-					}
-				/>
 			</Container>
+			<PositionNew
+				open={openAdd}
+				onClose={handleCloseAddPosition}
+				onCreate={handleCreatePosition}
+				onPositionChanged={handlePositionNameChanged}
+				position={positionName}
+			/>
+			<PositionNew
+				open={openEdit}
+				onClose={handleCloseEditPosition}
+				onUpdate={handleUpdatePosition}
+				onPositionChanged={handlePositionNameChanged}
+				position={positionName}
+			/>
+			<ConfirmDialog
+				open={openConfirm}
+				onClose={handleCloseConfirm}
+				title="Delete"
+				content={
+					<>
+						Are you sure want to delete <strong> {selected.length} </strong> items?
+					</>
+				}
+				action={
+					<Button
+						variant="contained"
+						color="error"
+						onClick={() => {
+							handleCloseConfirm();
+							handleDeleteRows(selected);
+						}}
+					>
+						Delete
+					</Button>
+				}
+			/>
 		</>
 	)
 }

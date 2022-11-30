@@ -41,22 +41,22 @@ Route::middleware('auth')->group(function ()
 	 * Management - Employee/Position
 	 */
 	Route::get('dashboard/position/list', [PositionController::class, 'index'])->name('management.position.list');
-	// Create
-	Route::get('dashboard/position/new', [PositionController::class, 'create'])->name('management.position.create');
+	// CRUD
 	Route::post('dashboard/position/new', [PositionController::class, 'store'])->name('management.position.new');
+	Route::post('dashboard/position/{position}/edit', [PositionController::class, 'edit']);
+	Route::delete('dashboard/position/{position}', [PositionController::class, 'destroy']);
+	Route::post('dashboard/position/delete-multiple', [PositionController::class, 'delete_multiple'])->name('management.position.delete-multiple');
 	/**
 	 * Management - Employee/Department
 	 */
 	Route::get('dashboard/department/list', [DepartmentController::class, 'index'])->name('management.department.list');
 	// Create
-	Route::get('dashboard/department/new', [DepartmentController::class, 'create'])->name('management.department.create');
 	Route::post('dashboard/department/new', [DepartmentController::class, 'store'])->name('management.department.new');
 	/**
 	 * Management - Employee/Company
 	 */
 	Route::get('dashboard/company/list', [CompanyController::class, 'index'])->name('management.company.list');
 	// Create
-	Route::get('dashboard/company/new', [CompanyController::class, 'create'])->name('management.company.create');
 	Route::post('dashboard/company/new', [CompanyController::class, 'store'])->name('management.company.new');
 
 

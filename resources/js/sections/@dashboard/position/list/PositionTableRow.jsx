@@ -15,7 +15,6 @@ import { fDate } from '@/utils/formatTime';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
-import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
@@ -23,9 +22,10 @@ PositionTableRow.propTypes = {
 	row: PropTypes.object,
 	selected: PropTypes.bool,
 	onDeleteRow: PropTypes.func,
+	onUpdateRow: PropTypes.func,
 };
 
-export default function PositionTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+export default function PositionTableRow ({ row, selected, onSelectRow, onDeleteRow, onUpdateRow }) {
 	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [openPopover, setOpenPopover] = useState(null);
@@ -37,6 +37,11 @@ export default function PositionTableRow ({ row, selected, onSelectRow, onDelete
 	const handleCloseConfirm = () => {
 		setOpenConfirm(false);
 	};
+
+	const handleDeleteRow = () => {
+		handleCloseConfirm();
+		onDeleteRow();
+	}
 
 	const handleOpenPopover = (event) => {
 		setOpenPopover(event.currentTarget);
@@ -67,14 +72,12 @@ export default function PositionTableRow ({ row, selected, onSelectRow, onDelete
 			</TableRow>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
-				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						Inertia.visit(`/dashboard/employee/${row.id}`);
-					}}
-				>
-					<Iconify icon="eva:eye-fill" />
-					View
+				<MenuItem onClick={() => {
+					onUpdateRow();
+					handleClosePopover();
+				}}>
+					<Iconify icon="eva:edit-fill" />
+					Edit
 				</MenuItem>
 				<MenuItem
 					onClick={() => {
@@ -94,7 +97,7 @@ export default function PositionTableRow ({ row, selected, onSelectRow, onDelete
 				title="Delete"
 				content="Are you sure want to delete?"
 				action={
-					<Button variant="contained" color="error" onClick={onDeleteRow}>
+					<Button variant="contained" color="error" onClick={handleDeleteRow}>
 						Delete
 					</Button>
 				}

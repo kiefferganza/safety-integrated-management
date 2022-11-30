@@ -9,6 +9,8 @@ class Position extends Model
 {
 	use HasFactory;
 
+	protected $guarded = [];
+
 	protected $table = 'tbl_position';
 
 	protected $primaryKey = 'position_id';

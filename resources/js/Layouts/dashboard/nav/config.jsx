@@ -81,30 +81,36 @@ const navConfig = [
 				children: [
 					{ title: 'list', path: PATH_DASHBOARD.employee.root },
 					{ title: 'create', path: PATH_DASHBOARD.employee.new },
-					{
-						title: "position",
-						path: PATH_DASHBOARD.position.root,
-						children: [
-							{ title: 'list', path: PATH_DASHBOARD.position.root },
-							{ title: 'Create', path: PATH_DASHBOARD.position.new },
-						],
-					},
-					{
-						title: "department",
-						path: PATH_DASHBOARD.department.root,
-						children: [
-							{ title: 'list', path: PATH_DASHBOARD.department.root },
-							{ title: 'Create', path: PATH_DASHBOARD.department.new },
-						],
-					},
-					{
-						title: "company",
-						path: PATH_DASHBOARD.company.root,
-						children: [
-							{ title: 'list', path: PATH_DASHBOARD.company.root },
-							{ title: 'Create', path: PATH_DASHBOARD.company.new },
-						],
-					},
+					// Position
+					{ title: 'position', path: PATH_DASHBOARD.position.root },
+					// Department
+					{ title: 'department', path: PATH_DASHBOARD.department.root },
+					// Company
+					{ title: 'company', path: PATH_DASHBOARD.company.root },
+					// {
+					// 	title: "position",
+					// 	path: PATH_DASHBOARD.position.root,
+					// 	children: [
+					// 		{ title: 'list', path: PATH_DASHBOARD.position.root },
+					// 		{ title: 'Create', path: PATH_DASHBOARD.position.new },
+					// 	],
+					// },
+					// {
+					// 	title: "department",
+					// 	path: PATH_DASHBOARD.department.root,
+					// 	children: [
+					// 		{ title: 'list', path: PATH_DASHBOARD.department.root },
+					// 		{ title: 'Create', path: PATH_DASHBOARD.department.new },
+					// 	],
+					// },
+					// {
+					// 	title: "company",
+					// 	path: PATH_DASHBOARD.company.root,
+					// 	children: [
+					// 		{ title: 'list', path: PATH_DASHBOARD.company.root },
+					// 		{ title: 'Create', path: PATH_DASHBOARD.company.new },
+					// 	],
+					// },
 				],
 			},
 
