@@ -1,3 +1,4 @@
+export { default as EmployeeProfile } from './home/EmployeeProfile';
 export { default as Profile } from './home/Profile';
 export { default as ProfileAbout } from './home/ProfileAbout';
 export { default as ProfilePostCard } from './home/ProfilePostCard';

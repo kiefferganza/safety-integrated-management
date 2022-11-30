@@ -53,8 +53,8 @@ const TABLE_HEAD = [
 	{ id: 'position', label: 'Position', align: 'left' },
 	{ id: 'department', label: 'Department', align: 'left' },
 	{ id: 'nationality', label: 'Nationality', align: 'left' },
-	{ id: 'is_active', label: 'Status', align: 'left' },
 	{ id: 'phone_no', label: 'Phone No.', align: 'left' },
+	{ id: 'is_active', label: 'Status', align: 'left' },
 	{ id: '' },
 ];
 
@@ -330,9 +330,6 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 						onFilterStartDate={(newValue) => {
 							setFilterStartDate(newValue);
 						}}
-						onFilterEndDate={(newValue) => {
-							setFilterEndDate(newValue);
-						}}
 					/>
 
 					<TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -461,7 +458,6 @@ function applyFilter ({
 	filterDepartment,
 	filterPosition,
 	filterStartDate,
-	filterEndDate,
 }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
 

@@ -7,23 +7,24 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
-import EmpoloyeeNewEditForm from '@/sections/@dashboard/employee/form';
+import EmpoloyeeNewEditForm from '@/sections/@dashboard/employee/form/EmpoloyeeNewEditForm';
 import { Head } from '@inertiajs/inertia-react';
+import { getCurrentUserName } from '@/utils/formatName';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeCreatePage () {
+export default function EmployeeCreateEditPage ({ currentEmployee, companies, departments, nationalities, positions, isEdit = false }) {
 	const { themeStretch } = useSettingsContext();
 
 	return (
 		<>
 			<Head>
-				<title>Create a new employee</title>
+				<title>{isEdit ? `${getCurrentUserName(currentEmployee)} - Edit` : "New employee"}</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Create a new employee"
+					heading={isEdit ? "Edit employee" : "Create new employee"}
 					links={[
 						{
 							name: 'Dashboard',
@@ -34,12 +35,19 @@ export default function EmployeeCreatePage () {
 							href: PATH_DASHBOARD.employee.root,
 						},
 						{
-							name: 'New invoice',
+							name: isEdit ? getCurrentUserName(currentEmployee) : "New employee",
 						},
 					]}
 				/>
 
-				<EmpoloyeeNewEditForm />
+				<EmpoloyeeNewEditForm
+					currentEmployee={currentEmployee}
+					companies={companies}
+					departments={departments}
+					nationalities={nationalities}
+					positions={positions}
+					isEdit={isEdit}
+				/>
 			</Container>
 		</>
 	);

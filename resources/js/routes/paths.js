@@ -65,12 +65,28 @@ export const PATH_DASHBOARD = {
 		cards: path(ROOTS_DASHBOARD, '/user/cards'),
 		profile: path(ROOTS_DASHBOARD, '/user/profile'),
 		account: path(ROOTS_DASHBOARD, '/user/account'),
-		edit: (name) => path(ROOTS_DASHBOARD, `/user/${name}/edit`),
+		edit: (id) => path(ROOTS_DASHBOARD, `/user/${id}/edit`),
 	},
 	employee: {
 		root: path(ROOTS_DASHBOARD, '/employee/list'),
 		new: path(ROOTS_DASHBOARD, '/employee/new'),
 		edit: (id) => path(ROOTS_DASHBOARD, `/employee/${id}/edit`),
+		view: (id) => path(ROOTS_DASHBOARD, `/employee/${id}`),
+	},
+	position: {
+		root: path(ROOTS_DASHBOARD, '/position/list'),
+		new: path(ROOTS_DASHBOARD, '/position/new'),
+		edit: (id) => path(ROOTS_DASHBOARD, `/position/${id}/edit`),
+	},
+	department: {
+		root: path(ROOTS_DASHBOARD, '/department/list'),
+		new: path(ROOTS_DASHBOARD, '/department/new'),
+		edit: (id) => path(ROOTS_DASHBOARD, `/department/${id}/edit`),
+	},
+	company: {
+		root: path(ROOTS_DASHBOARD, '/company/list'),
+		new: path(ROOTS_DASHBOARD, '/company/new'),
+		edit: (id) => path(ROOTS_DASHBOARD, `/company/${id}/edit`),
 	},
 	ppe: {
 		root: path(ROOTS_DASHBOARD, '/ppe'),

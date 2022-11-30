@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\Position;
+use App\Models\TrainingType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -57,7 +58,6 @@ class EmployeeController extends Controller
 
 
 	public function store(Request $request) {
-		dd($request->all());
 		$user = Auth::user();
 		$employee = new Employee;
 		$employee->user_id = $user->user_id;
@@ -100,7 +100,7 @@ class EmployeeController extends Controller
 	public function update(Employee $employee) {
 		$user = Auth::user();
 
-		return Inertia::render("Dashboard/Management/Employee/Create/index", [
+		return Inertia::render("Dashboard/Management/Employee/Edit/index", [
 			"currentEmployee" => $employee,
 			"companies" => DB::table("tbl_company")->where([["sub_id", $user->subscriber_id], ["is_deleted", 0]])->get(),
 			"departments" => DB::table("tbl_department")->get(),
@@ -151,30 +151,21 @@ class EmployeeController extends Controller
 	}
 
 
-	public function manage_positions() {
-		$employees = DB::table("tbl_position")
-		->join("users", "users.user_id", "tbl_position.user_id")
-		->select(DB::raw("tbl_position.position_id, tbl_position.position, tbl_position.date_created as position_date_created"))
-		->where("tbl_position.is_deleted", 0)
-		->get();
-		return Inertia::render('Employees/ManagePositions', ["employees" => $employees]);
-	}
-
-	public function department() {
+	public function show(Employee $employee) {
 		$user = Auth::user();
-		$departments = DB::table("tbl_department")
-		->select(DB::raw("tbl_department.department_id, tbl_department.department, tbl_department.date_created"))
-		->where([
-			["tbl_department.is_deleted", 0],
-			["sub_id", $user->subscriber_id]
-		])
-		->get();
-		return Inertia::render('Employees/Department', ["departments" => $departments]);
-	}
 
-	public function companies() {
-		$companies = DB::table("tbl_company")->where("is_deleted", 0)->get();
-		return Inertia::render("Employees/Companies", ["companies" => $companies]);
+		return Inertia::render('Dashboard/Management/Employee/View/index', [
+			"employee" => $employee->load([
+				"trainings" => fn ($query) => 
+					$query->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
+					->where("is_deleted", 0),
+				"position" => fn ($query) => 
+					$query->select("position_id", "position")->where("is_deleted", 0),
+				"department" => fn ($query) => 
+					$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
+			]),
+			"trainingTypes" => TrainingType::get()
+		]);
 	}
 
 }

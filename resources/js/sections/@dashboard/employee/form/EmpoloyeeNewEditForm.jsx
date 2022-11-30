@@ -11,8 +11,8 @@ import { Box, Card, Grid, Stack, Switch, Typography, FormControlLabel, TextField
 import { fData } from '@/utils/formatNumber';
 // components
 import Label from '@/Components/label';
-import FormProvider, { RHFRadioGroup, RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
-import { getCurrentUserImage, getCurrentUserName } from '@/utils/formatName';
+import FormProvider, { RHFRadioGroup, RHFSelect, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
+import { getCurrentUserImage } from '@/utils/formatName';
 import { usePage } from '@inertiajs/inertia-react';
 import { DatePicker } from '@mui/x-date-pickers';
 import { Inertia } from '@inertiajs/inertia';
@@ -23,11 +23,13 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 
 EmpoloyeeNewEditForm.propTypes = {
 	currentEmployee: PropTypes.object,
+	departments: PropTypes.array,
+	nationalities: PropTypes.array,
+	positions: PropTypes.array
 };
 
-export default function EmpoloyeeNewEditForm () {
-	const { companies, departments, nationalities, positions, currentEmployee } = usePage().props;
-	console.log(currentEmployee);
+export default function EmpoloyeeNewEditForm ({ companies, departments, nationalities, positions, currentEmployee, isEdit = false }) {
+	// const { companies, departments, nationalities, positions, currentEmployee } = usePage().props;
 
 	const NewUserSchema = Yup.object().shape({
 		firstname: Yup.string().required('First name is required'),
@@ -45,12 +47,12 @@ export default function EmpoloyeeNewEditForm () {
 
 	const defaultValues = {
 		firstname: currentEmployee?.firstname || '',
-		middlename: currentEmployee?.middlename || '',
+		middlename: currentEmployee?.middlename?.trim() || '',
 		lastname: currentEmployee?.lastname || '',
 		email: currentEmployee?.email || '',
 		phone_no: currentEmployee?.phone_no || '',
-		company: currentEmployee?.company || companies[0].company_id || '',
-		company_type: currentEmployee?.company_type || 'Main Contractor',
+		company: currentEmployee?.company || '',
+		company_type: currentEmployee?.company_type || '',
 		position: currentEmployee?.position || '',
 		department: currentEmployee?.department || '',
 		nationality: currentEmployee?.nationality || '',
@@ -78,7 +80,7 @@ export default function EmpoloyeeNewEditForm () {
 	const onSubmit = async () => {
 		try {
 			Inertia.post(
-				currentEmployee ? PATH_DASHBOARD.employee.edit(currentEmployee.employee_id) : route("management.employee.new"),
+				isEdit ? PATH_DASHBOARD.employee.edit(currentEmployee.employee_id) : route("management.employee.new"),
 				{
 					...values,
 					birth_date: format(new Date(values.birth_date), 'yyyy-MM-dd HH-mm-ss')
@@ -109,7 +111,7 @@ export default function EmpoloyeeNewEditForm () {
 			<Grid container spacing={3}>
 				<Grid item xs={12} md={4}>
 					<Card sx={{ pt: 10, pb: 5, px: 3 }}>
-						{currentEmployee && (
+						{isEdit && (
 							<Label
 								color={values.is_active === 1 ? 'warning' : 'success'}
 								sx={{ textTransform: 'uppercase', position: 'absolute', top: 24, right: 24 }}
@@ -146,7 +148,7 @@ export default function EmpoloyeeNewEditForm () {
 							/>
 						</Box>
 
-						{currentEmployee && (
+						{isEdit && (
 							<FormControlLabel
 								labelPlacement="start"
 								control={
@@ -154,7 +156,6 @@ export default function EmpoloyeeNewEditForm () {
 										name="is_active"
 										control={control}
 										render={({ field }) => {
-											console.log(field);
 											return (
 												<Switch
 													{...field}
@@ -254,6 +255,7 @@ export default function EmpoloyeeNewEditForm () {
 							sx={{ my: 1 }}
 						>
 							<RHFSelect name="company" label="Company" placeholder="Company">
+								<option value=""></option>
 								{companies.map((option) => (
 									<option key={option.company_id} value={option.company_id}>
 										{option.company_name}
@@ -262,6 +264,7 @@ export default function EmpoloyeeNewEditForm () {
 							</RHFSelect>
 
 							<RHFSelect name="company_type" label="Company Type" placeholder="Company Type">
+								<option value=""></option>
 								<option value="Main Contractor">Main Contractor</option>
 								<option value="Sub Contractor">Sub Contractor</option>
 								<option value="Client">Client</option>

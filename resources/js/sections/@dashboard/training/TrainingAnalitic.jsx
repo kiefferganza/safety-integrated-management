@@ -9,15 +9,8 @@ import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 
-EmployeeAnalytic.propTypes = {
-	icon: PropTypes.string,
-	title: PropTypes.string,
-	color: PropTypes.string,
-	total: PropTypes.number,
-	percent: PropTypes.number,
-};
 
-export default function EmployeeAnalytic ({ title, total, icon, color, percent }) {
+const TrainingAnalitic = ({ title, total, icon, color, percent, hours }) => {
 	return (
 		<Stack direction="row" alignItems="center" justifyContent="center" sx={{ width: 1, minWidth: 200 }}>
 			<Stack alignItems="center" justifyContent="center" sx={{ position: 'relative' }}>
@@ -42,14 +35,32 @@ export default function EmployeeAnalytic ({ title, total, icon, color, percent }
 
 			<Stack spacing={0.5} sx={{ ml: 2 }}>
 				<Typography variant="h6">{title}</Typography>
+				{total > 0 && (
+					<Typography variant="subtitle2">
+						{fShortenNumber(hours) || 0}{' '}
+						<Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
+							total hours
+						</Box>
+					</Typography>
+				)}
 
 				<Typography variant="subtitle2">
 					{fShortenNumber(total) || 0}{' '}
 					<Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
-						employees
+						trainings
 					</Box>
 				</Typography>
 			</Stack>
 		</Stack>
-	);
+	)
 }
+
+export default TrainingAnalitic;
+
+TrainingAnalitic.propTypes = {
+	icon: PropTypes.string,
+	title: PropTypes.string,
+	color: PropTypes.string,
+	total: PropTypes.number,
+	percent: PropTypes.number,
+};

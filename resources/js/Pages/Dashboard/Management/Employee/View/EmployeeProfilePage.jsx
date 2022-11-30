@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import _ from 'lodash';
 // @mui
 import { Tab, Card, Tabs, Container, Box } from '@mui/material';
 // routes
@@ -12,17 +13,18 @@ import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
-	Profile,
+	EmployeeProfile,
 	ProfileCover,
 	ProfileFriends,
 	ProfileGallery,
 	ProfileFollowers,
 } from '@/sections/@dashboard/user/profile';
 import { getCurrentUserName } from '@/utils/formatName';
+import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTrainings';
 
 // ----------------------------------------------------------------------
 
-export default function UserProfilePage ({ user }) {
+export default function EmployeeProfilePage ({ employee }) {
 	const { themeStretch } = useSettingsContext();
 
 	const [searchFriends, setSearchFriends] = useState('');
@@ -34,7 +36,13 @@ export default function UserProfilePage ({ user }) {
 			value: 'profile',
 			label: 'Profile',
 			icon: <Iconify icon="ic:round-account-box" />,
-			component: <Profile info={_userAbout} posts={_userFeeds} user={user} />,
+			component: <EmployeeProfile info={_userAbout} posts={_userFeeds} employee={employee} />,
+		},
+		{
+			value: 'trainings',
+			label: 'Trainings',
+			icon: <Iconify icon="mingcute:certificate-2-fill" />,
+			component: <EmployeeTrainings trainings={employee.trainings} />,
 		},
 		{
 			value: 'followers',
@@ -68,8 +76,8 @@ export default function UserProfilePage ({ user }) {
 				heading="Profile"
 				links={[
 					{ name: 'Dashboard', href: PATH_DASHBOARD.root },
-					{ name: 'User', href: PATH_DASHBOARD.user.root },
-					{ name: getCurrentUserName(user) },
+					{ name: 'Employees', href: PATH_DASHBOARD.employee.root },
+					{ name: getCurrentUserName(employee) },
 				]}
 			/>
 			<Card
@@ -79,7 +87,7 @@ export default function UserProfilePage ({ user }) {
 					position: 'relative',
 				}}
 			>
-				<ProfileCover user={user} name={getCurrentUserName(user)} role={user?.position} cover={_userAbout.cover} />
+				<ProfileCover user={employee} name={getCurrentUserName(employee)} role={_.capitalize(employee?.position?.position || "")} cover={_userAbout.cover} />
 
 				<Tabs
 					value={currentTab}

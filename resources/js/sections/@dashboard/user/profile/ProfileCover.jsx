@@ -8,6 +8,7 @@ import { bgBlur } from '@/utils/cssStyles';
 import Image from '@/Components/image';
 import { CustomAvatar } from '@/Components/custom-avatar';
 import { usePage } from '@inertiajs/inertia-react';
+import { getCurrentUserImage } from '@/utils/formatName';
 
 // ----------------------------------------------------------------------
 
@@ -48,14 +49,13 @@ ProfileCover.propTypes = {
 	role: PropTypes.string,
 };
 
-export default function ProfileCover ({ name, role, cover }) {
-	const { auth: { user } } = usePage().props;
+export default function ProfileCover ({ name, role, cover, user }) {
 
 	return (
 		<StyledRoot>
 			<StyledInfo>
 				<CustomAvatar
-					src={`/storage/media/photos/employee/${(user.profile_pic || user.employee.img_src)}`}
+					src={getCurrentUserImage(user)}
 					alt={`${user?.firstname || user?.employee?.firstname} ${user?.lastname || user?.employee?.lastname}`}
 					name={`${user?.firstname || user?.employee?.firstname} ${user?.lastname || user?.employee?.lastname}`}
 					sx={{
