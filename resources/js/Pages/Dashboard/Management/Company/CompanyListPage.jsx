@@ -30,22 +30,22 @@ import {
 	TablePaginationCustom,
 } from '@/Components/table';
 // sections
-import { DepartmentTableRow, DepartmentTableToolbar } from '@/sections/@dashboard/department/list';
+import { CompanyTableRow, CompanyTableToolbar } from '@/sections/@dashboard/company/list';
 import { fDate } from '@/utils/formatTime';
-import DepartmentNewEdit from '@/sections/@dashboard/department/portal/DepartmentNewEdit';
-import { Inertia } from '@inertiajs/inertia';
+import CompanyNewEdit from '@/sections/@dashboard/company/portal/CompanyNewEdit';
 import { useSwal } from '@/hooks/useSwal';
+import { Inertia } from '@inertiajs/inertia';
 
 
 const TABLE_HEAD = [
 	{ id: 'index', label: '#', align: 'left' },
-	{ id: 'department', label: 'Department', align: 'center' },
-	{ id: 'date_created', label: 'Date Created', align: 'center' },
-	{ id: '', label: 'Action', align: 'right' },
+	{ id: 'department', label: 'Department', align: 'left' },
+	{ id: 'date_created', label: 'Date Created', align: 'left' },
+	{ id: '' },
 ];
 
 
-const DepartmentListPage = ({ departments }) => {
+const CompanyListPage = ({ companies }) => {
 	const { load, stop } = useSwal();
 	const { themeStretch } = useSettingsContext();
 
@@ -72,22 +72,22 @@ const DepartmentListPage = ({ departments }) => {
 
 	const [openAdd, setOpenAdd] = useState(false);
 	const [openEdit, setOpenEdit] = useState(false);
-	const [departmentName, setDepartmentName] = useState('');
-	const [editDepartmentData, setEditDepartmentData] = useState(null);
+	const [companyName, setCompanyName] = useState('');
+	const [editCompanyData, setEditCompanyData] = useState(null);
 
 	const [tableData, setTableData] = useState([]);
 
 	useEffect(() => {
-		if (departments && departments.length > 0) {
-			const data = departments.map(({ department, date_created, department_id }, index) => ({
-				id: department_id,
+		if (companies && companies.length > 0) {
+			const data = companies.map(({ company_name, created_at, company_id }, index) => ({
+				id: company_id,
 				index: index + 1,
-				department,
-				date_created
+				company_name,
+				created_at
 			}));
 			setTableData(data);
 		}
-	}, [departments]);
+	}, [companies]);
 
 
 	const [openConfirm, setOpenConfirm] = useState(false);
@@ -101,7 +101,6 @@ const DepartmentListPage = ({ departments }) => {
 		filterName,
 		filterDate
 	});
-
 
 	const denseHeight = dense ? 56 : 76;
 
@@ -124,41 +123,41 @@ const DepartmentListPage = ({ departments }) => {
 		setFilterDate(null);
 	}
 
-	const handleOpenAddDepartment = () => setOpenAdd(true);
-	const handleCloseAddDepartment = () => {
-		setDepartmentName("")
+	const handleOpenAddCompany = () => setOpenAdd(true);
+	const handleCloseAddCompany = () => {
+		setCompanyName("")
 		setOpenAdd(false);
 	}
-	const handleOpenEditDepartment = (dept) => {
-		setEditDepartmentData(dept);
-		setDepartmentName(dept.department)
+	const handleOpenEditCompany = (comp) => {
+		setEditCompanyData(comp);
+		setCompanyName(comp.company_name)
 		setOpenEdit(true);
 	}
-	const handleCloseEditDepartment = () => {
-		setDepartmentName("")
-		setEditDepartmentData(null);
+	const handleCloseEditCompany = () => {
+		setCompanyName("")
+		setEditCompanyData(null);
 		setOpenEdit(false);
 	}
 
-	const handleDepartmentNameChanged = (e) => setDepartmentName(e.target.value);
+	const handleCompanyNameChanged = (e) => setCompanyName(e.target.value);
 
-	const handleCreateDepartment = () => {
-		Inertia.post(route('management.department.new'), { department: departmentName }, {
+	const handleCreateCompany = () => {
+		Inertia.post(route('management.company.new'), { company: companyName }, {
 			onStart: () => {
-				handleCloseAddDepartment();
-				load("Adding new department", "Please wait...");
-				setDepartmentName("");
+				handleCloseAddCompany();
+				load("Adding new company", "Please wait...");
+				setCompanyName("");
 			},
 			onFinish: stop
 		});
 	}
 
-	const handleUpdateDepartment = () => {
-		Inertia.post(`/dashboard/department/${editDepartmentData.id}/edit`, { department: departmentName }, {
+	const handleUpdateCompany = () => {
+		Inertia.put(`/dashboard/company/${editCompanyData.id}/edit`, { company: companyName }, {
 			onStart: () => {
-				handleCloseEditDepartment();
-				load("Updating department", "Please wait...");
-				setDepartmentName("");
+				handleCloseEditCompany();
+				load("Updating company", "Please wait...");
+				setCompanyName("");
 			},
 			onFinish: stop
 		});
@@ -173,18 +172,18 @@ const DepartmentListPage = ({ departments }) => {
 	};
 
 	const handleDeleteRow = (id) => {
-		Inertia.delete(`/dashboard/department/${id}`, {
+		Inertia.delete(`/dashboard/company/${id}`, {
 			onStart: () => {
-				load("Deleting department", "Please wait...");
+				load("Deleting company", "Please wait...");
 			},
 			onFinish: stop
 		});
 	}
 
 	const handleDeleteRows = (sel) => {
-		Inertia.post(route('management.department.delete-multiple'), { ids: sel }, {
+		Inertia.post(route('management.company.delete-multiple'), { ids: sel }, {
 			onStart: () => {
-				load(`Deleting ${selected.length} departments`, "Please wait...");
+				load(`Deleting ${selected.length} companies`, "Please wait...");
 			},
 			onFinish: () => {
 				setSelected([]);
@@ -197,7 +196,7 @@ const DepartmentListPage = ({ departments }) => {
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Department List"
+					heading="Company List"
 					links={[
 						{
 							name: 'Dashboard',
@@ -208,22 +207,22 @@ const DepartmentListPage = ({ departments }) => {
 							href: PATH_DASHBOARD.employee.root,
 						},
 						{
-							name: 'Department List',
+							name: 'Company List',
 						},
 					]}
 					action={
 						<Button
 							variant="contained"
 							startIcon={<Iconify icon="eva:plus-fill" />}
-							onClick={handleOpenAddDepartment}
+							onClick={handleOpenAddCompany}
 						>
-							New Department
+							New Company
 						</Button>
 					}
 				/>
 
 				<Card>
-					<DepartmentTableToolbar
+					<CompanyTableToolbar
 						filterName={filterName}
 						isFiltered={isFiltered}
 						onFilterName={handleFilterName}
@@ -272,13 +271,13 @@ const DepartmentListPage = ({ departments }) => {
 								/>
 								<TableBody>
 									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-										<DepartmentTableRow
+										<CompanyTableRow
 											key={row.id}
 											row={row}
 											selected={selected.includes(row.id)}
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
-											onUpdateRow={() => handleOpenEditDepartment(row)}
+											onUpdateRow={() => handleOpenEditCompany(row)}
 										/>
 									))}
 
@@ -301,20 +300,20 @@ const DepartmentListPage = ({ departments }) => {
 					/>
 				</Card>
 			</Container>
-			<DepartmentNewEdit
+			<CompanyNewEdit
 				open={openAdd}
-				onClose={handleCloseAddDepartment}
-				onCreate={handleCreateDepartment}
-				onDepartmentChanged={handleDepartmentNameChanged}
-				department={departmentName}
+				onClose={handleCloseAddCompany}
+				onCreate={handleCreateCompany}
+				onCompanyChanged={handleCompanyNameChanged}
+				company={companyName}
 			/>
-			<DepartmentNewEdit
-				title='Edit Department'
+			<CompanyNewEdit
+				title='Edit Company'
 				open={openEdit}
-				onClose={handleCloseEditDepartment}
-				onUpdate={handleUpdateDepartment}
-				onDepartmentChanged={handleDepartmentNameChanged}
-				department={departmentName}
+				onClose={handleCloseEditCompany}
+				onUpdate={handleUpdateCompany}
+				onCompanyChanged={handleCompanyNameChanged}
+				company={companyName}
 			/>
 			<ConfirmDialog
 				open={openConfirm}
@@ -359,16 +358,16 @@ function applyFilter ({
 	inputData = stabilizedThis.map((el) => el[0]);
 
 	if (filterName) {
-		inputData = inputData.filter(({ department }) => department.toLowerCase().includes(filterName.toLowerCase()));
+		inputData = inputData.filter(({ company_name }) => company_name.toLowerCase().includes(filterName.toLowerCase()));
 	}
 
 	if (filterDate) {
 		const dateFiltered = fDate(filterDate);
-		inputData = inputData.filter(({ date_created }) => fDate(date_created) === dateFiltered);
+		inputData = inputData.filter(({ created_at }) => fDate(created_at) === dateFiltered);
 	}
 
 	return inputData;
 }
 
 
-export default DepartmentListPage
+export default CompanyListPage

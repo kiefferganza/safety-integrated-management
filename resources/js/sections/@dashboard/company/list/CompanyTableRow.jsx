@@ -56,9 +56,9 @@ export default function CompanyTableRow ({ row, selected, onSelectRow, onDeleteR
 
 				<TableCell align="left">{row.index}</TableCell>
 
-				<TableCell align="center">{row.company_name}</TableCell>
+				<TableCell align="left">{row.company_name}</TableCell>
 
-				<TableCell align="center">{fDate(row.created_at)}</TableCell>
+				<TableCell align="left">{fDate(row.created_at)}</TableCell>
 
 				<TableCell align="right">
 					<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>

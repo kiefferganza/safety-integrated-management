@@ -10,7 +10,7 @@ use Inertia\Inertia;
 class CompanyController extends Controller
 {
   public function index() {
-		return Inertia::render('Dashboard/Management/Company/List/index', [
+		return Inertia::render('Dashboard/Management/Company/index', [
 			"companies" => CompanyModel::where("is_deleted", 0)->get()
 		]);
 	}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\TrainingType;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,6 @@ class EmployeeController extends Controller
 {
   public function index() {
 		$user = Auth::user();
-		
 		$employees = Employee::select(DB::raw("tbl_employees.employee_id,
 		tbl_employees.firstname,
 		tbl_employees.middlename,
@@ -77,7 +77,7 @@ class EmployeeController extends Controller
 		$employee->is_active = 0;
 		$employee->is_deleted = 0;
 		$employee->sex = $request->sex;
-		$employee->date_created = date("Y-m-d H:i:s");
+		$employee->date_created = Carbon::now();
 
 		if($request->hasFile("img_src")) {
 			$file = $request->file("img_src")->getClientOriginalName();
@@ -125,7 +125,6 @@ class EmployeeController extends Controller
 		$employee->birth_date = $request->birth_date;
 		$employee->is_active = $request->is_active;
 		$employee->sex = $request->sex;
-		$employee->date_created = date("Y-m-d H:i:s");
 
 		if($request->hasFile("img_src")) {
 			$file = $request->file("img_src")->getClientOriginalName();

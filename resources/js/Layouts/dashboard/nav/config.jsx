@@ -77,7 +77,7 @@ const navConfig = [
 				title: 'employee',
 				path: PATH_DASHBOARD.employee.root,
 				icon: ICONS.employee,
-				childList: ["position", "department", "company"],
+				childList: ["position", "department", "company", "employee"],
 				children: [
 					{ title: 'list', path: PATH_DASHBOARD.employee.root },
 					{ title: 'create', path: PATH_DASHBOARD.employee.new },

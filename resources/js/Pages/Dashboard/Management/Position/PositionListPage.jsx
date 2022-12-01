@@ -43,9 +43,9 @@ import { useSwal } from '@/hooks/useSwal';
 
 const TABLE_HEAD = [
 	{ id: 'index', label: '#', align: 'left' },
-	{ id: 'position', label: 'Position', align: 'center' },
-	{ id: 'date_created', label: 'Date Created', align: 'center' },
-	{ id: '', label: 'Action', align: 'right' },
+	{ id: 'position', label: 'Position', align: 'left' },
+	{ id: 'date_created', label: 'Date Created', align: 'left' },
+	{ id: '' },
 ];
 
 const NewUserSchema = Yup.object().shape({

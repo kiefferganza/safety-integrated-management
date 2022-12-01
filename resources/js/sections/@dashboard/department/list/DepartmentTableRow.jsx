@@ -55,9 +55,9 @@ export default function DepartmentTableRow ({ row, selected, onSelectRow, onDele
 
 				<TableCell align="left">{row.index}</TableCell>
 
-				<TableCell align="center">{row.department}</TableCell>
+				<TableCell align="left">{row.department}</TableCell>
 
-				<TableCell align="center">{fDate(row.date_created)}</TableCell>
+				<TableCell align="left">{fDate(row.date_created)}</TableCell>
 
 				<TableCell align="right">
 					<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>

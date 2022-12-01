@@ -10,7 +10,7 @@ use Inertia\Inertia;
 class PositionController extends Controller
 {
 	public function index() {
-		return Inertia::render('Dashboard/Management/Position/List/index', [
+		return Inertia::render('Dashboard/Management/Position/index', [
 			"positions" => Position::where("is_deleted", 0)->get()
 		]);
 	}

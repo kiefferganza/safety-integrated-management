@@ -12,7 +12,7 @@ class DepartmentController extends Controller
   public function index() {
 		$user = Auth::user();
 		
-		return Inertia::render('Dashboard/Management/Department/List/index', [
+		return Inertia::render('Dashboard/Management/Department/index', [
 			"departments" => Department::where([
 					["is_deleted", 0],
 					["sub_id", $user->subscriber_id]

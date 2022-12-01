@@ -41,14 +41,16 @@ const PositionNew = ({
 									label="Position"
 									fullWidth
 								/>
-								<Button
-									size="small"
-									color="error"
-									startIcon={<Iconify icon="eva:trash-2-outline" />}
-									onClick={() => handleRemove(index)}
-								>
-									Remove
-								</Button>
+								{(onCreate) && (
+									<Button
+										size="small"
+										color="error"
+										startIcon={<Iconify icon="eva:trash-2-outline" />}
+										onClick={() => handleRemove(index)}
+									>
+										Remove
+									</Button>
+								)}
 							</Stack>
 						))
 					)}

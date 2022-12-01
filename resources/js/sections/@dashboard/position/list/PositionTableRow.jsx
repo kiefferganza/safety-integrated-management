@@ -60,9 +60,9 @@ export default function PositionTableRow ({ row, selected, onSelectRow, onDelete
 
 				<TableCell align="left">{row.index}</TableCell>
 
-				<TableCell align="center">{row.position}</TableCell>
+				<TableCell align="left">{row.position}</TableCell>
 
-				<TableCell align="center">{fDate(row.date_created)}</TableCell>
+				<TableCell align="left">{fDate(row.date_created)}</TableCell>
 
 				<TableCell align="right">
 					<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
