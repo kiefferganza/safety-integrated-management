@@ -11,13 +11,14 @@ import { Box, Card, Grid, Stack, Switch, Typography, FormControlLabel, TextField
 import { fData } from '@/utils/formatNumber';
 // components
 import Label from '@/Components/label';
-import FormProvider, { RHFRadioGroup, RHFSelect, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
+import FormProvider, { RHFPhone, RHFRadioGroup, RHFSelect, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
 import { getCurrentUserImage } from '@/utils/formatName';
 import { usePage } from '@inertiajs/inertia-react';
 import { DatePicker } from '@mui/x-date-pickers';
 import { Inertia } from '@inertiajs/inertia';
 import { format } from 'date-fns';
 import { PATH_DASHBOARD } from '@/routes/paths';
+import _ from 'lodash';
 
 // ----------------------------------------------------------------------
 
@@ -83,7 +84,10 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 				isEdit ? PATH_DASHBOARD.employee.edit(currentEmployee.employee_id) : route("management.employee.new"),
 				{
 					...values,
-					birth_date: format(new Date(values.birth_date), 'yyyy-MM-dd HH-mm-ss')
+					birth_date: format(new Date(values.birth_date), 'yyyy-MM-dd HH:mm:ss')
+				},
+				{
+					preserveScroll: true
 				}
 			);
 		} catch (error) {
@@ -209,7 +213,7 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 								control={control}
 								render={({ field, fieldState: { error } }) => (
 									<DatePicker
-										label="Date create"
+										label="Birth of Date"
 										value={field.value}
 										onChange={(newValue) => {
 											field.onChange(newValue);
@@ -220,7 +224,8 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 									/>
 								)}
 							/>
-							<RHFTextField name="phone_no" label="Phone Number" type="number" />
+
+							<RHFPhone name="phone_no" label="Phone Number" />
 
 							<Stack>
 								<Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
@@ -265,12 +270,12 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 
 							<RHFSelect name="company_type" label="Company Type" placeholder="Company Type">
 								<option value=""></option>
-								<option value="Main Contractor">Main Contractor</option>
-								<option value="Sub Contractor">Sub Contractor</option>
-								<option value="Client">Client</option>
+								<option value="main contractor">Main Contractor</option>
+								<option value="sub contractor">Sub Contractor</option>
+								<option value="client">Client</option>
 							</RHFSelect>
 
-							<RHFSelect name="position" label="Position" placeholder="Position">
+							<RHFSelect name="position" label="Role" placeholder="Role">
 								<option value=""></option>
 								{positions.map((option) => (
 									<option key={option.position_id} value={option.position_id}>
@@ -288,11 +293,11 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 								))}
 							</RHFSelect>
 
-							<RHFSelect name="nationality" label="Nationality" placeholder="Nationality">
+							<RHFSelect name="nationality" label="Country" placeholder="Country">
 								<option value=""></option>
 								{nationalities.map((option) => (
-									<option key={option.id} value={option.id}>
-										{option.name}
+									<option key={option.id} value={option.id} style={{ textTransform: "capitalize" }}>
+										{_.capitalize(option.name)}
 									</option>
 								))}
 							</RHFSelect>

@@ -78,6 +78,7 @@ class EmployeeController extends Controller
 		$employee->is_deleted = 0;
 		$employee->sex = $request->sex;
 		$employee->date_created = Carbon::now();
+		$employee->date_updated = Carbon::now();
 
 		if($request->hasFile("img_src")) {
 			$file = $request->file("img_src")->getClientOriginalName();
@@ -125,6 +126,7 @@ class EmployeeController extends Controller
 		$employee->birth_date = $request->birth_date;
 		$employee->is_active = $request->is_active;
 		$employee->sex = $request->sex;
+		$employee->date_updated = Carbon::now();
 
 		if($request->hasFile("img_src")) {
 			$file = $request->file("img_src")->getClientOriginalName();

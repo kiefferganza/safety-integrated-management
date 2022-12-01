@@ -39,7 +39,7 @@ import { Inertia } from '@inertiajs/inertia';
 
 const TABLE_HEAD = [
 	{ id: 'index', label: '#', align: 'left' },
-	{ id: 'department', label: 'Department', align: 'left' },
+	{ id: 'company_name', label: 'Company', align: 'left' },
 	{ id: 'date_created', label: 'Date Created', align: 'left' },
 	{ id: '' },
 ];

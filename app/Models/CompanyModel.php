@@ -14,6 +14,4 @@ class CompanyModel extends Model
 	protected $table = 'tbl_company';
 
 	protected $primaryKey = 'company_id';
-
-	public $timestamps = false;
 }
