@@ -9,6 +9,8 @@ class CompanyModel extends Model
 {
 	use HasFactory;
 
+	protected $guarded = [];
+
 	protected $table = 'tbl_company';
 
 	protected $primaryKey = 'company_id';

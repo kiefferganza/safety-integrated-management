@@ -17,14 +17,21 @@ class PositionController extends Controller
 
 	public function store(Request $request) {
 		$user = Auth::user();
-		Position::create([
-			"position" => $request->position,
-			"user_id" => $user->subscriber_id,
-			"is_deleted" => 0
-		]);
+
+
+		$positions = [];
+		foreach ($request->all() as $position) {
+			$positions[] = [
+				"user_id" => $user->subscriber_id,
+				"is_deleted" => 0,
+				"position" => $position["position"]
+			];
+		}
+		Position::insert($positions);
+		
 		return redirect()->back()
 		->with("message", "Position created successfully!")
-		->with("type", "success");;
+		->with("type", "success");
 	}
 
 

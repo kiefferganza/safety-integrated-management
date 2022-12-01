@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function ()
 	// Create
 	Route::get('/dashboard/user/new', fn () => Inertia::render("Dashboard/Management/User/Create/index"))->name('management.user.new');
 
+
 	/**
 	 * Management - Employee
 	 */
@@ -37,6 +38,8 @@ Route::middleware('auth')->group(function ()
 	Route::post('/dashboard/employee/{employee}/edit', [EmployeeController::class, "edit"])->name('management.employee.edit');
 	// View
 	Route::get('/dashboard/employee/{employee}', [EmployeeController::class, "show"])->name('management.employee.show');
+
+
 	/**
 	 * Management - Employee/Position
 	 */
@@ -46,18 +49,28 @@ Route::middleware('auth')->group(function ()
 	Route::post('dashboard/position/{position}/edit', [PositionController::class, 'edit']);
 	Route::delete('dashboard/position/{position}', [PositionController::class, 'destroy']);
 	Route::post('dashboard/position/delete-multiple', [PositionController::class, 'delete_multiple'])->name('management.position.delete-multiple');
+
+
 	/**
 	 * Management - Employee/Department
 	 */
 	Route::get('dashboard/department/list', [DepartmentController::class, 'index'])->name('management.department.list');
-	// Create
+	// Crud
 	Route::post('dashboard/department/new', [DepartmentController::class, 'store'])->name('management.department.new');
+	Route::post('dashboard/department/{department}/edit', [DepartmentController::class, 'edit']);
+	Route::delete('dashboard/department/{department}', [DepartmentController::class, 'destroy']);
+	Route::post('dashboard/department/delete-multiple', [DepartmentController::class, 'delete_multiple'])->name('management.department.delete-multiple');
+
+
 	/**
 	 * Management - Employee/Company
 	 */
 	Route::get('dashboard/company/list', [CompanyController::class, 'index'])->name('management.company.list');
-	// Create
+	// CRUD
 	Route::post('dashboard/company/new', [CompanyController::class, 'store'])->name('management.company.new');
+	Route::put('dashboard/company/{company}/edit', [CompanyController::class, 'edit']);
+	Route::delete('dashboard/company/{company}', [CompanyController::class, 'destroy']);
+	Route::post('dashboard/company/delete-multiple', [CompanyController::class, 'delete_multiple'])->name('management.company.delete-multiple');
 
 
 });

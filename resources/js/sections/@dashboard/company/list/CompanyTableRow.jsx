@@ -23,9 +23,10 @@ CompanyTableRow.propTypes = {
 	row: PropTypes.object,
 	selected: PropTypes.bool,
 	onDeleteRow: PropTypes.func,
+	onUpdateRow: PropTypes.func,
 };
 
-export default function CompanyTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+export default function CompanyTableRow ({ row, selected, onSelectRow, onDeleteRow, onUpdateRow }) {
 	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [openPopover, setOpenPopover] = useState(null);
@@ -67,14 +68,12 @@ export default function CompanyTableRow ({ row, selected, onSelectRow, onDeleteR
 			</TableRow>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
-				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						Inertia.visit(`/dashboard/employee/${row.id}`);
-					}}
-				>
-					<Iconify icon="eva:eye-fill" />
-					View
+				<MenuItem onClick={() => {
+					onUpdateRow();
+					handleClosePopover();
+				}}>
+					<Iconify icon="eva:edit-fill" />
+					Edit
 				</MenuItem>
 				<MenuItem
 					onClick={() => {

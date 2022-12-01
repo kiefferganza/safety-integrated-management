@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import _ from 'lodash';
+import * as Yup from 'yup';
+// form
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import {
 	Card,
@@ -15,6 +18,7 @@ import {
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // Components
+import FormProvider from '@/Components/hook-form';
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';
 import ConfirmDialog from '@/Components/confirm-dialog';
@@ -44,14 +48,32 @@ const TABLE_HEAD = [
 	{ id: '', label: 'Action', align: 'right' },
 ];
 
+const NewUserSchema = Yup.object().shape({
+	positionItems: Yup.array().of(
+		Yup.object().shape({
+			position: Yup.string().required("Position title is required."),
+		})
+	)
+});
 
 const PositionListPage = ({ positions }) => {
 	const { themeStretch } = useSettingsContext();
 
+	const methods = useForm({
+		resolver: yupResolver(NewUserSchema),
+		defaultValues: {
+			positionItems: [{ position: '', id: 0 }],
+		}
+	});
+
+	const {
+		reset,
+		setValue,
+		handleSubmit
+	} = methods;
+
 	const [openAdd, setOpenAdd] = useState(false);
 	const [openEdit, setOpenEdit] = useState(false);
-	const [positionName, setPositionName] = useState('');
-	const [editPositionData, setEditPositionData] = useState(null);
 
 	const { load, stop } = useSwal();
 	const {
@@ -101,8 +123,6 @@ const PositionListPage = ({ positions }) => {
 		filterDate
 	});
 
-	const dataInPage = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
 	const denseHeight = dense ? 56 : 76;
 
 	const isFiltered = filterName !== '' || !!filterDate;
@@ -126,41 +146,35 @@ const PositionListPage = ({ positions }) => {
 
 	const handleOpenAddPosition = () => setOpenAdd(true);
 	const handleCloseAddPosition = () => {
-		setPositionName("")
 		setOpenAdd(false);
+		reset({ positionItems: [{ position: '', id: 0 }] })
 	}
 	const handleOpenEditPosition = (pos) => {
-		setEditPositionData(pos);
-		setPositionName(pos.position)
+		setValue("positionItems.0.position", pos.position);
+		setValue("positionItems.0.id", pos.id);
 		setOpenEdit(true);
 	}
 	const handleCloseEditPosition = () => {
-		setPositionName("")
-		setEditPositionData(null);
 		setOpenEdit(false);
+		reset({ positionItems: [{ position: '', id: 0 }] });
 	}
 
-	const handlePositionNameChanged = (e) => {
-		setPositionName(_.capitalize(e.target.value));
-	}
 
-	const handleCreatePosition = () => {
-		Inertia.post(route('management.position.new'), { position: positionName }, {
+	const handleCreatePosition = ({ positionItems }) => {
+		Inertia.post(route('management.position.new'), positionItems, {
 			onStart: () => {
 				handleCloseAddPosition();
 				load("Adding new position", "Please wait...");
-				setPositionName("");
 			},
 			onFinish: stop
 		});
 	}
 
-	const handleUpdatePosition = () => {
-		Inertia.post(`/dashboard/position/${editPositionData.id}/edit`, { position: positionName }, {
+	const handleUpdatePosition = ({ positionItems }) => {
+		Inertia.post(`/dashboard/position/${positionItems[0].id}/edit`, { position: positionItems[0].position }, {
 			onStart: () => {
 				handleCloseEditPosition();
 				load("Updating position", "Please wait...");
-				setPositionName("");
 			},
 			onFinish: stop
 		});
@@ -303,20 +317,21 @@ const PositionListPage = ({ positions }) => {
 					/>
 				</Card>
 			</Container>
-			<PositionNew
-				open={openAdd}
-				onClose={handleCloseAddPosition}
-				onCreate={handleCreatePosition}
-				onPositionChanged={handlePositionNameChanged}
-				position={positionName}
-			/>
-			<PositionNew
-				open={openEdit}
-				onClose={handleCloseEditPosition}
-				onUpdate={handleUpdatePosition}
-				onPositionChanged={handlePositionNameChanged}
-				position={positionName}
-			/>
+			<FormProvider methods={methods}>
+				<PositionNew
+					open={openAdd}
+					onClose={handleCloseAddPosition}
+					onCreate={handleCreatePosition}
+				/>
+			</FormProvider>
+			<FormProvider methods={methods}>
+				<PositionNew
+					title='Edit Position'
+					open={openEdit}
+					onClose={handleCloseEditPosition}
+					onUpdate={handleUpdatePosition}
+				/>
+			</FormProvider>
 			<ConfirmDialog
 				open={openConfirm}
 				onClose={handleCloseConfirm}

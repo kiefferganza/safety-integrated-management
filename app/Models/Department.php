@@ -9,6 +9,8 @@ class Department extends Model
 {
 	use HasFactory;
 
+	protected $guarded = [];
+
 	protected $table = 'tbl_department';
 
 	protected $primaryKey = 'department_id';

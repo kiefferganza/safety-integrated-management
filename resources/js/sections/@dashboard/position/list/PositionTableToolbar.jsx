@@ -54,7 +54,7 @@ export default function PositionTableToolbar ({
 				fullWidth
 				value={filterName}
 				onChange={onFilterName}
-				placeholder="Search department's name"
+				placeholder="Search position's name"
 				InputProps={{
 					startAdornment: (
 						<InputAdornment position="start">

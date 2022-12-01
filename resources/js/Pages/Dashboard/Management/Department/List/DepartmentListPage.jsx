@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from '@inertiajs/inertia-react';
 // @mui
 import {
 	Card,
@@ -33,6 +32,9 @@ import {
 // sections
 import { DepartmentTableRow, DepartmentTableToolbar } from '@/sections/@dashboard/department/list';
 import { fDate } from '@/utils/formatTime';
+import DepartmentNewEdit from '@/sections/@dashboard/department/portal/DepartmentNewEdit';
+import { Inertia } from '@inertiajs/inertia';
+import { useSwal } from '@/hooks/useSwal';
 
 
 const TABLE_HEAD = [
@@ -44,7 +46,7 @@ const TABLE_HEAD = [
 
 
 const DepartmentListPage = ({ departments }) => {
-
+	const { load, stop } = useSwal();
 	const { themeStretch } = useSettingsContext();
 
 	const {
@@ -67,6 +69,11 @@ const DepartmentListPage = ({ departments }) => {
 	} = useTable({
 		defaultRowsPerPage: 10
 	});
+
+	const [openAdd, setOpenAdd] = useState(false);
+	const [openEdit, setOpenEdit] = useState(false);
+	const [departmentName, setDepartmentName] = useState('');
+	const [editDepartmentData, setEditDepartmentData] = useState(null);
 
 	const [tableData, setTableData] = useState([]);
 
@@ -95,7 +102,6 @@ const DepartmentListPage = ({ departments }) => {
 		filterDate
 	});
 
-	const dataInPage = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
 	const denseHeight = dense ? 56 : 76;
 
@@ -118,6 +124,46 @@ const DepartmentListPage = ({ departments }) => {
 		setFilterDate(null);
 	}
 
+	const handleOpenAddDepartment = () => setOpenAdd(true);
+	const handleCloseAddDepartment = () => {
+		setDepartmentName("")
+		setOpenAdd(false);
+	}
+	const handleOpenEditDepartment = (dept) => {
+		setEditDepartmentData(dept);
+		setDepartmentName(dept.department)
+		setOpenEdit(true);
+	}
+	const handleCloseEditDepartment = () => {
+		setDepartmentName("")
+		setEditDepartmentData(null);
+		setOpenEdit(false);
+	}
+
+	const handleDepartmentNameChanged = (e) => setDepartmentName(e.target.value);
+
+	const handleCreateDepartment = () => {
+		Inertia.post(route('management.department.new'), { department: departmentName }, {
+			onStart: () => {
+				handleCloseAddDepartment();
+				load("Adding new department", "Please wait...");
+				setDepartmentName("");
+			},
+			onFinish: stop
+		});
+	}
+
+	const handleUpdateDepartment = () => {
+		Inertia.post(`/dashboard/department/${editDepartmentData.id}/edit`, { department: departmentName }, {
+			onStart: () => {
+				handleCloseEditDepartment();
+				load("Updating department", "Please wait...");
+				setDepartmentName("");
+			},
+			onFinish: stop
+		});
+	}
+
 	const handleOpenConfirm = () => {
 		setOpenConfirm(true);
 	};
@@ -127,10 +173,25 @@ const DepartmentListPage = ({ departments }) => {
 	};
 
 	const handleDeleteRow = (id) => {
-
+		Inertia.delete(`/dashboard/department/${id}`, {
+			onStart: () => {
+				load("Deleting department", "Please wait...");
+			},
+			onFinish: stop
+		});
 	}
 
-	const handleDeleteRows = (sel) => { }
+	const handleDeleteRows = (sel) => {
+		Inertia.post(route('management.department.delete-multiple'), { ids: sel }, {
+			onStart: () => {
+				load(`Deleting ${selected.length} departments`, "Please wait...");
+			},
+			onFinish: () => {
+				setSelected([]);
+				stop();
+			}
+		});
+	}
 
 	return (
 		<>
@@ -152,10 +213,9 @@ const DepartmentListPage = ({ departments }) => {
 					]}
 					action={
 						<Button
-							href={PATH_DASHBOARD.department.new}
-							component={Link}
 							variant="contained"
 							startIcon={<Iconify icon="eva:plus-fill" />}
+							onClick={handleOpenAddDepartment}
 						>
 							New Department
 						</Button>
@@ -218,6 +278,7 @@ const DepartmentListPage = ({ departments }) => {
 											selected={selected.includes(row.id)}
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
+											onUpdateRow={() => handleOpenEditDepartment(row)}
 										/>
 									))}
 
@@ -239,29 +300,44 @@ const DepartmentListPage = ({ departments }) => {
 						onChangeDense={onChangeDense}
 					/>
 				</Card>
-				<ConfirmDialog
-					open={openConfirm}
-					onClose={handleCloseConfirm}
-					title="Delete"
-					content={
-						<>
-							Are you sure want to delete <strong> {selected.length} </strong> items?
-						</>
-					}
-					action={
-						<Button
-							variant="contained"
-							color="error"
-							onClick={() => {
-								handleDeleteRows(selected);
-								handleCloseConfirm();
-							}}
-						>
-							Delete
-						</Button>
-					}
-				/>
 			</Container>
+			<DepartmentNewEdit
+				open={openAdd}
+				onClose={handleCloseAddDepartment}
+				onCreate={handleCreateDepartment}
+				onDepartmentChanged={handleDepartmentNameChanged}
+				department={departmentName}
+			/>
+			<DepartmentNewEdit
+				title='Edit Department'
+				open={openEdit}
+				onClose={handleCloseEditDepartment}
+				onUpdate={handleUpdateDepartment}
+				onDepartmentChanged={handleDepartmentNameChanged}
+				department={departmentName}
+			/>
+			<ConfirmDialog
+				open={openConfirm}
+				onClose={handleCloseConfirm}
+				title="Delete"
+				content={
+					<>
+						Are you sure want to delete <strong> {selected.length} </strong> items?
+					</>
+				}
+				action={
+					<Button
+						variant="contained"
+						color="error"
+						onClick={() => {
+							handleDeleteRows(selected);
+							handleCloseConfirm();
+						}}
+					>
+						Delete
+					</Button>
+				}
+			/>
 		</>
 	)
 }

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from '@inertiajs/inertia-react';
 // @mui
 import {
 	Card,
@@ -33,6 +32,9 @@ import {
 // sections
 import { CompanyTableRow, CompanyTableToolbar } from '@/sections/@dashboard/company/list';
 import { fDate } from '@/utils/formatTime';
+import CompanyNewEdit from '@/sections/@dashboard/company/portal/CompanyNewEdit';
+import { useSwal } from '@/hooks/useSwal';
+import { Inertia } from '@inertiajs/inertia';
 
 
 const TABLE_HEAD = [
@@ -44,7 +46,7 @@ const TABLE_HEAD = [
 
 
 const CompanyListPage = ({ companies }) => {
-
+	const { load, stop } = useSwal();
 	const { themeStretch } = useSettingsContext();
 
 	const {
@@ -67,6 +69,11 @@ const CompanyListPage = ({ companies }) => {
 	} = useTable({
 		defaultRowsPerPage: 10
 	});
+
+	const [openAdd, setOpenAdd] = useState(false);
+	const [openEdit, setOpenEdit] = useState(false);
+	const [companyName, setCompanyName] = useState('');
+	const [editCompanyData, setEditCompanyData] = useState(null);
 
 	const [tableData, setTableData] = useState([]);
 
@@ -95,8 +102,6 @@ const CompanyListPage = ({ companies }) => {
 		filterDate
 	});
 
-	const dataInPage = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
 	const denseHeight = dense ? 56 : 76;
 
 	const isFiltered = filterName !== '' || !!filterDate;
@@ -118,6 +123,46 @@ const CompanyListPage = ({ companies }) => {
 		setFilterDate(null);
 	}
 
+	const handleOpenAddCompany = () => setOpenAdd(true);
+	const handleCloseAddCompany = () => {
+		setCompanyName("")
+		setOpenAdd(false);
+	}
+	const handleOpenEditCompany = (comp) => {
+		setEditCompanyData(comp);
+		setCompanyName(comp.company_name)
+		setOpenEdit(true);
+	}
+	const handleCloseEditCompany = () => {
+		setCompanyName("")
+		setEditCompanyData(null);
+		setOpenEdit(false);
+	}
+
+	const handleCompanyNameChanged = (e) => setCompanyName(e.target.value);
+
+	const handleCreateCompany = () => {
+		Inertia.post(route('management.company.new'), { company: companyName }, {
+			onStart: () => {
+				handleCloseAddCompany();
+				load("Adding new company", "Please wait...");
+				setCompanyName("");
+			},
+			onFinish: stop
+		});
+	}
+
+	const handleUpdateCompany = () => {
+		Inertia.put(`/dashboard/company/${editCompanyData.id}/edit`, { company: companyName }, {
+			onStart: () => {
+				handleCloseEditCompany();
+				load("Updating company", "Please wait...");
+				setCompanyName("");
+			},
+			onFinish: stop
+		});
+	}
+
 	const handleOpenConfirm = () => {
 		setOpenConfirm(true);
 	};
@@ -127,10 +172,25 @@ const CompanyListPage = ({ companies }) => {
 	};
 
 	const handleDeleteRow = (id) => {
-
+		Inertia.delete(`/dashboard/company/${id}`, {
+			onStart: () => {
+				load("Deleting company", "Please wait...");
+			},
+			onFinish: stop
+		});
 	}
 
-	const handleDeleteRows = (sel) => { }
+	const handleDeleteRows = (sel) => {
+		Inertia.post(route('management.company.delete-multiple'), { ids: sel }, {
+			onStart: () => {
+				load(`Deleting ${selected.length} companies`, "Please wait...");
+			},
+			onFinish: () => {
+				setSelected([]);
+				stop();
+			}
+		});
+	}
 
 	return (
 		<>
@@ -152,10 +212,9 @@ const CompanyListPage = ({ companies }) => {
 					]}
 					action={
 						<Button
-							href={PATH_DASHBOARD.company.new}
-							component={Link}
 							variant="contained"
 							startIcon={<Iconify icon="eva:plus-fill" />}
+							onClick={handleOpenAddCompany}
 						>
 							New Company
 						</Button>
@@ -218,6 +277,7 @@ const CompanyListPage = ({ companies }) => {
 											selected={selected.includes(row.id)}
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
+											onUpdateRow={() => handleOpenEditCompany(row)}
 										/>
 									))}
 
@@ -239,29 +299,44 @@ const CompanyListPage = ({ companies }) => {
 						onChangeDense={onChangeDense}
 					/>
 				</Card>
-				<ConfirmDialog
-					open={openConfirm}
-					onClose={handleCloseConfirm}
-					title="Delete"
-					content={
-						<>
-							Are you sure want to delete <strong> {selected.length} </strong> items?
-						</>
-					}
-					action={
-						<Button
-							variant="contained"
-							color="error"
-							onClick={() => {
-								handleDeleteRows(selected);
-								handleCloseConfirm();
-							}}
-						>
-							Delete
-						</Button>
-					}
-				/>
 			</Container>
+			<CompanyNewEdit
+				open={openAdd}
+				onClose={handleCloseAddCompany}
+				onCreate={handleCreateCompany}
+				onCompanyChanged={handleCompanyNameChanged}
+				company={companyName}
+			/>
+			<CompanyNewEdit
+				title='Edit Company'
+				open={openEdit}
+				onClose={handleCloseEditCompany}
+				onUpdate={handleUpdateCompany}
+				onCompanyChanged={handleCompanyNameChanged}
+				company={companyName}
+			/>
+			<ConfirmDialog
+				open={openConfirm}
+				onClose={handleCloseConfirm}
+				title="Delete"
+				content={
+					<>
+						Are you sure want to delete <strong> {selected.length} </strong> items?
+					</>
+				}
+				action={
+					<Button
+						variant="contained"
+						color="error"
+						onClick={() => {
+							handleDeleteRows(selected);
+							handleCloseConfirm();
+						}}
+					>
+						Delete
+					</Button>
+				}
+			/>
 		</>
 	)
 }
