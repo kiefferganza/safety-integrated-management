@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EmployeeRequest;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\TrainingType;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -59,8 +59,9 @@ class EmployeeController extends Controller
 	}
 
 
-	public function store(Request $request) {
+	public function store(EmployeeRequest $request) {
 		$user = Auth::user();
+
 		$employee = new Employee;
 		$employee->user_id = $user->user_id;
 		$employee->sub_id = $user->subscriber_id;
@@ -79,6 +80,7 @@ class EmployeeController extends Controller
 		$employee->is_active = 0;
 		$employee->is_deleted = 0;
 		$employee->sex = $request->sex;
+		$employee->about = $request->about;
 		$employee->date_created = Carbon::now();
 		$employee->date_updated = Carbon::now();
 
@@ -113,7 +115,7 @@ class EmployeeController extends Controller
 	}
 
 
-	public function edit(Request $request, Employee $employee) {
+	public function edit(EmployeeRequest $request, Employee $employee) {
 		$employee->firstname = $request->firstname;
 		$employee->middlename = $request->middlename ? $request->middlename : " ";
 		$employee->lastname = $request->lastname;
@@ -128,6 +130,7 @@ class EmployeeController extends Controller
 		$employee->birth_date = $request->birth_date;
 		$employee->is_active = $request->is_active;
 		$employee->sex = $request->sex;
+		$employee->about = $request->about;
 		$employee->date_updated = Carbon::now();
 
 		if($request->hasFile("img_src")) {

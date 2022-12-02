@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 // form
@@ -19,6 +19,7 @@ import FormProvider, { RHFPhone, RHFRadioGroup, RHFSelect, RHFTextField, RHFUplo
 import { Inertia } from '@inertiajs/inertia';
 import { format } from 'date-fns';
 import _ from 'lodash';
+import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -30,6 +31,8 @@ EmpoloyeeNewEditForm.propTypes = {
 };
 
 export default function EmpoloyeeNewEditForm ({ companies, departments, nationalities, positions, currentEmployee, users, isEdit = false }) {
+	const { errors: resErrors } = usePage().props;
+
 
 	const NewUserSchema = Yup.object().shape({
 		firstname: Yup.string().required('First name is required'),
@@ -42,7 +45,8 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 		position: Yup.string().required('Position is required'),
 		department: Yup.string().required('Department is required'),
 		nationality: Yup.string().required('Nationality is required'),
-		birth_date: Yup.string().required('Date of birth is required')
+		birth_date: Yup.string().required('Date of birth is required'),
+		about: Yup.string().max(255, "About must not exceed 255 characters")
 	});
 
 	const defaultValues = {
@@ -59,6 +63,7 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 		img_src: currentEmployee?.img_src ? getCurrentUserImage(currentEmployee) : '',
 		birth_date: currentEmployee?.birth_date || '',
 		sex: currentEmployee?.sex || 'Male',
+		about: currentEmployee?.about || '',
 		is_active: currentEmployee?.is_active
 	};
 
@@ -73,10 +78,19 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 		setValue,
 		handleSubmit,
 		reset,
+		setError,
 		formState: { isSubmitting },
 	} = methods;
 
 	const values = watch();
+
+	useEffect(() => {
+		if (Object.keys(resErrors).length !== 0) {
+			for (const key in resErrors) {
+				setError(key, { type: "custom", message: resErrors[key] });
+			}
+		}
+	}, [resErrors]);
 
 	const handleAutocompleteName = (_, val) => {
 		if (val) {
@@ -106,7 +120,8 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 					birth_date: format(new Date(values.birth_date), 'yyyy-MM-dd HH:mm:ss')
 				},
 				{
-					preserveScroll: true
+					preserveScroll: true,
+					preserveState: true
 				}
 			);
 		} catch (error) {
@@ -275,6 +290,19 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 									}}
 								/>
 							</Stack>
+							<RHFSelect name="nationality" label="Country" placeholder="Country">
+								<option value=""></option>
+								{nationalities.map((option) => (
+									<option key={option.id} value={option.id} style={{ textTransform: "capitalize" }}>
+										{_.capitalize(option.name)}
+									</option>
+								))}
+							</RHFSelect>
+
+						</Box>
+
+						<Box sx={{ mb: 3 }}>
+							<RHFTextField name="about" multiline rows={4} label="About" />
 						</Box>
 
 						<Typography variant="h6" sx={{ color: 'text.disabled' }} >
@@ -321,15 +349,6 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 								{departments.map((option) => (
 									<option key={option.department_id} value={option.department_id}>
 										{option.department}
-									</option>
-								))}
-							</RHFSelect>
-
-							<RHFSelect name="nationality" label="Country" placeholder="Country">
-								<option value=""></option>
-								{nationalities.map((option) => (
-									<option key={option.id} value={option.id} style={{ textTransform: "capitalize" }}>
-										{_.capitalize(option.name)}
 									</option>
 								))}
 							</RHFSelect>

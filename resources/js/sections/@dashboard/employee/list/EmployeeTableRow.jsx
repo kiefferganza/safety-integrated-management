@@ -106,7 +106,9 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onDelete
 				<MenuItem
 					onClick={() => {
 						handleClosePopover();
-						Inertia.visit(`/dashboard/employee/${row.id}`);
+						Inertia.visit(`/dashboard/employee/${row.id}`, {
+							only: ['employee']
+						});
 					}}
 				>
 					<Iconify icon="eva:eye-fill" />
