@@ -27,6 +27,7 @@ export default function ProfilePostInput () {
 					borderRadius: 1,
 					border: (theme) => `solid 1px ${alpha(theme.palette.grey[500], 0.32)}`,
 				}}
+				disabled
 			/>
 
 			<Stack direction="row" alignItems="center" justifyContent="space-between">
@@ -42,7 +43,7 @@ export default function ProfilePostInput () {
 					</Fab>
 				</Stack>
 
-				<Button variant="contained">Post</Button>
+				<Button variant="contained" disabled>Post</Button>
 			</Stack>
 
 			<input ref={fileInputRef} type="file" style={{ display: 'none' }} />

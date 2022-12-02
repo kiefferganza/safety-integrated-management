@@ -161,16 +161,23 @@ class EmployeeController extends Controller
 		$user = Auth::user();
 
 		return Inertia::render('Dashboard/Management/Employee/View/index', [
-			"employee" => $employee->load([
+			"employees" => $employee->with([
 				"trainings" => fn ($query) => 
 					$query->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
 					->where("is_deleted", 0),
+				"nationality" => fn ($query) =>
+					$query->select("id", "name as nationality")->where("is_deleted", 0),
 				"position" => fn ($query) => 
 					$query->select("position_id", "position")->where("is_deleted", 0),
+				"company" => fn ($query) => 
+					$query->select("company_id", "company_name")->where("is_deleted", 0),
 				"department" => fn ($query) => 
 					$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
-			]),
-			"trainingTypes" => TrainingType::get()
+			])
+			->where("is_deleted", 0)
+			->get(),
+			"id" => $employee->employee_id,
+			"trainingTypes" => TrainingType::get(),
 		]);
 	}
 

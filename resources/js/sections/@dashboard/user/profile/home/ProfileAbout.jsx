@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import { Link, Card, Typography, CardHeader, Stack } from '@mui/material';
 // components
 import Iconify from '@/Components/iconify';
+import { InertiaLink } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -26,13 +27,19 @@ ProfileAbout.propTypes = {
 	school: PropTypes.string,
 };
 
-export default function ProfileAbout ({ quote, country, email, role, company, school }) {
+export default function ProfileAbout ({ id, quote, country, email, role, company, department }) {
 	return (
 		<Card>
 			<CardHeader title="About" />
 
 			<Stack spacing={2} sx={{ p: 3 }}>
-				<Typography variant="body2">{quote}</Typography>
+				{!!quote ? (
+					<Typography variant="body2">{quote}</Typography>
+				) : (
+					<Link variant="body2" component={InertiaLink} href={`/dashboard/employee/${id}/edit`}>
+						Add information
+					</Link>
+				)}
 
 				<Stack direction="row">
 					<StyledIcon icon="eva:pin-fill" />
@@ -65,9 +72,9 @@ export default function ProfileAbout ({ quote, country, email, role, company, sc
 					<StyledIcon icon="ic:round-business-center" />
 
 					<Typography variant="body2">
-						Studied at &nbsp;
+						{/* Studied at &nbsp; */}
 						<Link component="span" variant="subtitle2" color="text.primary">
-							{school}
+							{department}
 						</Link>
 					</Typography>
 				</Stack>

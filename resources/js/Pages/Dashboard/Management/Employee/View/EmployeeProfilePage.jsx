@@ -24,7 +24,7 @@ import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTraini
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeProfilePage ({ employee }) {
+export default function EmployeeProfilePage ({ employee, employees }) {
 	const { themeStretch } = useSettingsContext();
 
 	const [searchFriends, setSearchFriends] = useState('');
@@ -66,7 +66,7 @@ export default function EmployeeProfilePage ({ employee }) {
 			value: 'gallery',
 			label: 'Gallery',
 			icon: <Iconify icon="ic:round-perm-media" />,
-			component: <ProfileGallery gallery={_userGallery} />,
+			component: <ProfileGallery gallery={_userGallery.slice(0, 3)} />,
 		},
 	];
 
@@ -87,7 +87,7 @@ export default function EmployeeProfilePage ({ employee }) {
 					position: 'relative',
 				}}
 			>
-				<ProfileCover user={employee} name={getCurrentUserName(employee)} role={_.capitalize(employee?.position?.position || "")} cover={_userAbout.cover} />
+				<ProfileCover user={employee} name={getCurrentUserName(employee)} role={_.capitalize(employee?.position?.position || "")} cover="/storage/assets/images/home/cover.jpg" />
 
 				<Tabs
 					value={currentTab}

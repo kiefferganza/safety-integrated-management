@@ -7,6 +7,7 @@ import ProfilePostCard from './ProfilePostCard';
 import ProfilePostInput from './ProfilePostInput';
 import ProfileFollowInfo from './ProfileFollowInfo';
 import ProfileSocialInfo from './ProfileSocialInfo';
+import _ from 'lodash';
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +16,7 @@ EmployeeProfile.propTypes = {
 	posts: PropTypes.array,
 };
 
-export default function EmployeeProfile ({ info, posts }) {
+export default function EmployeeProfile ({ info, posts, employee }) {
 	return (
 		<Grid container spacing={3}>
 			<Grid item xs={12} md={4}>
@@ -23,15 +24,23 @@ export default function EmployeeProfile ({ info, posts }) {
 					<ProfileFollowInfo follower={info.follower} following={info.following} />
 
 					<ProfileAbout
-						quote={info.quote}
-						country={info.country}
-						email={info.email}
-						role={info.role}
-						company={info.company}
-						school={info.school}
+						id={employee.employee_id}
+						quote={employee?.about || ""}
+						country={_.capitalize(employee?.nationality?.nationality)}
+						email={employee.email}
+						role={_.capitalize(employee?.position?.position)}
+						company={_.capitalize(employee?.company?.company_name)}
+						department={_.startCase(employee?.department?.department?.toLowerCase())}
 					/>
 
-					<ProfileSocialInfo socialLinks={info.socialLinks} />
+					<ProfileSocialInfo
+						socialLinks={{
+							facebookLink: `https://www.facebook.com`,
+							instagramLink: `https://www.instagram.com`,
+							linkedinLink: `https://www.linkedin.com`,
+							twitterLink: `https://www.twitter.com`,
+						}}
+					/>
 				</Stack>
 			</Grid>
 
@@ -39,9 +48,7 @@ export default function EmployeeProfile ({ info, posts }) {
 				<Stack spacing={3}>
 					<ProfilePostInput />
 
-					{posts.map((post) => (
-						<ProfilePostCard key={post.id} post={post} />
-					))}
+					<ProfilePostCard post={posts[0]} />
 				</Stack>
 			</Grid>
 		</Grid>

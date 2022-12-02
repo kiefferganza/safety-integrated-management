@@ -59,4 +59,12 @@ class Employee extends Model
 		return $this->hasMany(Training::class, "employee_id");
 	}
 
+	public function nationality() {
+		return $this->hasOne(Nationality::class, "id", "nationality");
+	}
+
+	public function company() {
+		return $this->hasOne(CompanyModel::class, "company_id", "company");
+	}
+
 }
