@@ -1,7 +1,7 @@
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import EmployeeCreateEditPage from "../EmployeeCreateEditPage";
 
-const index = ({ companies, departments, nationalities, positions }) => {
+const index = ({ companies, departments, nationalities, positions, users }) => {
 	return (
 		<DashboardLayout>
 			<EmployeeCreateEditPage
@@ -10,6 +10,7 @@ const index = ({ companies, departments, nationalities, positions }) => {
 				departments={departments}
 				nationalities={nationalities}
 				positions={positions}
+				users={users}
 			/>
 		</DashboardLayout>
 	)

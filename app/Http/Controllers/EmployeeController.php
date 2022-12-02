@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\TrainingType;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,6 +54,7 @@ class EmployeeController extends Controller
 			"departments" => DB::table("tbl_department")->get(),
 			"nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
 			"positions" => Position::get(),
+			"users" => User::select("firstname", "lastname", "email", "position")->where([["deleted", 0], ["firstname", "!=", null]])->get()
 		]);
 	}
 

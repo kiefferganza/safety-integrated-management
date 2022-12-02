@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 // form
@@ -6,18 +6,18 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Grid, Stack, Switch, Typography, FormControlLabel, TextField } from '@mui/material';
+import { Box, Card, Grid, Stack, Switch, Typography, FormControlLabel, TextField, Autocomplete } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
 // utils
 import { fData } from '@/utils/formatNumber';
+import { PATH_DASHBOARD } from '@/routes/paths';
+import { getCurrentUserImage } from '@/utils/formatName';
 // components
 import Label from '@/Components/label';
 import FormProvider, { RHFPhone, RHFRadioGroup, RHFSelect, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
-import { getCurrentUserImage } from '@/utils/formatName';
-import { usePage } from '@inertiajs/inertia-react';
-import { DatePicker } from '@mui/x-date-pickers';
+
 import { Inertia } from '@inertiajs/inertia';
 import { format } from 'date-fns';
-import { PATH_DASHBOARD } from '@/routes/paths';
 import _ from 'lodash';
 
 // ----------------------------------------------------------------------
@@ -29,8 +29,7 @@ EmpoloyeeNewEditForm.propTypes = {
 	positions: PropTypes.array
 };
 
-export default function EmpoloyeeNewEditForm ({ companies, departments, nationalities, positions, currentEmployee, isEdit = false }) {
-	// const { companies, departments, nationalities, positions, currentEmployee } = usePage().props;
+export default function EmpoloyeeNewEditForm ({ companies, departments, nationalities, positions, currentEmployee, users, isEdit = false }) {
 
 	const NewUserSchema = Yup.object().shape({
 		firstname: Yup.string().required('First name is required'),
@@ -73,10 +72,30 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 		control,
 		setValue,
 		handleSubmit,
+		reset,
 		formState: { isSubmitting },
 	} = methods;
 
 	const values = watch();
+
+	const handleAutocompleteName = (_, val) => {
+		if (val) {
+			const user = users.find(user => `${user.firstname} ${user.lastname}`.toLowerCase() === val.toLowerCase());
+			console.log(user);
+			setValue("firstname", user.firstname);
+			setValue("lastname", user.lastname);
+			setValue("email", user.email);
+			setValue("position", user.position || "");
+		} else {
+			reset({ firstname: "", lastname: "", position: "", email: "" });
+		}
+	}
+
+	const handleFirstnameChange = (e, val) => {
+		if (e?.type === "change") {
+			setValue("firstname", val);
+		}
+	}
 
 	const onSubmit = async () => {
 		try {
@@ -203,7 +222,20 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 							}}
 							sx={{ mt: 1, mb: 2 }}
 						>
-							<RHFTextField name="firstname" label="First Name" />
+							{isEdit ? (
+								<RHFTextField name="firstname" label="First Name" />
+							) : (
+								<Autocomplete
+									inputValue={values.firstname}
+									freeSolo
+									options={users.map((user) => (`${user.firstname} ${user.lastname}`))}
+									onInputChange={handleFirstnameChange}
+									onChange={handleAutocompleteName}
+									fullWidth
+									renderInput={(params) => <TextField label="First Name" {...params} />}
+								/>
+							)}
+
 							<RHFTextField name="middlename" label="Middle Name" />
 							<RHFTextField name="lastname" label="Last Name" />
 							<RHFTextField name="email" label="Email Address" />

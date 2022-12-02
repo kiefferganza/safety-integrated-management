@@ -13,7 +13,7 @@ import { getCurrentUserName } from '@/utils/formatName';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeCreateEditPage ({ currentEmployee, companies, departments, nationalities, positions, isEdit = false }) {
+export default function EmployeeCreateEditPage ({ currentEmployee, companies, departments, nationalities, positions, isEdit = false, users }) {
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -46,6 +46,7 @@ export default function EmployeeCreateEditPage ({ currentEmployee, companies, de
 					departments={departments}
 					nationalities={nationalities}
 					positions={positions}
+					users={users}
 					isEdit={isEdit}
 				/>
 			</Container>
