@@ -12,6 +12,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { fData } from '@/utils/formatNumber';
 import { PATH_DASHBOARD } from '@/routes/paths';
 import { getCurrentUserImage } from '@/utils/formatName';
+import { countries } from '@/assets/data';
 // components
 import Label from '@/Components/label';
 import FormProvider, { RHFPhone, RHFRadioGroup, RHFSelect, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
@@ -26,11 +27,10 @@ import { usePage } from '@inertiajs/inertia-react';
 EmpoloyeeNewEditForm.propTypes = {
 	currentEmployee: PropTypes.object,
 	departments: PropTypes.array,
-	nationalities: PropTypes.array,
 	positions: PropTypes.array
 };
 
-export default function EmpoloyeeNewEditForm ({ companies, departments, nationalities, positions, currentEmployee, users, isEdit = false }) {
+export default function EmpoloyeeNewEditForm ({ companies, departments, positions, currentEmployee, users, isEdit = false }) {
 	const { errors: resErrors } = usePage().props;
 
 
@@ -59,7 +59,7 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 		company_type: currentEmployee?.company_type || '',
 		position: currentEmployee?.position || '',
 		department: currentEmployee?.department || '',
-		nationality: currentEmployee?.nationality || '',
+		country: currentEmployee?.country || '',
 		img_src: currentEmployee?.img_src ? getCurrentUserImage(currentEmployee) : '',
 		birth_date: currentEmployee?.birth_date || '',
 		sex: currentEmployee?.sex || 'Male',
@@ -290,11 +290,11 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, national
 									}}
 								/>
 							</Stack>
-							<RHFSelect name="nationality" label="Country" placeholder="Country">
-								<option value=""></option>
-								{nationalities.map((option) => (
-									<option key={option.id} value={option.id} style={{ textTransform: "capitalize" }}>
-										{_.capitalize(option.name)}
+							<RHFSelect name="country" label="Country" placeholder="Country">
+								<option value="" />
+								{countries.map((option) => (
+									<option key={option.code} value={option.label}>
+										{option.label}
 									</option>
 								))}
 							</RHFSelect>

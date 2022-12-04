@@ -41,16 +41,18 @@ export default function ProfileAbout ({ id, quote, country, email, role, company
 					</Link>
 				)}
 
-				<Stack direction="row">
-					<StyledIcon icon="eva:pin-fill" />
+				{country && (
+					<Stack direction="row">
+						<StyledIcon icon="eva:pin-fill" />
 
-					<Typography variant="body2">
-						Live at &nbsp;
-						<Link component="span" variant="subtitle2" color="text.primary">
-							{country}
-						</Link>
-					</Typography>
-				</Stack>
+						<Typography variant="body2">
+							Live at &nbsp;
+							<Link component="span" variant="subtitle2" color="text.primary">
+								{country}
+							</Link>
+						</Typography>
+					</Stack>
+				)}
 
 				<Stack direction="row">
 					<StyledIcon icon="eva:email-fill" />

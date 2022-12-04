@@ -78,7 +78,7 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onDelete
 
 				<TableCell align="left">{row.department}</TableCell>
 
-				<TableCell align="left">{row.nationality}</TableCell>
+				<TableCell align="left">{row.country || "N/A"}</TableCell>
 
 				<TableCell align="left">{row.phone_no}</TableCell>
 

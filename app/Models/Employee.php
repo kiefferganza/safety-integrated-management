@@ -18,34 +18,7 @@ class Employee extends Model
 
 	public $timestamps = false;
 
-	/**
-	 * The attributes that are mass assignable.
-	 *
-	 * @var array<int, string>
-	 */
-	protected $fillable = [
-		'firstname',
-		'middlename',
-		'lastname',
-		'username',
-		'phone_no',
-		'email',
-		'password',
-		'img_src',
-		'company',
-		'company_type',
-		'position',
-		'department',
-		'nationality',
-		'is_active',
-		'is_deleted',
-		'user_id',
-		'sub_id',
-		'sex',
-		'birth_date',
-		'emp_id',
-		'deleted'
-	];
+	protected $guarded = [];
 
 	public function position() {
 		return $this->hasOne(Position::class, "position_id", "position");

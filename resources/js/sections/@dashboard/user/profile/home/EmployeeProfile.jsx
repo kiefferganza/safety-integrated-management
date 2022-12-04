@@ -26,7 +26,7 @@ export default function EmployeeProfile ({ info, posts, employee }) {
 					<ProfileAbout
 						id={employee.employee_id}
 						quote={employee?.about || ""}
-						country={_.capitalize(employee?.nationality?.nationality)}
+						country={_.capitalize(employee?.country)}
 						email={employee.email}
 						role={_.capitalize(employee?.position?.position)}
 						company={_.capitalize(employee?.company?.company_name)}

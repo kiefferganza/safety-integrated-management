@@ -1,4 +1,3 @@
-
 // @mui
 import { Container } from '@mui/material';
 // routes
@@ -13,7 +12,7 @@ import { getCurrentUserName } from '@/utils/formatName';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeCreateEditPage ({ currentEmployee, companies, departments, nationalities, positions, isEdit = false, users }) {
+export default function EmployeeCreateEditPage ({ currentEmployee, companies, departments, positions, isEdit = false, users }) {
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -44,7 +43,6 @@ export default function EmployeeCreateEditPage ({ currentEmployee, companies, de
 					currentEmployee={currentEmployee}
 					companies={companies}
 					departments={departments}
-					nationalities={nationalities}
 					positions={positions}
 					users={users}
 					isEdit={isEdit}

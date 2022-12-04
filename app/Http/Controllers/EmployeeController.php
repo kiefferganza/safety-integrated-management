@@ -52,7 +52,7 @@ class EmployeeController extends Controller
 		return Inertia::render("Dashboard/Management/Employee/Create/index", [
 			"companies" => DB::table("tbl_company")->where([["sub_id", $user->subscriber_id], ["is_deleted", 0]])->get(),
 			"departments" => DB::table("tbl_department")->get(),
-			"nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
+			// "nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
 			"positions" => Position::get(),
 			"users" => User::select("firstname", "lastname", "email", "position")->where([["deleted", 0], ["firstname", "!=", null]])->get()
 		]);
@@ -75,7 +75,8 @@ class EmployeeController extends Controller
 		$employee->company_type = $request->company_type;
 		$employee->position = (int)$request->position;
 		$employee->department = (int)$request->department;
-		$employee->nationality = (int)$request->nationality;
+		// $employee->nationality = (int)$request->nationality;
+		$employee->country = $request->country;
 		$employee->birth_date = $request->birth_date;
 		$employee->is_active = 0;
 		$employee->is_deleted = 0;
@@ -109,7 +110,7 @@ class EmployeeController extends Controller
 			"currentEmployee" => $employee,
 			"companies" => DB::table("tbl_company")->where([["sub_id", $user->subscriber_id], ["is_deleted", 0]])->get(),
 			"departments" => DB::table("tbl_department")->get(),
-			"nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
+			// "nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
 			"positions" => Position::get(),
 		]);
 	}
@@ -126,7 +127,8 @@ class EmployeeController extends Controller
 		$employee->company_type = $request->company_type;
 		$employee->position = (int)$request->position;
 		$employee->department = (int)$request->department;
-		$employee->nationality = (int)$request->nationality;
+		// $employee->nationality = (int)$request->nationality;
+		$employee->country = $request->country;
 		$employee->birth_date = $request->birth_date;
 		$employee->is_active = $request->is_active;
 		$employee->sex = $request->sex;
