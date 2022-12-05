@@ -1,6 +1,5 @@
-
-import { useState } from 'react';
-import _ from 'lodash';
+import { useState, useEffect } from 'react';
+import capitalize from 'lodash/capitalize';
 // @mui
 import { Tab, Card, Tabs, Container, Box } from '@mui/material';
 // routes
@@ -17,19 +16,32 @@ import {
 	ProfileCover,
 	ProfileFriends,
 	ProfileGallery,
-	ProfileFollowers,
 } from '@/sections/@dashboard/user/profile';
 import { getCurrentUserName } from '@/utils/formatName';
 import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTrainings';
+// Redux
+import { useSelector, useDispatch } from 'react-redux';
+import { getEmployees } from '@/redux/slices/employee';
+import EmployeeFollowers from '@/sections/@dashboard/user/profile/EmployeeFollowers';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeProfilePage ({ employee, employees }) {
+export default function EmployeeProfilePage ({ employee }) {
+	const dispatch = useDispatch();
+
 	const { themeStretch } = useSettingsContext();
 
 	const [searchFriends, setSearchFriends] = useState('');
 
 	const [currentTab, setCurrentTab] = useState('profile');
+
+	const { employees } = useSelector((state) => state.employee);
+
+	useEffect(() => {
+		if (employees.length === 0) {
+			dispatch(getEmployees());
+		}
+	}, []);
 
 	const TABS = [
 		{
@@ -48,7 +60,7 @@ export default function EmployeeProfilePage ({ employee, employees }) {
 			value: 'followers',
 			label: 'Followers',
 			icon: <Iconify icon="eva:heart-fill" />,
-			component: <ProfileFollowers followers={_userFollowers} />,
+			component: <EmployeeFollowers employees={employees} />,
 		},
 		{
 			value: 'friends',
@@ -56,7 +68,7 @@ export default function EmployeeProfilePage ({ employee, employees }) {
 			icon: <Iconify icon="eva:people-fill" />,
 			component: (
 				<ProfileFriends
-					friends={_userFriends}
+					friends={[]}
 					searchFriends={searchFriends}
 					onSearchFriends={(event) => setSearchFriends(event.target.value)}
 				/>
@@ -87,7 +99,7 @@ export default function EmployeeProfilePage ({ employee, employees }) {
 					position: 'relative',
 				}}
 			>
-				<ProfileCover user={employee} name={getCurrentUserName(employee)} role={_.capitalize(employee?.position?.position || "")} cover="/storage/assets/images/home/cover.jpg" />
+				<ProfileCover user={employee} name={getCurrentUserName(employee)} role={capitalize(employee?.position?.position || "")} cover="/storage/assets/images/home/cover.jpg" />
 
 				<Tabs
 					value={currentTab}

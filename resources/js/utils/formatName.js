@@ -24,3 +24,11 @@ export const getCurrentUserImage = (user) => {
 	}
 	return null;
 }
+
+
+export const getImageSrc = (img) => {
+	if (img) {
+		return `/storage/media/photos/employee/${img}`;
+	}
+	return null;
+}

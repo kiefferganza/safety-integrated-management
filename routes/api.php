@@ -1,8 +1,10 @@
 <?php
 
+use App\Models\Employee;
 use ExpoSDK\Expo;
 use ExpoSDK\ExpoMessage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,9 +18,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth')->group(function ()
+{
+	Route::get('/employees', function() {
+		$user = Auth::user();
+
+		return [
+			"employees" => Employee::with([
+				"position" => fn ($query) => 
+					$query->select("position_id", "position")->where("is_deleted", 0),
+				"company" => fn ($query) => 
+					$query->select("company_id", "company_name")->where("is_deleted", 0),
+				"department" => fn ($query) => 
+					$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
+			])->where("is_deleted", 0)->get(),
+		];
+	});
 });
+
 
 Route::post("/send/notification", function(Request $request) {
 	$request->validate([

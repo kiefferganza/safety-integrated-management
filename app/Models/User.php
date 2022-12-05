@@ -104,4 +104,8 @@ class User extends Authenticatable
 	{
 		return $this->hasOne(UserAccess::class, "user_id", "emp_id");
 	}
+
+	public function followers() {
+		return $this->hasMany(Follower::class, 'follower_id', 'user_id');
+	}
 }
