@@ -44,7 +44,6 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, position
 		company_type: Yup.string().required('Company type is required'),
 		position: Yup.string().required('Position is required'),
 		department: Yup.string().required('Department is required'),
-		nationality: Yup.string().required('Nationality is required'),
 		birth_date: Yup.string().required('Date of birth is required'),
 		about: Yup.string().max(255, "About must not exceed 255 characters")
 	});
@@ -112,6 +111,7 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, position
 	}
 
 	const onSubmit = async () => {
+		console.log("wew");
 		try {
 			Inertia.post(
 				isEdit ? PATH_DASHBOARD.employee.edit(currentEmployee.employee_id) : route("management.employee.new"),

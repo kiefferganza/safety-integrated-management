@@ -34,7 +34,7 @@ class EmployeeRequest extends FormRequest
 			"company_type" => "string|required",
 			"position" => "required",
 			"department" => "required",
-			"nationality" => "required",
+			"nationality" => "string",
 			"birth_date" => "required",
 			"email" => [
 				"required",
