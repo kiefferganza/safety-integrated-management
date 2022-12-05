@@ -29,11 +29,10 @@ class EmployeeController extends Controller
 		tbl_department.department,
 		tbl_employees.is_deleted,
 		tbl_employees.is_active,
-		tbl_nationalities.`name` as nationality"))
+		tbl_employees.country"))
 		->join("tbl_department", "tbl_employees.department", "tbl_department.department_id")
 		->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 		->join("tbl_nationalities", "tbl_employees.nationality", "tbl_nationalities.id")
-		->join("users", "users.user_id", "tbl_employees.user_id")
 		->where([
 			["tbl_employees.sub_id", $user->subscriber_id],
 			["tbl_employees.is_deleted", 0]

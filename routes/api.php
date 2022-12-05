@@ -37,23 +37,6 @@ Route::middleware('auth')->group(function ()
 	});
 });
 
-Route::get('/update', function() {
-	$users = User::select("emp_id", "email")->where("user_id", "!=", 1)->with("employee")->get();
-	foreach ($users as $user) {
-		if($user->employee) {
-			$emp = $user->employee;
-			$emp->email = $user->email;
-			if($emp->nationality === 76) {
-				$emp->country = "Iraq";
-			}
-			$emp->save();
-		}
-	}
-	return [
-		"users" => $users,
-	];
-});
-
 
 Route::post("/send/notification", function(Request $request) {
 	$request->validate([
