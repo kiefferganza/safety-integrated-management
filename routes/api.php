@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Employee;
+use App\Models\User;
 use ExpoSDK\Expo;
 use ExpoSDK\ExpoMessage;
 use Illuminate\Http\Request;
@@ -34,6 +35,23 @@ Route::middleware('auth')->group(function ()
 			])->where("is_deleted", 0)->get(),
 		];
 	});
+});
+
+Route::get('/update', function() {
+	$users = User::select("emp_id", "email")->where("user_id", "!=", 1)->with("employee")->get();
+	foreach ($users as $user) {
+		if($user->employee) {
+			$emp = $user->employee;
+			$emp->email = $user->email;
+			if($emp->nationality === 76) {
+				$emp->country = "Iraq";
+			}
+			$emp->save();
+		}
+	}
+	return [
+		"users" => $users,
+	];
 });
 
 
