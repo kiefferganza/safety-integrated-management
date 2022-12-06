@@ -148,7 +148,7 @@ export default function EmployeeListPage ({ employees, unassignedUsers, canWrite
 
 	const getUnassignedEmployeeLength = () => tableData.filter((item) => !item.user_id).length;
 
-	const getPercentUnassignedEmployee = () => (getUnassignedEmployeeLength / tableData.length) * 100;
+	const getPercentUnassignedEmployee = () => (getUnassignedEmployeeLength() / tableData.length) * 100;
 
 	const TABS = [
 		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
