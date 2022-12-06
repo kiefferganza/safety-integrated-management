@@ -32,23 +32,33 @@ export default function EmployeeProfilePage ({ employee }) {
 	const { themeStretch } = useSettingsContext();
 
 	const [searchFriends, setSearchFriends] = useState('');
+	const [followers, setFollowers] = useState([]);
 
 	const [currentTab, setCurrentTab] = useState('profile');
 
-	const { employees } = useSelector((state) => state.employee);
+	const { employees, currentUser } = useSelector((state) => state.employee);
 
 	useEffect(() => {
 		if (employees.length === 0) {
 			dispatch(getEmployees());
 		}
-	}, []);
+		if (employees.length > 0 && employee?.followers?.length > 0) {
+			const tmpFollowers = employee.followers.map((follower) => {
+				const emp = employees.find(e => e.user_id === follower.user_id)
+				if (emp) {
+					return emp;
+				}
+			});
+			setFollowers(tmpFollowers);
+		}
+	}, [dispatch]);
 
 	const TABS = [
 		{
 			value: 'profile',
 			label: 'Profile',
 			icon: <Iconify icon="ic:round-account-box" />,
-			component: <EmployeeProfile info={_userAbout} posts={_userFeeds} employee={employee} />,
+			component: <EmployeeProfile posts={_userFeeds} employee={employee} />,
 		},
 		{
 			value: 'trainings',
@@ -56,24 +66,24 @@ export default function EmployeeProfilePage ({ employee }) {
 			icon: <Iconify icon="mingcute:certificate-2-fill" />,
 			component: <EmployeeTrainings trainings={employee.trainings} />,
 		},
-		{
-			value: 'followers',
-			label: 'Followers',
-			icon: <Iconify icon="eva:heart-fill" />,
-			component: <EmployeeFollowers employees={employees} />,
-		},
-		{
-			value: 'friends',
-			label: 'Friends',
-			icon: <Iconify icon="eva:people-fill" />,
-			component: (
-				<ProfileFriends
-					friends={[]}
-					searchFriends={searchFriends}
-					onSearchFriends={(event) => setSearchFriends(event.target.value)}
-				/>
-			),
-		},
+		// {
+		// 	value: 'followers',
+		// 	label: 'Followers',
+		// 	icon: <Iconify icon="eva:heart-fill" />,
+		// 	component: <EmployeeFollowers followers={followers || []} currentUser={currentUser} />,
+		// },
+		// {
+		// 	value: 'friends',
+		// 	label: 'Friends',
+		// 	icon: <Iconify icon="eva:people-fill" />,
+		// 	component: (
+		// 		<ProfileFriends
+		// 			friends={[]}
+		// 			searchFriends={searchFriends}
+		// 			onSearchFriends={(event) => setSearchFriends(event.target.value)}
+		// 		/>
+		// 	),
+		// },
 		{
 			value: 'gallery',
 			label: 'Gallery',

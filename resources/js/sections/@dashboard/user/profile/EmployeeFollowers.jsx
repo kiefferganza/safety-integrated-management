@@ -4,24 +4,25 @@ import { useState } from 'react';
 import { Box, Card, Button, Avatar, Typography, Stack, Pagination, InputAdornment } from '@mui/material';
 // components
 import Iconify from '@/Components/iconify';
-import { getImageSrc } from '@/utils/formatName';
+import { getCurrentUserImage, getImageSrc } from '@/utils/formatName';
 import { CustomTextField } from '@/Components/custom-input';
 
 // ----------------------------------------------------------------------
 
 EmployeeFollowers.propTypes = {
-	employees: PropTypes.array,
+	currentUser: PropTypes.object,
+	followers: PropTypes.array,
 };
 
 const ROWS_PER_PAGE = 15;
 
-export default function EmployeeFollowers ({ employees }) {
+export default function EmployeeFollowers ({ followers, currentUser }) {
 	const [page, setPage] = useState(1);
-	const pages = Math.ceil(employees.length / ROWS_PER_PAGE);
+	const pages = Math.ceil(followers.length / ROWS_PER_PAGE);
 
 	const [filterName, setFilterName] = useState('');
 
-	const dataFiltered = applyFilter({ inputData: employees, filterName });
+	const dataFiltered = applyFilter({ inputData: followers, filterName });
 
 	const handleSearchName = (e) => {
 		setPage(1);
@@ -55,7 +56,13 @@ export default function EmployeeFollowers ({ employees }) {
 				/>
 			</Stack>
 
-			<Stack>
+			<Stack
+				minHeight={{
+					xs: 200,
+					md: 480
+				}}
+				justifyContent="space-between"
+			>
 				<Box
 					gap={3}
 					display="grid"
@@ -66,7 +73,7 @@ export default function EmployeeFollowers ({ employees }) {
 					}}
 				>
 					{dataFiltered.slice((page - 1) * ROWS_PER_PAGE, ((page - 1) * ROWS_PER_PAGE) + ROWS_PER_PAGE).map((employee) => (
-						<FollowerCard key={employee.employee_id} employee={employee} />
+						<FollowerCard key={employee.employee_id} employee={employee} currentUser={currentUser} />
 					))}
 				</Box>
 				<Pagination sx={{ my: 3, alignSelf: 'flex-end' }} count={pages} page={page} onChange={handlePageChange} showLastButton showFirstButton />
@@ -86,10 +93,14 @@ FollowerCard.propTypes = {
 	}),
 };
 
-function FollowerCard ({ employee }) {
-	const { firstname, lastname, img_src, country, position, company } = employee;
+function FollowerCard ({ employee, currentUser }) {
+	const { user_id, firstname, lastname, img_src, country, position, company } = employee;
 
 	const [toggle, setToogle] = useState(false);
+
+	const handleFollow = () => {
+		setToogle(!toggle);
+	}
 
 	return (
 		<Card
@@ -133,16 +144,18 @@ function FollowerCard ({ employee }) {
 				)}
 			</Box>
 
-			<Button
-				size="small"
-				onClick={() => setToogle(!toggle)}
-				variant={toggle ? 'text' : 'outlined'}
-				color={toggle ? 'primary' : 'inherit'}
-				startIcon={toggle && <Iconify icon="eva:checkmark-fill" />}
-				sx={{ flexShrink: 0 }}
-			>
-				{toggle ? 'Followed' : 'Follow'}
-			</Button>
+			{user_id !== currentUser?.user_id && (
+				<Button
+					size="small"
+					onClick={handleFollow}
+					variant={toggle ? 'text' : 'outlined'}
+					color={toggle ? 'primary' : 'inherit'}
+					startIcon={toggle && <Iconify icon="eva:checkmark-fill" />}
+					sx={{ flexShrink: 0 }}
+				>
+					{toggle ? 'Followed' : 'Follow'}
+				</Button>
+			)}
 		</Card>
 	);
 }

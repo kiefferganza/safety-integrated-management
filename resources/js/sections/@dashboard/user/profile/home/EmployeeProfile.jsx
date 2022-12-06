@@ -12,16 +12,15 @@ import _ from 'lodash';
 // ----------------------------------------------------------------------
 
 EmployeeProfile.propTypes = {
-	info: PropTypes.object,
-	posts: PropTypes.array,
+	employee: PropTypes.object
 };
 
-export default function EmployeeProfile ({ info, posts, employee }) {
+export default function EmployeeProfile ({ posts, employee }) {
 	return (
 		<Grid container spacing={3}>
 			<Grid item xs={12} md={4}>
 				<Stack spacing={3}>
-					<ProfileFollowInfo follower={info.follower} following={info.following} />
+					<ProfileFollowInfo follower={employee?.followers?.length || 0} following={employee?.following?.length || 0} />
 
 					<ProfileAbout
 						id={employee.employee_id}

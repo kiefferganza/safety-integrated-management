@@ -12,6 +12,14 @@ export const getFullName = (user) => {
 };
 
 
+export const getEmployeeName = (emp) => {
+	const fname = _.capitalize(emp?.firstname);
+	const mname = _.capitalize(emp?.middlename);
+	const lname = _.capitalize(emp?.lastname);
+	return `${fname}${mname?.trim() !== "." ? " " + mname + " " : " "}${lname}`
+};
+
+
 export const getCurrentUserImage = (user) => {
 	if (user.img_src) {
 		return `/storage/media/photos/employee/${user?.img_src}`;

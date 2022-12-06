@@ -40,4 +40,16 @@ class Employee extends Model
 		return $this->hasOne(CompanyModel::class, "company_id", "company");
 	}
 
+	public function toolboxTalks() {
+		return $this->hasMany(ToolboxTalk::class, "employee_id", "employee_id");
+	}
+
+	public function following() {
+		return $this->hasMany(Follower::class, "user_id", "user_id");
+	}
+
+	public function followers() {
+		return $this->hasMany(Follower::class, "following_id", "user_id");
+	}
+
 }

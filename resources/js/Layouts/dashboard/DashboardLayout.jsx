@@ -13,11 +13,15 @@ import NavVertical from './nav/NavVertical';
 import NavHorizontal from './nav/NavHorizontal';
 import { useSnackbar } from 'notistack';
 import { usePage } from '@inertiajs/inertia-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentUser } from '@/redux/slices/employee';
 
 // ----------------------------------------------------------------------
 
 export default function DashboardLayout ({ children }) {
-	const { flash } = usePage().props;
+	const dispatch = useDispatch();
+	const { currentEmployee } = useSelector(state => state.employee);
+	const { flash, auth } = usePage().props;
 	const { themeLayout } = useSettingsContext();
 
 	const { enqueueSnackbar } = useSnackbar();
@@ -34,6 +38,9 @@ export default function DashboardLayout ({ children }) {
 		if (flash.message) {
 			enqueueSnackbar(flash.message, { variant: flash.type || "default" });
 			flash.message = null;
+		}
+		if (!currentEmployee && auth.user) {
+			dispatch(setCurrentUser(auth.user));
 		}
 	}, [flash]);
 

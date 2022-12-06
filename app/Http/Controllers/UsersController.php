@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Follower;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,4 +43,16 @@ class UsersController extends Controller
 
 		return Inertia::render("Dashboard/Management/User/Cards/index", ["users" => $userslist]);
 	}
+
+
+	public function followUser($user_id) {
+		$user = Auth::user();
+		Follower::firstOrCreate([
+			"user_id" => $user->user_id,
+			"following_id" => $user_id,
+		]);
+		return redirect()->back();
+	}
+
+
 }

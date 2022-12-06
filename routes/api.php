@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UsersController;
 use App\Models\Employee;
 use App\Models\User;
 use ExpoSDK\Expo;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function ()
 {
+
 	Route::get('/employees', function() {
 		$user = Auth::user();
 
@@ -32,9 +34,13 @@ Route::middleware('auth')->group(function ()
 					$query->select("company_id", "company_name")->where("is_deleted", 0),
 				"department" => fn ($query) => 
 					$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
+				"followers"
 			])->where("is_deleted", 0)->get(),
 		];
 	});
+	
+	Route::post('/user/follow/{user_id}', [UsersController::class, "followUser"]);
+
 });
 
 

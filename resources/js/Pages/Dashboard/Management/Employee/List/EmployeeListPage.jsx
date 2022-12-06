@@ -20,8 +20,6 @@ import {
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
 import { fDate } from '@/utils/formatTime';
-// _mock_
-import { _invoices } from '@/_mock/arrays';
 // components
 import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
@@ -44,6 +42,9 @@ import EmployeeAnalytic from '@/sections/@dashboard/employee/EmployeeAnalytic';
 import { EmployeeTableRow, EmployeeTableToolbar } from '@/sections/@dashboard/employee/list';
 import { Head, Link } from '@inertiajs/inertia-react';
 import { getFullName } from '@/utils/formatName';
+import { useSwal } from '@/hooks/useSwal';
+import { Inertia } from '@inertiajs/inertia';
+import EmployeeAssignment from '../EmployeeAssignment';
 
 // ----------------------------------------------------------------------
 
@@ -61,10 +62,11 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeListPage ({ employees, canWrite }) {
+export default function EmployeeListPage ({ employees, unassignedUsers, canWrite }) {
 	const theme = useTheme();
 
 	const { themeStretch } = useSettingsContext();
+	const { load, stop } = useSwal();
 
 
 	const {
@@ -86,11 +88,14 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 		onChangeRowsPerPage,
 	} = useTable();
 
+	const [openAssign, setOpenAssign] = useState(false);
+	const [empAssignData, setEmpAssignData] = useState(null);
+
+	const [openConfirm, setOpenConfirm] = useState(false);
+
 	const [tableData, setTableData] = useState([]);
 
 	const [filterName, setFilterName] = useState('');
-
-	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [filterStatus, setFilterStatus] = useState('all');
 
@@ -124,8 +129,6 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 		setTableData(data || []);
 	}, [employees]);
 
-	const dataInPage = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
 	const denseHeight = dense ? 56 : 76;
 
 	const isFiltered =
@@ -143,10 +146,15 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 
 	const getPercentByStatus = (status) => (getLengthByStatus(status) / tableData.length) * 100;
 
+	const getUnassignedEmployeeLength = () => tableData.filter((item) => !item.user_id).length;
+
+	const getPercentUnassignedEmployee = () => (getUnassignedEmployeeLength / tableData.length) * 100;
+
 	const TABS = [
 		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
 		{ value: 'active', label: 'Active', color: 'success', count: getLengthByStatus('active') },
-		{ value: 'inactive', label: 'Inactive', color: 'warning', count: getLengthByStatus('inactive') }
+		{ value: 'inactive', label: 'Inactive', color: 'warning', count: getLengthByStatus('inactive') },
+		{ value: 'unassigned', label: 'Unassigned', color: 'error', count: getUnassignedEmployeeLength() }
 	];
 
 	const OPTIONS = useMemo(() => ({
@@ -183,32 +191,27 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 	};
 
 	const handleDeleteRow = (id) => {
-		const deleteRow = tableData.filter((row) => row.id !== id);
-		setSelected([]);
-		setTableData(deleteRow);
-
-		if (page > 0) {
-			if (dataInPage.length < 2) {
-				setPage(page - 1);
-			}
-		}
+		Inertia.delete(`/dashboard/employee/${id}/delete`, {
+			onStart: () => {
+				load("Deleting company", "Please wait...");
+			},
+			onFinish: stop,
+			preserveScroll: true
+		});
 	};
 
 	const handleDeleteRows = (selected) => {
-		const deleteRows = tableData.filter((row) => !selected.includes(row.id));
-		setSelected([]);
-		setTableData(deleteRows);
-
-		if (page > 0) {
-			if (selected.length === dataInPage.length) {
-				setPage(page - 1);
-			} else if (selected.length === dataFiltered.length) {
+		Inertia.post(route('management.employee.delete-multiple'), { ids: selected }, {
+			onStart: () => {
+				load(`Deleting ${selected.length} companies`, "Please wait...");
+			},
+			onFinish: () => {
+				setSelected([]);
 				setPage(0);
-			} else if (selected.length > dataInPage.length) {
-				const newPage = Math.ceil((tableData.length - selected.length) / rowsPerPage) - 1;
-				setPage(newPage);
-			}
-		}
+				stop();
+			},
+			preserveScroll: true
+		});
 	};
 
 	const handleResetFilter = () => {
@@ -219,6 +222,16 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 		setFilterEndDate(null);
 		setFilterStartDate(null);
 	};
+
+	const handleOpenAssignment = (emp) => {
+		setEmpAssignData(emp);
+		setOpenAssign(true);
+	}
+
+	const handleCloseAssignment = () => {
+		setEmpAssignData(null);
+		setOpenAssign(false);
+	}
 
 	return (
 		<>
@@ -286,6 +299,13 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 								icon="mdi:account-clock"
 								color={theme.palette.warning.main}
 							/>
+							<EmployeeAnalytic
+								title="Unassigned"
+								total={getUnassignedEmployeeLength()}
+								percent={getPercentUnassignedEmployee()}
+								icon="mdi:account-cancel"
+								color={theme.palette.error.main}
+							/>
 						</Stack>
 					</Scrollbar>
 				</Card>
@@ -346,18 +366,6 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 							}
 							action={
 								<Stack direction="row">
-									<Tooltip title="Sent">
-										<IconButton color="primary">
-											<Iconify icon="ic:round-send" />
-										</IconButton>
-									</Tooltip>
-
-									<Tooltip title="Download">
-										<IconButton color="primary">
-											<Iconify icon="eva:download-outline" />
-										</IconButton>
-									</Tooltip>
-
 									<Tooltip title="Print">
 										<IconButton color="primary">
 											<Iconify icon="eva:printer-fill" />
@@ -398,6 +406,7 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 											selected={selected.includes(row.id)}
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
+											onAssign={handleOpenAssignment}
 											canWrite={canWrite}
 										/>
 									))}
@@ -422,6 +431,13 @@ export default function EmployeeListPage ({ employees, canWrite }) {
 					/>
 				</Card>
 			</Container>
+
+			<EmployeeAssignment
+				open={openAssign}
+				onClose={handleCloseAssignment}
+				employee={empAssignData}
+				unassignedUsers={unassignedUsers}
+			/>
 
 			<ConfirmDialog
 				open={openConfirm}
@@ -476,7 +492,11 @@ function applyFilter ({
 	}
 
 	if (filterStatus !== 'all') {
-		inputData = inputData.filter((employee) => employee.status === filterStatus);
+		if (filterStatus === 'unassigned') {
+			inputData = inputData.filter((employee) => !employee.user_id);
+		} else {
+			inputData = inputData.filter((employee) => employee.status === filterStatus);
+		}
 	}
 
 	if (filterDepartment !== 'all') {

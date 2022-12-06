@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { Link } from '@inertiajs/inertia-react';
+import { Inertia } from '@inertiajs/inertia';
+import { Link, usePage, } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from '@/routes/paths';
 // @mui
 import {
@@ -23,7 +24,8 @@ import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
-import { Inertia } from '@inertiajs/inertia';
+// import { useSelector, useDispatch } from 'react-redux';
+// import { followUser } from '@/redux/slices/employee';
 
 // ----------------------------------------------------------------------
 
@@ -34,9 +36,13 @@ EmployeeTableRow.propTypes = {
 	onSelectRow: PropTypes.func,
 };
 
-export default function EmployeeTableRow ({ row, selected, onSelectRow, onDeleteRow, canWrite }) {
+export default function EmployeeTableRow ({ row, selected, onSelectRow, onDeleteRow, onAssign, canWrite }) {
+	// const dispatch = useDispatch();
+	// const { isLoading } = useSelector(state => state.employee);
+	// const { auth: { user } } = usePage().props;
 	const [openConfirm, setOpenConfirm] = useState(false);
 
+	const [loading, setLoading] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
 
 	const handleOpenConfirm = () => {
@@ -54,6 +60,19 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onDelete
 	const handleClosePopover = () => {
 		setOpenPopover(null);
 	};
+
+	// const handleFollowEmployee = () => {
+	// 	setLoading(true);
+	// 	handleClosePopover();
+	// 	Inertia.post(`/dashboard/user/${row.user_id}/follow`, {}, {
+	// 		preserveScroll: true,
+	// 		preserveState: true,
+	// 		onFinish () {
+	// 			setLoading(false);
+	// 		}
+	// 	});
+	// 	// dispatch(followUser(row.user_id));
+	// }
 
 	return (
 		<>
@@ -107,18 +126,42 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onDelete
 					onClick={() => {
 						handleClosePopover();
 						Inertia.visit(`/dashboard/employee/${row.id}`, {
-							only: ['employee']
+							only: ['employee'],
+							preserveScroll: true
 						});
 					}}
 				>
 					<Iconify icon="eva:eye-fill" />
 					View
 				</MenuItem>
+				{/* {row.user_id != user.user_id && (
+					<MenuItem
+						onClick={handleFollowEmployee}
+						disabled={(row.user_id == 0) || loading}
+					>
+						<Iconify icon="eva:heart-fill" />
+						<Iconify icon="eva:checkmark-fill" />
+						Follow
+					</MenuItem>
+				)} */}
+				{!row.user_id && (
+					<MenuItem
+						onClick={() => {
+							handleClosePopover();
+							onAssign(row);
+						}}
+					>
+						<Iconify icon="mdi:account-arrow-right" />
+						Assign User
+					</MenuItem>
+				)}
 				{canWrite && (
 					<>
 						<MenuItem
 							component={Link}
 							href={PATH_DASHBOARD.employee.edit(row.employee_id)}
+							preserveScroll
+							onClick={handleClosePopover}
 						>
 							<Iconify icon="eva:edit-fill" />
 							Edit

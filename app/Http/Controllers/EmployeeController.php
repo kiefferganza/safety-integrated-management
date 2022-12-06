@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmployeeRequest;
+use Illuminate\Http\Request;
 use App\Models\Employee;
+use App\Models\Follower;
 use App\Models\Position;
 use App\Models\TrainingType;
 use App\Models\User;
@@ -17,7 +19,9 @@ class EmployeeController extends Controller
 {
   public function index() {
 		$user = Auth::user();
-		$employees = Employee::select(DB::raw("tbl_employees.employee_id,
+		$employees = Employee::select(DB::raw("
+		tbl_employees.user_id,
+		tbl_employees.employee_id,
 		tbl_employees.firstname,
 		tbl_employees.middlename,
 		tbl_employees.lastname,
@@ -37,10 +41,12 @@ class EmployeeController extends Controller
 			["tbl_employees.sub_id", $user->subscriber_id],
 			["tbl_employees.is_deleted", 0]
 		])
+		->with("followers")
 		->get();
 
 		return Inertia::render("Dashboard/Management/Employee/List/index", [
 			"employees" => $employees,
+			"unassignedUsers" => User::select("username", "user_id")->where("emp_id", null)->get()
 		]);
 	}
 
@@ -53,7 +59,13 @@ class EmployeeController extends Controller
 			"departments" => DB::table("tbl_department")->get(),
 			// "nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
 			"positions" => Position::get(),
-			"users" => User::select("firstname", "lastname", "email", "position")->where([["deleted", 0], ["firstname", "!=", null]])->get()
+			"users" => User::select("firstname", "lastname", "email", "position")
+				->where([
+					["deleted", 0],
+					["firstname", "!=", null],
+					["emp_id", null]
+				])
+				->get()
 		]);
 	}
 
@@ -140,7 +152,7 @@ class EmployeeController extends Controller
 			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
 			$request->file("img_src")->storeAs('media/photos/employee', $file_name, 'public');
 
-			if($employee->img_src !== "photo-camera-neon-icon-vector-35706296" || $employee->img_src !== "Picture21" || $employee->img_src !== "Crystal_personal.svg") {
+			if($employee->img_src && $employee->img_src !== "photo-camera-neon-icon-vector-35706296" || $employee->img_src !== "Picture21" || $employee->img_src !== "Crystal_personal.svg") {
 				if(Storage::exists("public/media/docs/" . $employee->img_src)) {
 					Storage::delete("public/media/docs/" . $employee->img_src);
 				}
@@ -172,9 +184,75 @@ class EmployeeController extends Controller
 					$query->select("position_id", "position")->where("is_deleted", 0),
 				"department" => fn ($query) => 
 					$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
+				"followers" => fn ($query) => 
+					$query->select("user_id","following_id"),
+				"following" => fn ($query) => 
+					$query->select("user_id","following_id"),
 			]),
 			"trainingTypes" => TrainingType::get()
 		]);
+	}
+
+
+	public function destroy(Employee $employee) {
+		User::where("emp_id", $employee->employee_id)->update(["emp_id" => null]);
+
+		// if($employee->user_id) {
+		// 	Follower::where("user_id", $employee->user_id)->orWhere("following_id", $employee->user_id)->delete();
+		// }
+
+		if($employee->img_src !== "photo-camera-neon-icon-vector-35706296" || $employee->img_src !== "Picture21" || $employee->img_src !== "Crystal_personal.svg") {
+			if(Storage::exists("public/media/docs/" . $employee->img_src)) {
+				Storage::delete("public/media/docs/" . $employee->img_src);
+			}
+		}
+
+		$employee->delete();
+
+		return redirect()->back()
+		->with("message", "Employee deleted successfully!")
+		->with("type", "success");
+	}
+
+	public function delete_multiple(Request $request) {
+		$fields = $request->validate([
+			"ids" => "required|array"
+		]);
+
+		foreach ($fields['ids'] as $id) {
+			$employee = Employee::find($id);
+			User::where("emp_id", $employee->employee_id)->update(["emp_id" => null]);
+
+			// if($employee->user_id) {
+			// 	Follower::where("user_id", $employee->user_id)->orWhere("following_id", $employee->user_id)->delete();
+			// }
+			if($employee->img_src && $employee->img_src !== "photo-camera-neon-icon-vector-35706296" || $employee->img_src !== "Picture21" || $employee->img_src !== "Crystal_personal.svg") {
+				if(Storage::exists("public/media/docs/" . $employee->img_src)) {
+					Storage::delete("public/media/docs/" . $employee->img_src);
+				}
+			}
+
+			$employee->delete();
+		}
+
+		return redirect()->back()
+		->with("message", count($fields['ids'])." employee deleted successfully")
+		->with("type", "success");
+	}
+
+	public function assign_user(Request $request, Employee $employee) {
+		$user = User::find($request->user_id);
+
+		if($user) {
+			$user->emp_id = $employee->employee_id;
+			$employee->user_id = $user->user_id;
+			// $employee->firstname = $user->firstname;
+			$employee->save();
+			$user->save();
+		}
+		return redirect()->back()
+		->with("message", "Success")
+		->with("type", "success");
 	}
 
 }
