@@ -6,7 +6,7 @@ import './locales/i18n';
 import 'simplebar/src/simplebar.css';
 
 // lightbox
-import 'react-image-lightbox/style.css';
+import 'react-18-image-lightbox/style.css';
 
 // map
 import './utils/mapboxgl';
