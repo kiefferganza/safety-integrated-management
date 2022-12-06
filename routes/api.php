@@ -8,6 +8,7 @@ use ExpoSDK\ExpoMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,32 @@ Route::middleware('auth')->group(function ()
 	
 	Route::post('/user/follow/{user_id}', [UsersController::class, "followUser"]);
 
+});
+
+Route::get("/update", function() {
+	$users = User::where("emp_id", "!=", null)->get();
+	foreach ($users as $user) {
+		if($user->employee) {
+			$emp = $user->employee;
+			if(!$emp->user_id) {
+				$emp->user_id = $user->user_id;
+				$emp->save();
+			}
+		}
+	}
+});
+
+Route::get("delete/user", function() {
+	$users = User::where("deleted", 1)->get();
+	foreach ($users as $user) {
+		if($user->profile_pic) {
+			if(Storage::exists("public/media/docs/" . $user->profile_pic)) {
+				Storage::delete("public/media/docs/" . $user->profile_pic);
+			}
+		}
+		$user->delete();
+	}
+	dd($users);
 });
 
 
