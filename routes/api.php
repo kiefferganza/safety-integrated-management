@@ -43,6 +43,15 @@ Route::middleware('auth')->group(function ()
 
 });
 
+Route::get("/update", function() {
+	$emp = Employee::where("is_deleted", 1)->get();
+	foreach ($emp as $e) {
+		$e->toolboxTalks()->delete();
+		$e->delete();
+	}
+	dd($emp);
+});
+
 
 Route::post("/send/notification", function(Request $request) {
 	$request->validate([
