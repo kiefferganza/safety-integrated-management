@@ -34,7 +34,7 @@ export default function ProfileAbout ({ editLink, quote, country, email, role, c
 
 			<Stack spacing={2} sx={{ p: 3 }}>
 				{!!quote ? (
-					<Typography variant="body2">{quote}</Typography>
+					<Typography variant="body2" sx={{ wordBreak: "break-word" }}>{quote}</Typography>
 				) : (
 					editLink && (
 						<Link variant="body2" component={InertiaLink} href={editLink}>
