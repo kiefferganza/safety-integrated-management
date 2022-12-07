@@ -18,12 +18,12 @@ Route::middleware('auth')->group(function ()
 	 */
 	Route::get('/dashboard/user/list', [UsersController::class, 'index'])->name('management.user.list');
 	Route::post('/dashboard/user/{user_id}/follow', [UsersController::class, 'followUser']);
-	// Edit
+	Route::get('/dashboard/user/profile', [UsersController::class, 'profile'])->name('management.user.profile');
+	Route::get('/dashboard/user/settings', fn () => Inertia::render("Dashboard/Management/User/Account/index"))->name('management.user.settings');
+	Route::get('/dashboard/user/profile/{user}', [UsersController::class, "show"])->name('management.user.show');
+	// CRUD
 	Route::get('/dashboard/user/{user}/edit', [UsersController::class, 'edit_user'])->name('management.user.edit');
-	Route::get('/dashboard/user/profile', fn () => Inertia::render("Dashboard/Management/User/index"))->name('management.user.profile');
 	Route::get('/dashboard/user/cards', [UsersController::class, 'cards'])->name('management.user.cards');
-	Route::get('/dashboard/user/account', fn () => Inertia::render("Dashboard/Management/User/Account/index"))->name('management.user.account');
-	// Create
 	Route::get('/dashboard/user/new', fn () => Inertia::render("Dashboard/Management/User/Create/index"))->name('management.user.new');
 
 
@@ -33,12 +33,12 @@ Route::middleware('auth')->group(function ()
 	 */
 	Route::get('/dashboard/employee/list', [EmployeeController::class, "index"])->name('management.employee.list');
 	Route::post('/dashboard/employee/{employee}/assign', [EmployeeController::class, "assign_user"]);
+	Route::get('/dashboard/employee/{employee}', [EmployeeController::class, "show"])->name('management.employee.show');
 	// CRUD
 	Route::get('/dashboard/employee/new', [EmployeeController::class, "create"])->name('management.employee.create');
 	Route::post('/dashboard/employee/new', [EmployeeController::class, "store"])->name('management.employee.new');
 	Route::get('/dashboard/employee/{employee}/edit', [EmployeeController::class, "update"])->name('management.employee.update');
 	Route::post('/dashboard/employee/{employee}/edit', [EmployeeController::class, "edit"])->name('management.employee.edit');
-	Route::get('/dashboard/employee/{employee}', [EmployeeController::class, "show"])->name('management.employee.show');
 	Route::delete('dashboard/employee/{employee}/delete', [EmployeeController ::class, 'destroy']);
 	Route::post('dashboard/delete/delete-multiple', [EmployeeController ::class, 'delete_multiple'])->name('management.employee.delete-multiple');
 

@@ -27,7 +27,7 @@ ProfileAbout.propTypes = {
 	school: PropTypes.string,
 };
 
-export default function ProfileAbout ({ id, quote, country, email, role, company, department }) {
+export default function ProfileAbout ({ editLink, quote, country, email, role, company, department }) {
 	return (
 		<Card>
 			<CardHeader title="About" />
@@ -36,9 +36,11 @@ export default function ProfileAbout ({ id, quote, country, email, role, company
 				{!!quote ? (
 					<Typography variant="body2">{quote}</Typography>
 				) : (
-					<Link variant="body2" component={InertiaLink} href={`/dashboard/employee/${id}/edit`}>
-						Add information
-					</Link>
+					editLink && (
+						<Link variant="body2" component={InertiaLink} href={editLink}>
+							Add information
+						</Link>
+					)
 				)}
 
 				{country && (
@@ -60,7 +62,7 @@ export default function ProfileAbout ({ id, quote, country, email, role, company
 				</Stack>
 
 				<Stack direction="row">
-					<StyledIcon icon="ic:round-business-center" />
+					<StyledIcon icon="mdi:account-multiple" />
 
 					<Typography variant="body2">
 						{role} at &nbsp;
@@ -71,7 +73,7 @@ export default function ProfileAbout ({ id, quote, country, email, role, company
 				</Stack>
 
 				<Stack direction="row">
-					<StyledIcon icon="ic:round-business-center" />
+					<StyledIcon icon="mdi:bank" />
 
 					<Typography variant="body2">
 						{/* Studied at &nbsp; */}

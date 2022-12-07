@@ -59,12 +59,12 @@ export const PATH_DASHBOARD = {
 		view: (name) => path(ROOTS_DASHBOARD, `/chat/${name}`),
 	},
 	user: {
-		root: path(ROOTS_DASHBOARD, '/user/account'),
+		root: path(ROOTS_DASHBOARD, '/user/profile'),
 		new: path(ROOTS_DASHBOARD, '/user/new'),
 		list: path(ROOTS_DASHBOARD, '/user/list'),
 		cards: path(ROOTS_DASHBOARD, '/user/cards'),
 		profile: path(ROOTS_DASHBOARD, '/user/profile'),
-		account: path(ROOTS_DASHBOARD, '/user/account'),
+		account: path(ROOTS_DASHBOARD, '/user/settings'),
 		edit: (id) => path(ROOTS_DASHBOARD, `/user/${id}/edit`),
 	},
 	employee: {

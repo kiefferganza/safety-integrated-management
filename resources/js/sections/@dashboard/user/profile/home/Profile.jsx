@@ -1,4 +1,6 @@
 import PropTypes from 'prop-types';
+import capitalize from 'lodash/capitalize';
+import startCase from 'lodash/startCase';
 // @mui
 import { Grid, Stack } from '@mui/material';
 //
@@ -15,20 +17,20 @@ Profile.propTypes = {
 	posts: PropTypes.array,
 };
 
-export default function Profile ({ info, posts }) {
+export default function Profile ({ info, posts, user, employee }) {
 	return (
 		<Grid container spacing={3}>
 			<Grid item xs={12} md={4}>
 				<Stack spacing={3}>
-					<ProfileFollowInfo follower={info.follower} following={info.following} />
+					<ProfileFollowInfo />
 
 					<ProfileAbout
-						quote={info.quote}
-						country={info.country}
-						email={info.email}
-						role={info.role}
-						company={info.company}
-						school={info.school}
+						quote={user?.about}
+						country={capitalize(employee?.country)}
+						email={user.email}
+						role={capitalize(employee?.position?.position)}
+						company={capitalize(employee?.company?.company_name)}
+						department={startCase(employee?.department?.department?.toLowerCase())}
 					/>
 
 					<ProfileSocialInfo socialLinks={info.socialLinks} />
@@ -39,9 +41,7 @@ export default function Profile ({ info, posts }) {
 				<Stack spacing={3}>
 					<ProfilePostInput />
 
-					{posts.map((post) => (
-						<ProfilePostCard key={post.id} post={post} />
-					))}
+					<ProfilePostCard post={posts[0]} />
 				</Stack>
 			</Grid>
 		</Grid>

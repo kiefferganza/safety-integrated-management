@@ -69,13 +69,6 @@ class User extends Authenticatable
 		->orderBy("tbl_employees.firstname");
 	}
 
-	public function scopeCurrentUser($query, $user) {
-		return $query
-			->leftJoin("tbl_position", "tbl_position.position_id", "users.position")
-			->where("emp_id", $user->emp_id)
-			->first();
-	}
-
 	public function employee()
 	{
 		return $this->hasOne(Employee::class, "employee_id", "emp_id");

@@ -20,7 +20,7 @@ import {
 
 // ----------------------------------------------------------------------
 
-export default function UserAccountPage () {
+export default function UserAccountPage ({ user }) {
 	const { themeStretch } = useSettingsContext();
 
 	const [currentTab, setCurrentTab] = useState('general');
@@ -30,7 +30,7 @@ export default function UserAccountPage () {
 			value: 'general',
 			label: 'General',
 			icon: <Iconify icon="ic:round-account-box" />,
-			component: <AccountGeneral />,
+			component: <AccountGeneral user={user} />,
 		},
 		{
 			value: 'billing',

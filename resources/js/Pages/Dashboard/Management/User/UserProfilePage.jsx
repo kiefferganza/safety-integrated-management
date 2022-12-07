@@ -19,10 +19,11 @@ import {
 	ProfileFollowers,
 } from '@/sections/@dashboard/user/profile';
 import { getCurrentUserName } from '@/utils/formatName';
+import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTrainings';
 
 // ----------------------------------------------------------------------
 
-export default function UserProfilePage ({ user }) {
+export default function UserProfilePage ({ user, employee }) {
 	const { themeStretch } = useSettingsContext();
 
 	const [searchFriends, setSearchFriends] = useState('');
@@ -34,13 +35,19 @@ export default function UserProfilePage ({ user }) {
 			value: 'profile',
 			label: 'Profile',
 			icon: <Iconify icon="ic:round-account-box" />,
-			component: <Profile info={_userAbout} posts={_userFeeds} user={user} />,
+			component: <Profile info={_userAbout} posts={_userFeeds} user={user} employee={employee} />,
 		},
 		{
 			value: 'followers',
 			label: 'Followers',
 			icon: <Iconify icon="eva:heart-fill" />,
 			component: <ProfileFollowers followers={_userFollowers} />,
+		},
+		{
+			value: 'trainings',
+			label: 'Trainings',
+			icon: <Iconify icon="mingcute:certificate-2-fill" />,
+			component: <EmployeeTrainings trainings={employee.trainings} />,
 		},
 		{
 			value: 'friends',
@@ -79,7 +86,7 @@ export default function UserProfilePage ({ user }) {
 					position: 'relative',
 				}}
 			>
-				<ProfileCover user={user} name={getCurrentUserName(user)} role={user?.position} cover={_userAbout.cover} />
+				<ProfileCover user={user} name={getCurrentUserName(user)} role={user?.employee?.position} cover={_userAbout.cover} />
 
 				<Tabs
 					value={currentTab}

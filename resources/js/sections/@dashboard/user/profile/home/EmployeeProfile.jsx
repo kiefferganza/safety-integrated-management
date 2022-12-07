@@ -23,13 +23,13 @@ export default function EmployeeProfile ({ posts, employee }) {
 					<ProfileFollowInfo follower={employee?.followers?.length || 0} following={employee?.following?.length || 0} />
 
 					<ProfileAbout
-						id={employee.employee_id}
 						quote={employee?.about || ""}
 						country={_.capitalize(employee?.country)}
 						email={employee.email}
 						role={_.capitalize(employee?.position?.position)}
 						company={_.capitalize(employee?.company?.company_name)}
 						department={_.startCase(employee?.department?.department?.toLowerCase())}
+						editLink={`/dashboard/employee/${employee.employee_id}/edit`}
 					/>
 
 					<ProfileSocialInfo

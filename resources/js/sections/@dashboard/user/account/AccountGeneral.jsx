@@ -8,37 +8,32 @@ import { Box, Grid, Card, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // utils
 import { fData } from '@/utils/formatNumber';
-// assets
-import { countries } from '../../../../assets/data';
 // components
 import { useSnackbar } from '@/Components/snackbar';
-import FormProvider, { RHFSwitch, RHFSelect, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
-import { usePage } from '@inertiajs/inertia-react';
-import { getCurrentUserImage, getCurrentUserName } from '@/utils/formatName';
+import FormProvider, { RHFTextField, RHFUploadAvatar, RHFPhone } from '@/Components/hook-form';
+import Label from '@/Components/label';
 
 // ----------------------------------------------------------------------
 
-export default function AccountGeneral () {
+export default function AccountGeneral ({ user }) {
 	const { enqueueSnackbar } = useSnackbar();
 
-	const { auth: { user } } = usePage().props;
-
 	const UpdateUserSchema = Yup.object().shape({
-		displayName: Yup.string().required('Name is required'),
+		firstname: Yup.string().required('First name is required'),
+		lastname: Yup.string().required('Last name is required'),
+		email: Yup.string().required('Email is required').email(),
+		phone_no: Yup.string().required('Phone number is required'),
+		about: Yup.string().max(255, "About must not exceed 255 characters")
 	});
 
 	const defaultValues = {
-		displayName: getCurrentUserName(user),
+		firstname: user?.firstname || user?.employee?.firstname || '',
+		lastname: user?.lastname || user?.employee?.lastname || '',
 		email: user?.email || '',
-		photoURL: getCurrentUserImage(user) ? getCurrentUserImage(user) : '',
-		phoneNumber: user?.phone_no || '',
-		country: user?.country || '',
-		address: user?.address || '',
-		state: user?.state || '',
-		city: user?.city || '',
-		zipCode: user?.zipCode || '',
+		profile_pic: user?.profile_pic ? `/storage/media/photos/employee/${user?.profile_pic}` : null,
+		username: user?.username || '',
 		about: user?.about || '',
-		isPublic: user?.isPublic || false,
+		// isPublic: user?.isPublic || false,
 	};
 
 	const methods = useForm({
@@ -70,7 +65,7 @@ export default function AccountGeneral () {
 			});
 
 			if (file) {
-				setValue('photoURL', newFile);
+				setValue('profile_pic', newFile);
 			}
 		},
 		[setValue]
@@ -81,28 +76,37 @@ export default function AccountGeneral () {
 			<Grid container spacing={3}>
 				<Grid item xs={12} md={4}>
 					<Card sx={{ py: 10, px: 3, textAlign: 'center' }}>
-						<RHFUploadAvatar
-							name="photoURL"
-							maxSize={3145728}
-							onDrop={handleDrop}
-							helperText={
-								<Typography
-									variant="caption"
-									sx={{
-										mt: 2,
-										mx: 'auto',
-										display: 'block',
-										textAlign: 'center',
-										color: 'text.secondary',
-									}}
-								>
-									Allowed *.jpeg, *.jpg, *.png, *.gif
-									<br /> max size of {fData(3145728)}
-								</Typography>
-							}
-						/>
+						<Label
+							color={user?.user_type === 1 ? 'info' : 'success'}
+							sx={{ textTransform: 'uppercase', position: 'absolute', top: 24, right: 24 }}
+						>
+							{user?.user_type === 1 ? "User" : "Admin"}
+						</Label>
+						<Box sx={{ mb: 5 }}>
 
-						<RHFSwitch name="isPublic" labelPlacement="start" label="Public Profile" sx={{ mt: 5 }} />
+							<RHFUploadAvatar
+								name="profile_pic"
+								maxSize={3145728}
+								onDrop={handleDrop}
+								helperText={
+									<Typography
+										variant="caption"
+										sx={{
+											mt: 2,
+											mx: 'auto',
+											display: 'block',
+											textAlign: 'center',
+											color: 'text.secondary',
+										}}
+									>
+										Allowed *.jpeg, *.jpg, *.png, *.gif
+										<br /> max size of {fData(3145728)}
+									</Typography>
+								}
+							/>
+						</Box>
+
+						{/* <RHFSwitch name="isPublic" labelPlacement="start" label="Public Profile" sx={{ mt: 5 }} /> */}
 					</Card>
 				</Grid>
 
@@ -117,28 +121,14 @@ export default function AccountGeneral () {
 								sm: 'repeat(2, 1fr)',
 							}}
 						>
-							<RHFTextField name="displayName" label="Name" />
+							<RHFTextField name="firstname" label="First name" />
+
+							<RHFTextField name="lastname" label="Last name" />
 
 							<RHFTextField name="email" label="Email Address" />
 
-							<RHFTextField name="phoneNumber" label="Phone Number" />
+							<RHFPhone name="username" label="Username" />
 
-							<RHFTextField name="address" label="Address" />
-
-							<RHFSelect name="country" label="Country" placeholder="Country">
-								<option value="" />
-								{countries.map((option) => (
-									<option key={option.code} value={option.label}>
-										{option.label}
-									</option>
-								))}
-							</RHFSelect>
-
-							<RHFTextField name="state" label="State/Region" />
-
-							<RHFTextField name="city" label="City" />
-
-							<RHFTextField name="zipCode" label="Zip/Code" />
 						</Box>
 
 						<Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>

@@ -2,14 +2,15 @@ import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
 import UserAccountPage from "./UserAccountPage";
 
-const index = () => {
+const index = ({ auth }) => {
+
 	return (
 		<>
 			<Head>
-				<title>User: Account</title>
+				<title>Setting</title>
 			</Head>
 			<DashboardLayout>
-				<UserAccountPage />
+				<UserAccountPage user={auth?.user || {}} />
 			</DashboardLayout>
 		</>
 	)

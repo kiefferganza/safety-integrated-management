@@ -23,7 +23,7 @@ const OPTIONS = [
 	},
 	{
 		label: 'Settings',
-		linkTo: "/dashboard/user/account"
+		linkTo: "/dashboard/user/settings"
 	},
 ];
 
