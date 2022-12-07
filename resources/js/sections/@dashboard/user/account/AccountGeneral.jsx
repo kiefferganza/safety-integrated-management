@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -9,20 +9,21 @@ import { LoadingButton } from '@mui/lab';
 // utils
 import { fData } from '@/utils/formatNumber';
 // components
-import { useSnackbar } from '@/Components/snackbar';
 import FormProvider, { RHFTextField, RHFUploadAvatar, RHFPhone } from '@/Components/hook-form';
 import Label from '@/Components/label';
+import { Inertia } from '@inertiajs/inertia';
+import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
 export default function AccountGeneral ({ user }) {
-	const { enqueueSnackbar } = useSnackbar();
-
+	const { errors: resErrors } = usePage().props;
+	const [loading, setLoading] = useState(false);
 	const UpdateUserSchema = Yup.object().shape({
-		firstname: Yup.string().required('First name is required'),
-		lastname: Yup.string().required('Last name is required'),
-		email: Yup.string().required('Email is required').email(),
-		phone_no: Yup.string().required('Phone number is required'),
+		firstname: Yup.string().required('First name must not be empty'),
+		lastname: Yup.string().required('Last name must not be empty'),
+		email: Yup.string().required('Email must not be empty').email(),
+		username: Yup.string().required('Username must not be empty'),
 		about: Yup.string().max(255, "About must not exceed 255 characters")
 	});
 
@@ -41,16 +42,32 @@ export default function AccountGeneral ({ user }) {
 		defaultValues,
 	});
 
-	const {
+	let {
 		setValue,
 		handleSubmit,
-		formState: { isSubmitting },
+		setError,
+		formState: { isDirty },
 	} = methods;
 
-	const onSubmit = async () => {
+	useEffect(() => {
+		if (Object.keys(resErrors).length !== 0) {
+			for (const key in resErrors) {
+				setError(key, { type: "custom", message: resErrors[key] });
+			}
+		}
+	}, [resErrors]);
+
+	const onSubmit = async (data) => {
 		try {
-			await new Promise((resolve) => setTimeout(resolve, 500));
-			enqueueSnackbar('Update success!');
+			Inertia.put(`/dashboard/user/${user.user_id}/update`, data, {
+				preserveScroll: true,
+				onStart () {
+					setLoading(true);
+				},
+				onFinish () {
+					setLoading(false);
+				}
+			});
 		} catch (error) {
 			console.error(error);
 		}
@@ -65,7 +82,7 @@ export default function AccountGeneral ({ user }) {
 			});
 
 			if (file) {
-				setValue('profile_pic', newFile);
+				setValue('profile_pic', newFile, { shouldDirty: true });
 			}
 		},
 		[setValue]
@@ -134,7 +151,7 @@ export default function AccountGeneral ({ user }) {
 						<Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
 							<RHFTextField name="about" multiline rows={4} label="About" />
 
-							<LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+							<LoadingButton type="submit" variant="contained" disabled={!isDirty} loading={loading}>
 								Save Changes
 							</LoadingButton>
 						</Stack>

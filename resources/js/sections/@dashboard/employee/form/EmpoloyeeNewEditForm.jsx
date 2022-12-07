@@ -111,7 +111,6 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, position
 	}
 
 	const onSubmit = async () => {
-		console.log("wew");
 		try {
 			Inertia.post(
 				isEdit ? PATH_DASHBOARD.employee.edit(currentEmployee.employee_id) : route("management.employee.new"),

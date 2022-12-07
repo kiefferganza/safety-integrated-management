@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function ()
 	Route::get('/dashboard/user/profile/{user}', [UsersController::class, "show"])->name('management.user.show');
 	// CRUD
 	Route::get('/dashboard/user/{user}/edit', [UsersController::class, 'edit_user'])->name('management.user.edit');
+	Route::put('/dashboard/user/{user}/update', [UsersController::class, 'update'])->name('management.user.update');
 	Route::get('/dashboard/user/cards', [UsersController::class, 'cards'])->name('management.user.cards');
 	Route::get('/dashboard/user/new', fn () => Inertia::render("Dashboard/Management/User/Create/index"))->name('management.user.new');
 

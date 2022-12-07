@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class EmployeeRequest extends FormRequest
+class UserRequest extends FormRequest
 {
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -24,22 +24,21 @@ class EmployeeRequest extends FormRequest
 	 */
 	public function rules()
 	{
+		$user_rule = Rule::unique('users')->where("deleted", 0);
+
 		return [
 			"firstname" => "string|required",
 			"lastname" => "string|required",
-			"sex" => "string|required",
-			"phone_no" => "required",
-			"company" => "required",
-			"company_type" => "string|required",
-			"position" => "required",
-			"department" => "required",
-			"nationality" => "string",
-			"birth_date" => "required",
+			"username" => [
+				"required",
+				"string",
+				$user_rule->ignore($this->user)
+			],
 			"email" => [
 				"required",
-				"email",
-				Rule::unique('tbl_employees')->where("is_deleted", 0)->ignore($this->employee)
-			]
+				"string",
+				$user_rule->ignore($this->user)
+			],
 		];
 	}
 }

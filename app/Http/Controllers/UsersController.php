@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Models\Employee;
 use App\Models\Follower;
 use App\Models\TrainingType;
@@ -9,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class UsersController extends Controller
@@ -50,6 +52,34 @@ class UsersController extends Controller
 		return Inertia::render('Dashboard/Management/User/Account/index', [
 			"user" => $user->load("employee"),
 		]);
+	}
+
+	public function update(UserRequest $request, User $user) {
+		$user->firstname = $request->firstname;
+		$user->lastname = $request->lastname;
+		$user->username = $request->username;
+		$user->email = $request->email;
+		$user->about = $request->about;
+
+		if($request->hasFile("profile_pic")) {
+			$file = $request->file("profile_pic")->getClientOriginalName();
+			$extension = pathinfo($file, PATHINFO_EXTENSION);
+			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
+			$request->file("profile_pic")->storeAs('media/photos/employee', $file_name, 'public');
+
+			if($user->profile_pic && $user->profile_pic !== "photo-camera-neon-icon-vector-35706296" || $user->profile_pic !== "Picture21" || $user->profile_pic !== "Crystal_personal.svg") {
+				if(Storage::exists("public/media/docs/" . $user->profile_pic)) {
+					Storage::delete("public/media/docs/" . $user->profile_pic);
+				}
+			}
+			$user->profile_pic = $file_name;
+		}
+
+		$user->save();
+		
+		return redirect()->back()
+		->with("message", "Profile updated successfully!")
+		->with("type", "success");
 	}
 
 	public function edit_user(User $user) {

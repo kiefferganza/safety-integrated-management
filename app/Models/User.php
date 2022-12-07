@@ -36,7 +36,8 @@ class User extends Authenticatable
 		'password',
 		'profile_pic',
 		'emp_id',
-		'deleted'
+		'deleted',
+		'about'
 	];
 
 	/**
