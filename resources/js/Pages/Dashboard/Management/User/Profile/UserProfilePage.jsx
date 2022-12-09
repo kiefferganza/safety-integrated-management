@@ -23,7 +23,7 @@ import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTraini
 
 // ----------------------------------------------------------------------
 
-export default function UserProfilePage ({ user, employee }) {
+export default function UserProfilePage ({ user }) {
 	const { themeStretch } = useSettingsContext();
 
 	const [searchFriends, setSearchFriends] = useState('');
@@ -35,13 +35,13 @@ export default function UserProfilePage ({ user, employee }) {
 			value: 'profile',
 			label: 'Profile',
 			icon: <Iconify icon="ic:round-account-box" />,
-			component: <Profile info={_userAbout} posts={_userFeeds} user={user} employee={employee} />,
+			component: <Profile info={_userAbout} posts={_userFeeds} user={user} employee={user.employee} />,
 		},
 		{
 			value: 'trainings',
 			label: 'Trainings',
 			icon: <Iconify icon="mingcute:certificate-2-fill" />,
-			component: <EmployeeTrainings trainings={employee.trainings} />,
+			component: <EmployeeTrainings trainings={user.employee.trainings} />,
 		},
 		// {
 		// 	value: 'followers',
@@ -86,7 +86,7 @@ export default function UserProfilePage ({ user, employee }) {
 					position: 'relative',
 				}}
 			>
-				<ProfileCover user={user} name={getCurrentUserName(user)} role={user?.employee?.position} cover={_userAbout.cover} />
+				<ProfileCover user={user} name={getCurrentUserName(user)} role={user?.employee?.position?.position} cover={_userAbout.cover} />
 
 				<Tabs
 					value={currentTab}

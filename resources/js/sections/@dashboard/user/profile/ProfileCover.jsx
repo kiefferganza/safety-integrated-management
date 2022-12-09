@@ -14,9 +14,11 @@ import { getCurrentUserImage } from '@/utils/formatName';
 
 const StyledRoot = styled('div')(({ theme }) => ({
 	'&:before': {
-		...bgBlur({
-			color: theme.palette.primary.darker,
-		}),
+		// ...bgBlur({
+		// 	color: theme.palette.primary.darker,
+		// }),
+		backdropFilter: "blur(3px)",
+		backgroundColor: "rgba(0, 82, 73, 0.5)",
 		top: 0,
 		zIndex: 9,
 		content: "''",

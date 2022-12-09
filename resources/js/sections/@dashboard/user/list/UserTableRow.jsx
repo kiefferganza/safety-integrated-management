@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 // @mui
-import { Stack, Avatar, Button, Checkbox, TableRow, MenuItem, TableCell, IconButton, Typography } from '@mui/material';
+import { Stack, Avatar, Button, Checkbox, TableRow, MenuItem, TableCell, IconButton, Typography, Divider } from '@mui/material';
 // components
 import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
@@ -10,6 +10,7 @@ import ConfirmDialog from '@/Components/confirm-dialog';
 import { fDate } from '@/utils/formatTime';
 import { Link } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from '@/routes/paths';
+import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
@@ -92,6 +93,25 @@ export default function UserTableRow ({ row, selected, onSelectRow, onDeleteRow 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 140 }}>
 				<MenuItem
 					onClick={() => {
+						handleClosePopover();
+						Inertia.visit(`/dashboard/user/profile/${row.user_id}`, {
+							preserveScroll: true
+						});
+					}}
+				>
+					<Iconify icon="eva:eye-fill" />
+					View
+				</MenuItem>
+
+				<MenuItem component={Link} href={PATH_DASHBOARD.user.edit(row.user_id)}>
+					<Iconify icon="eva:edit-fill" />
+					Edit
+				</MenuItem>
+
+				<Divider sx={{ borderStyle: 'dashed' }} />
+
+				<MenuItem
+					onClick={() => {
 						handleOpenConfirm();
 						handleClosePopover();
 					}}
@@ -99,11 +119,6 @@ export default function UserTableRow ({ row, selected, onSelectRow, onDeleteRow 
 				>
 					<Iconify icon="eva:trash-2-outline" />
 					Delete
-				</MenuItem>
-
-				<MenuItem component={Link} href={PATH_DASHBOARD.user.edit(row.user_id)}>
-					<Iconify icon="eva:edit-fill" />
-					Edit
 				</MenuItem>
 			</MenuPopover>
 

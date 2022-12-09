@@ -8,6 +8,7 @@ import ProfilePostInput from './ProfilePostInput';
 import ProfileFollowInfo from './ProfileFollowInfo';
 import ProfileSocialInfo from './ProfileSocialInfo';
 import _ from 'lodash';
+import { isAfter } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
@@ -15,12 +16,25 @@ EmployeeProfile.propTypes = {
 	employee: PropTypes.object
 };
 
+const TODAY = new Date();
+
 export default function EmployeeProfile ({ posts, employee }) {
+
+	const trainingSummary = employee?.trainings?.reduce((acc, curr) => {
+		if (isAfter(TODAY, new Date(curr.date_expired))) {
+			acc.expired++;
+		} else {
+			acc.valid++;
+		}
+		return acc;
+	}, { valid: 0, expired: 0 });
+
 	return (
 		<Grid container spacing={3}>
 			<Grid item xs={12} md={4}>
 				<Stack spacing={3}>
-					<ProfileFollowInfo follower={employee?.followers?.length || 0} following={employee?.following?.length || 0} />
+					{/* <ProfileFollowInfo follower={employee?.followers?.length || 0} following={employee?.following?.length || 0} /> */}
+					<ProfileFollowInfo titleFollower="Valid Training" titleFollowing="Expired Training" follower={trainingSummary.valid} following={trainingSummary.expired} />
 
 					<ProfileAbout
 						quote={employee?.about || ""}

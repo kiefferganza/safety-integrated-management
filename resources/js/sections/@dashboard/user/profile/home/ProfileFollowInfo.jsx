@@ -6,23 +6,23 @@ import { fNumber } from '@/utils/formatNumber';
 
 // ----------------------------------------------------------------------
 
-export default function ProfileFollowInfo () {
+export default function ProfileFollowInfo ({ titleFollower, titleFollowing, follower, following }) {
 	return (
 		<Card sx={{ py: 3 }}>
 			<Stack direction="row" divider={<Divider orientation="vertical" flexItem />}>
 				<Stack width={1} textAlign="center">
-					<Typography variant="h4">{fNumber(0)}</Typography>
+					<Typography variant="h4">{fNumber(follower || 0)}</Typography>
 
 					<Typography variant="body2" sx={{ color: 'text.secondary' }}>
-						Follower
+						{titleFollower || "Follower"}
 					</Typography>
 				</Stack>
 
 				<Stack width={1} textAlign="center">
-					<Typography variant="h4">{fNumber(0)}</Typography>
+					<Typography variant="h4">{fNumber(following || 0)}</Typography>
 
 					<Typography variant="body2" sx={{ color: 'text.secondary' }}>
-						Following
+						{titleFollowing || "Following"}
 					</Typography>
 				</Stack>
 			</Stack>
