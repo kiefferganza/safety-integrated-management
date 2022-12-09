@@ -4,7 +4,7 @@ import EmployeeListPage from "./EmployeeListPage";
 import { useDispatch } from "react-redux";
 import { setEmployees } from "@/redux/slices/employee";
 
-const index = ({ employees, unassignedUsers, can_write_employee }) => {
+const index = ({ employees, unassignedUsers }) => {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -13,7 +13,7 @@ const index = ({ employees, unassignedUsers, can_write_employee }) => {
 
 	return (
 		<DashboardLayout>
-			<EmployeeListPage employees={employees} unassignedUsers={unassignedUsers} canWrite={can_write_employee} />
+			<EmployeeListPage employees={employees} unassignedUsers={unassignedUsers} canWrite={true} />
 		</DashboardLayout>
 	)
 }

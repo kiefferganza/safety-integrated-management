@@ -16,17 +16,24 @@ Route::middleware('auth')->group(function ()
 	/**
 	 * Management - User
 	 */
-	Route::get('/dashboard/user/list', [UsersController::class, 'index'])->name('management.user.list');
 	Route::post('/dashboard/user/{user_id}/follow', [UsersController::class, 'followUser']);
 	Route::get('/dashboard/user/profile', [UsersController::class, 'profile'])->name('management.user.profile');
 	Route::get('/dashboard/user/settings', fn () => Inertia::render("Dashboard/Management/User/Account/index"))->name('management.user.settings');
 	Route::get('/dashboard/user/profile/{user}', [UsersController::class, "show"])->name('management.user.show');
 	// CRUD
-	Route::get('/dashboard/user/{user}/edit', [UsersController::class, 'edit_user'])->name('management.user.edit');
-	Route::post('/dashboard/user/{user}/update', [UsersController::class, 'update'])->name('management.user.update');
-	Route::get('/dashboard/user/cards', [UsersController::class, 'cards'])->name('management.user.cards');
-	Route::get('/dashboard/user/new', [UsersController::class, 'create'])->name('management.user.new');
-	Route::post('/dashboard/user/new', [UsersController::class, 'store'])->name('management.user.store');
+	Route::middleware("can:update,App\Models\User")->group(function() {
+		Route::get('/dashboard/user/{user}/edit', [UsersController::class, 'edit_user']);
+		Route::post('/dashboard/user/{user}/update', [UsersController::class, 'update']);
+	});
+	Route::middleware("can:view,App\Models\User")->group(function() {
+		Route::get('/dashboard/user/cards', [UsersController::class, 'cards'])->name('management.user.cards');
+		Route::get('/dashboard/user/list', [UsersController::class, 'index'])->name('management.user.list');
+	});
+	Route::middleware("can:create,App\Models\User")->group(function() {
+		Route::get('/dashboard/user/new', [UsersController::class, 'create'])->name('management.user.new');
+		Route::post('/dashboard/user/new', [UsersController::class, 'store'])->name('management.user.store');
+	});
+	
 
 
 	/**

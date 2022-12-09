@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 // @mui
 import { Collapse } from '@mui/material';
 // hooks
 import useActiveLink from '@/hooks/useActiveLink';
 //
 import NavItem from './NavItem';
+import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -16,7 +17,7 @@ NavList.propTypes = {
 };
 
 export default function NavList ({ data, depth, hasChild }) {
-
+	const { can } = usePage().props;
 	const { active, isExternalLink } = useActiveLink(data.path, true, hasChild, data?.childList);
 
 	const [open, setOpen] = useState(active);
@@ -24,6 +25,10 @@ export default function NavList ({ data, depth, hasChild }) {
 	const handleToggle = () => {
 		setOpen(!open);
 	};
+
+	if (data.gate && !can[data.gate]) {
+		return null;
+	}
 
 	return (
 		<>
@@ -53,6 +58,11 @@ NavSubList.propTypes = {
 };
 
 function NavSubList ({ data, depth }) {
+	const { can } = usePage().props;
+	if (data.gate && !can[data.gate]) {
+		return null;
+	}
+
 	return (
 		<>
 			{data.map((list) => (

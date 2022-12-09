@@ -37,13 +37,6 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request)
     {
 			$user = Auth::user();
-			$can_write_employee = null;
-
-			if($user) {
-				$access = UserAccess::select("status")->where("user_id", $user->emp_id);
-
-				$can_write_employee = $access->where("access_type_id", 1)->first();
-			}
 
 			return array_merge(parent::share($request), [
 				'auth' => [
@@ -55,7 +48,10 @@ class HandleInertiaRequests extends Middleware
 					}])
 					: null,
 				],
-				"can_write_employee" => fn() => $can_write_employee ? ($can_write_employee->count() > 0 ? !($can_write_employee->status === 1) : false) : null,
+				"can" => [
+					"create_user" => Auth::check() ? Auth::user()->can('create', User::class) : false,
+					"view_any_user" => Auth::check() ? Auth::user()->can('viewAny', User::class) : false,
+				],
 				'ziggy' => function () use ($request) {
 					return array_merge((new Ziggy)->toArray(), [
 							'location' => $request->url(),

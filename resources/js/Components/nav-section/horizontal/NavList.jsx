@@ -5,6 +5,7 @@ import useActiveLink from '@/hooks/useActiveLink';
 //
 import { StyledPopover } from './styles';
 import NavItem from './NavItem';
+import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -15,18 +16,12 @@ NavList.propTypes = {
 };
 
 export default function NavList ({ data, depth, hasChild }) {
+	const { can } = usePage().props;
 	const navRef = useRef(null);
 
 	const { active, isExternalLink } = useActiveLink(data.path);
 
 	const [open, setOpen] = useState(false);
-
-	// useEffect(() => {
-	//   if (open) {
-	//     handleClose();
-	//   }
-	//   // eslint-disable-next-line react-hooks/exhaustive-deps
-	// }, [pathname]);
 
 	useEffect(() => {
 		if (open) {
@@ -43,6 +38,10 @@ export default function NavList ({ data, depth, hasChild }) {
 	const handleClose = () => {
 		setOpen(false);
 	};
+
+	if (data.gate && !can[data.gate]) {
+		return null;
+	}
 
 	return (
 		<>

@@ -63,6 +63,7 @@ const navConfig = [
 				title: 'user',
 				path: PATH_DASHBOARD.user.root,
 				icon: ICONS.user,
+				gate: "view_any_user",
 				children: [
 					{ title: 'profile', path: PATH_DASHBOARD.user.profile },
 					{ title: 'cards', path: PATH_DASHBOARD.user.cards },
