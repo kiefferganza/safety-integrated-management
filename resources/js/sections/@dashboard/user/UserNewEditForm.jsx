@@ -25,7 +25,6 @@ UserNewEditForm.propTypes = {
 };
 
 export default function UserNewEditForm ({ isEdit = false, currentUser, user, employees }) {
-	console.log({ isEdit, currentUser, user, employees });
 	const { errors: resErrors } = usePage().props;
 	const [loading, setLoading] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
@@ -323,31 +322,48 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user, em
 
 							<RHFTextField name="lastname" label="Last name" />
 
-							<RHFTextField
-								name="password"
-								label={isEdit ? "Update Password" : "Password"}
-								type={showPassword ? 'text' : 'password'}
-								InputProps={{
-									endAdornment: (
-										<InputAdornment position="end">
-											<IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-												<Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-											</IconButton>
-										</InputAdornment>
-									),
-								}}
-								helperText={
-									<Stack component="span" direction="row" alignItems="center">
-										{errors?.password?.message ? (
-											errors?.password?.message
-										) : (
-											<>
-												<Iconify icon="eva:info-fill" width={16} sx={{ mr: 0.5 }} /> Leave blank if you don't want to change the password.
-											</>
-										)}
-									</Stack>
-								}
-							/>
+							{isEdit ? (
+								<RHFTextField
+									name="password"
+									label={isEdit ? "Update Password" : "Password"}
+									type={showPassword ? 'text' : 'password'}
+									InputProps={{
+										endAdornment: (
+											<InputAdornment position="end">
+												<IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+													<Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+												</IconButton>
+											</InputAdornment>
+										),
+									}}
+									helperText={
+										<Stack component="span" direction="row" alignItems="center">
+											{errors?.password?.message ? (
+												errors?.password?.message
+											) : (
+												<>
+													<Iconify icon="eva:info-fill" width={16} sx={{ mr: 0.5 }} /> Leave blank if you don't want to change the password.
+												</>
+											)}
+										</Stack>
+									}
+								/>
+							) : (
+								<RHFTextField
+									name="password"
+									label={isEdit ? "Update Password" : "Password"}
+									type={showPassword ? 'text' : 'password'}
+									InputProps={{
+										endAdornment: (
+											<InputAdornment position="end">
+												<IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+													<Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+												</IconButton>
+											</InputAdornment>
+										),
+									}}
+								/>
+							)}
 							<RHFTextField
 								label="Confirm Password"
 								name="password_confirmation"
