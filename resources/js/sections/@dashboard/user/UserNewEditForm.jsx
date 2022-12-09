@@ -1,23 +1,21 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 // form
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Grid, Stack, Switch, Typography, FormControlLabel } from '@mui/material';
+import { Box, Card, Grid, Stack, Switch, Typography, FormControlLabel, TextField, Autocomplete, InputAdornment, IconButton } from '@mui/material';
 // utils
 import { fData } from '@/utils/formatNumber';
-// routes
-// import { PATH_DASHBOARD } from '@/routes/paths';
-// assets
-import { countries } from '../../../assets/data';
 // components
 import Label from '@/Components/label';
-import { useSnackbar } from '@/Components/snackbar';
-import FormProvider, { RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
+import FormProvider, { RHFPhone, RHFRadioGroup, RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
 import { getCurrentUserImage, getCurrentUserName } from '@/utils/formatName';
+import Iconify from '@/Components/iconify';
+import { usePage } from '@inertiajs/inertia-react';
+import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
@@ -26,46 +24,56 @@ UserNewEditForm.propTypes = {
 	currentUser: PropTypes.object,
 };
 
-export default function UserNewEditForm ({ isEdit = false, currentUser, user }) {
-	// const navigate = useNavigate();
-
-	const { enqueueSnackbar } = useSnackbar();
+export default function UserNewEditForm ({ isEdit = false, currentUser, user, employees }) {
+	console.log({ isEdit, currentUser, user, employees });
+	const { errors: resErrors } = usePage().props;
+	const [loading, setLoading] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 
 	const NewUserSchema = Yup.object().shape({
-		name: Yup.string().required('Name is required'),
-		email: Yup.string().required('Email is required').email(),
-		phoneNumber: Yup.string().required('Phone number is required'),
-		address: Yup.string().required('Address is required'),
-		country: Yup.string().required('country is required'),
-		company: Yup.string().required('Company is required'),
-		state: Yup.string().required('State is required'),
-		city: Yup.string().required('City is required'),
-		role: Yup.string().required('Role Number is required'),
-		avatarUrl: Yup.mixed().test('required', 'Avatar is required', (value) => value !== ''),
+		firstname: Yup.string().required('Please select an employee'),
+		emp_id: Yup.string().required('Please select an employee'),
+		lastname: Yup.string().required('Please select an employee'),
+		email: Yup.string().email("Must be a valid email address").required('Please select an employee'),
+		username: Yup.string().required('Username must not be empty'),
+		password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is must not be empty'),
+		password_confirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+		about: Yup.string().max(255, "About must not exceed 255 characters"),
+		user_type: Yup.number().required()
+	});
+
+	const UpdateUserSchema = Yup.object().shape({
+		firstname: Yup.string().required('Please select an employee'),
+		emp_id: Yup.string().required('Please select an employee'),
+		lastname: Yup.string().required('Please select an employee'),
+		email: Yup.string().email("Must be a valid email address").required('Please select an employee'),
+		username: Yup.string().required('Username must not be empty'),
+		about: Yup.string().max(255, "About must not exceed 255 characters"),
+		password: Yup.string().matches(/^(|.{6,})$/, 'Password must be at least 6 characters'),
+		password_confirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+		user_type: Yup.number().required()
 	});
 
 	const defaultValues = useMemo(
 		() => ({
-			name: user ? getCurrentUserName(user) : '',
 			email: user?.email || '',
-			phoneNumber: currentUser?.phoneNumber || '',
-			address: currentUser?.address || '',
-			country: currentUser?.country || '',
-			state: currentUser?.state || '',
-			city: currentUser?.city || '',
-			zipCode: currentUser?.zipCode || '',
-			avatarUrl: user ? getCurrentUserImage(user) || '' : '',
-			isVerified: currentUser?.isVerified || true,
-			status: user.status || '',
-			company: currentUser?.company || '',
-			role: currentUser?.role || '',
+			emp_id: user?.emp_id || '',
+			firstname: user?.firstname || user?.employee?.firstname || '',
+			lastname: user?.lastname || user?.employee?.lastname || '',
+			password: '',
+			password_confirmation: '',
+			profile_pic: user?.profile_pic ? `/storage/media/photos/employee/${user?.profile_pic}` : null,
+			username: user?.username || '',
+			user_type: user?.user_type === 0 ? 0 : 1,
+			about: user?.about || '',
+			status: user?.status === 0 ? 0 : 1
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[currentUser]
 	);
 
 	const methods = useForm({
-		resolver: yupResolver(NewUserSchema),
+		resolver: yupResolver(isEdit ? UpdateUserSchema : NewUserSchema),
 		defaultValues,
 	});
 
@@ -75,7 +83,8 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user }) 
 		control,
 		setValue,
 		handleSubmit,
-		formState: { isSubmitting },
+		setError,
+		formState: { isDirty, errors },
 	} = methods;
 
 	const values = watch();
@@ -90,16 +99,38 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user }) 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isEdit, currentUser]);
 
-	const onSubmit = async () => {
-		try {
-			await new Promise((resolve) => setTimeout(resolve, 500));
-			reset();
-			enqueueSnackbar(!isEdit ? 'Create success!' : 'Update success!');
-			// navigate(PATH_DASHBOARD.user.list);
-		} catch (error) {
-			console.error(error);
+
+	useEffect(() => {
+		if (Object.keys(resErrors).length !== 0) {
+			for (const key in resErrors) {
+				setError(key, { type: "custom", message: resErrors[key] });
+			}
 		}
-	};
+	}, [resErrors]);
+
+	const handleAutocompleteName = (_, val) => {
+		if (val) {
+			const random4digits = Math.floor(500 + Math.random() * 9000);
+			const emp = employees.find(emp => emp.employee_id === val?.employee_id);
+			setValue("firstname", emp?.firstname, { shouldDirty: true, shouldValidate: true });
+			setValue("lastname", emp?.lastname, { shouldDirty: true, shouldValidate: true });
+			setValue("email", emp?.email, { shouldDirty: true, shouldValidate: true });
+			setValue("about", emp?.about || "", { shouldDirty: true, shouldValidate: true });
+			setValue("emp_id", val?.employee_id, { shouldDirty: true, shouldValidate: true });
+			setValue("username", emp.firstname.toLowerCase() + random4digits, { shouldDirty: true, shouldValidate: true })
+			if (val?.img_src) {
+				setValue("profile_pic", `/storage/media/photos/employee/${val.img_src}`);
+			}
+		} else {
+			reset({ firstname: "", lastname: "", about: "", email: "" });
+		}
+	}
+
+	// const generateRandomPassword = () => {
+	// 	const randomstring = Math.random().toString(36).slice(-8);
+	// 	setValue("password", randomstring, { shouldDirty: true, shouldValidate: true });
+	// 	setValue("password_confirmation", randomstring, { shouldDirty: true, shouldValidate: true });
+	// }
 
 	const handleDrop = useCallback(
 		(acceptedFiles) => {
@@ -110,11 +141,29 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user }) 
 			});
 
 			if (file) {
-				setValue('avatarUrl', newFile);
+				setValue('profile_pic', newFile, { shouldDirty: true });
 			}
 		},
 		[setValue]
 	);
+
+
+	const onSubmit = async (data) => {
+		try {
+			Inertia.post(isEdit ? `/dashboard/user/${user.user_id}/update` : route('management.user.store'), data, {
+				onStart () {
+					setLoading(true);
+				},
+				onFinish () {
+					setLoading(false);
+				},
+				preserveScroll: true,
+				preserveState: true
+			});
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
 	return (
 		<FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -123,16 +172,16 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user }) 
 					<Card sx={{ pt: 10, pb: 5, px: 3 }}>
 						{isEdit && (
 							<Label
-								color={values.status === 1 ? 'warning' : 'success'}
+								color={values.user_type === 1 ? 'warning' : 'success'}
 								sx={{ textTransform: 'uppercase', position: 'absolute', top: 24, right: 24 }}
 							>
-								{values.status === 1 ? "User" : "Admin"}
+								{values.user_type === 1 ? "User" : "Admin"}
 							</Label>
 						)}
 
 						<Box sx={{ mb: 5 }}>
 							<RHFUploadAvatar
-								name="avatarUrl"
+								name="profile_pic"
 								maxSize={3145728}
 								onDrop={handleDrop}
 								helperText={
@@ -163,8 +212,8 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user }) 
 										render={({ field }) => (
 											<Switch
 												{...field}
-												checked={field.value !== 'active'}
-												onChange={(event) => field.onChange(event.target.checked ? 'banned' : 'active')}
+												checked={field.value == 1}
+												onChange={(event) => field.onChange(event.target.checked ? 1 : 0)}
 											/>
 										)}
 									/>
@@ -172,10 +221,10 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user }) 
 								label={
 									<>
 										<Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-											Banned
+											Activate
 										</Typography>
 										<Typography variant="body2" sx={{ color: 'text.secondary' }}>
-											Apply disable account
+											Apply activation on account
 										</Typography>
 									</>
 								}
@@ -183,7 +232,7 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user }) 
 							/>
 						)}
 
-						<RHFSwitch
+						{/* <RHFSwitch
 							name="isVerified"
 							labelPlacement="start"
 							label={
@@ -197,12 +246,13 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user }) 
 								</>
 							}
 							sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
-						/>
+						/> */}
 					</Card>
 				</Grid>
 
 				<Grid item xs={12} md={8}>
 					<Card sx={{ p: 3 }}>
+
 						<Box
 							rowGap={3}
 							columnGap={2}
@@ -212,29 +262,110 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user }) 
 								sm: 'repeat(2, 1fr)',
 							}}
 						>
-							<RHFTextField name="name" label="Full Name" />
+							{isEdit ? (
+								<TextField
+									label="Employee"
+									defaultValue={user?.employee?.firstname + " " + user?.employee?.lastname}
+									InputProps={{
+										readOnly: true
+									}}
+								/>
+							) : (
+								<Autocomplete
+									clearOnEscape
+									noOptionsText="Employee not found"
+									options={employees}
+									onChange={handleAutocompleteName}
+									fullWidth
+									getOptionLabel={(option) => (`${option?.firstname} ${option?.lastname}`)}
+									renderOption={(props, option) => {
+										return (
+											<li {...props} key={option.employee_id}>
+												{`${option?.firstname} ${option?.lastname}`}
+											</li>
+										);
+									}}
+									renderInput={(params) =>
+										<TextField
+											label="Select Employee"
+											{...params}
+											error={!!errors?.employee_id?.message}
+											helperText={errors?.employee_id?.message}
+										/>
+									}
+								/>
+							)}
+
+							<RHFTextField
+								name="username"
+								label="Username"
+							/>
+
+							<Stack>
+								<Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+									Account Type
+								</Typography>
+								<RHFRadioGroup
+									name="user_type"
+									options={[
+										{ label: "User", value: 1 },
+										{ label: "Admin", value: 0 },
+									]}
+									sx={{
+										'& .MuiFormControlLabel-root': { mr: 4 },
+									}}
+								/>
+							</Stack>
+
 							<RHFTextField name="email" label="Email Address" />
-							<RHFTextField name="phoneNumber" label="Phone Number" />
 
-							<RHFSelect name="country" label="Country" placeholder="Country">
-								<option value="" />
-								{countries.map((option) => (
-									<option key={option.code} value={option.label}>
-										{option.label}
-									</option>
-								))}
-							</RHFSelect>
+							<RHFTextField name="firstname" label="First name" />
 
-							<RHFTextField name="state" label="State/Region" />
-							<RHFTextField name="city" label="City" />
-							<RHFTextField name="address" label="Address" />
-							<RHFTextField name="zipCode" label="Zip/Code" />
-							<RHFTextField name="company" label="Company" />
-							<RHFTextField name="role" label="Role" />
+							<RHFTextField name="lastname" label="Last name" />
+
+							<RHFTextField
+								name="password"
+								label={isEdit ? "Update Password" : "Password"}
+								type={showPassword ? 'text' : 'password'}
+								InputProps={{
+									endAdornment: (
+										<InputAdornment position="end">
+											<IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+												<Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+											</IconButton>
+										</InputAdornment>
+									),
+								}}
+								helperText={
+									<Stack component="span" direction="row" alignItems="center">
+										{errors?.password?.message ? (
+											errors?.password?.message
+										) : (
+											<>
+												<Iconify icon="eva:info-fill" width={16} sx={{ mr: 0.5 }} /> Leave blank if you don't want to change the password.
+											</>
+										)}
+									</Stack>
+								}
+							/>
+							<RHFTextField
+								label="Confirm Password"
+								name="password_confirmation"
+								type={showPassword ? 'text' : 'password'}
+								InputProps={{
+									endAdornment: (
+										<InputAdornment position="end">
+											<IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+												<Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+											</IconButton>
+										</InputAdornment>
+									),
+								}}
+							/>
 						</Box>
 
 						<Stack alignItems="flex-end" sx={{ mt: 3 }}>
-							<LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+							<LoadingButton type="submit" variant="contained" disabled={!isDirty} loading={loading}>
 								{!isEdit ? 'Create User' : 'Save Changes'}
 							</LoadingButton>
 						</Stack>

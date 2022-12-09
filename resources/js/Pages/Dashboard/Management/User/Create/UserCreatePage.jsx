@@ -11,7 +11,7 @@ import UserNewEditForm from '@/sections/@dashboard/user/UserNewEditForm';
 
 // ----------------------------------------------------------------------
 
-export default function UserCreatePage () {
+export default function UserCreatePage ({ employees }) {
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -30,7 +30,7 @@ export default function UserCreatePage () {
 					{ name: 'New user' },
 				]}
 			/>
-			<UserNewEditForm />
+			<UserNewEditForm employees={employees} />
 		</Container>
 	);
 }

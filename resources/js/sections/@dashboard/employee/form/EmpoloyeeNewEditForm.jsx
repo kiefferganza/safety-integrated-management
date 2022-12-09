@@ -94,7 +94,6 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, position
 	const handleAutocompleteName = (_, val) => {
 		if (val) {
 			const user = users.find(user => `${user.firstname} ${user.lastname}`.toLowerCase() === val.toLowerCase());
-			console.log(user);
 			setValue("firstname", user.firstname);
 			setValue("lastname", user.lastname);
 			setValue("email", user.email);

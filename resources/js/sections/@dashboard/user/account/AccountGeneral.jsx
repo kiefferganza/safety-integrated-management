@@ -9,7 +9,7 @@ import { LoadingButton } from '@mui/lab';
 // utils
 import { fData } from '@/utils/formatNumber';
 // components
-import FormProvider, { RHFTextField, RHFUploadAvatar, RHFPhone } from '@/Components/hook-form';
+import FormProvider, { RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
 import Label from '@/Components/label';
 import { Inertia } from '@inertiajs/inertia';
 import { usePage } from '@inertiajs/inertia-react';
@@ -59,7 +59,12 @@ export default function AccountGeneral ({ user }) {
 
 	const onSubmit = async (data) => {
 		try {
-			Inertia.put(`/dashboard/user/${user.user_id}/update`, data, {
+			const updated = {
+				...data,
+				user_type: user?.user_type === 0 ? 0 : 1,
+				status: user?.status === 0 ? 0 : 1,
+			};
+			Inertia.post(`/dashboard/user/${user.user_id}/update`, updated, {
 				preserveScroll: true,
 				onStart () {
 					setLoading(true);
@@ -144,7 +149,7 @@ export default function AccountGeneral ({ user }) {
 
 							<RHFTextField name="email" label="Email Address" />
 
-							<RHFPhone name="username" label="Username" />
+							<RHFTextField name="username" label="Username" />
 
 						</Box>
 

@@ -150,11 +150,11 @@ class EmployeeController extends Controller
 			$file = $request->file("img_src")->getClientOriginalName();
 			$extension = pathinfo($file, PATHINFO_EXTENSION);
 			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
-			$request->file("img_src")->storeAs('media/photos/employee', $file_name, 'public');
+			$request->file("img_src")->storeAs('media/photos/employee/', $file_name, 'public');
 
-			if($employee->img_src && $employee->img_src !== "photo-camera-neon-icon-vector-35706296" || $employee->img_src !== "Picture21" || $employee->img_src !== "Crystal_personal.svg") {
-				if(Storage::exists("public/media/docs/" . $employee->img_src)) {
-					Storage::delete("public/media/docs/" . $employee->img_src);
+			if($employee->img_src && $employee->img_src !== "photo-camera-neon-icon-vector-35706296.png" || $employee->img_src !== "Picture21.jpg" || $employee->img_src !== "Crystal_personal.svg") {
+				if(Storage::exists("public/media/photos/employee/" . $employee->img_src)) {
+					Storage::delete("public/media/photos/employee/" . $employee->img_src);
 				}
 			}
 			
@@ -201,9 +201,9 @@ class EmployeeController extends Controller
 		// 	Follower::where("user_id", $employee->user_id)->orWhere("following_id", $employee->user_id)->delete();
 		// }
 
-		if($employee->img_src !== "photo-camera-neon-icon-vector-35706296" || $employee->img_src !== "Picture21" || $employee->img_src !== "Crystal_personal.svg") {
-			if(Storage::exists("public/media/docs/" . $employee->img_src)) {
-				Storage::delete("public/media/docs/" . $employee->img_src);
+		if($employee->img_src !== "photo-camera-neon-icon-vector-35706296.png" || $employee->img_src !== "Picture21.jpg" || $employee->img_src !== "Crystal_personal.svg") {
+			if(Storage::exists("public/media/photos/employee/" . $employee->img_src)) {
+				Storage::delete("public/media/photos/employee/" . $employee->img_src);
 			}
 		}
 
@@ -227,8 +227,8 @@ class EmployeeController extends Controller
 			// 	Follower::where("user_id", $employee->user_id)->orWhere("following_id", $employee->user_id)->delete();
 			// }
 			if($employee->img_src && $employee->img_src !== "photo-camera-neon-icon-vector-35706296" || $employee->img_src !== "Picture21" || $employee->img_src !== "Crystal_personal.svg") {
-				if(Storage::exists("public/media/docs/" . $employee->img_src)) {
-					Storage::delete("public/media/docs/" . $employee->img_src);
+				if(Storage::exists("public/media/photos/employee/" . $employee->img_src)) {
+					Storage::delete("public/media/photos/employee/" . $employee->img_src);
 				}
 			}
 

@@ -7,11 +7,14 @@ use App\Models\Employee;
 use App\Models\Follower;
 use App\Models\TrainingType;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Illuminate\Validation\Rule;
 
 class UsersController extends Controller
 {
@@ -28,6 +31,58 @@ class UsersController extends Controller
 
 		return Inertia::render("Dashboard/Management/User/List/index", ["users" => $userslist]);
 	}
+
+
+	public function create() {
+		$employees = Employee::where([
+			["is_deleted", 0],
+			["user_id", null]
+		])->get();
+		return Inertia::render("Dashboard/Management/User/Create/index", ["employees" => $employees]);
+	}
+	
+
+	public function store(UserRequest $request) {
+		$request->validate(["password" => "required|min:6|confirmed"]);
+
+		$user = new User();
+		$user->username = $request->username;
+		$user->firstname = $request->firstname;
+		$user->lastname = $request->lastname;
+		$user->email = $request->email;
+		$user->user_type = $request->user_type;
+		$user->about = $request->about;
+		$user->subscriber_id = Auth::user()->user_id;
+		$user->status = 1;
+		$user->deleted = 0;
+		$user->date_updated = Carbon::now();
+		$user->password = Hash::make($request->password);
+		$user->emp_id = $request->emp_id;
+
+		if($request->hasFile('profile_pic')){
+			$file = $request->file("profile_pic")->getClientOriginalName();
+			$extension = pathinfo($file, PATHINFO_EXTENSION);
+			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
+			$request->file("profile_pic")->storeAs('media/photos/employee/', $file_name, 'public');
+
+			$user->profile_pic = $file_name;
+
+		}else if($request->profile_pic) {
+			$profile_pic = explode("/employee/", $request->profile_pic)[1];
+			if(Storage::exists("public/media/photos/employee/" . $profile_pic)) {
+				$user->profile_pic = $profile_pic;
+			}
+		}
+
+		$user->save();
+
+		Employee::find($request->emp_id)->update(["user_id" => $user->user_id]);
+
+		return redirect()->back()
+			->with('message', 'User added successfully')
+			->with('type', 'success');
+	}
+
 
 	public function profile() {
 		$user = Auth::user();
@@ -48,44 +103,71 @@ class UsersController extends Controller
 		]);
 	}
 
+
 	public function show(User $user) {
 		return Inertia::render('Dashboard/Management/User/Account/index', [
 			"user" => $user->load("employee"),
 		]);
 	}
 
-	public function update(UserRequest $request, User $user) {
+
+	public function update(Request $request, User $user) {
+		$validate = [
+			"firstname" => "string|required",
+			"lastname" => "string|required",
+			"user_type" => "integer|required",
+			"status" => "integer|required",
+			"username" => [
+				"required",
+				"string",
+				Rule::unique('users')->where("deleted", 0)->ignore($user)
+			],
+		];
+		if($request->password) {
+			$validate["password"] = "required|min:6|confirmed";
+		}
+		$request->validate($validate);
+
 		$user->firstname = $request->firstname;
 		$user->lastname = $request->lastname;
 		$user->username = $request->username;
 		$user->email = $request->email;
 		$user->about = $request->about;
+		$user->user_type = $request->user_type;
+		$user->status = $request->status;
 
-		if($request->hasFile("profile_pic")) {
+		if($request->password) {
+			$user->password = Hash::make($request->password);
+		}
+
+		if($request->hasFile('profile_pic')){
 			$file = $request->file("profile_pic")->getClientOriginalName();
 			$extension = pathinfo($file, PATHINFO_EXTENSION);
 			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
-			$request->file("profile_pic")->storeAs('media/photos/employee', $file_name, 'public');
+			$request->file("profile_pic")->storeAs('media/photos/employee/', $file_name, 'public');
 
-			if($user->profile_pic && $user->profile_pic !== "photo-camera-neon-icon-vector-35706296" || $user->profile_pic !== "Picture21" || $user->profile_pic !== "Crystal_personal.svg") {
-				if(Storage::exists("public/media/docs/" . $user->profile_pic)) {
-					Storage::delete("public/media/docs/" . $user->profile_pic);
-				}
-			}
 			$user->profile_pic = $file_name;
+
+		}else if($request->profile_pic) {
+			$profile_pic = explode("/employee/", $request->profile_pic)[1];
+			if(Storage::exists("public/media/photos/employee/" . $profile_pic)) {
+				$user->profile_pic = $profile_pic;
+			}
 		}
 
 		$user->save();
 		
 		return redirect()->back()
-		->with("message", "Profile updated successfully!")
+		->with("message", "User updated successfully!")
 		->with("type", "success");
 	}
+
 
 	public function edit_user(User $user) {
 		$user->employee = $user->employee()->first();
 		return Inertia::render("Dashboard/Management/User/Edit/index", ["user" => $user]);
 	}
+
 
 	public function cards()
 	{
