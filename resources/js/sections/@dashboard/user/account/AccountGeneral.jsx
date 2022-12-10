@@ -33,7 +33,7 @@ export default function AccountGeneral ({ user }) {
 		email: user?.email || '',
 		profile_pic: user?.profile_pic ? `/storage/media/photos/employee/${user?.profile_pic}` : null,
 		username: user?.username || '',
-		about: user?.about || '',
+		about: user?.employee?.about || '',
 		// isPublic: user?.isPublic || false,
 	};
 

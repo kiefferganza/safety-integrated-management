@@ -11,6 +11,7 @@ import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';
 import SvgColor from '@/Components/svg-color';
 import { randomNumberRange } from '@/_mock';
+import { getCurrentUserImage, getCurrentUserName } from '@/utils/formatName';
 
 // ----------------------------------------------------------------------
 
@@ -30,8 +31,10 @@ UserCard.propTypes = {
 	user: PropTypes.object,
 };
 
-export default function UserCard ({ user, idx }) {
-	const { firstname, lastname, user_type, email, img_src } = user;
+export default function UserCard ({ user }) {
+	const { user_type, email } = user;
+
+	// console.log(employee);
 
 	return (
 		<Card sx={{ textAlign: 'center' }}>
@@ -52,8 +55,8 @@ export default function UserCard ({ user, idx }) {
 				/>
 
 				<Avatar
-					alt={firstname + " " + lastname}
-					src={img_src ? `/storage/media/photos/employee/${img_src}` : null}
+					alt={getCurrentUserName(user)}
+					src={getCurrentUserImage(user)}
 					sx={{
 						width: 64,
 						height: 64,
@@ -68,11 +71,11 @@ export default function UserCard ({ user, idx }) {
 
 				<StyledOverlay />
 
-				<Image src={`https://api-dev-minimal-v4.vercel.app/assets/images/covers/cover_${idx + 1}.jpg`} ratio="16/9" />
+				<Image src={`/storage/assets/covers/card-cover-${randomNumberRange(1, 7)}.jpg`} ratio="16/9" />
 			</Box>
 
 			<Typography variant="subtitle1" sx={{ mt: 6, mb: 0.5 }}>
-				{firstname + " " + lastname}
+				{getCurrentUserName(user)}
 			</Typography>
 
 			<Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -120,7 +123,7 @@ export default function UserCard ({ user, idx }) {
 
 				<div>
 					<Typography variant="caption" component="div" sx={{ mb: 0.75, color: 'text.disabled' }}>
-						Total Post
+						Total Training
 					</Typography>
 					<Typography variant="subtitle1">{fShortenNumber(randomNumberRange(999, 99999))}</Typography>
 				</div>

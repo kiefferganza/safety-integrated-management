@@ -36,7 +36,7 @@ EmployeeTableRow.propTypes = {
 	onSelectRow: PropTypes.func,
 };
 
-export default function EmployeeTableRow ({ row, selected, onSelectRow, onDeleteRow, onAssign, canWrite }) {
+export default function EmployeeTableRow ({ row, selected, onSelectRow, onDeleteRow, canWrite }) {
 	// const dispatch = useDispatch();
 	// const { isLoading } = useSelector(state => state.employee);
 	// const { auth: { user } } = usePage().props;
@@ -144,17 +144,6 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onDelete
 						Follow
 					</MenuItem>
 				)} */}
-				{!row.user_id && (
-					<MenuItem
-						onClick={() => {
-							handleClosePopover();
-							onAssign(row);
-						}}
-					>
-						<Iconify icon="mdi:account-arrow-right" />
-						Assign User
-					</MenuItem>
-				)}
 				{canWrite && (
 					<>
 						<MenuItem

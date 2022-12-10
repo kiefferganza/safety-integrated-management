@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 // form
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -7,24 +8,26 @@ import { Stack, Card } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '@/Components/iconify';
-import { useSnackbar } from '@/Components/snackbar';
 import FormProvider, { RHFTextField } from '@/Components/hook-form';
+import { Inertia } from '@inertiajs/inertia';
+import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
 export default function AccountChangePassword () {
-	const { enqueueSnackbar } = useSnackbar();
+	const { errors: resErrors } = usePage().props;
+	const [loading, setLoading] = useState(false);
 
 	const ChangePassWordSchema = Yup.object().shape({
 		oldPassword: Yup.string().required('Old Password is required'),
 		newPassword: Yup.string().min(6, 'Password must be at least 6 characters').required('New Password is required'),
-		confirmNewPassword: Yup.string().oneOf([Yup.ref('newPassword'), null], 'Passwords must match'),
+		newPassword_confirmation: Yup.string().oneOf([Yup.ref('newPassword'), null], 'Passwords must match'),
 	});
 
 	const defaultValues = {
 		oldPassword: '',
 		newPassword: '',
-		confirmNewPassword: '',
+		newPassword_confirmation: '',
 	};
 
 	const methods = useForm({
@@ -33,16 +36,31 @@ export default function AccountChangePassword () {
 	});
 
 	const {
-		reset,
 		handleSubmit,
-		formState: { isSubmitting },
+		setError,
+		reset
 	} = methods;
 
-	const onSubmit = async () => {
+	useEffect(() => {
+		if (Object.keys(resErrors).length !== 0) {
+			for (const key in resErrors) {
+				setError(key, { type: "custom", message: resErrors[key] });
+			}
+		}
+	}, [resErrors]);
+
+	const onSubmit = async (data) => {
 		try {
-			await new Promise((resolve) => setTimeout(resolve, 500));
-			reset();
-			enqueueSnackbar('Update success!');
+			Inertia.post(route("management.user.change_pass"), data, {
+				preserveScroll: true,
+				preserveState: true,
+				onStart () {
+					setLoading(true);
+				},
+				onFinish () {
+					setLoading(false);
+				}
+			});
 		} catch (error) {
 			console.error(error);
 		}
@@ -65,9 +83,9 @@ export default function AccountChangePassword () {
 						}
 					/>
 
-					<RHFTextField name="confirmNewPassword" type="password" label="Confirm New Password" />
+					<RHFTextField name="newPassword_confirmation" type="password" label="Confirm New Password" />
 
-					<LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+					<LoadingButton type="submit" variant="contained" loading={loading}>
 						Save Changes
 					</LoadingButton>
 				</Stack>

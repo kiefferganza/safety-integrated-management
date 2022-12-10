@@ -13,6 +13,8 @@ import {
 	Container,
 	IconButton,
 	TableContainer,
+	Stack,
+	useTheme,
 } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
@@ -40,6 +42,7 @@ import { Link } from '@inertiajs/inertia-react';
 import Label from '@/Components/label';
 import { getCurrentUserName } from '@/utils/formatName';
 import { fDate } from '@/utils/formatTime';
+import EmployeeAnalytic from '@/sections/@dashboard/employee/EmployeeAnalytic';
 
 // ----------------------------------------------------------------------
 
@@ -81,6 +84,7 @@ export default function UserListPage ({ users }) {
 	} = useTable();
 
 	const { themeStretch } = useSettingsContext();
+	const theme = useTheme();
 
 	const [tableData, setTableData] = useState(() => users.map(user => ({ ...user, name: getCurrentUserName(user) })));
 
@@ -123,6 +127,8 @@ export default function UserListPage ({ users }) {
 			return tableData.filter((item) => item.status !== 1).length;
 		}
 	}
+
+	const getPercentByStatus = (status) => (getLengthByStatus(status) / tableData.length) * 100;
 
 	const STATUS_OPTIONS = [
 		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
@@ -215,6 +221,41 @@ export default function UserListPage ({ users }) {
 						</Button>
 					}
 				/>
+
+				<Card sx={{ mb: 5 }}>
+					<Scrollbar>
+						<Stack
+							direction="row"
+							divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
+							sx={{ py: 2 }}
+						>
+							<EmployeeAnalytic
+								title="Total"
+								total={tableData.length}
+								percent={100}
+								icon="material-symbols:supervisor-account"
+								color={theme.palette.info.main}
+							/>
+
+							<EmployeeAnalytic
+								title="Activated"
+								total={getLengthByStatus('active')}
+								percent={getPercentByStatus('active')}
+								icon="mdi:account-badge"
+								color={theme.palette.success.main}
+							/>
+
+							<EmployeeAnalytic
+								title="Deactivated"
+								total={getLengthByStatus('inactive')}
+								percent={getPercentByStatus('inactive')}
+								icon="mdi:account-cancel"
+								color={theme.palette.error.main}
+							/>
+
+						</Stack>
+					</Scrollbar>
+				</Card>
 
 				<Card>
 					<Tabs

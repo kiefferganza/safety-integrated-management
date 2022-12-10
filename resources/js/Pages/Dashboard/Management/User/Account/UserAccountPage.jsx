@@ -37,18 +37,20 @@ export default function UserAccountPage ({ user }) {
 			label: 'Billing',
 			icon: <Iconify icon="ic:round-receipt" />,
 			component: <AccountBilling cards={_userPayment} addressBook={_userAddressBook} invoices={_userInvoices} />,
+			disabled: true
 		},
 		{
 			value: 'notifications',
 			label: 'Notifications',
 			icon: <Iconify icon="eva:bell-fill" />,
 			component: <AccountNotifications />,
+			disabled: true
 		},
 		{
 			value: 'social_links',
 			label: 'Social links',
 			icon: <Iconify icon="eva:share-fill" />,
-			component: <AccountSocialLinks socialLinks={_userAbout.socialLinks} />,
+			component: <AccountSocialLinks user={user} />,
 		},
 		{
 			value: 'change_password',
@@ -71,7 +73,7 @@ export default function UserAccountPage ({ user }) {
 
 			<Tabs value={currentTab} onChange={(event, newValue) => setCurrentTab(newValue)}>
 				{TABS.map((tab) => (
-					<Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
+					<Tab disabled={tab.disabled} key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
 				))}
 			</Tabs>
 

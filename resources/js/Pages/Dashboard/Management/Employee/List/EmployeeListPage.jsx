@@ -299,6 +299,7 @@ export default function EmployeeListPage ({ employees, unassignedUsers, canWrite
 								icon="mdi:account-clock"
 								color={theme.palette.warning.main}
 							/>
+
 							<EmployeeAnalytic
 								title="Unassigned"
 								total={getUnassignedEmployeeLength()}

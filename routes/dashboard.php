@@ -13,38 +13,15 @@ Route::middleware('auth')->group(function ()
 	// General
 	Route::get('/dashboard/employees', fn () => Inertia::render("Dashboard/General/Employee/index"))->name('general.employee');
 
-	/**
-	 * Management - User
-	 */
-	Route::post('/dashboard/user/{user_id}/follow', [UsersController::class, 'followUser']);
-	Route::get('/dashboard/user/profile', [UsersController::class, 'profile'])->name('management.user.profile');
-	Route::get('/dashboard/user/settings', fn () => Inertia::render("Dashboard/Management/User/Account/index"))->name('management.user.settings');
-	Route::get('/dashboard/user/profile/{user}', [UsersController::class, "show"])->name('management.user.show');
-	// CRUD
-	Route::middleware("can:update,App\Models\User")->group(function() {
-		Route::get('/dashboard/user/{user}/edit', [UsersController::class, 'edit_user']);
-		Route::post('/dashboard/user/{user}/update', [UsersController::class, 'update']);
-	});
-	Route::middleware("can:view,App\Models\User")->group(function() {
-		Route::get('/dashboard/user/cards', [UsersController::class, 'cards'])->name('management.user.cards');
-		Route::get('/dashboard/user/list', [UsersController::class, 'index'])->name('management.user.list');
-	});
-	Route::middleware("can:create,App\Models\User")->group(function() {
-		Route::get('/dashboard/user/new', [UsersController::class, 'create'])->name('management.user.new');
-		Route::post('/dashboard/user/new', [UsersController::class, 'store'])->name('management.user.store');
-	});
-	
-
 
 	/**
 	 * Management - Employee
 	 */
 	Route::get('/dashboard/employee/list', [EmployeeController::class, "index"])->name('management.employee.list');
-	Route::post('/dashboard/employee/{employee}/assign', [EmployeeController::class, "assign_user"]);
-	Route::get('/dashboard/employee/{employee}', [EmployeeController::class, "show"])->name('management.employee.show');
 	// CRUD
 	Route::get('/dashboard/employee/new', [EmployeeController::class, "create"])->name('management.employee.create');
 	Route::post('/dashboard/employee/new', [EmployeeController::class, "store"])->name('management.employee.new');
+	Route::get('/dashboard/employee/{employee}', [EmployeeController::class, "show"])->name('management.employee.show');
 	Route::get('/dashboard/employee/{employee}/edit', [EmployeeController::class, "update"])->name('management.employee.update');
 	Route::post('/dashboard/employee/{employee}/edit', [EmployeeController::class, "edit"])->name('management.employee.edit');
 	Route::delete('dashboard/employee/{employee}/delete', [EmployeeController ::class, 'destroy']);
@@ -61,6 +38,31 @@ Route::middleware('auth')->group(function ()
 	Route::delete('dashboard/position/{position}', [PositionController::class, 'destroy']);
 	Route::post('dashboard/position/delete-multiple', [PositionController::class, 'delete_multiple'])->name('management.position.delete-multiple');
 
+
+
+	/**
+	 * Management - User
+	 */
+	Route::post('/dashboard/user/{user_id}/follow', [UsersController::class, 'followUser']);
+	Route::post('/dashboard/user/change-password', [UsersController::class, 'change_password'])->name('management.user.change_pass');
+	Route::get('/dashboard/user/profile', [UsersController::class, 'profile'])->name('management.user.profile');
+	Route::get('/dashboard/user/settings', fn () => Inertia::render("Dashboard/Management/User/Account/index"))->name('management.user.settings');
+	Route::get('/dashboard/user/profile/{user}', [UsersController::class, "show"])->name('management.user.show');
+
+	// CRUD
+	Route::middleware("can:update,App\Models\User")->group(function() {
+		Route::get('/dashboard/user/{user}/edit', [UsersController::class, 'edit_user']);
+		Route::post('/dashboard/user/{user}/update', [UsersController::class, 'update']);
+	});
+	Route::middleware("can:view,App\Models\User")->group(function() {
+		Route::get('/dashboard/user/cards', [UsersController::class, 'cards'])->name('management.user.cards');
+		Route::get('/dashboard/user/list', [UsersController::class, 'index'])->name('management.user.list');
+	});
+	Route::middleware("can:create,App\Models\User")->group(function() {
+		Route::get('/dashboard/user/new', [UsersController::class, 'create'])->name('management.user.new');
+		Route::post('/dashboard/user/new', [UsersController::class, 'store'])->name('management.user.store');
+	});
+	
 
 	/**
 	 * Management - Employee/Department

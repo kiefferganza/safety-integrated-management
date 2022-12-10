@@ -17,12 +17,28 @@ ProfileGallery.propTypes = {
 	gallery: PropTypes.array,
 };
 
+const COVER_IMAGES = [
+	{
+		id: 1,
+		imageUrl: "/storage/assets/covers/card-cover-1.jpg"
+	},
+	{
+		id: 2,
+		imageUrl: "/storage/assets/covers/card-cover-2.jpg"
+	},
+	{
+		id: 3,
+		imageUrl: "/storage/assets/covers/card-cover-3.jpg"
+	},
+];
+
 export default function ProfileGallery ({ gallery }) {
 	const [openLightbox, setOpenLightbox] = useState(false);
 
 	const [selectedImage, setSelectedImage] = useState(0);
 
-	const imagesLightbox = gallery.map((img) => img.imageUrl);
+	// const imagesLightbox = gallery.map((img) => img.imageUrl);
+	const imagesLightbox = COVER_IMAGES.map((img) => img.imageUrl);
 
 	const handleOpenLightbox = (url) => {
 		const selectedImage = imagesLightbox.findIndex((index) => index === url);
@@ -32,7 +48,7 @@ export default function ProfileGallery ({ gallery }) {
 
 	const handleCloseLightbox = () => {
 		setOpenLightbox(false);
-	};
+	}
 
 	return (
 		<>
@@ -49,9 +65,10 @@ export default function ProfileGallery ({ gallery }) {
 					md: 'repeat(3, 1fr)',
 				}}
 			>
-				{gallery.map((image) => (
+				{COVER_IMAGES.map((image) => (
 					<GalleryItem key={image.id} image={image} onOpenLightbox={handleOpenLightbox} />
 				))}
+				{/* <GalleryItem image={} onOpenLightbox={handleOpenLightbox} /> */}
 			</Box>
 
 			<Lightbox
@@ -86,7 +103,7 @@ function GalleryItem ({ image, onOpenLightbox }) {
 		<Card sx={{ cursor: 'pointer', position: 'relative' }}>
 			<Image alt="gallery" ratio="1/1" src={imageUrl} onClick={() => onOpenLightbox(imageUrl)} />
 
-			<Stack
+			{/* <Stack
 				spacing={2}
 				direction="row"
 				alignItems="center"
@@ -113,7 +130,7 @@ function GalleryItem ({ image, onOpenLightbox }) {
 				<IconButton color="inherit">
 					<Iconify icon="eva:more-vertical-fill" />
 				</IconButton>
-			</Stack>
+			</Stack> */}
 		</Card>
 	);
 }

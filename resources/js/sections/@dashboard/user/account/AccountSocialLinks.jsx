@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 // form
 import { useForm } from 'react-hook-form';
 // @mui
@@ -6,49 +5,42 @@ import { Stack, Card, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '@/Components/iconify';
-import { useSnackbar } from '@/Components/snackbar';
 import FormProvider, { RHFTextField } from '@/Components/hook-form';
+import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
 const SOCIAL_LINKS = [
 	{
-		value: 'facebookLink',
+		value: 'facebook',
 		icon: <Iconify icon="eva:facebook-fill" width={24} />,
+		placeholder: "Link to your facebook account"
 	},
 	{
-		value: 'instagramLink',
+		value: 'instagram',
 		icon: <Iconify icon="ant-design:instagram-filled" width={24} />,
+		placeholder: "Link to your instagram account"
 	},
 	{
-		value: 'linkedinLink',
+		value: 'linkedin',
 		icon: <Iconify icon="eva:linkedin-fill" width={24} />,
+		placeholder: "Link to your linkedin account"
 	},
 	{
-		value: 'twitterLink',
+		value: 'twitter',
 		icon: <Iconify icon="eva:twitter-fill" width={24} />,
+		placeholder: "Link to your twitter account"
 	},
 ];
 
 // ----------------------------------------------------------------------
-
-AccountSocialLinks.propTypes = {
-	socialLinks: PropTypes.shape({
-		facebookLink: PropTypes.string,
-		instagramLink: PropTypes.string,
-		linkedinLink: PropTypes.string,
-		twitterLink: PropTypes.string,
-	}),
-};
-
-export default function AccountSocialLinks ({ socialLinks }) {
-	const { enqueueSnackbar } = useSnackbar();
-
+export default function AccountSocialLinks ({ user }) {
+	const [loading, setLoading] = useState(false);
 	const defaultValues = {
-		facebookLink: socialLinks.facebookLink,
-		instagramLink: socialLinks.instagramLink,
-		linkedinLink: socialLinks.linkedinLink,
-		twitterLink: socialLinks.twitterLink,
+		facebook: user?.facebook || '',
+		instagram: user?.instagram || '',
+		linkedin: user?.linkedin || '',
+		twitter: user?.twitter || '',
 	};
 
 	const methods = useForm({
@@ -57,13 +49,20 @@ export default function AccountSocialLinks ({ socialLinks }) {
 
 	const {
 		handleSubmit,
-		formState: { isSubmitting },
 	} = methods;
 
 	const onSubmit = async () => {
 		try {
-			await new Promise((resolve) => setTimeout(resolve, 500));
-			enqueueSnackbar('Update success!');
+			Inertia.post(`/dashboard/user/social/${user.user_id}/update`, data, {
+				preserveScroll: true,
+				preserveState: true,
+				onStart () {
+					setLoading(true);
+				},
+				onFinish () {
+					setLoading(false);
+				}
+			});
 		} catch (error) {
 			console.error(error);
 		}
@@ -77,13 +76,14 @@ export default function AccountSocialLinks ({ socialLinks }) {
 						<RHFTextField
 							key={link.value}
 							name={link.value}
+							placeholder={link.placeholder}
 							InputProps={{
 								startAdornment: <InputAdornment position="start">{link.icon}</InputAdornment>,
 							}}
 						/>
 					))}
 
-					<LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+					<LoadingButton type="submit" variant="contained" loading={loading}>
 						Save Changes
 					</LoadingButton>
 				</Stack>

@@ -14,6 +14,7 @@ import { UserCard } from '@/sections/@dashboard/user/cards';
 
 export default function UserCardsPage ({ users }) {
 	const { themeStretch } = useSettingsContext();
+	console.log(users);
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'lg'}>
@@ -36,7 +37,7 @@ export default function UserCardsPage ({ users }) {
 				}}
 			>
 				{users.map((user, idx) => (
-					<UserCard key={user.user_id} user={user} idx={idx} />
+					<UserCard key={user.user_id} user={user} />
 				))}
 			</Box>
 		</Container>

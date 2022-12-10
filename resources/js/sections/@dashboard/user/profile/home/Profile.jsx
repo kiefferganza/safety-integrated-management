@@ -9,23 +9,38 @@ import ProfilePostCard from './ProfilePostCard';
 import ProfilePostInput from './ProfilePostInput';
 import ProfileFollowInfo from './ProfileFollowInfo';
 import ProfileSocialInfo from './ProfileSocialInfo';
+import { isAfter } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
 Profile.propTypes = {
 	info: PropTypes.object,
+	user: PropTypes.object,
+	employee: PropTypes.object,
 	posts: PropTypes.array,
 };
 
+const TODAY = new Date();
+
 export default function Profile ({ info, posts, user, employee }) {
+
+	const trainingSummary = employee?.trainings?.reduce((acc, curr) => {
+		if (isAfter(TODAY, new Date(curr.date_expired))) {
+			acc.expired++;
+		} else {
+			acc.valid++;
+		}
+		return acc;
+	}, { valid: 0, expired: 0 });
+
 	return (
 		<Grid container spacing={3}>
 			<Grid item xs={12} md={4}>
 				<Stack spacing={3}>
-					<ProfileFollowInfo />
+					<ProfileFollowInfo titleFollower="Valid Training" titleFollowing="Expired Training" follower={trainingSummary.valid} following={trainingSummary.expired} />
 
 					<ProfileAbout
-						quote={user?.about}
+						quote={employee?.about}
 						country={capitalize(employee?.country)}
 						email={user.email}
 						role={capitalize(employee?.position?.position)}

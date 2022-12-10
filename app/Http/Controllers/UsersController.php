@@ -51,7 +51,7 @@ class UsersController extends Controller
 		$user->lastname = $request->lastname;
 		$user->email = $request->email;
 		$user->user_type = $request->user_type;
-		$user->about = $request->about;
+		// $user->about = $request->about;
 		$user->subscriber_id = Auth::user()->user_id;
 		$user->status = 1;
 		$user->deleted = 0;
@@ -105,19 +105,6 @@ class UsersController extends Controller
 
 
 	public function show(User $user) {
-		// dd($user);
-		// $employee = Employee::find($user->emp_id)->with([
-		// 	"trainings" => fn ($query) => 
-		// 		$query->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
-		// 		->where("is_deleted", 0),
-		// 	"company" => fn ($query) =>
-		// 		$query->select("company_id", "company_name")->where("is_deleted", 0),
-		// 	"position" => fn ($query) => 
-		// 		$query->select("position_id", "position")->where("is_deleted", 0),
-		// 	"department" => fn ($query) => 
-		// 		$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]])
-		// ])->first();
-		
 		return Inertia::render("Dashboard/Management/User/Profile/index", [
 			"user" => $user->load(["employee" => fn ($query) => 
 				$query->with([
@@ -158,7 +145,7 @@ class UsersController extends Controller
 		$user->lastname = $request->lastname;
 		$user->username = $request->username;
 		$user->email = $request->email;
-		$user->about = $request->about;
+		// $user->about = $request->about;
 		$user->user_type = $request->user_type;
 		$user->status = $request->status;
 
@@ -182,6 +169,10 @@ class UsersController extends Controller
 		}
 
 		$user->save();
+
+		if($request->about) {
+			Employee::find($user->user_id)->update(["about" => $request->about]);
+		}
 		
 		return redirect()->back()
 		->with("message", "User updated successfully!")
@@ -199,14 +190,38 @@ class UsersController extends Controller
 	{
 			$user = Auth::user();
 
-			$userslist = User::select(DB::raw("users.user_id, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id, tbl_employees.img_src"))
-			->join("tbl_employees", "users.emp_id", "tbl_employees.employee_id")
-			->where([
-					["users.subscriber_id", $user->subscriber_id],
-					["users.deleted", 0]
+			$users = User::select("user_id", "user_type", "status", "date_created", "emp_id")
+			->with([
+				"employee" => fn($query) => 
+					$query->with([
+						"trainings" => fn($query2) =>
+							$query2->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
+							->where("is_deleted", 0),
+					])
 			])->get();
 
-		return Inertia::render("Dashboard/Management/User/Cards/index", ["users" => $userslist]);
+			// $userslist = User::select(DB::raw("users.user_id, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id, tbl_employees.img_src"))
+			// ->join("tbl_employees", "users.emp_id", "tbl_employees.employee_id")
+			// ->where([
+			// 		["users.subscriber_id", $user->subscriber_id],
+			// 		["users.deleted", 0]
+			// ])->get();
+
+		// return Inertia::render("Dashboard/Management/User/Cards/index", ["users" => $userslist]);
+		return Inertia::render("Dashboard/Management/User/Cards/index", ["users" => $users]);
+	}
+
+
+	public function update_socials(Request $request, User $user) {
+		$user->facebook = $request->facebook || "";
+		$user->instagram = $request->instagram || "";
+		$user->linkedin = $request->linkedin || "";
+		$user->twitter = $request->twitter || "";
+
+		$user->save();
+		return redirect()->back()
+		->with("message", "User social accounts updated successfully!")
+		->with("type", "success");
 	}
 
 
@@ -217,6 +232,27 @@ class UsersController extends Controller
 			"following_id" => $user_id,
 		]);
 		return redirect()->back();
+	}
+
+
+	public function change_password(Request $request) {
+		$request->validate([
+			"oldPassword" => "required",
+			"newPassword" => "required|min:6|confirmed",
+		]);
+
+		$user = Auth::user();
+
+		if(Hash::check($request->oldPassword, $user->password)) {
+			$user->password = Hash::make($request->newPassword);
+			$user->save();
+
+			return redirect()->back()
+			->with("message", "Password updated successfully!")
+			->with("type", "success");
+		}
+		
+		return redirect()->back()->withErrors(["oldPassword" => "Incorrect password please try again"]);
 	}
 
 
