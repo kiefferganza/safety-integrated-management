@@ -26,8 +26,6 @@ import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTraini
 export default function UserProfilePage ({ user, employee }) {
 	const { themeStretch } = useSettingsContext();
 
-	console.log(employee);
-
 	const [searchFriends, setSearchFriends] = useState('');
 
 	const [currentTab, setCurrentTab] = useState('profile');
@@ -37,7 +35,7 @@ export default function UserProfilePage ({ user, employee }) {
 			value: 'profile',
 			label: 'Profile',
 			icon: <Iconify icon="ic:round-account-box" />,
-			component: <Profile socialAccounts={employee?.social_accounts || []} posts={_userFeeds} user={user} employee={employee} />,
+			component: <Profile socialAccounts={user?.social_accounts || []} posts={_userFeeds} user={user} employee={employee} />,
 		},
 		{
 			value: 'trainings',
