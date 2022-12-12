@@ -48,6 +48,10 @@ class Employee extends Model
 		return $this->hasMany(Follower::class, "user_id", "user_id");
 	}
 
+	public function social_accounts() {
+		return $this->hasMany(SocialAccount::class, "user_id", "user_id");
+	}
+
 	public function followers() {
 		return $this->hasMany(Follower::class, "following_id", "user_id");
 	}

@@ -1,48 +1,57 @@
 import PropTypes from 'prop-types';
 // @mui
 import { Link, Card, CardHeader, Stack } from '@mui/material';
-// _mock
-import { _socials } from '../../../../../_mock/arrays';
 // components
 import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 
-ProfileSocialInfo.propTypes = {
-	socialLinks: PropTypes.shape({
-		facebookLink: PropTypes.string,
-		instagramLink: PropTypes.string,
-		linkedinLink: PropTypes.string,
-		twitterLink: PropTypes.string,
-	}),
-};
+export default function ProfileSocialInfo ({ socialAccounts }) {
 
-export default function ProfileSocialInfo ({ socialLinks }) {
-	const { facebookLink, instagramLink, linkedinLink, twitterLink } = socialLinks;
+	if (!socialAccounts) {
+		return null;
+	}
 
 	return (
 		<Card>
 			<CardHeader title="Social" />
 
 			<Stack spacing={2} sx={{ p: 3 }}>
-				{_socials.map((link) => (
-					<Stack key={link.name} direction="row" sx={{ wordBreak: 'break-all' }}>
-						<Iconify
-							icon={link.icon}
-							sx={{
-								mr: 2,
-								flexShrink: 0,
-								color: link.color,
-							}}
-						/>
-						<Link component="span" variant="body2" color="text.primary">
-							{(link.value === 'facebook' && facebookLink) ||
-								(link.value === 'instagram' && instagramLink) ||
-								(link.value === 'linkedin' && linkedinLink) ||
-								twitterLink}
-						</Link>
-					</Stack>
-				))}
+				{socialAccounts.map((link) => {
+					let icon = "eva:facebook-fill";
+					let iconColor = "#1877F2";
+					switch (link.type) {
+						case "instagram":
+							icon = "ant-design:instagram-filled";
+							iconColor = "#E02D69";
+							break;
+						case "linkedin":
+							icon = "eva:linkedin-fill";
+							iconColor = "#007EBB";
+							break;
+						case "twitter":
+							icon = "eva:twitter-fill";
+							iconColor = "#00AAEC";
+							break;
+						default:
+							break;
+					}
+					return (
+						<Stack key={link.social_id} direction="row" sx={{ wordBreak: 'break-all' }}>
+							<Iconify
+								icon={icon}
+								sx={{
+									mr: 2,
+									flexShrink: 0,
+									color: iconColor,
+								}}
+							/>
+							<Link component="span" variant="body2" color="text.primary">
+								{link.social_link}
+							</Link>
+						</Stack>
+					)
+				})}
 			</Stack>
 		</Card>
 	);

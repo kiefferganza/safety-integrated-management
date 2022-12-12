@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use App\Models\Employee;
 use App\Models\Follower;
+use App\Models\SocialAccount;
 use App\Models\TrainingType;
 use App\Models\User;
 use Carbon\Carbon;
@@ -23,6 +24,7 @@ class UsersController extends Controller
 			$user = Auth::user();
 
 			$userslist = User::select(DB::raw("users.user_id, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id, tbl_employees.img_src"))
+			->with("social_accounts")
 			->join("tbl_employees", "users.emp_id", "tbl_employees.employee_id")
 			->where([
 					["users.subscriber_id", $user->subscriber_id],
@@ -95,8 +97,10 @@ class UsersController extends Controller
 			"position" => fn ($query) => 
 				$query->select("position_id", "position")->where("is_deleted", 0),
 			"department" => fn ($query) => 
-				$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]])
+				$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
+			"social_accounts"
 		])->first();
+
 		return Inertia::render("Dashboard/Management/User/index", [
 			"employee" => $employee,
 			"trainingTypes" => TrainingType::get()
@@ -106,18 +110,20 @@ class UsersController extends Controller
 
 	public function show(User $user) {
 		return Inertia::render("Dashboard/Management/User/Profile/index", [
-			"user" => $user->load(["employee" => fn ($query) => 
-				$query->with([
-					"trainings" => fn ($query) => 
-						$query->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
-						->where("is_deleted", 0),
-					"company" => fn ($query) =>
-						$query->select("company_id", "company_name")->where("is_deleted", 0),
-					"position" => fn ($query) => 
-						$query->select("position_id", "position")->where("is_deleted", 0),
-					"department" => fn ($query) => 
-						$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]])
-				])
+			"user" => $user->load([
+				"employee" => fn ($query) => 
+					$query->with([
+						"trainings" => fn ($query) => 
+							$query->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
+							->where("is_deleted", 0),
+						"company" => fn ($query) =>
+							$query->select("company_id", "company_name")->where("is_deleted", 0),
+						"position" => fn ($query) => 
+							$query->select("position_id", "position")->where("is_deleted", 0),
+						"department" => fn ($query) => 
+							$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]])
+					]),
+				"social_accounts"
 			]),
 			"trainingTypes" => TrainingType::get()
 		]);
@@ -188,7 +194,6 @@ class UsersController extends Controller
 
 	public function cards()
 	{
-			$user = Auth::user();
 
 			$users = User::select("user_id", "user_type", "status", "date_created", "emp_id")
 			->with([
@@ -197,28 +202,45 @@ class UsersController extends Controller
 						"trainings" => fn($query2) =>
 							$query2->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
 							->where("is_deleted", 0),
-					])
+					]),
+				"social_accounts"
 			])->get();
-
-			// $userslist = User::select(DB::raw("users.user_id, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id, tbl_employees.img_src"))
-			// ->join("tbl_employees", "users.emp_id", "tbl_employees.employee_id")
-			// ->where([
-			// 		["users.subscriber_id", $user->subscriber_id],
-			// 		["users.deleted", 0]
-			// ])->get();
-
-		// return Inertia::render("Dashboard/Management/User/Cards/index", ["users" => $userslist]);
 		return Inertia::render("Dashboard/Management/User/Cards/index", ["users" => $users]);
 	}
 
 
-	public function update_socials(Request $request, User $user) {
-		$user->facebook = $request->facebook || "";
-		$user->instagram = $request->instagram || "";
-		$user->linkedin = $request->linkedin || "";
-		$user->twitter = $request->twitter || "";
+	public function update_socials(Request $request) {
+		// dd($request->all());
+		$user = Auth::user();
 
-		$user->save();
+		if($request->facebook) {
+			SocialAccount::firstOrCreate(
+				[ "user_id" => $user->user_id, "type" => "facebook" ],
+				[ "social_link" => $request->facebook ]
+			);
+		}
+
+		if($request->instagram) {
+			SocialAccount::firstOrCreate(
+				[ "user_id" => $user->user_id, "type" => "instagram" ],
+				[ "social_link" => $request->instagram ]
+			);
+		}
+
+		if($request->linkedin) {
+			SocialAccount::firstOrCreate(
+				[ "user_id" => $user->user_id, "type" => "linkedin" ],
+				[ "social_link" => $request->linkedin ]
+			);
+		}
+
+		if($request->twitter) {
+			SocialAccount::firstOrCreate(
+				[ "user_id" => $user->user_id, "type" => "twitter" ],
+				[ "social_link" => $request->twitter ]
+			);
+		}
+
 		return redirect()->back()
 		->with("message", "User social accounts updated successfully!")
 		->with("type", "success");

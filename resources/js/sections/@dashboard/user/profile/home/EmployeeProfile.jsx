@@ -46,14 +46,9 @@ export default function EmployeeProfile ({ posts, employee }) {
 						editLink={`/dashboard/employee/${employee.employee_id}/edit`}
 					/>
 
-					<ProfileSocialInfo
-						socialLinks={{
-							facebookLink: `https://www.facebook.com`,
-							instagramLink: `https://www.instagram.com`,
-							linkedinLink: `https://www.linkedin.com`,
-							twitterLink: `https://www.twitter.com`,
-						}}
-					/>
+					{employee?.social_accounts.length > 0 && (
+						<ProfileSocialInfo socialAccounts={employee?.social_accounts} />
+					)}
 				</Stack>
 			</Grid>
 

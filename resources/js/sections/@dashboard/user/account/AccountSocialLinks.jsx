@@ -1,3 +1,4 @@
+import { useState } from 'react';
 // form
 import { useForm } from 'react-hook-form';
 // @mui
@@ -36,11 +37,19 @@ const SOCIAL_LINKS = [
 // ----------------------------------------------------------------------
 export default function AccountSocialLinks ({ user }) {
 	const [loading, setLoading] = useState(false);
+
+	function getSocial (type) {
+		if (user?.social_accounts?.length > 0) {
+			return user?.social_accounts?.find(social => social?.type === type)?.social_link
+		}
+		return null;
+	}
+
 	const defaultValues = {
-		facebook: user?.facebook || '',
-		instagram: user?.instagram || '',
-		linkedin: user?.linkedin || '',
-		twitter: user?.twitter || '',
+		facebook: getSocial("facebook") || '',
+		instagram: getSocial("instagram") || '',
+		linkedin: getSocial("linkedin") || '',
+		twitter: getSocial("twitter") || '',
 	};
 
 	const methods = useForm({
@@ -49,11 +58,14 @@ export default function AccountSocialLinks ({ user }) {
 
 	const {
 		handleSubmit,
+		formState: {
+			isDirty
+		}
 	} = methods;
 
-	const onSubmit = async () => {
+	const onSubmit = async (data) => {
 		try {
-			Inertia.post(`/dashboard/user/social/${user.user_id}/update`, data, {
+			Inertia.put(route('management.user.update_socials'), data, {
 				preserveScroll: true,
 				preserveState: true,
 				onStart () {
@@ -83,7 +95,7 @@ export default function AccountSocialLinks ({ user }) {
 						/>
 					))}
 
-					<LoadingButton type="submit" variant="contained" loading={loading}>
+					<LoadingButton type="submit" variant="contained" disabled={!isDirty} loading={loading}>
 						Save Changes
 					</LoadingButton>
 				</Stack>

@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function ()
 	 */
 	Route::post('/dashboard/user/{user_id}/follow', [UsersController::class, 'followUser']);
 	Route::post('/dashboard/user/change-password', [UsersController::class, 'change_password'])->name('management.user.change_pass');
+	Route::put('/dashboard/user/update-socials', [UsersController::class, 'update_socials'])->name('management.user.update_socials');
 	Route::get('/dashboard/user/profile', [UsersController::class, 'profile'])->name('management.user.profile');
 	Route::get('/dashboard/user/settings', fn () => Inertia::render("Dashboard/Management/User/Account/index"))->name('management.user.settings');
 	Route::get('/dashboard/user/profile/{user}', [UsersController::class, "show"])->name('management.user.show');

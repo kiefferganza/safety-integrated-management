@@ -14,15 +14,15 @@ import { isAfter } from 'date-fns';
 // ----------------------------------------------------------------------
 
 Profile.propTypes = {
-	info: PropTypes.object,
 	user: PropTypes.object,
 	employee: PropTypes.object,
 	posts: PropTypes.array,
+	socialAccounts: PropTypes.array,
 };
 
 const TODAY = new Date();
 
-export default function Profile ({ info, posts, user, employee }) {
+export default function Profile ({ posts, user, employee, socialAccounts }) {
 
 	const trainingSummary = employee?.trainings?.reduce((acc, curr) => {
 		if (isAfter(TODAY, new Date(curr.date_expired))) {
@@ -32,6 +32,7 @@ export default function Profile ({ info, posts, user, employee }) {
 		}
 		return acc;
 	}, { valid: 0, expired: 0 });
+
 
 	return (
 		<Grid container spacing={3}>
@@ -47,8 +48,9 @@ export default function Profile ({ info, posts, user, employee }) {
 						company={capitalize(employee?.company?.company_name)}
 						department={startCase(employee?.department?.department?.toLowerCase())}
 					/>
-
-					<ProfileSocialInfo socialLinks={info.socialLinks} />
+					{socialAccounts.length > 0 && (
+						<ProfileSocialInfo socialAccounts={socialAccounts} />
+					)}
 				</Stack>
 			</Grid>
 

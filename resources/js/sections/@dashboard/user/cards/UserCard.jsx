@@ -32,9 +32,7 @@ UserCard.propTypes = {
 };
 
 export default function UserCard ({ user }) {
-	const { user_type, email } = user;
-
-	// console.log(employee);
+	const { user_type, email, social_accounts } = user;
 
 	return (
 		<Card sx={{ textAlign: 'center' }}>
@@ -83,21 +81,47 @@ export default function UserCard ({ user }) {
 			</Typography>
 
 
-			<Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 1 }}>
-				{_socials.map((social) => (
-					<IconButton
-						key={social.name}
-						sx={{
-							color: social.color,
-							'&:hover': {
-								bgcolor: alpha(social.color, 0.08),
-							},
-						}}
-					>
-						<Iconify icon={social.icon} />
-					</IconButton>
-				))}
-			</Stack>
+			{social_accounts?.length > 0 && (
+				<Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 1 }}>
+					{social_accounts.map((social) => {
+						let icon = "eva:facebook-fill";
+						let iconColor = "#1877F2";
+						switch (social.type) {
+							case "instagram":
+								icon = "ant-design:instagram-filled";
+								iconColor = "#E02D69";
+								break;
+							case "linkedin":
+								icon = "eva:linkedin-fill";
+								iconColor = "#007EBB";
+								break;
+							case "twitter":
+								icon = "eva:twitter-fill";
+								iconColor = "#00AAEC";
+								break;
+							default:
+								break;
+						}
+
+						return (
+							<IconButton
+								key={social.social_id}
+								href={social.social_link}
+								target="_blank"
+								rel="nofollow noopener noreferrer"
+								sx={{
+									color: iconColor,
+									'&:hover': {
+										bgcolor: alpha(iconColor, 0.08),
+									},
+								}}
+							>
+								<Iconify icon={icon} />
+							</IconButton>
+						)
+					})}
+				</Stack>
+			)}
 
 			<Typography variant="body2" sx={{ color: 'secondary.main', mb: 3 }}>
 				{email}

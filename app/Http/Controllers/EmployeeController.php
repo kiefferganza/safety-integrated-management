@@ -184,10 +184,11 @@ class EmployeeController extends Controller
 					$query->select("position_id", "position")->where("is_deleted", 0),
 				"department" => fn ($query) => 
 					$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
-				"followers" => fn ($query) => 
-					$query->select("user_id","following_id"),
-				"following" => fn ($query) => 
-					$query->select("user_id","following_id"),
+				// "followers" => fn ($query) => 
+				// 	$query->select("user_id","following_id"),
+				// "following" => fn ($query) => 
+				// 	$query->select("user_id","following_id"),
+				"social_accounts"
 			]),
 			"trainingTypes" => TrainingType::get()
 		]);
