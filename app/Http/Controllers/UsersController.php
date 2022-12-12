@@ -197,12 +197,7 @@ class UsersController extends Controller
 
 			$users = User::select("user_id", "user_type", "status", "date_created", "emp_id")
 			->with([
-				"employee" => fn($query) => 
-					$query->with([
-						"trainings" => fn($query2) =>
-							$query2->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
-							->where("is_deleted", 0),
-					]),
+				"employee" => fn($query) => $query->withCount("trainings"),
 				"social_accounts"
 			])->get();
 		return Inertia::render("Dashboard/Management/User/Cards/index", ["users" => $users]);

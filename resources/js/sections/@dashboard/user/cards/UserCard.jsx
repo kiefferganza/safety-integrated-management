@@ -32,7 +32,9 @@ UserCard.propTypes = {
 };
 
 export default function UserCard ({ user }) {
-	const { user_type, email, social_accounts } = user;
+	const { user_type, email, social_accounts, employee } = user;
+
+	console.log(employee?.trainings_count);
 
 	return (
 		<Card sx={{ textAlign: 'center' }}>
@@ -149,7 +151,7 @@ export default function UserCard ({ user }) {
 					<Typography variant="caption" component="div" sx={{ mb: 0.75, color: 'text.disabled' }}>
 						Total Training
 					</Typography>
-					<Typography variant="subtitle1">{fShortenNumber(randomNumberRange(999, 99999))}</Typography>
+					<Typography variant="subtitle1">{employee?.trainings_count ? fShortenNumber(employee?.trainings_count) : 0}</Typography>
 				</div>
 			</Box>
 		</Card>
