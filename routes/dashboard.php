@@ -4,12 +4,20 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\TrainingClientController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware('auth')->group(function ()
 {
+	Route::get('/', function () {
+		return redirect()->route('dashboard');
+	});
+	Route::get('/dashboard', function () {
+		return redirect()->route('dashboard');
+	});
+
 	// General
 	Route::get('/dashboard/employees', fn () => Inertia::render("Dashboard/General/Employee/index"))->name('general.employee');
 
@@ -86,5 +94,14 @@ Route::middleware('auth')->group(function ()
 	Route::delete('dashboard/company/{company}', [CompanyController::class, 'destroy']);
 	Route::post('dashboard/company/delete-multiple', [CompanyController::class, 'delete_multiple'])->name('management.company.delete-multiple');
 
+
+	/**
+	 * Management - Trainings
+	 */
+	Route::get('dashboard/training/in-house', [TrainingClientController::class, 'index'])->name('training.client');
+	Route::get('dashboard/training/client', [TrainingClientController::class, 'index'])->name('training.client');
+	Route::post('dashboard/training/client', [TrainingClientController::class, 'store'])->name('training.store_client');
+	Route::put('dashboard/training/client/{training}', [TrainingClientController::class, 'update'])->name('training.update_client');
+	Route::post('dashboard/training/client/delete', [TrainingClientController::class, 'destroy'])->name('training.destroy_client');
 
 });

@@ -6,15 +6,6 @@ use Inertia\Inertia;
 Route::middleware('auth')->group(function ()
 {
 
-	Route::get('/', function ()
-	{
-		return redirect()->route('dashboard');
-	});
-	Route::get('/dashboard', function ()
-	{
-		return redirect()->route('dashboard');
-	});
-
 	Route::get('/dashboard/inventory', fn () => Inertia::render("Dashboard/General/App/index"))->name('general.inventory');
 	Route::get('/dashboard/hse-dashboard', fn () => Inertia::render("Dashboard/General/Analytics/index"))->name('dashboard');
 	// Route::get('/dashboard/banking', fn () => Inertia::render("Dashboard/General/Banking/index"))->name('general.banking');
@@ -22,13 +13,6 @@ Route::middleware('auth')->group(function ()
 	Route::get('/dashboard/file', fn () => Inertia::render("Dashboard/General/File/index"))->name('general.file');
 
 	// Management Secition
-	// // Management - User
-	// Route::get('/dashboard/user/profile', fn () => Inertia::render("Dashboard/Management/User/index"))->name('management.user.profile');
-	// Route::get('/dashboard/user/cards', fn () => Inertia::render("Dashboard/Management/User/Cards/index"))->name('management.user.cards');
-	// Route::get('/dashboard/user/list', fn () => Inertia::render("Dashboard/Management/User/List/index"))->name('management.user.list');
-	// Route::get('/dashboard/user/new', fn () => Inertia::render("Dashboard/Management/User/Create/index"))->name('management.user.new');
-	// Route::get('/dashboard/user/reece-chung/edit', fn () => Inertia::render("Dashboard/Management/User/Edit/index"))->name('management.user.edit');
-	// Route::get('/dashboard/user/account', fn () => Inertia::render("Dashboard/Management/User/Account/index"))->name('management.user.account');
 	// Management - PPE
 	Route::get('/dashboard/ppe/shop', fn () => Inertia::render("Dashboard/Management/Ecommerce/Shop/index"))->name('management.ecommerce.shop');
 	Route::get('/dashboard/ppe/product/nike-air-force-1-ndestrukt', fn () => Inertia::render("Dashboard/Management/Ecommerce/Product/index"))->name('management.ecommerce.product');

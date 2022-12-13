@@ -35,14 +35,12 @@ const TrainingAnalitic = ({ title, total, icon, color, percent, hours }) => {
 
 			<Stack spacing={0.5} sx={{ ml: 2 }}>
 				<Typography variant="h6">{title}</Typography>
-				{total > 0 && (
-					<Typography variant="subtitle2">
-						{fShortenNumber(hours) || 0}{' '}
-						<Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
-							total hours
-						</Box>
-					</Typography>
-				)}
+				<Typography variant="subtitle2">
+					{fShortenNumber(hours) || 0}{' '}
+					<Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
+						total hours
+					</Box>
+				</Typography>
 
 				<Typography variant="subtitle2">
 					{fShortenNumber(total) || 0}{' '}

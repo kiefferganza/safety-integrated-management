@@ -106,6 +106,7 @@ export const PATH_DASHBOARD = {
 		inHouse: path(ROOTS_DASHBOARD, '/training/in-house'),
 		client: path(ROOTS_DASHBOARD, '/training/client'),
 		thirdParty: path(ROOTS_DASHBOARD, '/training/third-party'),
+		new: path(ROOTS_DASHBOARD, '/training/new'),
 	},
 
 	// Toolbox Talks

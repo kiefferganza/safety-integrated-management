@@ -30,7 +30,7 @@ export function getTrainingStatus (date_expired) {
 	}
 
 	return {
-		text: "Valid ",
+		text: "Valid",
 		color: "success"
 	};
 }

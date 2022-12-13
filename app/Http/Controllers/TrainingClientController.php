@@ -30,7 +30,7 @@ class TrainingClientController extends Controller
 		}
 		$sequence =  $sequence_no_zeros . $number_of_trainings;
 
-		return Inertia::render("Training/Client/index", [
+		return Inertia::render("Dashboard/Management/Training/Client/index", [
 			"trainings" => $trainings,
 			"sequence_no" => $sequence,
 			"personel" =>  User::personel(Auth::user())->get(),
