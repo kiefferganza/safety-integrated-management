@@ -38,6 +38,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		title: Yup.string().required('Course title is required'),
 		location: Yup.string().required('Location is required'),
 		trainer: Yup.string().required('Trainer is required'),
+		contract_no: Yup.string().required("Contract no. is required"),
 		training_hrs: Yup.string().required('Training hours is required'),
 		trainees: Yup.array().min(1, "Please add at least 1 participant"),
 		training_date: Yup.string().required("Please add date range"),

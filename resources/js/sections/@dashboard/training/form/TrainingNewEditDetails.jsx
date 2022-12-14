@@ -152,19 +152,19 @@ const TrainingNewEditDetails = () => {
 							}}
 							onInputChange={(event) => {
 								if (event.type === "change") {
-									setValue('trainer', event.target.value);
+									setValue('trainer', event.target.value, { shouldValidate: true });
 								} else {
-									setValue('trainer', '');
+									setValue('trainer', '', { shouldValidate: true });
 								}
 							}}
 							onChange={(_event, newValue) => {
 								if (newValue) {
-									setValue('trainer', `${newValue?.firstname} ${newValue?.lastname}`);
+									setValue('trainer', `${newValue?.firstname} ${newValue?.lastname}`, { shouldValidate: true });
 								} else {
-									setValue('trainer', '');
+									setValue('trainer', '', { shouldValidate: true });
 								}
 							}}
-							renderInput={(params) => <TextField label="Conducted by:" {...params} value={values.trainer} />}
+							renderInput={(params) => <TextField label="Conducted by:" error={!!errors?.trainer?.message} helperText={errors?.trainer?.message || ""} {...params} value={values.trainer} />}
 						/>
 
 						<RHFTextField name="contract_no" label="Contract No." type="number" fullWidth />
