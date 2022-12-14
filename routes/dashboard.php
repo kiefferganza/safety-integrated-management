@@ -98,10 +98,11 @@ Route::middleware('auth')->group(function ()
 	/**
 	 * Management - Trainings
 	 */
-	Route::get('dashboard/training/in-house', [TrainingClientController::class, 'index'])->name('training.client');
-	Route::get('dashboard/training/client', [TrainingClientController::class, 'index'])->name('training.client');
-	Route::post('dashboard/training/client', [TrainingClientController::class, 'store'])->name('training.store_client');
-	Route::put('dashboard/training/client/{training}', [TrainingClientController::class, 'update'])->name('training.update_client');
-	Route::post('dashboard/training/client/delete', [TrainingClientController::class, 'destroy'])->name('training.destroy_client');
+	Route::get('dashboard/training/new', [TrainingClientController::class, 'create'])->name('training.management.create');
+	Route::post('dashboard/training/create', [TrainingClientController::class, 'store'])->name('training.management.store');
+	Route::get('dashboard/training/in-house', [TrainingClientController::class, 'index'])->name('training.management.client');
+	Route::get('dashboard/training/client', [TrainingClientController::class, 'index'])->name('training.management.client');
+	Route::put('dashboard/training/client/{training}', [TrainingClientController::class, 'update'])->name('training.management.update_client');
+	Route::post('dashboard/training/client/delete', [TrainingClientController::class, 'destroy'])->name('training.management.destroy_client');
 
 });

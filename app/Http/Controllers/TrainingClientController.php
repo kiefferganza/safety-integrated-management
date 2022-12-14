@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Position;
 use App\Models\Training;
 use App\Models\TrainingFiles;
@@ -14,14 +15,23 @@ use Inertia\Inertia;
 class TrainingClientController extends Controller
 {
 	public function index() {
-		$trainings = Training::where([["is_deleted", false], ["type", 4]])
+		$trainings = Training::where([["is_deleted", false], ["type", 2]])
 		->with([
 			"trainees" => fn ($query) => $query->with("position")
 		])
 		->orderByDesc("date_created")
 		->get();
 
+		return Inertia::render("Dashboard/Management/Training/Client/index", [
+			"trainings" => $trainings
+		]);
+	}
+
+
+	public function create() {
+		$trainings = Training::where([["is_deleted", false], ["type", 2]])->get();
 		$number_of_trainings = $trainings->count() + 1;
+
 		$number_of_zeroes = strlen((string) $number_of_trainings);
 		$sequence_no_zeros = '';
 		for ($i = 0; $i <= $number_of_zeroes; $i++)
@@ -30,11 +40,15 @@ class TrainingClientController extends Controller
 		}
 		$sequence =  $sequence_no_zeros . $number_of_trainings;
 
-		return Inertia::render("Dashboard/Management/Training/Client/index", [
-			"trainings" => $trainings,
+
+		return Inertia::render("Dashboard/Management/Training/Create/index",[
 			"sequence_no" => $sequence,
-			"personel" =>  User::personel(Auth::user())->get(),
-			"positions" => Position::all("position", "position_id"),
+			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+			->where([
+				["tbl_position.is_deleted", 0],
+				["tbl_employees.is_deleted", 0]
+			])
+			->get()
 		]);
 	}
 
@@ -61,9 +75,10 @@ class TrainingClientController extends Controller
 		$training->date_expired = $request->date_expired;
 		$training->training_hrs = $request->training_hrs;
 		$training->remarks = $request->remarks ? $request->remarks : null;
-		$training->status = "Scheduled";
-		$training->type = 4;
+		$training->type = (int)$request->type;
+		$training->status = "published";
 		$training->date_created = date("Y-m-d H:i:s");
+		$training->is_deleted = 0;
 
 		if($request->hasFile("src")) {
 			$file = $request->file("src")->getClientOriginalName();

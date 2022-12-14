@@ -232,7 +232,7 @@ export default function TrainingClientList ({ trainings }) {
 					]}
 					action={
 						<Button
-							to={PATH_DASHBOARD.training.new}
+							href={PATH_DASHBOARD.training.new}
 							component={Link}
 							preserveScroll
 							variant="contained"

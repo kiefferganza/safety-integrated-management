@@ -11,8 +11,7 @@ import { Box, Card, Grid, Stack, Switch, Typography, FormControlLabel, TextField
 import { fData } from '@/utils/formatNumber';
 // components
 import Label from '@/Components/label';
-import FormProvider, { RHFPhone, RHFRadioGroup, RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
-import { getCurrentUserImage, getCurrentUserName } from '@/utils/formatName';
+import FormProvider, { RHFRadioGroup, RHFTextField, RHFUploadAvatar } from '@/Components/hook-form';
 import Iconify from '@/Components/iconify';
 import { usePage } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
