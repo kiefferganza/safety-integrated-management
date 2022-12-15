@@ -273,12 +273,11 @@ class TrainingController extends Controller
 
 			foreach ($request->trainees as $trainee) {
 				if(!isset($trainee["pivot"])) {
+					// Delete
 					$training_files_to_delete = TrainingFiles::where([
 						["training_id", $training->training_id],
 						["emp_id", (int)$trainee["emp_id"]]
 					])->get()->toArray();
-
-
 					if(!empty($training_files_to_delete)) {
 						foreach ($training_files_to_delete as $file_to_delete) {
 							if(Storage::exists("public/media/training/" . $file_to_delete["src"])) {
@@ -289,34 +288,58 @@ class TrainingController extends Controller
 						TrainingFiles::find($training_files_to_delete[0]["training_files_id"])->delete();
 					}
 
-					$trainees[] = [
-						"training_id" => (int)$training->training_id,
-						"employee_id" => (int)$trainee["emp_id"],
-						"user_id" => (int)$trainee["user_id"],
-						"is_removed" => 0,
-						"date_joined" => date("Y-m-d H:i:s")
-					];
+					// Insert or update
+					$tr_trainee = TrainingTrainees::where([
+						["training_id", $training->training_id],
+						["employee_id", (int)$trainee["emp_id"]]
+					])->first();
+					
+					if(!$tr_trainee) {
+						$trainees[] = [
+							"training_id" => (int)$training->training_id,
+							"employee_id" => (int)$trainee["emp_id"],
+							"user_id" => (int)$trainee["user_id"],
+							"is_removed" => 0,
+							"date_joined" => date("Y-m-d H:i:s")
+						];
+					}
+					
 	
 					if($trainee["src"] !== null) {
 						$file = $trainee["src"]->getClientOriginalName();
 						$extension = pathinfo($file, PATHINFO_EXTENSION);
 						$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
 						$trainee["src"]->storeAs('media/training', $file_name, 'public');
-			
-						$files[] = [
-							"src" => $file_name,
-							"training_id" => (int)$training->training_id,
-							"emp_id" => (int)$trainee["emp_id"],
-							"user_id" => (int)$trainee["user_id"],
-							"is_deleted" => 0
-						];
+
+						$tr_file = TrainingFiles::where([
+							["training_id", $training->training_id],
+							["emp_id", (int)$trainee["emp_id"]]
+						])->first();
+
+						if($tr_file) {
+							if(Storage::exists("public/media/training/" . $tr_file->src)) {
+								Storage::delete("public/media/training/" . $tr_file->src);
+							}
+							$tr_file->src = $file_name;
+							$tr_file->save();
+						}else {
+							$files[] = [
+								"src" => $file_name,
+								"training_id" => (int)$training->training_id,
+								"emp_id" => (int)$trainee["emp_id"],
+								"user_id" => (int)$trainee["user_id"],
+								"is_deleted" => 0
+							];
+						}
 					}
 				}
 			}
 			if(!empty($files)) {
 				TrainingFiles::insert($files);
 			}
-			TrainingTrainees::insert($trainees);
+			if(!empty($trainees)) {
+				TrainingTrainees::insert($trainees);
+			}
 		}
 
 		return redirect()->back()
