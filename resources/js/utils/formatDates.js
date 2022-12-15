@@ -1,4 +1,4 @@
-import { isAfter } from "date-fns";
+import { isAfter, isEqual } from "date-fns";
 
 const TODAY = new Date()
 const WEEK = 7;
@@ -11,18 +11,20 @@ export function getLastTwoWeeks (date) {
 
 
 
-export function getTrainingStatus (date_expired) {
+export function getTrainingStatus (training_date, date_expired) {
 	const dateExpiredTwoWeeksBeforeDate = getLastTwoWeeks(date_expired);
 
-	if (isAfter(TODAY, dateExpiredTwoWeeksBeforeDate)) {
+	const start = new Date(training_date)
+	const end = new Date(date_expired);
+
+	if (isAfter(start, end) || isEqual(start, end)) {
 		return {
 			text: "Expired",
 			color: "error"
 		}
 	}
 
-	const end = new Date(date_expired);
-	if (TODAY > dateExpiredTwoWeeksBeforeDate && TODAY < end) {
+	if (start > dateExpiredTwoWeeksBeforeDate && start < end) {
 		return {
 			text: "Soon to Expire",
 			color: "warning"

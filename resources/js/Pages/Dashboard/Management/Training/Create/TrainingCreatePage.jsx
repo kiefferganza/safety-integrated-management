@@ -12,7 +12,7 @@ import { Head } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
-export default function TrainingCreatePage () {
+export default function TrainingCreatePage ({ isView = false, isEdit = false, currentTraining }) {
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -39,7 +39,7 @@ export default function TrainingCreatePage () {
 					]}
 				/>
 
-				<TrainingNewEditForm />
+				<TrainingNewEditForm isEdit={isEdit} isView={isView} currentTraining={currentTraining} />
 			</Container>
 		</>
 	);

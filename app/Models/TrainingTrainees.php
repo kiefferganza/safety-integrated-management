@@ -11,7 +11,7 @@ class TrainingTrainees extends Model
 
 	protected $table = 'tbl_training_trainees';
 
-	protected $primaryKey = 'trainee_id ';
+	protected $primaryKey = 'trainee_id';
 
 	const CREATED_AT = 'date_joined';
 	const UPDATED_AT = null;

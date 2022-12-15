@@ -134,11 +134,12 @@ const navConfig = [
 				path: PATH_DASHBOARD.training.root,
 				icon: ICONS.training,
 				children: [
+					{ title: 'create', path: PATH_DASHBOARD.training.new },
 					{ title: 'client', path: PATH_DASHBOARD.training.client },
 					{ title: 'induction', path: PATH_DASHBOARD.training.induction },
 					{ title: 'in house', path: PATH_DASHBOARD.training.inHouse },
 					{ title: 'third party', path: PATH_DASHBOARD.training.thirdParty },
-					{ title: 'create', path: PATH_DASHBOARD.training.new },
+					{ title: 'metrics report', path: "/#" },
 				]
 			},
 

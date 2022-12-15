@@ -7,7 +7,7 @@ import Scrollbar from '@/Components/scrollbar';
 import SearchNotFound from '@/Components/search-not-found';
 
 
-const TrainingEmployeeDialog = ({ open, selected, onClose, onSelect, personelOptions }) => {
+const TrainingEmployeeDialog = ({ open, selected, onClose, onSelect, personelOptions, trainees }) => {
 	const [searchAddress, setSearchAddress] = useState('');
 
 	const dataFiltered = applyFilter(personelOptions, searchAddress);
@@ -28,9 +28,15 @@ const TrainingEmployeeDialog = ({ open, selected, onClose, onSelect, personelOpt
 			<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ pt: 2.5, px: 3 }}>
 				<Typography variant="h6"> Select address </Typography>
 
-				<IconButton sx={{ alignSelf: 'flex-end' }} onClick={onClose}>
-					<Iconify icon="material-symbols:close" sx={{ color: 'text.disabled' }} />
-				</IconButton>
+				{trainees.length > 0 ? (
+					<IconButton sx={{ alignSelf: 'flex-end' }} onClick={onClose}>
+						<Iconify icon="material-symbols:check" sx={{ color: 'primary.main' }} />
+					</IconButton>
+				) : (
+					<IconButton sx={{ alignSelf: 'flex-end' }} onClick={onClose}>
+						<Iconify icon="material-symbols:close" sx={{ color: 'text.disabled' }} />
+					</IconButton>
+				)}
 			</Stack>
 
 			<Stack sx={{ p: 2.5 }}>

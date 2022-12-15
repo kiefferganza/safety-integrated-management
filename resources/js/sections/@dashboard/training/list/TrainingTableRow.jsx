@@ -9,6 +9,7 @@ import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
+import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
@@ -21,8 +22,8 @@ TrainingTableRow.propTypes = {
 	onDeleteRow: PropTypes.func,
 };
 
-export default function TrainingTableRow ({ row, selected, onSelectRow, onDeleteRow, onEditRow, onViewRow }) {
-	const { cms, title, traninees_count, trainer, training_date, date_expired, status } = row;
+export default function TrainingTableRow ({ row, selected, onSelectRow, onDeleteRow, type }) {
+	const { cms, title, traninees_count, trainer, training_date, date_expired, status, completed } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -63,6 +64,15 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 
 				<TableCell>{fDate(date_expired)}</TableCell>
 
+				<TableCell>
+					<Label
+						variant="soft"
+						color={completed ? "success" : "warning"}
+					>
+						{completed ? "Complete" : "Incomplete"}
+					</Label>
+				</TableCell>
+
 				<TableCell align="center">
 					<Label
 						variant="soft"
@@ -83,10 +93,9 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 				<MenuItem
 					onClick={() => {
 						handleClosePopover();
-						// Inertia.visit(`/dashboard/employee/${row.id}`, {
-						// 	only: ['employee'],
-						// 	preserveScroll: true
-						// });
+						Inertia.visit(`/dashboard/training/client/${row.id}`, {
+							preserveScroll: true
+						});
 					}}
 				>
 					<Iconify icon="eva:eye-fill" />
@@ -94,8 +103,10 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 				</MenuItem>
 				<MenuItem
 					onClick={() => {
-						onEditRow();
 						handleClosePopover();
+						Inertia.visit(`/dashboard/training/${type}/${row.id}/edit`, {
+							preserveScroll: true
+						});
 					}}
 				>
 					<Iconify icon="eva:edit-fill" />

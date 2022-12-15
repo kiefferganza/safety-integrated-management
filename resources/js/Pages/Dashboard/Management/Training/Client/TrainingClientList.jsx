@@ -28,6 +28,8 @@ import { getTrainingStatus } from '@/utils/formatDates';
 import { TrainingTableRow, TrainingTableToolbar } from '@/sections/@dashboard/training/list';
 import TrainingAnalitic from '@/sections/@dashboard/training/TrainingAnalitic';
 import { fTimestamp } from '@/utils/formatTime';
+import { Inertia } from '@inertiajs/inertia';
+import { useSwal } from '@/hooks/useSwal';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +40,7 @@ const TABLE_HEAD = [
 	{ id: 'trainer', label: 'Conducted By', align: 'left' },
 	{ id: 'training_date', label: 'Training Date', align: 'left' },
 	{ id: 'date_expired', label: 'Expiration', align: 'left' },
+	{ id: 'certificate', label: 'Certificate', align: 'left' },
 	{ id: 'status', label: 'Status', align: 'center' },
 	{ id: '' },
 ];
@@ -52,6 +55,7 @@ const STATUS_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function TrainingClientList ({ trainings }) {
+	const { load, stop } = useSwal();
 	const {
 		dense,
 		page,
@@ -89,22 +93,33 @@ export default function TrainingClientList ({ trainings }) {
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
+	const joinTrainees = (trainees, files) => {
+		const newTrainees = trainees.map(tr => {
+			const file = files.find(f => f.training_id === tr.pivot.training_id && f.emp_id === tr.employee_id);
+			return {
+				...tr,
+				file: file ? file.src : null,
+				src: file ? `/storage/media/training/${file.src}` : null
+			};
+		});
+		return newTrainees;
+	}
+
 	useEffect(() => {
 		if (trainings && trainings?.length > 0) {
 			setTableData(trainings.map(training => ({
+				...training,
 				id: training.training_id,
 				cms: training?.project_code ? `${training?.project_code}-${training?.originator}-${training?.discipline}-${training?.document_type}-${training?.document_zone ? training?.document_zone + "-" : ""}${training?.document_level ? training?.document_level + "-" : ""}${training?.sequence_no}` : "N/A",
-				title: training.title,
-				traninees_count: trainings?.traninees?.length || 0,
-				traninees: training.traninees,
-				trainer: training.trainer,
-				training_hrs: training.training_hrs,
-				training_date: training.training_date,
-				date_expired: training.date_expired,
-				status: getTrainingStatus(training.date_expired)
+				traninees_count: training.trainees?.length || 0,
+				trainees: joinTrainees(training.trainees, training.training_files),
+				status: getTrainingStatus(training.training_date, training.date_expired),
+				completed: training.trainees.length === training.training_files.length
 			})));
 		}
 	}, [trainings]);
+
+	console.log(tableData);
 
 	const dataFiltered = applyFilter({
 		inputData: tableData,
@@ -170,37 +185,33 @@ export default function TrainingClientList ({ trainings }) {
 	}
 
 	const handleDeleteRow = (id) => {
-		const deleteRow = tableData.filter((row) => row.id !== id);
-		setSelected([]);
-		setTableData(deleteRow);
-
-		if (page > 0) {
-			if (dataInPage.length < 2) {
-				setPage(page - 1);
+		Inertia.post(route('training.management.destroy'), { ids: [id] }, {
+			preserveState: true,
+			preserveScroll: true,
+			onStart () {
+				setOpenConfirm(false);
+				load("Deleting training", "please wait...");
+			},
+			onFinish () {
+				stop();
 			}
-		}
+		});
 	};
 
 	const handleDeleteRows = (selected) => {
-		const deleteRows = tableData.filter((row) => !selected.includes(row.id));
-		setSelected([]);
-		setTableData(deleteRows);
-
-		if (page > 0) {
-			if (selected.length === dataInPage.length) {
-				setPage(page - 1);
-			} else if (selected.length === dataFiltered.length) {
-				setPage(0);
-			} else if (selected.length > dataInPage.length) {
-				const newPage = Math.ceil((tableData.length - selected.length) / rowsPerPage) - 1;
-				setPage(newPage);
+		Inertia.post(route('training.management.destroy'), { ids: selected }, {
+			preserveState: true,
+			preserveScroll: true,
+			onStart () {
+				setOpenConfirm(false);
+				load("Deleting training", "please wait...");
+			},
+			onFinish () {
+				stop();
 			}
-		}
+		});
 	};
 
-	const handleEditRow = (id) => {
-		// navigate(PATH_DASHBOARD.eCommerce.edit(paramCase(id)));
-	};
 
 	const handleViewRow = (id) => {
 		// navigate(PATH_DASHBOARD.eCommerce.view(paramCase(id)));
@@ -372,8 +383,7 @@ export default function TrainingClientList ({ trainings }) {
 													selected={selected.includes(row.id)}
 													onSelectRow={() => onSelectRow(row.id)}
 													onDeleteRow={() => handleDeleteRow(row.id)}
-													onEditRow={() => handleEditRow(row.name)}
-													onViewRow={() => handleViewRow(row.name)}
+													type="client"
 												/>
 											) : (
 												!isNotFound && <TableSkeleton key={index} sx={{ height: denseHeight }} />

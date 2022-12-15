@@ -45,15 +45,19 @@ class Training extends Model
 	];
 
 	public function trainees() {
-		return $this->belongsToMany(Employee::class, "tbl_training_trainees", "training_id", "employee_id", "training_id")->wherePivot("is_removed", false);
+		return $this->belongsToMany(Employee::class, "tbl_training_trainees", "training_id", "employee_id", "training_id")->wherePivot("is_removed", false)->withPivot("trainee_id");
 	}
 
-	public function trainee_pivot() {
-		return $this->hasMany(TrainingTrainees::class, "training_id");
+	// public function trainee_pivot() {
+	// 	return $this->hasMany(TrainingTrainees::class, "training_id");
+	// }
+
+	public function training_files() {
+		return $this->hasMany(TrainingFiles::class, "training_id");
 	}
 
-	public function file() {
-		return $this->hasOne(TrainingFiles::class, "training_id");
+	public function external_details() {
+		return $this->hasOne(TrainingExternal::class, "training_id");
 	}
 
 }

@@ -12,7 +12,7 @@ const TYPE_OPTIONS = [
 	{ type: 4, label: 'Induction' },
 ];
 
-const TrainingProjectDetails = () => {
+const TrainingProjectDetails = ({ isView, isEdit }) => {
 
 	return (
 		<Box sx={{ p: 3 }}>
@@ -21,6 +21,7 @@ const TrainingProjectDetails = () => {
 					Project Info
 				</Typography>
 				<RHFSelect
+					disabled={isView || isEdit}
 					size="small"
 					name="type"
 					label="Course Type"
@@ -40,6 +41,7 @@ const TrainingProjectDetails = () => {
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
 						<RHFTextField
+							disabled={isView}
 							name="project_code"
 							label="Project Code"
 							inputProps={{
@@ -47,18 +49,18 @@ const TrainingProjectDetails = () => {
 							}}
 						/>
 
-						<RHFTextField name="originator" label="Originator" />
+						<RHFTextField disabled={isView} name="originator" label="Originator" />
 
-						<RHFTextField name="discipline" label="Discipline" />
+						<RHFTextField disabled={isView} name="discipline" label="Discipline" />
 
 					</Stack>
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-						<RHFTextField name="document_type" label="Type" />
+						<RHFTextField disabled={isView} name="document_type" label="Type" />
 
-						<RHFTextField name="document_zone" label="Zone (Optional)" />
+						<RHFTextField disabled={isView} name="document_zone" label="Zone (Optional)" />
 
-						<RHFTextField name="document_level" label="Level (Optional)" />
+						<RHFTextField disabled={isView} name="document_level" label="Level (Optional)" />
 
 					</Stack>
 				</Stack>

@@ -4,7 +4,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PositionController;
-use App\Http\Controllers\TrainingClientController;
+use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -98,11 +98,22 @@ Route::middleware('auth')->group(function ()
 	/**
 	 * Management - Trainings
 	 */
-	Route::get('dashboard/training/new', [TrainingClientController::class, 'create'])->name('training.management.create');
-	Route::post('dashboard/training/create', [TrainingClientController::class, 'store'])->name('training.management.store');
-	Route::get('dashboard/training/in-house', [TrainingClientController::class, 'index'])->name('training.management.client');
-	Route::get('dashboard/training/client', [TrainingClientController::class, 'index'])->name('training.management.client');
-	Route::put('dashboard/training/client/{training}', [TrainingClientController::class, 'update'])->name('training.management.update_client');
-	Route::post('dashboard/training/client/delete', [TrainingClientController::class, 'destroy'])->name('training.management.destroy_client');
+	Route::get('dashboard/training/new', [TrainingController::class, 'create'])->name('training.management.create');
+	Route::post('dashboard/training/create', [TrainingController::class, 'store'])->name('training.management.store');
+	Route::get('dashboard/training/in-house', [TrainingController::class, 'index'])->name('training.management.client');
+	Route::get('dashboard/training/client', [TrainingController::class, 'index'])->name('training.management.client');
+	Route::put('dashboard/training/{training}', [TrainingController::class, 'update'])->name('training.management.update');
+	Route::post('dashboard/training/delete', [TrainingController::class, 'destroy'])->name('training.management.destroy');
+	// Show
+	Route::get('dashboard/training/client/{training}', [TrainingController::class, 'show_client'])->name('training.management.client.show');
+	Route::get('dashboard/training/induction/{training}', [TrainingController::class, 'show_induction'])->name('training.management.induction.show');
+	Route::get('dashboard/training/in-house/{training}', [TrainingController::class, 'show_in_house'])->name('training.management.in_house.show');
+	Route::get('dashboard/training/third-party/{training}', [TrainingController::class, 'show_third_party'])->name('training.management.third_party.show');
+	// Update
+	Route::post('dashboard/training/{training}/edit', [TrainingController::class, 'update']);
+	Route::get('dashboard/training/client/{training}/edit', [TrainingController::class, 'edit']);
+	Route::get('dashboard/training/induction/{training}/edit', [TrainingController::class, 'edit']);
+	Route::get('dashboard/training/in-house/{training}/edit', [TrainingController::class, 'edit']);
+	Route::get('dashboard/training/third-party/{training}/edit', [TrainingController::class, 'edit']);
 
 });

@@ -26,11 +26,11 @@ TrainingNewEditForm.propTypes = {
 	currentTraining: PropTypes.object,
 };
 
-export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
+export default function TrainingNewEditForm ({ isEdit, isView = false, currentTraining }) {
 	const { sequence_no } = usePage().props;
 	const [loadingSend, setLoadingSend] = useState(false);
 
-	const NewUserSchema = Yup.object().shape({
+	const newTrainingSchema = Yup.object().shape({
 		project_code: Yup.string().required('Project Code is required'),
 		originator: Yup.string().required('Originator is required'),
 		discipline: Yup.string().required('Discipline is required'),
@@ -43,40 +43,47 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		trainees: Yup.array().min(1, "Please add at least 1 participant"),
 		training_date: Yup.string().required("Please add date range"),
 		date_expired: Yup.string().required("Please add date range"),
-		type: Yup.string().required("Please select course type")
+		type: Yup.string().required("Please select course type"),
+		// External
+		reviewed_by: Yup.string().when("type", (type, schema) => type == "3" ? schema.required() : schema.notRequired()),
+		approved_by: Yup.string().when("type", (type, schema) => type == "3" ? schema.required() : schema.notRequired()),
+		currency: Yup.string().when("type", (type, schema) => type == "3" ? schema.required() : schema.notRequired()),
+		course_price: Yup.string().when("type", (type, schema) => type == "3" ? schema.required() : schema.notRequired()),
+		training_center: Yup.string().when("type", (type, schema) => type == "3" ? schema.required() : schema.notRequired()),
 	});
 
-	const defaultValues = useMemo(
-		() => ({
-			sequence_no: currentTraining?.invoiceNumber || sequence_no || '',
-			project_code: currentTraining?.project_code || '',
-			originator: currentTraining?.originator || '',
-			discipline: currentTraining?.discipline || '',
-			document_type: currentTraining?.document_type || '',
-			document_zone: currentTraining?.document_zone || '',
-			document_level: currentTraining?.document_level || '',
-			title: currentTraining?.title || '',
-			location: currentTraining?.location || '',
-			contract_no: currentTraining?.contract_no || '',
-			trainer: currentTraining?.trainer || '',
-			src: currentTraining?.src || null,
-			training_hrs: '',
-			training_date: '',
-			date_expired: '',
-			trainees: [],
-			type: "2"
-		}),
-		[currentTraining]
-	);
+	const defaultValues = useMemo(() => ({
+		sequence_no: currentTraining?.sequence_no || sequence_no || '',
+		project_code: currentTraining?.project_code || '',
+		originator: currentTraining?.originator || '',
+		discipline: currentTraining?.discipline || '',
+		document_type: currentTraining?.document_type || '',
+		document_zone: currentTraining?.document_zone || '',
+		document_level: currentTraining?.document_level || '',
+		title: currentTraining?.title || '',
+		location: currentTraining?.location || '',
+		contract_no: currentTraining?.contract_no || '',
+		trainer: currentTraining?.trainer || '',
+		training_hrs: currentTraining?.training_hrs || '',
+		training_date: currentTraining?.training_date || '',
+		date_expired: currentTraining?.date_expired || '',
+		trainees: currentTraining?.trainees || [],
+		type: currentTraining?.type || "2",
+		reviewed_by: currentTraining?.reviewed_by || '',
+		approved_by: currentTraining?.approved_by || '',
+		currency: currentTraining?.currency || '',
+		course_price: currentTraining?.course_price || '',
+	}), [currentTraining]);
 
 	const methods = useForm({
-		resolver: yupResolver(NewUserSchema),
+		resolver: yupResolver(newTrainingSchema),
 		defaultValues,
 	});
 
 	const {
 		reset,
-		handleSubmit
+		handleSubmit,
+		formState: { errors }
 	} = methods;
 
 	useEffect(() => {
@@ -91,18 +98,33 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 
 	const handleCreateAndSend = async (data) => {
 		try {
-			Inertia.post(route('training.management.store'), data, {
-				onStart () {
-					setLoadingSend(true);
-				},
-				onSuccess () {
-					reset();
-				},
-				onFinish () {
-					setLoadingSend(false);
-				}
-			});
-			setLoadingSend(false);
+			if (isEdit) {
+				Inertia.post(`/dashboard/training/${currentTraining.training_id}/edit`, data, {
+					preserveScroll: true,
+					onStart () {
+						setLoadingSend(true);
+					},
+					onSuccess () {
+						reset(defaultValues);
+					},
+					onFinish () {
+						setLoadingSend(false);
+					}
+				});
+			} else {
+				Inertia.post(route('training.management.store'), data, {
+					preserveScroll: true,
+					onStart () {
+						setLoadingSend(true);
+					},
+					onSuccess () {
+						reset();
+					},
+					onFinish () {
+						setLoadingSend(false);
+					}
+				});
+			}
 		} catch (error) {
 			console.error(error);
 			setLoadingSend(false);
@@ -113,22 +135,24 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		<FormProvider methods={methods}>
 			<Card>
 
-				<TrainingProjectDetails />
+				<TrainingProjectDetails isView={isView} isEdit={isEdit} />
 
-				<TrainingNewEditDetails />
+				<TrainingNewEditDetails isView={isView} isEdit={isEdit} currentTraining={currentTraining} />
 
 			</Card>
 
-			<Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
-				<LoadingButton
-					size="large"
-					variant="contained"
-					loading={loadingSend}
-					onClick={handleSubmit(handleCreateAndSend)}
-				>
-					{isEdit ? 'Update' : 'Create'}
-				</LoadingButton>
-			</Stack>
+			{!isView && (
+				<Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
+					<LoadingButton
+						size="large"
+						variant="contained"
+						loading={loadingSend}
+						onClick={handleSubmit(handleCreateAndSend)}
+					>
+						{isEdit ? 'Update' : 'Create'}
+					</LoadingButton>
+				</Stack>
+			)}
 		</FormProvider>
 	);
 }
