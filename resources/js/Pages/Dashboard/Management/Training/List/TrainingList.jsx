@@ -36,9 +36,8 @@ import { useSwal } from '@/hooks/useSwal';
 const TABLE_HEAD = [
 	{ id: 'cms', label: 'CMS Number', align: 'left' },
 	{ id: 'title', label: 'Title', align: 'left' },
-	{ id: 'traninees_count', label: 'No. of Participants', align: 'center' },
-	{ id: 'trainer', label: 'Conducted By', align: 'left' },
-	{ id: 'training_date', label: 'Training Date', align: 'left' },
+	{ id: 'traninees_count', label: 'Participants', align: 'center' },
+	{ id: 'training_date', label: 'Training', align: 'left' },
 	{ id: 'date_expired', label: 'Expiration', align: 'left' },
 	{ id: 'certificate', label: 'Certificate', align: 'left' },
 	{ id: 'status', label: 'Status', align: 'center' },
@@ -54,7 +53,7 @@ const STATUS_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function TrainingClientList ({ trainings }) {
+export default function TrainingClientList ({ trainings, module }) {
 	const { load, stop } = useSwal();
 	const {
 		dense,
@@ -95,7 +94,7 @@ export default function TrainingClientList ({ trainings }) {
 
 	const joinTrainees = (trainees, files) => {
 		const newTrainees = trainees.map(tr => {
-			const file = files.find(f => f.training_id === tr.pivot.training_id && f.emp_id === tr.employee_id);
+			const file = files?.find(f => f.training_id === tr.pivot.training_id && f.emp_id === tr.employee_id);
 			return {
 				...tr,
 				file: file ? file.src : null,
@@ -119,8 +118,6 @@ export default function TrainingClientList ({ trainings }) {
 		}
 	}, [trainings]);
 
-	console.log(tableData);
-
 	const dataFiltered = applyFilter({
 		inputData: tableData,
 		comparator: getComparator(order, orderBy),
@@ -130,7 +127,6 @@ export default function TrainingClientList ({ trainings }) {
 		filterEndDate
 	});
 
-	const dataInPage = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
 	const denseHeight = dense ? 60 : 80;
 
@@ -193,6 +189,7 @@ export default function TrainingClientList ({ trainings }) {
 				load("Deleting training", "please wait...");
 			},
 			onFinish () {
+				setSelected([]);
 				stop();
 			}
 		});
@@ -207,15 +204,12 @@ export default function TrainingClientList ({ trainings }) {
 				load("Deleting training", "please wait...");
 			},
 			onFinish () {
+				setSelected([]);
 				stop();
 			}
 		});
 	};
 
-
-	const handleViewRow = (id) => {
-		// navigate(PATH_DASHBOARD.eCommerce.view(paramCase(id)));
-	};
 
 	const handleResetFilter = () => {
 		setFilterName('');
@@ -227,17 +221,17 @@ export default function TrainingClientList ({ trainings }) {
 	return (
 		<>
 			<Head>
-				<title> Training: Client List</title>
+				<title>{`${module} List`}</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Client List"
+					heading={`${module} List`}
 					links={[
 						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{
-							name: 'Client',
-							href: PATH_DASHBOARD.training.root,
+							name: module,
+							href: PATH_DASHBOARD.training.new,
 						},
 						{ name: 'List' },
 					]}

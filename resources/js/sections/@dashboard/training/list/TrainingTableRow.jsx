@@ -23,7 +23,7 @@ TrainingTableRow.propTypes = {
 };
 
 export default function TrainingTableRow ({ row, selected, onSelectRow, onDeleteRow, type }) {
-	const { cms, title, traninees_count, trainer, training_date, date_expired, status, completed } = row;
+	const { cms, title, traninees_count, training_date, date_expired, status, completed } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -57,8 +57,6 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 				<TableCell>{title}</TableCell>
 
 				<TableCell align="center">{traninees_count}</TableCell>
-
-				<TableCell>{trainer}</TableCell>
 
 				<TableCell>{fDate(training_date)}</TableCell>
 

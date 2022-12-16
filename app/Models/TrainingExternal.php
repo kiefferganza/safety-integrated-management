@@ -20,4 +20,13 @@ class TrainingExternal extends Model
 	protected $guarded = [];
 
 
+	public function reviewer() {
+		return $this->hasOne(Employee::class, "employee_id", "reviewed_by");
+	}
+
+	public function approval() {
+		return $this->hasOne(Employee::class, "employee_id", "approved_by");
+	}
+
+
 }

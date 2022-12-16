@@ -60,7 +60,7 @@ export default function InvoiceDetails ({ invoice }) {
 
 	return (
 		<>
-			<InvoiceToolbar invoice={invoice} />
+			{/* <InvoiceToolbar invoice={invoice} /> */}
 
 			<Card sx={{ pt: 5, px: 5 }}>
 				<Grid container>

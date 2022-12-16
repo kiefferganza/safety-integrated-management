@@ -28,6 +28,8 @@ const index = ({ training }) => {
 		}
 	}, [training]);
 
+	console.log({ training });
+
 	return (
 		<DashboardLayout>
 			<TrainingCreatePage isEdit currentTraining={trainingData} />

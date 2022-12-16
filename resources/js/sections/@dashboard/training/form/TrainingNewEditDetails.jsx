@@ -15,7 +15,7 @@ import { currencies } from '@/_mock/arrays/_currencies';
 
 // ----------------------------------------------------------------------
 
-const TrainingNewEditDetails = ({ isView, currentTraining, isEdit }) => {
+const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 	const { personel } = usePage().props;
 	const [openParticipants, setOpenParticipants] = useState(false);
 	const { setValue, watch, formState: { errors } } = useFormContext();
@@ -94,6 +94,14 @@ const TrainingNewEditDetails = ({ isView, currentTraining, isEdit }) => {
 		}
 	}
 
+	const getAutocompleteValue = (id) => {
+		const findPerson = personel.find(per => per.employee_id == id);
+		if (findPerson) {
+			return `${findPerson.firstname} ${findPerson.lastname}`
+		}
+		return '';
+	}
+
 	return (
 		<Box sx={{ p: 3 }}>
 			<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
@@ -103,7 +111,7 @@ const TrainingNewEditDetails = ({ isView, currentTraining, isEdit }) => {
 				<Box>
 					<Button
 						variant="soft"
-						disabled={isView}
+
 						color={!!errors?.training_date?.message || !!errors?.date_expired?.message ? "error" : "inherit"}
 						sx={{
 							textTransform: 'unset',
@@ -130,116 +138,105 @@ const TrainingNewEditDetails = ({ isView, currentTraining, isEdit }) => {
 
 						<RHFTextField disabled name="sequence_no" label="Squence No." fullWidth />
 
-						<RHFTextField disabled={isView} name="title" label="Course Title" fullWidth />
+						<RHFTextField name="title" label="Course Title" fullWidth />
 
-						<RHFTextField disabled={isView} name="location" label="Training Location" fullWidth />
+						<RHFTextField name="location" label="Training Location" fullWidth />
 
 					</Stack>
 
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-						{isView ? (
-							<RHFTextField disabled={isView} name="trainer" label="Conducted by:" fullWidth />
-						) : (
-							<Autocomplete
-								disabled={isView}
-								clearOnEscape
-								name="trainer"
-								options={personel}
-								fullWidth
-								freeSolo
-								inputValue={values.trainer}
-								getOptionLabel={(option) => (`${option?.firstname} ${option?.lastname}`)}
-								renderOption={(props, option) => {
-									return (
-										<li {...props} key={option.employee_id}>
-											{`${option?.firstname} ${option?.lastname}`}
-										</li>
-									);
-								}}
-								onInputChange={(event) => {
-									if (event?.type === "change") {
-										setValue('trainer', event.target.value, { shouldValidate: true });
-									} else {
-										setValue('trainer', '', { shouldValidate: true });
-									}
-								}}
-								onChange={(_event, newValue) => {
-									if (newValue) {
-										setValue('trainer', `${newValue?.firstname} ${newValue?.lastname}`, { shouldValidate: true });
-									} else {
-										setValue('trainer', '', { shouldValidate: true });
-									}
-								}}
-								renderInput={(params) =>
-									<TextField
-										{...params}
-										label="Conducted by:"
-										value={values.trainer}
-										error={!!errors?.trainer?.message}
-										helperText={errors?.trainer?.message || ""}
-									/>
+						<Autocomplete
+
+							clearOnEscape
+							name="trainer"
+							options={personel}
+							fullWidth
+							freeSolo
+							inputValue={values.trainer}
+							getOptionLabel={(option) => (`${option?.firstname} ${option?.lastname}`)}
+							renderOption={(props, option) => {
+								return (
+									<li {...props} key={option.employee_id}>
+										{`${option?.firstname} ${option?.lastname}`}
+									</li>
+								);
+							}}
+							onInputChange={(event) => {
+								if (event?.type === "change") {
+									setValue('trainer', event.target.value, { shouldValidate: true });
+								} else {
+									setValue('trainer', '', { shouldValidate: true });
 								}
-							/>
-						)}
+							}}
+							onChange={(_event, newValue) => {
+								if (newValue) {
+									setValue('trainer', `${newValue?.firstname} ${newValue?.lastname}`, { shouldValidate: true });
+								} else {
+									setValue('trainer', '', { shouldValidate: true });
+								}
+							}}
+							renderInput={(params) =>
+								<TextField
+									{...params}
+									label="Conducted by:"
+									value={values.trainer}
+									error={!!errors?.trainer?.message}
+									helperText={errors?.trainer?.message || ""}
+								/>
+							}
+						/>
 
 
-						<RHFTextField disabled={isView} name="contract_no" label="Contract No." type="number" fullWidth />
+						<RHFTextField name="contract_no" label="Contract No." type="number" fullWidth />
 
-						<RHFTextField disabled={isView} name="training_hrs" label="Training Hours" type="number" fullWidth />
+						<RHFTextField name="training_hrs" label="Training Hours" type="number" fullWidth />
 
 					</Stack>
 
 					{values.type == "3" && (
 						<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-							{isView ? (
-								<>
-									<RHFTextField disabled={isView} name="reviewed_by" label="Reviewed By:" fullWidth />
-									<RHFTextField disabled={isView} name="approved_by" label="Approved By:" fullWidth />
-								</>
-							) : (
-								<>
-									<Autocomplete
-										fullWidth
-										onChange={(_event, newValue) => {
-											if (newValue) {
-												setValue('reviewed_by', newValue.id, { shouldValidate: true });
-											} else {
-												setValue('reviewed_by', '', { shouldValidate: true });
-											}
-										}}
-										options={personel.map((option) => ({ id: option.employee_id, label: `${option?.firstname} ${option?.lastname}` }))}
-										renderOption={(props, option) => {
-											return (
-												<li {...props} key={option.id}>
-													{option.label}
-												</li>
-											);
-										}}
-										renderInput={(params) => <TextField label="Reviewed By:" {...params} />}
-									/>
-									<Autocomplete
-										fullWidth
-										onChange={(_event, newValue) => {
-											if (newValue) {
-												setValue('approved_by', newValue.id, { shouldValidate: true });
-											} else {
-												setValue('approved_by', '', { shouldValidate: true });
-											}
-										}}
-										options={personel.map((option) => ({ id: option.employee_id, label: `${option?.firstname} ${option?.lastname}` }))}
-										renderOption={(props, option) => {
-											return (
-												<li {...props} key={option.id}>
-													{option.label}
-												</li>
-											);
-										}}
-										renderInput={(params) => <TextField label="Approved By:" {...params} />}
-									/>
-								</>
-							)}
+							<Autocomplete
+								fullWidth
+								value={getAutocompleteValue(values.reviewed_by)}
+								onChange={(_event, newValue) => {
+									if (newValue) {
+										setValue('reviewed_by', newValue.id, { shouldValidate: true });
+									} else {
+										setValue('reviewed_by', '', { shouldValidate: true });
+									}
+								}}
+								options={personel.map((option) => ({ id: option.employee_id, label: `${option?.firstname} ${option?.lastname}` }))}
+								renderOption={(props, option) => {
+									return (
+										<li {...props} key={option.id}>
+											{option.label}
+										</li>
+									);
+								}}
+								renderInput={(params) => <TextField label="Reviewed By:" {...params} />}
+							/>
+							<Autocomplete
+								fullWidth
+								value={getAutocompleteValue(values.approved_by)}
+								onChange={(_event, newValue) => {
+									if (newValue) {
+										setValue('approved_by', newValue.id, { shouldValidate: true });
+									} else {
+										setValue('approved_by', '', { shouldValidate: true });
+									}
+								}}
+								options={personel.map((option) => ({ id: option.employee_id, label: `${option?.firstname} ${option?.lastname}` }))}
+								renderOption={(props, option) => {
+									return (
+										<li {...props} key={option.id}>
+											{option.label}
+										</li>
+									);
+								}}
+								renderInput={(params) => <TextField label="Approved By:" {...params} />}
+							/>
 
-							<RHFTextField disabled={isView} name="training_center" label="Training Center" fullWidth />
+							<RHFTextField name="training_center" label="Training Center" fullWidth />
 						</Stack>
 					)}
 
@@ -253,7 +250,7 @@ const TrainingNewEditDetails = ({ isView, currentTraining, isEdit }) => {
 					Participants
 				</Typography>
 				<Box>
-					<Button disabled={isView} size="small" color={!!errors?.trainees?.message ? "error" : "primary"} startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenParticipants}>
+					<Button size="small" color={!!errors?.trainees?.message ? "error" : "primary"} startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenParticipants}>
 						Add Participants
 					</Button>
 					{!!errors?.trainees?.message &&
@@ -263,7 +260,7 @@ const TrainingNewEditDetails = ({ isView, currentTraining, isEdit }) => {
 			</Stack>
 
 			<Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3} sx={{ paddingX: { xs: 0, md: 8 } }}>
-				<TrainingParticipantTable isView={isView} trainees={values.trainees} handleRemove={handleSelectParticipants} />
+				<TrainingParticipantTable trainees={values.trainees} handleRemove={handleSelectParticipants} />
 			</Stack>
 
 			{values.type == "3" && (
@@ -277,35 +274,25 @@ const TrainingNewEditDetails = ({ isView, currentTraining, isEdit }) => {
 					>
 
 						<Stack spacing={2} justifyContent="flex-end" direction={{ xs: 'column', md: 'row' }} sx={{ width: 1 }}>
-							{isView ? (
-								<RHFTextField
-									disabled={isView}
-									size="small"
-									label="Currency"
-									name="currency"
-									sx={{ maxWidth: { md: 200 } }}
-								/>
-							) : (
-								<RHFAutocomplete
-									name="currency"
-									size="small"
-									fullWidth
-									sx={{ maxWidth: { md: 200 } }}
-									options={Object.keys(currencies)}
-									onChange={(_, newValue) => {
-										console.log(newValue);
-										if (newValue) {
-											setValue("currency", newValue, { shouldValidate: true });
-										} else {
-											setValue("currency", '', { shouldValidate: true });
-										}
-									}}
-									renderInput={(params) => <TextField value={values.currency} label="Currency" {...params} />}
-								/>
-							)}
+							<RHFAutocomplete
+								name="currency"
+								size="small"
+								fullWidth
+								sx={{ maxWidth: { md: 200 } }}
+								options={Object.keys(currencies)}
+								onChange={(_, newValue) => {
+									console.log(newValue);
+									if (newValue) {
+										setValue("currency", newValue, { shouldValidate: true });
+									} else {
+										setValue("currency", '', { shouldValidate: true });
+									}
+								}}
+								renderInput={(params) => <TextField value={values.currency} label="Currency" {...params} />}
+							/>
 
 							<RHFTextField
-								disabled={isView}
+
 								size="small"
 								label="Price"
 								name="course_price"

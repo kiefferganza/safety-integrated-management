@@ -1,11 +1,11 @@
 import DashboardLayout from '@/Layouts/dashboard/DashboardLayout';
-import TrainingClientList from './TrainingClientList';
+import TrainingList from './TrainingList';
 
-const index = ({ trainings }) => {
+const index = ({ trainings, module }) => {
 
 	return (
 		<DashboardLayout>
-			<TrainingClientList trainings={trainings} />
+			<TrainingList trainings={trainings} module={module} />
 		</DashboardLayout>
 	)
 }

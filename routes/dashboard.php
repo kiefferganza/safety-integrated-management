@@ -98,10 +98,14 @@ Route::middleware('auth')->group(function ()
 	/**
 	 * Management - Trainings
 	 */
+	// Lists
+	Route::get('dashboard/training/client', [TrainingController::class, 'index'])->name('training.management.client');
+	Route::get('dashboard/training/in-house', [TrainingController::class, 'in_house'])->name('training.management.in_house');
+	Route::get('dashboard/training/induction', [TrainingController::class, 'induction'])->name('training.management.in_house');
+	Route::get('dashboard/training/third-party', [TrainingController::class, 'external'])->name('training.management.in_house');
+
 	Route::get('dashboard/training/new', [TrainingController::class, 'create'])->name('training.management.create');
 	Route::post('dashboard/training/create', [TrainingController::class, 'store'])->name('training.management.store');
-	Route::get('dashboard/training/in-house', [TrainingController::class, 'index'])->name('training.management.client');
-	Route::get('dashboard/training/client', [TrainingController::class, 'index'])->name('training.management.client');
 	Route::put('dashboard/training/{training}', [TrainingController::class, 'update'])->name('training.management.update');
 	Route::post('dashboard/training/delete', [TrainingController::class, 'destroy'])->name('training.management.destroy');
 	// Show

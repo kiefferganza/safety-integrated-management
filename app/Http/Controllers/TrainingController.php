@@ -26,8 +26,9 @@ class TrainingController extends Controller
 		->orderByDesc("date_created")
 		->get();
 
-		return Inertia::render("Dashboard/Management/Training/Client/index", [
-			"trainings" => $trainings
+		return Inertia::render("Dashboard/Management/Training/List/index", [
+			"trainings" => $trainings,
+			"module" => "Client"
 		]);
 	}
 
@@ -35,39 +36,45 @@ class TrainingController extends Controller
 	public function in_house() {
 		$trainings = Training::where([["is_deleted", false], ["type", 1]])
 		->with([
-			"trainees" => fn ($query) => $query->with("position")
+			"trainees" => fn ($query) => $query->with("position"),
+			"training_files"
 		])
 		->orderByDesc("date_created")
 		->get();
 
-		return Inertia::render("Dashboard/Management/Training/Client/index", [
-			"trainings" => $trainings
+		return Inertia::render("Dashboard/Management/Training/List/index", [
+			"trainings" => $trainings,
+			"module" => "In House"
 		]);
 	}
 
 	public function external() {
 		$trainings = Training::where([["is_deleted", false], ["type", 3]])
 		->with([
-			"trainees" => fn ($query) => $query->with("position")
+			"trainees" => fn ($query) => $query->with("position"),
+			"training_files"
 		])
 		->orderByDesc("date_created")
 		->get();
 
-		return Inertia::render("Dashboard/Management/Training/Client/index", [
-			"trainings" => $trainings
+		return Inertia::render("Dashboard/Management/Training/List/index", [
+			"trainings" => $trainings,
+			"module" => "Third Party"
 		]);
 	}
 
 	public function induction() {
 		$trainings = Training::where([["is_deleted", false], ["type", 4]])
 		->with([
-			"trainees" => fn ($query) => $query->with("position")
+			"trainees" => fn ($query) => $query->with("position"),
+			"training_files"
 		])
 		->orderByDesc("date_created")
 		->get();
 
-		return Inertia::render("Dashboard/Management/Training/Client/index", [
-			"trainings" => $trainings
+		return Inertia::render("Dashboard/Management/Training/List/index", [
+			"trainings" => $trainings,
+			"module" => "Induction"
 		]);
 	}
 
@@ -389,7 +396,8 @@ class TrainingController extends Controller
 				["tbl_position.is_deleted", 0],
 				["tbl_employees.is_deleted", 0]
 			])
-			->get()
+			->get(),
+			"module" => "client"
 		]);
 	}
 
@@ -405,7 +413,8 @@ class TrainingController extends Controller
 				["tbl_position.is_deleted", 0],
 				["tbl_employees.is_deleted", 0]
 			])
-			->get()
+			->get(),
+			"module" => "third party"
 		]);
 	}
 

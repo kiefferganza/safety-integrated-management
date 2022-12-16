@@ -6,7 +6,7 @@ import Scrollbar from '@/Components/scrollbar/Scrollbar';
 import Iconify from '@/Components/iconify';
 import TrainingFileUploadDialog from './TrainingFileUploadDialog';
 
-const TrainingParticipantTable = ({ trainees, handleRemove, isView = false }) => {
+const TrainingParticipantTable = ({ trainees, handleRemove }) => {
 	const [openUploadFile, setOpenUploadFile] = useState(false);
 	const [selectedTrainee, setSelectedTrainee] = useState(null);
 
@@ -75,15 +75,15 @@ const TrainingParticipantTable = ({ trainees, handleRemove, isView = false }) =>
 												startIcon={<Iconify icon="eva:cloud-upload-fill" />}
 												onClick={() => handleOpenUploadFile(row)}
 												color="primary"
-												disabled={isView}
+
 											>
 												{row?.src ? "Update Certificate" : "Upload"}
 											</Button>
 										</TableCell>
 
 										<TableCell align="right">
-											<IconButton disabled={isView} onClick={() => handleRemove({ employee_id: row.emp_id })}>
-												<Iconify icon="eva:trash-2-outline" sx={{ color: isView ? 'text.secondary' : 'error.main' }} />
+											<IconButton onClick={() => handleRemove({ employee_id: row.emp_id })}>
+												<Iconify icon="eva:trash-2-outline" sx={{ color: 'error.main' }} />
 											</IconButton>
 										</TableCell>
 									</TableRow>

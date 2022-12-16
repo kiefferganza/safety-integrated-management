@@ -12,18 +12,33 @@ import { Head } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
-export default function TrainingCreatePage ({ isView = false, isEdit = false, currentTraining }) {
+// const TYPE_OPTIONS = [
+// 	{ type: 2, label: 'Client' },
+// 	{ type: 1, label: 'In-house' },
+// 	{ type: 3, label: 'External' },
+// 	{ type: 4, label: 'Induction' },
+// ];
+
+const TYPE_OPTIONS = {
+	2: 'client',
+	1: 'inHouse',
+	3: 'thirdParty',
+	4: 'induction'
+}
+
+
+export default function TrainingCreatePage ({ isEdit = false, currentTraining }) {
 	const { themeStretch } = useSettingsContext();
 
 	return (
 		<>
 			<Head>
-				<title>Create a new training</title>
+				<title>{isEdit ? 'Update course' : 'New training'}</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Create a new training"
+					heading={isEdit ? 'Update course' : 'New training'}
 					links={[
 						{
 							name: 'Dashboard',
@@ -31,15 +46,15 @@ export default function TrainingCreatePage ({ isView = false, isEdit = false, cu
 						},
 						{
 							name: 'List',
-							href: PATH_DASHBOARD.training.client,
+							href: (isEdit && currentTraining) ? PATH_DASHBOARD.training[TYPE_OPTIONS[currentTraining.type]] : PATH_DASHBOARD.training.client,
 						},
 						{
-							name: 'New Training',
+							name: isEdit ? 'Update course' : 'New training',
 						},
 					]}
 				/>
 
-				<TrainingNewEditForm isEdit={isEdit} isView={isView} currentTraining={currentTraining} />
+				<TrainingNewEditForm isEdit={isEdit} currentTraining={currentTraining} />
 			</Container>
 		</>
 	);

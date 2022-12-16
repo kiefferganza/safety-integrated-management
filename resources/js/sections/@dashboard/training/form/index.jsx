@@ -26,7 +26,7 @@ TrainingNewEditForm.propTypes = {
 	currentTraining: PropTypes.object,
 };
 
-export default function TrainingNewEditForm ({ isEdit, isView = false, currentTraining }) {
+export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 	const { sequence_no } = usePage().props;
 	const [loadingSend, setLoadingSend] = useState(false);
 
@@ -69,10 +69,11 @@ export default function TrainingNewEditForm ({ isEdit, isView = false, currentTr
 		date_expired: currentTraining?.date_expired || '',
 		trainees: currentTraining?.trainees || [],
 		type: currentTraining?.type || "2",
-		reviewed_by: currentTraining?.reviewed_by || '',
-		approved_by: currentTraining?.approved_by || '',
-		currency: currentTraining?.currency || '',
-		course_price: currentTraining?.course_price || '',
+		training_center: currentTraining?.training_center || '',
+		reviewed_by: currentTraining?.external_details?.reviewed_by || '',
+		approved_by: currentTraining?.external_details?.approved_by || '',
+		currency: currentTraining?.external_details?.currency || '',
+		course_price: currentTraining?.external_details?.course_price || '',
 	}), [currentTraining]);
 
 	const methods = useForm({
@@ -135,24 +136,22 @@ export default function TrainingNewEditForm ({ isEdit, isView = false, currentTr
 		<FormProvider methods={methods}>
 			<Card>
 
-				<TrainingProjectDetails isView={isView} isEdit={isEdit} />
+				<TrainingProjectDetails isEdit={isEdit} />
 
-				<TrainingNewEditDetails isView={isView} isEdit={isEdit} currentTraining={currentTraining} />
+				<TrainingNewEditDetails isEdit={isEdit} currentTraining={currentTraining} />
 
 			</Card>
 
-			{!isView && (
-				<Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
-					<LoadingButton
-						size="large"
-						variant="contained"
-						loading={loadingSend}
-						onClick={handleSubmit(handleCreateAndSend)}
-					>
-						{isEdit ? 'Update' : 'Create'}
-					</LoadingButton>
-				</Stack>
-			)}
+			<Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
+				<LoadingButton
+					size="large"
+					variant="contained"
+					loading={loadingSend}
+					onClick={handleSubmit(handleCreateAndSend)}
+				>
+					{isEdit ? 'Update' : 'Create'}
+				</LoadingButton>
+			</Stack>
 		</FormProvider>
 	);
 }
