@@ -104,6 +104,11 @@ export default function TrainingClientList ({ trainings, module }) {
 		return newTrainees;
 	}
 
+	const checkTrainingComplete = (trainees, files) => {
+		if (trainees.length <= 0 || files.length <= 0) return false;
+		return trainees.length === files.length;
+	}
+
 	useEffect(() => {
 		if (trainings && trainings?.length > 0) {
 			setTableData(trainings.map(training => ({
@@ -113,7 +118,7 @@ export default function TrainingClientList ({ trainings, module }) {
 				traninees_count: training.trainees?.length || 0,
 				trainees: joinTrainees(training.trainees, training.training_files),
 				status: getTrainingStatus(training.training_date, training.date_expired),
-				completed: training.trainees.length === training.training_files.length
+				completed: checkTrainingComplete(training.trainees, training.training_files)
 			})));
 		}
 	}, [trainings]);
