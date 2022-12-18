@@ -243,6 +243,7 @@ class TrainingController extends Controller
 		$training->remarks = $request->remarks ? $request->remarks : null;
 		$training->type = (int)$request->type;
 		$training->training_center = $request->training_center;
+		$training->increment("revision_no");
 
 
 		$training->save();
