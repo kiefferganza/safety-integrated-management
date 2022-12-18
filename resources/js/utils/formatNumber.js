@@ -2,36 +2,42 @@ import numeral from 'numeral';
 
 // ----------------------------------------------------------------------
 
-export function fNumber(number) {
-  return numeral(number).format();
+export function fNumber (number) {
+	return numeral(number).format();
 }
 
-export function fCurrency(number) {
-  const format = number ? numeral(number).format('$0,0.00') : '';
+export function fCurrency (number) {
+	const format = number ? numeral(number).format('$0,0.00') : '';
 
-  return result(format, '.00');
+	return result(format, '.00');
 }
 
-export function fPercent(number) {
-  const format = number ? numeral(Number(number) / 100).format('0.0%') : '';
+export function fCurrencyNumber (number) {
+	const format = number ? numeral(number).format('0,0.00') : '';
 
-  return result(format, '.0');
+	return result(format, '.00');
 }
 
-export function fShortenNumber(number) {
-  const format = number ? numeral(number).format('0.00a') : '';
+export function fPercent (number) {
+	const format = number ? numeral(Number(number) / 100).format('0.0%') : '';
 
-  return result(format, '.00');
+	return result(format, '.0');
 }
 
-export function fData(number) {
-  const format = number ? numeral(number).format('0.0 b') : '';
+export function fShortenNumber (number) {
+	const format = number ? numeral(number).format('0.00a') : '';
 
-  return result(format, '.0');
+	return result(format, '.00');
 }
 
-function result(format, key = '.00') {
-  const isInteger = format.includes(key);
+export function fData (number) {
+	const format = number ? numeral(number).format('0.0 b') : '';
 
-  return isInteger ? format.replace(key, '') : format;
+	return result(format, '.0');
+}
+
+function result (format, key = '.00') {
+	const isInteger = format.includes(key);
+
+	return isInteger ? format.replace(key, '') : format;
 }

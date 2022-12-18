@@ -60,4 +60,8 @@ class Training extends Model
 		return $this->hasOne(TrainingExternal::class, "training_id");
 	}
 
+	public function user_employee() {
+		return $this->hasOne(Employee::class, "user_id", "user_id");
+	}
+
 }

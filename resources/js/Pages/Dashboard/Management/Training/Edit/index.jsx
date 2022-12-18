@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import TrainingCreatePage from "../Create/TrainingCreatePage";
+import TrainingEditCreatePage from "../TrainingEditCreatePage";
 
-const index = ({ training }) => {
+const index = ({ training, details }) => {
 	const [trainingData, setTrainingData] = useState({});
 
 	const joinTrainees = () => {
@@ -28,11 +28,11 @@ const index = ({ training }) => {
 		}
 	}, [training]);
 
-	console.log({ training });
+	// console.log({ module });
 
 	return (
 		<DashboardLayout>
-			<TrainingCreatePage isEdit currentTraining={trainingData} />
+			<TrainingEditCreatePage details={details} isEdit currentTraining={trainingData} />
 		</DashboardLayout>
 	)
 }

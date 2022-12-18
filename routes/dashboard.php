@@ -112,12 +112,9 @@ Route::middleware('auth')->group(function ()
 	Route::get('dashboard/training/client/{training}', [TrainingController::class, 'show_client'])->name('training.management.client.show');
 	Route::get('dashboard/training/induction/{training}', [TrainingController::class, 'show_induction'])->name('training.management.induction.show');
 	Route::get('dashboard/training/in-house/{training}', [TrainingController::class, 'show_in_house'])->name('training.management.in_house.show');
-	Route::get('dashboard/training/third-party/{training}', [TrainingController::class, 'show_third_party'])->name('training.management.third_party.show');
+	Route::get('dashboard/training/third-party/{training}', [TrainingController::class, 'show_external'])->name('training.management.third_party.show');
 	// Update
 	Route::post('dashboard/training/{training}/edit', [TrainingController::class, 'update']);
-	Route::get('dashboard/training/client/{training}/edit', [TrainingController::class, 'edit']);
-	Route::get('dashboard/training/induction/{training}/edit', [TrainingController::class, 'edit']);
-	Route::get('dashboard/training/in-house/{training}/edit', [TrainingController::class, 'edit']);
-	Route::get('dashboard/training/third-party/{training}/edit', [TrainingController::class, 'edit']);
+	Route::get('dashboard/training/{training}/edit', [TrainingController::class, 'edit']);
 
 });

@@ -53,7 +53,7 @@ const STATUS_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function TrainingClientList ({ trainings, module }) {
+export default function TrainingClientList ({ trainings, module, url }) {
 	const { load, stop } = useSwal();
 	const {
 		dense,
@@ -382,7 +382,7 @@ export default function TrainingClientList ({ trainings, module }) {
 													selected={selected.includes(row.id)}
 													onSelectRow={() => onSelectRow(row.id)}
 													onDeleteRow={() => handleDeleteRow(row.id)}
-													type="client"
+													url={url}
 												/>
 											) : (
 												!isNotFound && <TableSkeleton key={index} sx={{ height: denseHeight }} />

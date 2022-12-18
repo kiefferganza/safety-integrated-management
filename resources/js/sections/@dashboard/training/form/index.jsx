@@ -26,7 +26,7 @@ TrainingNewEditForm.propTypes = {
 	currentTraining: PropTypes.object,
 };
 
-export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
+export default function TrainingNewEditForm ({ isEdit, details, currentTraining }) {
 	const { sequence_no } = usePage().props;
 	const [loadingSend, setLoadingSend] = useState(false);
 
@@ -83,8 +83,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 
 	const {
 		reset,
-		handleSubmit,
-		formState: { errors }
+		handleSubmit
 	} = methods;
 
 	useEffect(() => {

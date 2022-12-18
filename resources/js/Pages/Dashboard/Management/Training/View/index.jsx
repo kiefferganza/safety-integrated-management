@@ -5,13 +5,14 @@ import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
-import InvoiceDetails from '@/sections/@dashboard/invoice/details';
+import TrainingDetails from '@/sections/@dashboard/training/details';
 import { Head } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from "@/routes/paths";
 
-import { _invoices } from '@/_mock/arrays';
+import { getTrainingStatus } from "@/utils/formatDates";
+import { capitalCase } from "change-case";
 
-const index = ({ training }) => {
+const index = ({ training, module, url }) => {
 	const { themeStretch } = useSettingsContext();
 	const [trainingData, setTrainingData] = useState({});
 
@@ -23,7 +24,8 @@ const index = ({ training }) => {
 				emp_id: tr.employee_id,
 				fullname: `${tr.firstname} ${tr.lastname}`,
 				position: tr?.position?.position,
-				src: file ? `/storage/media/training/${file.src}` : null
+				src: file ? `/storage/media/training/${file.src}` : null,
+				filename: file?.src || null
 			};
 		});
 		return newTrainees;
@@ -33,35 +35,34 @@ const index = ({ training }) => {
 		if (training) {
 			setTrainingData({
 				...training,
+				id: training.training_id,
+				cms: training?.project_code ? `${training?.project_code}-${training?.originator}-${training?.discipline}-${training?.document_type}-${training?.document_zone ? training?.document_zone + "-" : ""}${training?.document_level ? training?.document_level + "-" : ""}${training?.sequence_no}` : null,
 				trainees: joinTrainees(),
+				status: getTrainingStatus(training.training_date, training.date_expired),
 			});
 		}
 	}, []);
 
-	const id = "e99f09a7-dd88-49d5-b1c8-1daf80c2d7b5";
-
-	const currentInvoice = _invoices.find((invoice) => invoice.id === id);
-
 	return (
 		<>
 			<Head>
-				<title>Client</title>
+				<title>{capitalCase(module)}</title>
 			</Head>
 			<DashboardLayout>
 				<Container maxWidth={themeStretch ? false : 'lg'}>
 					<CustomBreadcrumbs
-						heading="Invoice Details"
+						heading="Course Details"
 						links={[
 							{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 							{
-								name: 'Invoices',
-								href: PATH_DASHBOARD.training.root,
+								name: `${module} List`,
+								href: PATH_DASHBOARD.training[url],
 							},
-							{ name: `Client` },
+							{ name: capitalCase(module) },
 						]}
 					/>
 
-					<InvoiceDetails invoice={currentInvoice} />
+					<TrainingDetails training={trainingData} module={module} />
 				</Container>
 			</DashboardLayout>
 		</>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -56,4 +57,8 @@ class Employee extends Model
 		return $this->hasMany(Follower::class, "following_id", "user_id");
 	}
 
+
+	public function getFullnameAttribute() {
+		return trim($this->attirbutes['firstname']). ' '  .trim($this->attributes['lastname']);
+	}
 }

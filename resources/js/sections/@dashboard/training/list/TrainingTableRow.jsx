@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 // @mui
-import { Stack, Button, TableRow, Checkbox, MenuItem, TableCell, IconButton, Link, Divider } from '@mui/material';
+import { Stack, Button, TableRow, Checkbox, MenuItem, TableCell, IconButton, Divider } from '@mui/material';
 // utils
 import { fDate } from '@/utils/formatTime';
 // components
@@ -16,13 +16,12 @@ import { Inertia } from '@inertiajs/inertia';
 TrainingTableRow.propTypes = {
 	row: PropTypes.object,
 	selected: PropTypes.bool,
-	onEditRow: PropTypes.func,
-	onViewRow: PropTypes.func,
 	onSelectRow: PropTypes.func,
 	onDeleteRow: PropTypes.func,
+	url: PropTypes.string
 };
 
-export default function TrainingTableRow ({ row, selected, onSelectRow, onDeleteRow, type }) {
+export default function TrainingTableRow ({ row, selected, onSelectRow, onDeleteRow, url }) {
 	const { cms, title, traninees_count, training_date, date_expired, status, completed } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
@@ -91,7 +90,7 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 				<MenuItem
 					onClick={() => {
 						handleClosePopover();
-						Inertia.visit(`/dashboard/training/client/${row.id}`, {
+						Inertia.visit(`/dashboard/training/${url}/${row.id}`, {
 							preserveScroll: true
 						});
 					}}
@@ -102,7 +101,7 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 				<MenuItem
 					onClick={() => {
 						handleClosePopover();
-						Inertia.visit(`/dashboard/training/${type}/${row.id}/edit`, {
+						Inertia.visit(`/dashboard/training/${row.id}/edit`, {
 							preserveScroll: true
 						});
 					}}

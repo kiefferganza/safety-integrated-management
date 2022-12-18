@@ -12,6 +12,7 @@ use App\Models\TrainingTrainees;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -28,7 +29,8 @@ class TrainingController extends Controller
 
 		return Inertia::render("Dashboard/Management/Training/List/index", [
 			"trainings" => $trainings,
-			"module" => "Client"
+			"module" => "Client",
+			"url" => "client"
 		]);
 	}
 
@@ -44,7 +46,8 @@ class TrainingController extends Controller
 
 		return Inertia::render("Dashboard/Management/Training/List/index", [
 			"trainings" => $trainings,
-			"module" => "In House"
+			"module" => "In House",
+			"url" => "in-house"
 		]);
 	}
 
@@ -59,7 +62,8 @@ class TrainingController extends Controller
 
 		return Inertia::render("Dashboard/Management/Training/List/index", [
 			"trainings" => $trainings,
-			"module" => "Third Party"
+			"module" => "Third Party",
+			"url" => "third-party"
 		]);
 	}
 
@@ -74,7 +78,8 @@ class TrainingController extends Controller
 
 		return Inertia::render("Dashboard/Management/Training/List/index", [
 			"trainings" => $trainings,
-			"module" => "Induction"
+			"module" => "Induction",
+			"url" => "induction"
 		]);
 	}
 
@@ -205,6 +210,8 @@ class TrainingController extends Controller
 			]);
 		}
 
+		$details = $this->getTrainingType($training->type);
+
 		return Inertia::render("Dashboard/Management/Training/Edit/index", [
 			"training" => $loadedTraining,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
@@ -212,7 +219,8 @@ class TrainingController extends Controller
 				["tbl_position.is_deleted", 0],
 				["tbl_employees.is_deleted", 0]
 			])
-			->get()
+			->get(),
+			"details" => $details
 		]);
 	}
 
@@ -385,28 +393,16 @@ class TrainingController extends Controller
 	}
 
 	// SHOW
-	public function show_client(Training $training) {
-		return Inertia::render("Dashboard/Management/Training/View/index", [
-			"training" => $training->load([
-				"trainees" => fn ($query) => $query->with("position"),
-				"training_files"
-			]),
-			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
-			->where([
-				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0]
-			])
-			->get(),
-			"module" => "client"
-		]);
-	}
+	public function show_in_house(Training $training) {
+		if($training->type !== 2) {
+			return redirect()->back();
+		}
 
-	public function show_external(Training $training) {
 		return Inertia::render("Dashboard/Management/Training/View/index", [
 			"training" => $training->load([
 				"trainees" => fn ($query) => $query->with("position"),
 				"training_files",
-				"external_details"
+				"user_employee" => fn($q) => $q->select("user_id", "firstname", "lastname")
 			]),
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
@@ -414,8 +410,114 @@ class TrainingController extends Controller
 				["tbl_employees.is_deleted", 0]
 			])
 			->get(),
-			"module" => "third party"
+			"module" => "In House",
+			"url" => "in-house"
 		]);
+	}
+	
+	public function show_client(Training $training) {
+		if($training->type !== 2) {
+			return redirect()->back();
+		}
+
+		return Inertia::render("Dashboard/Management/Training/View/index", [
+			"training" => $training->load([
+				"trainees" => fn ($query) => $query->with("position"),
+				"training_files",
+				"user_employee" => fn($q) => $q->select("user_id", "firstname", "lastname")
+			]),
+			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+			->where([
+				["tbl_position.is_deleted", 0],
+				["tbl_employees.is_deleted", 0]
+			])
+			->get(),
+			"module" => "Client",
+			"url" => "client"
+		]);
+	}
+
+	public function show_external(Training $training) {
+		if($training->type !== 3) {
+			return redirect()->back();
+		}
+		return Inertia::render("Dashboard/Management/Training/View/index", [
+			"training" => $training->load([
+				"trainees" => fn ($query) => $query->with("position"),
+				"training_files",
+				"external_details" => fn($q) => $q->with([
+					"approval" => fn($q) => $q->select("employee_id","firstname", "lastname"),
+					"reviewer" => fn($q) => $q->select("employee_id","firstname", "lastname"),
+					"requested" => fn($q) => $q->select("employee_id","firstname", "lastname")
+				]),
+				"user_employee" => fn($q) => $q->select("user_id", "firstname", "lastname")
+			]),
+			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+			->where([
+				["tbl_position.is_deleted", 0],
+				["tbl_employees.is_deleted", 0]
+			])
+			->get(),
+			"module" => "External",
+			"url" => "thirdParty"
+		]);
+	}
+
+	public function show_induction(Training $training) {
+		if($training->type !== 4) {
+			return redirect()->back();
+		}
+		return Inertia::render("Dashboard/Management/Training/View/index", [
+			"training" => $training->load([
+				"trainees" => fn ($query) => $query->with("position"),
+				"training_files",
+				"user_employee" => fn($q) => $q->select("user_id", "firstname", "lastname")
+			]),
+			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+			->where([
+				["tbl_position.is_deleted", 0],
+				["tbl_employees.is_deleted", 0]
+			])
+			->get(),
+			"module" => "Induction",
+			"url" => "induction"
+		]);
+	}
+
+
+	private function getTrainingType($type) {
+		switch ($type) {
+			case 1:
+				return [
+					"title" => "In House",
+					"url" => "inHouse"
+				];
+				break;
+			case 2:
+				return [
+					"title" => "Client",
+					"url" => "client"
+				];
+				break;
+			case 3:
+				return [
+					"title" => "External",
+					"url" => "thirdParty"
+				];
+				break;
+			case 4:
+				return [
+					"title" => "Induction",
+					"url" => "induction"
+				];
+				break;
+			default:
+				return [
+					"title" => "Client",
+					"url" => "client"
+				];
+				break;
+		}
 	}
 
 }

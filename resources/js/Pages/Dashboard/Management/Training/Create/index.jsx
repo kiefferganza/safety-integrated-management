@@ -1,10 +1,10 @@
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import TrainingCreatePage from "./TrainingCreatePage";
+import TrainingEditCreatePage from "../TrainingEditCreatePage";
 
 const index = () => {
 	return (
 		<DashboardLayout>
-			<TrainingCreatePage />
+			<TrainingEditCreatePage />
 		</DashboardLayout>
 	)
 }

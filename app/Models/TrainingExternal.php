@@ -28,5 +28,9 @@ class TrainingExternal extends Model
 		return $this->hasOne(Employee::class, "employee_id", "approved_by");
 	}
 
+	public function requested() {
+		return $this->hasOne(Employee::class, "employee_id", "requested_by");
+	}
+
 
 }

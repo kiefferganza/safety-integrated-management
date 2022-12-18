@@ -20,19 +20,22 @@ export function getTrainingStatus (training_date, date_expired) {
 	if (isAfter(start, end) || isEqual(start, end)) {
 		return {
 			text: "Expired",
-			color: "error"
+			color: "error",
+			rawColor: "#FFAC82"
 		}
 	}
 
 	if (start > dateExpiredTwoWeeksBeforeDate && start < end) {
 		return {
 			text: "Soon to Expire",
-			color: "warning"
+			color: "warning",
+			rawColor: "#FFD666"
 		}
 	}
 
 	return {
 		text: "Valid",
-		color: "success"
+		color: "success",
+		rawColor: "#86E8AB"
 	};
 }

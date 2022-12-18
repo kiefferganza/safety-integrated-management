@@ -27,7 +27,7 @@ const TYPE_OPTIONS = {
 }
 
 
-export default function TrainingCreatePage ({ isEdit = false, currentTraining }) {
+export default function TrainingEditCreatePage ({ isEdit = false, details = null, currentTraining }) {
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -45,8 +45,8 @@ export default function TrainingCreatePage ({ isEdit = false, currentTraining })
 							href: PATH_DASHBOARD.root,
 						},
 						{
-							name: 'List',
-							href: (isEdit && currentTraining) ? PATH_DASHBOARD.training[TYPE_OPTIONS[currentTraining.type]] : PATH_DASHBOARD.training.client,
+							name: details ? `${details?.title} List` : 'List',
+							href: (isEdit && details) ? PATH_DASHBOARD.training[details?.url] : PATH_DASHBOARD.training.client,
 						},
 						{
 							name: isEdit ? 'Update course' : 'New training',
@@ -54,7 +54,7 @@ export default function TrainingCreatePage ({ isEdit = false, currentTraining })
 					]}
 				/>
 
-				<TrainingNewEditForm isEdit={isEdit} currentTraining={currentTraining} />
+				<TrainingNewEditForm details={details} isEdit={isEdit} currentTraining={currentTraining} />
 			</Container>
 		</>
 	);
