@@ -82,98 +82,98 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 					</Stack>
 				</Stack>
 
-				<Grid container spacing={{ xs: 2, md: 8 }} sx={{ mb: { xs: 5, md: 8 } }}>
+				<Grid container spacing={{ xs: 2, md: 5 }} sx={{ mb: 4 }}>
 					<Grid item xs={12} sm={6}>
-						<Box sx={{ mb: 3 }}>
+						<Box sx={{ mb: 1 }}>
 							<Box>
-								<Typography sx={{ mb: 1.5 }} variant="body1">Course Title</Typography>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Course Title</Typography>
 							</Box>
-							<Box borderBottom={1}>
-								<Typography variant="body1" textAlign="center">{training.title}</Typography>
+							<Box>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training.title}</Typography>
 							</Box>
 						</Box>
 
-						<Box sx={{ mb: 3 }}>
+						<Box sx={{ mb: 1 }}>
 							<Box>
-								<Typography sx={{ mb: 1.5 }} variant="body1">Training Location</Typography>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Training Location</Typography>
 							</Box>
-							<Box borderBottom={1}>
-								<Typography variant="body1" textAlign="center">{training.location}</Typography>
+							<Box>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training.location}</Typography>
 							</Box>
 						</Box>
 
-						<Box sx={{ mb: 3 }}>
+						<Box sx={{ mb: 1 }}>
 							<Box>
-								<Typography sx={{ mb: 1.5 }} variant="body1">Contract No.</Typography>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Contract No.</Typography>
 							</Box>
-							<Box borderBottom={1}>
-								<Typography variant="body1" textAlign="center">{training.contract_no}</Typography>
+							<Box>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training.contract_no}</Typography>
 							</Box>
 						</Box>
 
-						<Box sx={{ mb: 3 }}>
+						<Box sx={{ mb: 1 }}>
 							<Box>
-								<Typography sx={{ mb: 1.5 }} variant="body1">Conducted By</Typography>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Conducted By</Typography>
 							</Box>
-							<Box borderBottom={1}>
-								<Typography variant="body1" textAlign="center">{training.trainer}</Typography>
+							<Box>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training.trainer}</Typography>
 							</Box>
 						</Box>
 						{training?.training_center && (
-							<Box sx={{ mb: 3 }}>
+							<Box sx={{ mb: 1 }}>
 								<Box>
-									<Typography sx={{ mb: 1.5 }} variant="body1">Training Center</Typography>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Training Center</Typography>
 								</Box>
-								<Box borderBottom={1}>
-									<Typography variant="body1" textAlign="center">{training?.training_center || 'N/A'}</Typography>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training?.training_center || 'N/A'}</Typography>
 								</Box>
 							</Box>
 						)}
 					</Grid>
 					<Grid item xs={12} sm={6}>
-						<Box sx={{ mb: 3 }}>
+						<Box sx={{ mb: 1 }}>
 							<Box>
-								<Typography sx={{ mb: 1.5 }} variant="body1">Date of Training</Typography>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Date of Training</Typography>
 							</Box>
-							<Box borderBottom={1}>
-								<Typography variant="body1" textAlign="center">
+							<Box>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>
 									{training?.training_date ? fDate(training.training_date) : ''}
 								</Typography>
 							</Box>
 						</Box>
 
-						<Box sx={{ mb: 3 }}>
+						<Box sx={{ mb: 1 }}>
 							<Box>
-								<Typography sx={{ mb: 1.5 }} variant="body1">Date Expired</Typography>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Date Expired</Typography>
 							</Box>
-							<Box borderBottom={1}>
-								<Typography variant="body1" textAlign="center">
+							<Box>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>
 									{training?.date_expired ? fDate(training.date_expired) : ''}
 								</Typography>
 							</Box>
 						</Box>
 
-						<Box sx={{ mb: 3 }}>
+						<Box sx={{ mb: 1 }}>
 							<Box>
-								<Typography sx={{ mb: 1.5 }} variant="body1">Training Hours</Typography>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Training Hours</Typography>
 							</Box>
-							<Box borderBottom={1}>
-								<Typography variant="body1" textAlign="center">{training.training_hrs}</Typography>
+							<Box>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training.training_hrs}</Typography>
 							</Box>
 						</Box>
 
-						<Box sx={{ mb: 3 }}>
+						<Box sx={{ mb: 1 }}>
 							<Box>
-								<Typography sx={{ mb: 1.5 }} variant="body1">Status</Typography>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Status</Typography>
 							</Box>
-							<Box borderBottom={1}>
-								<Typography variant="body1" textAlign="center" color={training?.status?.rawColor}>{training?.status?.text}</Typography>
+							<Box>
+								<Typography variant="body1" color={training?.status?.rawColor}>{training?.status?.text}</Typography>
 							</Box>
 						</Box>
 					</Grid>
 				</Grid>
 
-				<TableContainer sx={{ overflow: 'unset', mb: 5 }}>
+				<TableContainer sx={{ overflow: 'unset', mb: 4 }}>
 					<Scrollbar>
 						<Table sx={{ minWidth: 960 }}>
 							<TableHead
@@ -268,7 +268,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 							</Grid>
 						</Box>
 
-						<Stack sx={{ mt: 8 }} spacing={3}>
+						<Stack sx={{ mt: 6 }} spacing={3}>
 							<Stack direction="row">
 								<Box width={140}>
 									<Typography variant="body1">Total Attendees</Typography>

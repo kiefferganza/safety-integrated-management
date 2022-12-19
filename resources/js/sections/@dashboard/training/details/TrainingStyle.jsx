@@ -30,11 +30,7 @@ const styles = StyleSheet.create({
 	alignRight: { textAlign: 'right' },
 	underlineText: {
 		width: '100%',
-		textAlign: 'center',
-		borderBottomWidth: 1,
-		borderStyle: 'solid',
-		lineHeight: 1.4,
-		marginTop: 4
+		color: '#9e9e9e'
 	},
 	page: {
 		padding: '8px 40px 0 40px',
