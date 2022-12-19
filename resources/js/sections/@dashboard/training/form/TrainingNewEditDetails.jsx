@@ -53,8 +53,8 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 
 	const handleCloseDate = () => {
 		if (!isError && (startDate && endDate)) {
-			setValue("training_date", format(startDate, "yyyy-MM-dd HH:mm:ss"), { shouldValidate: true });
-			setValue("date_expired", format(endDate, "yyyy-MM-dd HH:mm:ss"), { shouldValidate: true });
+			setValue("training_date", format(startDate, "yyyy-MM-dd HH:mm:ss"), { shouldValidate: true, shouldDirty: true });
+			setValue("date_expired", format(endDate, "yyyy-MM-dd HH:mm:ss"), { shouldValidate: true, shouldDirty: true });
 		}
 		onClosePicker();
 	}
@@ -77,9 +77,9 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 					{
 						...values.trainees[isSelected].pivot
 					}
-				]);
+				], { shouldValidate: true, shouldDirty: true });
 			}
-			setValue("trainees", values.trainees.filter(tr => tr.emp_id !== value.employee_id), { shouldValidate: true });
+			setValue("trainees", values.trainees.filter(tr => tr.emp_id !== value.employee_id), { shouldValidate: true, shouldDirty: true });
 		} else {
 			setValue("trainees", [
 				...values.trainees,
@@ -90,7 +90,7 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 					user_id: value.user_id,
 					src: null
 				}
-			], { shouldValidate: true });
+			], { shouldValidate: true, shouldDirty: true });
 		}
 	}
 
@@ -163,16 +163,16 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 							}}
 							onInputChange={(event) => {
 								if (event?.type === "change") {
-									setValue('trainer', event.target.value, { shouldValidate: true });
+									setValue('trainer', event.target.value, { shouldValidate: true, shouldDirty: true });
 								} else {
-									setValue('trainer', '', { shouldValidate: true });
+									setValue('trainer', '', { shouldValidate: true, shouldDirty: true });
 								}
 							}}
 							onChange={(_event, newValue) => {
 								if (newValue) {
-									setValue('trainer', `${newValue?.firstname} ${newValue?.lastname}`, { shouldValidate: true });
+									setValue('trainer', `${newValue?.firstname} ${newValue?.lastname}`, { shouldValidate: true, shouldDirty: true });
 								} else {
-									setValue('trainer', '', { shouldValidate: true });
+									setValue('trainer', '', { shouldValidate: true, shouldDirty: true });
 								}
 							}}
 							renderInput={(params) =>
@@ -200,9 +200,9 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 								value={getAutocompleteValue(values.reviewed_by)}
 								onChange={(_event, newValue) => {
 									if (newValue) {
-										setValue('reviewed_by', newValue.id, { shouldValidate: true });
+										setValue('reviewed_by', newValue.id, { shouldValidate: true, shouldDirty: true });
 									} else {
-										setValue('reviewed_by', '', { shouldValidate: true });
+										setValue('reviewed_by', '', { shouldValidate: true, shouldDirty: true });
 									}
 								}}
 								options={personel.map((option) => ({ id: option.employee_id, label: `${option?.firstname} ${option?.lastname}` }))}
@@ -220,9 +220,9 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 								value={getAutocompleteValue(values.approved_by)}
 								onChange={(_event, newValue) => {
 									if (newValue) {
-										setValue('approved_by', newValue.id, { shouldValidate: true });
+										setValue('approved_by', newValue.id, { shouldValidate: true, shouldDirty: true });
 									} else {
-										setValue('approved_by', '', { shouldValidate: true });
+										setValue('approved_by', '', { shouldValidate: true, shouldDirty: true });
 									}
 								}}
 								options={personel.map((option) => ({ id: option.employee_id, label: `${option?.firstname} ${option?.lastname}` }))}
@@ -283,9 +283,9 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 								onChange={(_, newValue) => {
 									console.log(newValue);
 									if (newValue) {
-										setValue("currency", newValue, { shouldValidate: true });
+										setValue("currency", newValue, { shouldValidate: true, shouldDirty: true });
 									} else {
-										setValue("currency", '', { shouldValidate: true });
+										setValue("currency", '', { shouldValidate: true, shouldDirty: true });
 									}
 								}}
 								renderInput={(params) => <TextField value={values.currency} label="Currency" {...params} />}

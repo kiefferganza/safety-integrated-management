@@ -48,7 +48,7 @@ const STATUS_OPTIONS = [
 	{ value: 'all', label: 'All' },
 	{ value: 'Valid', label: 'Valid' },
 	{ value: 'Soon to Expire', label: 'Soon to Expire' },
-	{ value: 'Expired', label: 'Expired' },
+	{ value: 'Expired', label: 'Expired' }
 ];
 
 // ----------------------------------------------------------------------
@@ -129,7 +129,7 @@ export default function TrainingClientList ({ trainings, module, url }) {
 		filterName,
 		filterStatus,
 		filterStartDate,
-		filterEndDate
+		filterEndDate,
 	});
 
 
@@ -145,11 +145,15 @@ export default function TrainingClientList ({ trainings, module, url }) {
 
 	const getTotalHours = (trainings_arr) => trainings_arr.reduce((acc, curr) => acc += curr.training_hrs, 0);
 
+	const getCertificateLength = (bool) => tableData.filter(data => data.completed === bool).length;
+
 	const TABS = [
 		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
 		{ value: 'Valid', label: 'Valid', color: 'success', count: getLengthByStatus('Valid').length },
 		{ value: 'Soon to Expire', label: 'Soon to Expire', color: 'warning', count: getLengthByStatus('Soon to Expire').length },
-		{ value: 'Expired', label: 'Expired', color: 'error', count: getLengthByStatus('Expired').length }
+		{ value: 'Expired', label: 'Expired', color: 'error', count: getLengthByStatus('Expired').length },
+		{ value: true, label: 'Completed', color: 'success', count: getCertificateLength(true) },
+		{ value: false, label: 'Incomplete', color: 'warning', count: getCertificateLength(false) },
 	];
 
 	const handleOpenConfirm = () => {
@@ -438,7 +442,7 @@ export default function TrainingClientList ({ trainings, module, url }) {
 
 // ----------------------------------------------------------------------
 
-function applyFilter ({ inputData, comparator, filterName, filterStatus, filterStartDate, filterEndDate }) {
+function applyFilter ({ inputData, comparator, filterName, filterStatus, filterStartDate, filterEndDate, filterByCertificate }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
 
 	stabilizedThis.sort((a, b) => {
@@ -454,7 +458,11 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 	}
 
 	if (filterStatus !== 'all') {
-		inputData = inputData.filter((training) => filterStatus.trim().toLowerCase() == training.status.text.trim().toLowerCase());
+		if (typeof filterStatus === 'boolean') {
+			inputData = inputData.filter(training => training.completed === filterStatus);
+		} else {
+			inputData = inputData.filter((training) => filterStatus.trim().toLowerCase() == training.status.text.trim().toLowerCase());
+		}
 	}
 
 	if (filterStartDate && !filterEndDate) {

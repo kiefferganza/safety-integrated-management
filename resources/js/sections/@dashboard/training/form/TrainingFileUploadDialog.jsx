@@ -66,7 +66,7 @@ const TrainingFileUploadDialog = ({
 			}
 			return tr;
 		});
-		setValue('trainees', updatedTrainees);
+		setValue('trainees', updatedTrainees, { shouldDirty: true, shouldValidate: true });
 	}
 
 	return (

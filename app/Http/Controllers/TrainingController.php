@@ -85,6 +85,7 @@ class TrainingController extends Controller
 
 
 	public function create() {
+		// TODO: sequence by type
 		$trainings = Training::where([["is_deleted", false], ["type", 2]])->get();
 		$number_of_trainings = $trainings->count() + 1;
 
@@ -249,7 +250,7 @@ class TrainingController extends Controller
 		$training->save();
 
 		if($request->type == "3") {
-			$training_external = TrainingExternal::where("training_id", $training->training_id);
+			$training_external = TrainingExternal::where("training_id", $training->training_id)->first();
 
 			$training_external->training_id = $training->training_id;
 			$training_external->currency = $request->currency;

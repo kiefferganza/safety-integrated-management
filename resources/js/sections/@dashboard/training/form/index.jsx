@@ -83,7 +83,8 @@ export default function TrainingNewEditForm ({ isEdit, details, currentTraining 
 
 	const {
 		reset,
-		handleSubmit
+		handleSubmit,
+		formState: { isDirty }
 	} = methods;
 
 	useEffect(() => {
@@ -147,6 +148,7 @@ export default function TrainingNewEditForm ({ isEdit, details, currentTraining 
 					variant="contained"
 					loading={loadingSend}
 					onClick={handleSubmit(handleCreateAndSend)}
+					disabled={isEdit ? !isDirty : false}
 				>
 					{isEdit ? 'Update' : 'Create'}
 				</LoadingButton>
