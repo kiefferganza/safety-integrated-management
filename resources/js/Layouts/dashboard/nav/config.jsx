@@ -45,9 +45,9 @@ const navConfig = [
 		subheader: 'general',
 		items: [
 			{ title: 'HSE-dashboard', path: PATH_DASHBOARD.general.hse_dashboard, icon: ICONS.analytics },
-			{ title: 'file', path: PATH_DASHBOARD.general.file, icon: ICONS.file },
-			{ title: 'employee', path: PATH_DASHBOARD.general.employee, icon: ICONS.employee },
-			{ title: 'inventory', path: PATH_DASHBOARD.general.inventory, icon: ICONS.ecommerce },
+			{ title: 'file', path: PATH_DASHBOARD.general.file, icon: ICONS.file, disabled: true },
+			{ title: 'employee', path: PATH_DASHBOARD.general.employee, icon: ICONS.employee, disabled: true },
+			{ title: 'inventory', path: PATH_DASHBOARD.general.inventory, icon: ICONS.ecommerce, disabled: true },
 			// { title: 'banking', path: PATH_DASHBOARD.general.banking, icon: ICONS.banking },
 			// { title: 'booking', path: PATH_DASHBOARD.general.booking, icon: ICONS.booking },
 		],
@@ -113,21 +113,6 @@ const navConfig = [
 				],
 			},
 
-			// PPE
-			{
-				title: 'PPE',
-				path: PATH_DASHBOARD.ppe.root,
-				icon: ICONS.cart,
-				children: [
-					{ title: 'shop', path: PATH_DASHBOARD.ppe.shop },
-					{ title: 'product', path: PATH_DASHBOARD.ppe.demoView },
-					{ title: 'list', path: PATH_DASHBOARD.ppe.list },
-					{ title: 'create', path: PATH_DASHBOARD.ppe.new },
-					{ title: 'edit', path: PATH_DASHBOARD.ppe.demoEdit },
-					{ title: 'checkout', path: PATH_DASHBOARD.ppe.checkout },
-				],
-			},
-
 			// Training
 			{
 				title: 'Training',
@@ -140,34 +125,6 @@ const navConfig = [
 					{ title: 'in house', path: PATH_DASHBOARD.training.inHouse },
 					{ title: 'third party', path: PATH_DASHBOARD.training.thirdParty },
 					{ title: 'metrics report', path: "/#" },
-				]
-			},
-
-			// Toolbox Talks
-			{
-				title: 'Toolbox Talks',
-				path: PATH_DASHBOARD.toolboxTalks.root,
-				icon: ICONS.toolboxTalks,
-				children: [
-					{ title: 'civil', path: PATH_DASHBOARD.toolboxTalks.civil },
-					{ title: 'electrical', path: PATH_DASHBOARD.toolboxTalks.electrical },
-					{ title: 'mechanical', path: PATH_DASHBOARD.toolboxTalks.mechanical },
-					{ title: 'camp', path: PATH_DASHBOARD.toolboxTalks.camp },
-					{ title: 'office', path: PATH_DASHBOARD.toolboxTalks.office },
-					{ title: 'man hour reports', path: PATH_DASHBOARD.toolboxTalks.manHourReports },
-					{ title: 'man day reports', path: PATH_DASHBOARD.toolboxTalks.manDayReports },
-				]
-			},
-
-			// Incident
-			{
-				title: 'Incident',
-				path: PATH_DASHBOARD.incident.root,
-				icon: ICONS.incident,
-				children: [
-					{ title: 'first aid', path: PATH_DASHBOARD.incident.firstAid },
-					{ title: 'investigation', path: PATH_DASHBOARD.incident.investigation },
-					{ title: 'incident report', path: PATH_DASHBOARD.incident.incidentReport },
 				]
 			},
 
@@ -187,6 +144,49 @@ const navConfig = [
 					},
 					{ title: 'machineries', path: PATH_DASHBOARD.inspection.machineries },
 					{ title: 'tools & equipments', path: PATH_DASHBOARD.inspection.toolsAndEquipments },
+				]
+			},
+
+			// Toolbox Talks
+			{
+				title: 'Toolbox Talks',
+				path: PATH_DASHBOARD.toolboxTalks.root,
+				icon: ICONS.toolboxTalks,
+				children: [
+					{ title: 'civil', path: PATH_DASHBOARD.toolboxTalks.civil, disabled: true },
+					{ title: 'electrical', path: PATH_DASHBOARD.toolboxTalks.electrical, disabled: true },
+					{ title: 'mechanical', path: PATH_DASHBOARD.toolboxTalks.mechanical, disabled: true },
+					{ title: 'camp', path: PATH_DASHBOARD.toolboxTalks.camp, disabled: true },
+					{ title: 'office', path: PATH_DASHBOARD.toolboxTalks.office, disabled: true },
+					{ title: 'man hour reports', path: PATH_DASHBOARD.toolboxTalks.manHourReports, disabled: true },
+					{ title: 'man day reports', path: PATH_DASHBOARD.toolboxTalks.manDayReports, disabled: true },
+				]
+			},
+
+			// PPE
+			{
+				title: 'PPE',
+				path: PATH_DASHBOARD.ppe.root,
+				icon: ICONS.cart,
+				children: [
+					{ title: 'shop', path: PATH_DASHBOARD.ppe.shop, disabled: true },
+					{ title: 'product', path: PATH_DASHBOARD.ppe.demoView, disabled: true },
+					{ title: 'list', path: PATH_DASHBOARD.ppe.list, disabled: true },
+					{ title: 'create', path: PATH_DASHBOARD.ppe.new, disabled: true },
+					{ title: 'edit', path: PATH_DASHBOARD.ppe.demoEdit, disabled: true },
+					{ title: 'checkout', path: PATH_DASHBOARD.ppe.checkout, disabled: true },
+				],
+			},
+
+			// Incident
+			{
+				title: 'Incident',
+				path: PATH_DASHBOARD.incident.root,
+				icon: ICONS.incident,
+				children: [
+					{ title: 'first aid', path: PATH_DASHBOARD.incident.firstAid, disabled: true },
+					{ title: 'investigation', path: PATH_DASHBOARD.incident.investigation, disabled: true },
+					{ title: 'incident report', path: PATH_DASHBOARD.incident.incidentReport, disabled: true },
 				]
 			},
 
@@ -218,6 +218,7 @@ const navConfig = [
 				title: 'File manager',
 				path: PATH_DASHBOARD.fileManager,
 				icon: ICONS.folder,
+				disabled: true
 			},
 		],
 	},
@@ -232,11 +233,13 @@ const navConfig = [
 				path: PATH_DASHBOARD.mail.root,
 				icon: ICONS.mail,
 				info: <Label color="error">+32</Label>,
+				disabled: true
 			},
 			{
 				title: 'chat',
 				path: PATH_DASHBOARD.chat.root,
 				icon: ICONS.chat,
+				disabled: true
 			},
 			{
 				title: 'calendar',
@@ -247,6 +250,7 @@ const navConfig = [
 				title: 'kanban',
 				path: PATH_DASHBOARD.kanban,
 				icon: ICONS.kanban,
+				disabled: true
 			},
 		],
 	},

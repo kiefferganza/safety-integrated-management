@@ -21,7 +21,14 @@ const NavItem = forwardRef(({ item, depth, open, active, isExternalLink, ...othe
 	const subItem = depth !== 1;
 
 	const renderContent = (
-		<StyledItem ref={ref} open={open} depth={depth} active={active} disabled={disabled} {...other}>
+		<StyledItem
+			ref={ref}
+			open={open}
+			depth={depth}
+			active={active}
+			disabled={disabled}
+			{...other}
+		>
 			{icon && <StyledIcon>{icon}</StyledIcon>}
 
 			<ListItemText
@@ -84,7 +91,7 @@ const NavItem = forwardRef(({ item, depth, open, active, isExternalLink, ...othe
 
 		// Default
 		return (
-			<MuiLink component={Link} preserveScroll to={path} underline="none">
+			<MuiLink component={Link} preserveScroll href={disabled ? "#" : path} underline="none">
 				{renderContent}
 			</MuiLink>
 		);

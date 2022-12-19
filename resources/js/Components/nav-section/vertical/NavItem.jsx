@@ -29,7 +29,13 @@ export default function NavItem ({ item, depth, open, active, isExternalLink, ..
 	const subItem = depth !== 1;
 
 	const renderContent = (
-		<StyledItem depth={depth} active={active} disabled={disabled} caption={!!caption} {...other}>
+		<StyledItem
+			depth={depth}
+			active={active}
+			disabled={disabled}
+			caption={!!caption}
+			{...other}
+		>
 			{icon && <StyledIcon>{icon}</StyledIcon>}
 
 			{subItem && (
@@ -90,7 +96,7 @@ export default function NavItem ({ item, depth, open, active, isExternalLink, ..
 
 		// Default
 		return (
-			<MuiLink component={Link} preserveScroll href={path} underline="none">
+			<MuiLink component={Link} preserveScroll href={disabled ? "#" : path} underline="none">
 				{renderContent}
 			</MuiLink>
 		);
