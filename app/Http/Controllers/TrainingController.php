@@ -395,7 +395,7 @@ class TrainingController extends Controller
 
 	// SHOW
 	public function show_in_house(Training $training) {
-		if($training->type !== 2) {
+		if($training->type !== 1) {
 			return redirect()->back();
 		}
 
