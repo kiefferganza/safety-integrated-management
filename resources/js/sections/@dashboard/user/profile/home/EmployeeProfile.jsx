@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Grid, Stack } from '@mui/material';
 //
 import ProfileAbout from './ProfileAbout';
-import ProfilePostCard from './ProfilePostCard';
+// import ProfilePostCard from './ProfilePostCard';
 import ProfilePostInput from './ProfilePostInput';
 import ProfileFollowInfo from './ProfileFollowInfo';
 import ProfileSocialInfo from './ProfileSocialInfo';
@@ -18,7 +18,7 @@ EmployeeProfile.propTypes = {
 
 const TODAY = new Date();
 
-export default function EmployeeProfile ({ posts, employee }) {
+export default function EmployeeProfile ({ employee }) {
 
 	const trainingSummary = employee?.trainings?.reduce((acc, curr) => {
 		if (isAfter(TODAY, new Date(curr.date_expired))) {
@@ -56,7 +56,7 @@ export default function EmployeeProfile ({ posts, employee }) {
 				<Stack spacing={3}>
 					<ProfilePostInput />
 
-					<ProfilePostCard post={posts[0]} />
+					{/* <ProfilePostCard post={[]} /> */}
 				</Stack>
 			</Grid>
 		</Grid>

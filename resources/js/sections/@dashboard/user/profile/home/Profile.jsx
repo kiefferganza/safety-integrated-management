@@ -5,7 +5,7 @@ import startCase from 'lodash/startCase';
 import { Grid, Stack } from '@mui/material';
 //
 import ProfileAbout from './ProfileAbout';
-import ProfilePostCard from './ProfilePostCard';
+// import ProfilePostCard from './ProfilePostCard';
 import ProfilePostInput from './ProfilePostInput';
 import ProfileFollowInfo from './ProfileFollowInfo';
 import ProfileSocialInfo from './ProfileSocialInfo';
@@ -16,13 +16,12 @@ import { isAfter } from 'date-fns';
 Profile.propTypes = {
 	user: PropTypes.object,
 	employee: PropTypes.object,
-	posts: PropTypes.array,
 	socialAccounts: PropTypes.array,
 };
 
 const TODAY = new Date();
 
-export default function Profile ({ posts, user, employee, socialAccounts }) {
+export default function Profile ({ user, employee, socialAccounts }) {
 
 	const trainingSummary = employee?.trainings?.reduce((acc, curr) => {
 		if (isAfter(TODAY, new Date(curr.date_expired))) {
@@ -58,7 +57,7 @@ export default function Profile ({ posts, user, employee, socialAccounts }) {
 				<Stack spacing={3}>
 					<ProfilePostInput />
 
-					<ProfilePostCard post={posts[0]} />
+					{/* <ProfilePostCard post={{}} /> */}
 				</Stack>
 			</Grid>
 		</Grid>

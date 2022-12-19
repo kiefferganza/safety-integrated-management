@@ -86,7 +86,7 @@ export default function UserProfilePage ({ user, employee }) {
 					position: 'relative',
 				}}
 			>
-				<ProfileCover user={user} name={getCurrentUserName(user)} role={user?.employee?.position} cover={_userAbout.cover} />
+				<ProfileCover user={user} name={getCurrentUserName(user)} role={user?.employee?.position} cover="/storage/assets/images/home/cover.jpg" />
 
 				<Tabs
 					value={currentTab}
