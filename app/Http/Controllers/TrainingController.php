@@ -399,7 +399,7 @@ class TrainingController extends Controller
 			TrainingTrainees::whereIn("training_id", $training_ids)->delete();
 
 			$training_files = TrainingFiles::whereIn("training_id", $training_ids)
-			->get(["training_files_id","training_ids", "src"])->toArray();
+			->get(["training_files_id","training_id", "src"])->toArray();
 
 			foreach ($training_files as $file) {
 				if(Storage::exists("public/media/training/" . $file["src"])) {
