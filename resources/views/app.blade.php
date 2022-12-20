@@ -6,6 +6,15 @@
 
         <title inertia>{{ config('app.name', 'Safety-Integrated-Management') }}</title>
 
+				<meta name="robots" content="noindex, nofollow">
+				<meta property="og:title" content="Safety Integrated Management System">
+				<meta property="og:site_name" content="Safety Integrated Management System">
+
+				<!-- ICONS -->
+				<link rel="shortcut icon" href="{{ asset('assets/logo.png') }}">
+				<link rel="icon" sizes="192x192" type="image/png" href="{{ asset('assets/favicons/favicon.png') }}">
+				<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/favicons/apple-touch-icon-180x180.png') }}">
+
         <!-- Using Google Font -->
 				<link rel="preconnect" href="https://fonts.gstatic.com">
 				<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
