@@ -81,15 +81,15 @@ function CarouselItem ({ item }) {
 					color: 'common.white',
 				}}
 			>
-				<Typography variant="overline" sx={{ opacity: 0.48 }}>
+				{/* <Typography variant="overline" sx={{ opacity: 0.48 }}>
 					New
-				</Typography>
+				</Typography> */}
 
 				<Typography noWrap variant="h5" sx={{ mt: 1, mb: 3 }}>
 					{name}
 				</Typography>
 
-				<Button variant="contained">Buy Now</Button>
+				{/* <Button variant="contained">Buy Now</Button> */}
 			</CardContent>
 
 			<StyledOverlay />

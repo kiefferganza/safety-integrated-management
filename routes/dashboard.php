@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PositionController;
@@ -19,6 +20,7 @@ Route::middleware('auth')->group(function ()
 	});
 
 	// General
+	Route::get('/dashboard/hse-dashboard', [DashboardController::class, 'index'])->name('dashboard');
 	Route::get('/dashboard/employees', fn () => Inertia::render("Dashboard/General/Employee/index"))->name('general.employee');
 
 

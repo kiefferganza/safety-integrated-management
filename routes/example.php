@@ -7,7 +7,7 @@ Route::middleware('auth')->group(function ()
 {
 
 	Route::get('/dashboard/inventory', fn () => Inertia::render("Dashboard/General/App/index"))->name('general.inventory');
-	Route::get('/dashboard/hse-dashboard', fn () => Inertia::render("Dashboard/General/Analytics/index"))->name('dashboard');
+	
 	// Route::get('/dashboard/banking', fn () => Inertia::render("Dashboard/General/Banking/index"))->name('general.banking');
 	// Route::get('/dashboard/booking', fn () => Inertia::render("Dashboard/General/Booking/index"))->name('general.booking');
 	Route::get('/dashboard/file', fn () => Inertia::render("Dashboard/General/File/index"))->name('general.file');

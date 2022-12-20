@@ -19,13 +19,52 @@ import {
 	AnalyticsConversionRates,
 } from '../../../../sections/@dashboard/general/analytics';
 import { AppWelcome } from '@/sections/@dashboard/general/app';
-import { MotivationIllustration } from '@/assets/illustrations';
 import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
 import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
 
 // ----------------------------------------------------------------------
 
-export default function GeneralAnalyticsPage ({ user }) {
+const COVER_IMAGES = [
+	{
+		id: 1,
+		image: "/storage/assets/covers/card-cover-1.jpg",
+		name: ""
+	},
+	{
+		id: 2,
+		image: "/storage/assets/covers/card-cover-2.jpg",
+		name: ""
+	},
+	{
+		id: 3,
+		image: "/storage/assets/covers/card-cover-3.jpg",
+		name: ""
+	},
+	{
+		id: 4,
+		image: "/storage/assets/covers/card-cover-4.jpg",
+		name: ""
+	},
+	{
+		id: 5,
+		image: "/storage/assets/covers/card-cover-5.jpg",
+		name: ""
+	},
+	{
+		id: 6,
+		image: "/storage/assets/covers/card-cover-6.jpg",
+		name: ""
+	},
+	{
+		id: 7,
+		image: "/storage/assets/covers/card-cover-7.jpg",
+		name: ""
+	},
+];
+
+
+export default function GeneralAnalyticsPage ({ user, data }) {
+	const { mainContractors, manHoursWorks, trainingHours, tbt } = data
 	const theme = useTheme();
 
 	const { themeStretch } = useSettingsContext();
@@ -53,48 +92,48 @@ export default function GeneralAnalyticsPage ({ user }) {
 				</Grid>
 
 				<Grid item xs={12} md={4}>
-					<EcommerceNewProducts list={_ecommerceNewProducts} />
+					<EcommerceNewProducts list={COVER_IMAGES} />
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="Weekly Sales"
-						total={714000}
-						icon={'ant-design:android-filled'}
+						title="MANHOURS WORKED"
+						total={manHoursWorks}
+						icon={'mdi:clock-time-four-outline'}
 					/>
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="New Users"
-						total={1352831}
+						title="MANPOWER"
+						total={mainContractors}
 						color="info"
-						icon={'ant-design:apple-filled'}
+						icon={'simple-line-icons:user'}
 					/>
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="Item Orders"
-						total={1723315}
+						title="HSE TRAINING HOURS"
+						total={trainingHours}
 						color="warning"
-						icon={'ant-design:windows-filled'}
+						icon={'mdi:clock-time-four-outline'}
 					/>
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="Bug Reports"
-						total={234}
+						title="TOOLBOX TALK"
+						total={tbt}
 						color="error"
-						icon={'ant-design:bug-filled'}
+						icon={'mdi:dropbox'}
 					/>
 				</Grid>
 
 				<Grid item xs={12} md={6} lg={8}>
 					<AnalyticsWebsiteVisits
-						title="Website Visits"
-						subheader="(+43%) than last year"
+						title=""
+						subheader=""
 						chart={{
 							labels: [
 								'01/01/2003',
@@ -135,13 +174,13 @@ export default function GeneralAnalyticsPage ({ user }) {
 
 				<Grid item xs={12} md={6} lg={4}>
 					<AnalyticsCurrentVisits
-						title="Current Visits"
+						title=""
 						chart={{
 							series: [
-								{ label: 'America', value: 4344 },
-								{ label: 'Asia', value: 5435 },
-								{ label: 'Europe', value: 1443 },
-								{ label: 'Africa', value: 4443 },
+								{ label: '', value: 4344 },
+								{ label: '', value: 5435 },
+								{ label: '', value: 1443 },
+								{ label: '', value: 4443 },
 							],
 							colors: [
 								theme.palette.primary.main,
@@ -159,16 +198,16 @@ export default function GeneralAnalyticsPage ({ user }) {
 						subheader="(+43%) than last year"
 						chart={{
 							series: [
-								{ label: 'Italy', value: 400 },
-								{ label: 'Japan', value: 430 },
-								{ label: 'China', value: 448 },
-								{ label: 'Canada', value: 470 },
-								{ label: 'France', value: 540 },
-								{ label: 'Germany', value: 580 },
-								{ label: 'South Korea', value: 690 },
-								{ label: 'Netherlands', value: 1100 },
-								{ label: 'United States', value: 1200 },
-								{ label: 'United Kingdom', value: 1380 },
+								{ label: '', value: 400 },
+								{ label: '', value: 430 },
+								{ label: '', value: 448 },
+								{ label: '', value: 470 },
+								{ label: '', value: 540 },
+								{ label: '', value: 580 },
+								{ label: '', value: 690 },
+								{ label: '', value: 1100 },
+								{ label: '', value: 1200 },
+								{ label: '', value: 1380 },
 							],
 						}}
 					/>
@@ -178,7 +217,7 @@ export default function GeneralAnalyticsPage ({ user }) {
 					<AnalyticsCurrentSubject
 						title="Current Subject"
 						chart={{
-							categories: ['English', 'History', 'Physics', 'Geography', 'Chinese', 'Math'],
+							categories: ['', '', '', '', '', ''],
 							series: [
 								{ name: 'Series 1', data: [80, 50, 30, 40, 100, 20] },
 								{ name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
@@ -189,19 +228,19 @@ export default function GeneralAnalyticsPage ({ user }) {
 				</Grid>
 
 				<Grid item xs={12} md={6} lg={8}>
-					<AnalyticsNewsUpdate title="News Update" list={_analyticPost} />
+					<AnalyticsNewsUpdate title="News Update" list={[]} />
 				</Grid>
 
 				<Grid item xs={12} md={6} lg={4}>
-					<AnalyticsOrderTimeline title="Order Timeline" list={_analyticOrderTimeline} />
+					<AnalyticsOrderTimeline title="Order Timeline" list={[]} />
 				</Grid>
 
 				<Grid item xs={12} md={6} lg={4}>
-					<AnalyticsTrafficBySite title="Traffic by Site" list={_analyticTraffic} />
+					<AnalyticsTrafficBySite title="Traffic by Site" list={[]} />
 				</Grid>
 
 				<Grid item xs={12} md={6} lg={8}>
-					<AnalyticsTasks
+					{/* <AnalyticsTasks
 						title="Tasks"
 						list={[
 							{ id: '1', label: 'Create FireStone Logo' },
@@ -210,7 +249,7 @@ export default function GeneralAnalyticsPage ({ user }) {
 							{ id: '4', label: 'Scoping & Estimations' },
 							{ id: '5', label: 'Sprint Showcase' },
 						]}
-					/>
+					/> */}
 				</Grid>
 			</Grid>
 		</Container>
