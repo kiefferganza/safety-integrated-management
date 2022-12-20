@@ -85,7 +85,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 	} = methods;
 
 	const setSequenceNumber = (type) => {
-		if (isEdit || !currentTraining?.sequence_no) {
+		if (!isEdit || !currentTraining?.sequence_no && trainings) {
 			const trs = trainings.filter(tr => tr.type === +type);
 			const numOfLen = trs.length.toString().length;
 			setValue("sequence_no", "0".repeat(numOfLen === 1 ? 2 : numOfLen) + ((trs.length + 1) + ""));
