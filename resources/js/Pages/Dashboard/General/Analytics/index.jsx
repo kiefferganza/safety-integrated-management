@@ -50,8 +50,6 @@ const index = ({ auth: { user }, data }) => {
 		});
 	}, [data]);
 
-	console.log({ data, items });
-
 	return (
 		<>
 			<Head>

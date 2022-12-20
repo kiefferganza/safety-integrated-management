@@ -86,7 +86,7 @@ class TrainingController extends Controller
 
 	public function create() {
 		// TODO: sequence by type
-		$trainings = Training::where([["is_deleted", false], ["type", 2]])->get();
+		$trainings = Training::where([["is_deleted", false]])->get();
 		$number_of_trainings = $trainings->count() + 1;
 
 		$number_of_zeroes = strlen((string) $number_of_trainings);
@@ -213,6 +213,18 @@ class TrainingController extends Controller
 
 		$details = $this->getTrainingType($training->type);
 
+		$trainings = Training::where([["is_deleted", false], ["type", $training->type]])->get();
+		$number_of_trainings = $trainings->count() + 1;
+
+		$number_of_zeroes = strlen((string) $number_of_trainings);
+		$sequence_no_zeros = '';
+		for ($i = 0; $i <= $number_of_zeroes; $i++)
+		{
+			$sequence_no_zeros = $sequence_no_zeros . "0";
+		}
+		$sequence =  $sequence_no_zeros . $number_of_trainings;
+
+
 		return Inertia::render("Dashboard/Management/Training/Edit/index", [
 			"training" => $loadedTraining,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
@@ -221,7 +233,8 @@ class TrainingController extends Controller
 				["tbl_employees.is_deleted", 0]
 			])
 			->get(),
-			"details" => $details
+			"details" => $details,
+			"sequence_no" => $sequence
 		]);
 	}
 

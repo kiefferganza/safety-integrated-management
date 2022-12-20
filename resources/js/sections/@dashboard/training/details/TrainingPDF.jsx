@@ -23,7 +23,7 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 
 	return (
 		<Document title={training.cms ? training.cms.toUpperCase() : module + " Training"}>
-			<Page size="A4" style={styles.page} wrap={false}>
+			<Page size="A4" style={styles.page}>
 				<View style={styles.mb16}>
 					<View style={styles.gridContainer}>
 						<Image source="/logo/Fiafi-logo.png" style={{ height: 32, padding: 2 }} />
@@ -126,7 +126,7 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 					</View>
 				</View>
 
-				<View style={[styles.table, styles.mb40]}>
+				<View style={[styles.table, styles.mb40, { marginBottom: 80 }]}>
 					<View style={styles.tableHeader}>
 						<View style={styles.tableRow}>
 							<View style={styles.tableCell_1}>
@@ -196,19 +196,25 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 						<View style={{ width: '100%', borderBottom: 1 }}>
 						</View>
 					</View>
-					{training?.external_details && training.type === 3 ? (
+					{training?.external_details || training.type === 3 ? (
 						<View>
 							<View style={[styles.gridContainer, styles.mb40]}>
 								<View style={styles.col4}>
-									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{`${training?.external_details?.requested?.firstname?.trim()} ${training?.external_details?.requested?.lastname?.trim()}`}</Text>
+									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
+										{training?.external_details?.requested ? `${training?.external_details?.requested?.firstname?.trim()} ${training?.external_details?.requested?.lastname?.trim()}` : ""}
+									</Text>
 									<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Requested By</Text>
 								</View>
 								<View style={styles.col4}>
-									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{`${training?.external_details?.reviewer?.firstname?.trim()} ${training?.external_details?.reviewer?.lastname?.trim()}`}</Text>
+									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
+										{training?.external_details?.reviewer ? `${training?.external_details?.reviewer?.firstname?.trim()} ${training?.external_details?.reviewer?.lastname?.trim()}` : ""}
+									</Text>
 									<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Reviewed By</Text>
 								</View>
 								<View style={styles.col4}>
-									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{`${training?.external_details?.approval?.firstname?.trim()} ${training?.external_details?.approval?.lastname?.trim()}`}</Text>
+									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
+										{training?.external_details?.approval ? `${training?.external_details?.approval?.firstname?.trim()} ${training?.external_details?.approval?.lastname?.trim()}` : ""}
+									</Text>
 									<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
 								</View>
 							</View>
@@ -245,7 +251,7 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 										<Text>:</Text>
 									</View>
 									<View>
-										<Text>{fCurrencyNumber(getTotalAmmount) + '.00'} {training?.external_details?.currency}</Text>
+										<Text>{fCurrencyNumber(getTotalAmmount) || fCurrencyNumber(training?.external_details?.course_price) + '.00'} {training?.external_details?.currency}</Text>
 									</View>
 								</View>
 
@@ -264,7 +270,7 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 						</View>
 					) : (
 						<View>
-							<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{`${training?.user_employee?.firstname?.trim()} ${training?.user_employee?.lastname?.trim()}`}</Text>
+							<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{training?.user_employee ? `${training?.user_employee?.firstname?.trim()} ${training?.user_employee?.lastname?.trim()}` : ''}</Text>
 							<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Requested By</Text>
 						</View>
 					)}

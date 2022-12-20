@@ -8,10 +8,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack } from '@mui/material';
-// routes
-import { PATH_DASHBOARD } from '@/routes/paths';
-// mock
-import { _invoiceAddressFrom } from '../../../../_mock/arrays';
 // components
 import FormProvider from '@/Components/hook-form';
 //
@@ -26,7 +22,7 @@ TrainingNewEditForm.propTypes = {
 	currentTraining: PropTypes.object,
 };
 
-export default function TrainingNewEditForm ({ isEdit, details, currentTraining }) {
+export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 	const { sequence_no } = usePage().props;
 	const [loadingSend, setLoadingSend] = useState(false);
 
@@ -96,6 +92,8 @@ export default function TrainingNewEditForm ({ isEdit, details, currentTraining 
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isEdit, currentTraining]);
+
+	console.log(currentTraining);
 
 	const handleCreateAndSend = async (data) => {
 		try {

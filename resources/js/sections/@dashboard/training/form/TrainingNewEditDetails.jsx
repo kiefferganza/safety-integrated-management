@@ -187,7 +187,7 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 						/>
 
 
-						<RHFTextField name="contract_no" label="Contract No." type="number" fullWidth />
+						<RHFTextField name="contract_no" label="Contract No." fullWidth />
 
 						<RHFTextField name="training_hrs" label="Training Hours" type="number" fullWidth />
 
