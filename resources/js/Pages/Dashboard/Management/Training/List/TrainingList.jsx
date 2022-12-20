@@ -109,6 +109,8 @@ export default function TrainingClientList ({ trainings, module, url }) {
 		return trainees.length === files.length;
 	}
 
+	console.log({ trainings });
+
 	useEffect(() => {
 		if (trainings && trainings?.length > 0) {
 			setTableData(trainings.map(training => ({

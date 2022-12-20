@@ -12,20 +12,6 @@ import { Head } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
-// const TYPE_OPTIONS = [
-// 	{ type: 2, label: 'Client' },
-// 	{ type: 1, label: 'In-house' },
-// 	{ type: 3, label: 'External' },
-// 	{ type: 4, label: 'Induction' },
-// ];
-
-const TYPE_OPTIONS = {
-	2: 'client',
-	1: 'inHouse',
-	3: 'thirdParty',
-	4: 'induction'
-}
-
 
 export default function TrainingEditCreatePage ({ isEdit = false, details = null, currentTraining }) {
 	const { themeStretch } = useSettingsContext();

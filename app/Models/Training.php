@@ -53,7 +53,7 @@ class Training extends Model
 	// }
 
 	public function training_files() {
-		return $this->hasMany(TrainingFiles::class, "training_id");
+		return $this->hasMany(TrainingFiles::class, "training_id", "training_id");
 	}
 
 	public function external_details() {

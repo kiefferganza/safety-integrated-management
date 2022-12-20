@@ -2,6 +2,7 @@
 import { Box, Stack, Divider, Typography } from '@mui/material';
 // components
 import { RHFSelect, RHFTextField } from '@/Components/hook-form';
+import { useFormContext } from 'react-hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -12,7 +13,8 @@ const TYPE_OPTIONS = [
 	{ type: 4, label: 'Induction' },
 ];
 
-const TrainingProjectDetails = ({ isEdit }) => {
+const TrainingProjectDetails = ({ isEdit, updateSequence }) => {
+	const { setValue } = useFormContext();
 
 	return (
 		<Box sx={{ p: 3 }}>
@@ -26,6 +28,10 @@ const TrainingProjectDetails = ({ isEdit }) => {
 					name="type"
 					label="Course Type"
 					sx={{ width: { xs: '100%', md: 140 } }}
+					onChange={(e) => {
+						setValue("type", e.target.value, { shoudValidate: true });
+						updateSequence(e.target.value)
+					}}
 				>
 					<option value=""></option>
 					{TYPE_OPTIONS.map(option => (

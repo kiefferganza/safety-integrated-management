@@ -126,7 +126,7 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 					</View>
 				</View>
 
-				<View style={[styles.table, styles.mb40, { marginBottom: 80 }]}>
+				<View style={styles.table}>
 					<View style={styles.tableHeader}>
 						<View style={styles.tableRow}>
 							<View style={styles.tableCell_1}>
@@ -188,7 +188,7 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 					</View>
 				</View>
 
-				<View style={styles.mb40}>
+				<View style={[styles.mb40, { marginTop: training.type === 3 ? 32 : 80 }]}>
 					<View style={styles.mb40}>
 						<View style={[styles.gridContainer, styles.mb40]}>
 							<Text style={styles.subtitle2}>Remarks</Text>
@@ -198,7 +198,7 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 					</View>
 					{training?.external_details || training.type === 3 ? (
 						<View>
-							<View style={[styles.gridContainer, styles.mb40]}>
+							<View style={[styles.gridContainer, styles.mb32]}>
 								<View style={styles.col4}>
 									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
 										{training?.external_details?.requested ? `${training?.external_details?.requested?.firstname?.trim()} ${training?.external_details?.requested?.lastname?.trim()}` : ""}

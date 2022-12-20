@@ -23,7 +23,7 @@ TrainingNewEditForm.propTypes = {
 };
 
 export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
-	const { sequence_no } = usePage().props;
+	const { trainings } = usePage().props;
 	const [loadingSend, setLoadingSend] = useState(false);
 
 	const newTrainingSchema = Yup.object().shape({
@@ -49,7 +49,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 	});
 
 	const defaultValues = useMemo(() => ({
-		sequence_no: currentTraining?.sequence_no || sequence_no || '',
+		sequence_no: currentTraining?.sequence_no || '',
 		project_code: currentTraining?.project_code || '',
 		originator: currentTraining?.originator || '',
 		discipline: currentTraining?.discipline || '',
@@ -80,20 +80,29 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 	const {
 		reset,
 		handleSubmit,
+		setValue,
 		formState: { isDirty }
 	} = methods;
+
+	const setSequenceNumber = (type) => {
+		if (isEdit || !currentTraining?.sequence_no) {
+			const trs = trainings.filter(tr => tr.type === +type);
+			const numOfLen = trs.length.toString().length;
+			setValue("sequence_no", "0".repeat(numOfLen === 1 ? 2 : numOfLen) + ((trs.length + 1) + ""));
+		}
+	}
 
 	useEffect(() => {
 		if (isEdit && currentTraining) {
 			reset(defaultValues);
+			setSequenceNumber(2)
 		}
 		if (!isEdit) {
 			reset(defaultValues);
+			setSequenceNumber(2)
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isEdit, currentTraining]);
-
-	console.log(currentTraining);
 
 	const handleCreateAndSend = async (data) => {
 		try {
@@ -134,7 +143,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		<FormProvider methods={methods}>
 			<Card>
 
-				<TrainingProjectDetails isEdit={isEdit} />
+				<TrainingProjectDetails isEdit={isEdit} updateSequence={setSequenceNumber} />
 
 				<TrainingNewEditDetails isEdit={isEdit} currentTraining={currentTraining} />
 

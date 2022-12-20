@@ -85,21 +85,10 @@ class TrainingController extends Controller
 
 
 	public function create() {
-		// TODO: sequence by type
 		$trainings = Training::where([["is_deleted", false]])->get();
-		$number_of_trainings = $trainings->count() + 1;
-
-		$number_of_zeroes = strlen((string) $number_of_trainings);
-		$sequence_no_zeros = '';
-		for ($i = 0; $i <= $number_of_zeroes; $i++)
-		{
-			$sequence_no_zeros = $sequence_no_zeros . "0";
-		}
-		$sequence =  $sequence_no_zeros . $number_of_trainings;
-
 
 		return Inertia::render("Dashboard/Management/Training/Create/index",[
-			"sequence_no" => $sequence,
+			"trainings" => $trainings,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
@@ -113,11 +102,31 @@ class TrainingController extends Controller
 	public function store(TrainingRequest $request) {
 		$user = Auth::user();
 
+		$sequence_no = $request->sequence_no;
+
+		$seq_exist = Training::select("training_id")->where([
+			["sequence_no", $request->sequence_no],
+			["type", (int)$request->type]
+		])->first();
+
+		if($seq_exist) {
+			$trainings = Training::where([["is_deleted", false], ["type", (int)$request->type]])->get();
+			$number_of_trainings = $trainings->count() + 1;
+
+			$number_of_zeroes = strlen((string) $number_of_trainings);
+			$sequence_no_zeros = '';
+			for ($i = 0; $i <= $number_of_zeroes; $i++)
+			{
+				$sequence_no_zeros = $sequence_no_zeros . "0";
+			}
+			$sequence_no =  $sequence_no_zeros . $number_of_trainings;
+		}
+
 		$training = new Training;
 
 		$training->user_id = $user->user_id;
 		$training->employee_id = $user->emp_id;
-		$training->sequence_no = $request->sequence_no;
+		$training->sequence_no = $sequence_no;
 		$training->originator = $request->originator;
 		$training->project_code = $request->project_code;
 		$training->discipline = $request->discipline;
