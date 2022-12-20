@@ -124,7 +124,7 @@ const navConfig = [
 					{ title: 'induction', path: PATH_DASHBOARD.training.induction },
 					{ title: 'in house', path: PATH_DASHBOARD.training.inHouse },
 					{ title: 'third party', path: PATH_DASHBOARD.training.thirdParty },
-					{ title: 'metrics report', path: "/#" },
+					{ title: 'metrics report', path: "/#", disabled: true },
 				]
 			},
 
@@ -138,12 +138,12 @@ const navConfig = [
 						title: "Safety Observation",
 						path: PATH_DASHBOARD.inspection.safetyObservation,
 						children: [
-							{ title: 'form', path: PATH_DASHBOARD.inspection.form },
-							{ title: 'report', path: PATH_DASHBOARD.inspection.report },
+							{ title: 'form', path: PATH_DASHBOARD.inspection.form, disabled: true },
+							{ title: 'report', path: PATH_DASHBOARD.inspection.report, disabled: true },
 						],
 					},
-					{ title: 'machineries', path: PATH_DASHBOARD.inspection.machineries },
-					{ title: 'tools & equipments', path: PATH_DASHBOARD.inspection.toolsAndEquipments },
+					{ title: 'machineries', path: PATH_DASHBOARD.inspection.machineries, disabled: true },
+					{ title: 'tools & equipments', path: PATH_DASHBOARD.inspection.toolsAndEquipments, disabled: true },
 				]
 			},
 
