@@ -3,41 +3,54 @@ import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
 import GeneralAnalyticsPage from "./GeneralAnalyticsPage";
 
-const index = ({ auth: { user }, toolboxtalks, trainees }) => {
-	const [data, setData] = useState({
-		mainContractors: 0,
-		manHoursWorks: 0,
-		trainingHours: 0,
-		tbt: 0
+const index = ({ auth: { user }, data }) => {
+	const [items, setItems] = useState({
+		totalMainContractors: 0,
+		totalSubContractors: 0,
+		itds: {
+			count: 0,
+			itdMonth: 0,
+			totalHoursByMonth: 0,
+			totalItd: 0,
+			totalParticipantsPerMonth: 0,
+			totalDays: 0,
+			itdsManual: 0
+		},
+		trainingHours: {
+			thisMonth: 0,
+			itd: 0
+		},
+		tbt: {
+			thisMonth: 0,
+			itd: 0
+		},
 	});
 
 	useEffect(() => {
-		const { mainContractors, manHoursWorks } = toolboxtalks.reduce((acc, curr) => {
-			const { contractors, hours } = curr.participants.reduce((a, c) => {
-				if (c.company_type === 'main contractor') {
-					a.contractors++;
-				}
-				a.hours += c.pivot.time;
-				return a;
-			}, {
-				contractors: 0,
-				hours: 0
-			});
+		setItems({
+			totalMainContractors: data.contractors?.total_main_contractors || 0,
+			totalSubContractors: data.contractors?.total_sub_contractors || 0,
+			itds: {
+				count: data.itds_data?.count || 0,
+				itdMonth: data?.itds_data?.itd_month || 0,
+				totalHoursByMonth: parseInt(data.itds_data?.total_hours_selected_month || 0),
+				totalItd: parseInt(data.itds_data?.total_itd || 0),
+				totalParticipantsPerMonth: data.itds_data?.total_participants_per_month || 0,
+				totalDays: data.itds_data?.totals_days || 0,
+				itdsManual: parseInt(data?.itds_manual?.total_itds || 0),
+			},
+			trainingHours: {
+				thisMonth: parseInt(data.training_hours?.this_month?.total_hours || 0),
+				itd: parseInt(data.training_hours?.itd?.total_training_itd || 0),
+			},
+			tbt: {
+				thisMonth: data.tbt?.this_month?.total_tbt || 0,
+				itd: data.tbt?.itd?.total_tbt || 0
+			},
+		});
+	}, [data]);
 
-			acc.mainContractors += contractors;
-			acc.manHoursWorks += hours;
-			return acc;
-		}, {
-			mainContractors: 0,
-			manHoursWorks: 0
-		});
-		setData({
-			mainContractors,
-			manHoursWorks,
-			trainingHours: parseInt(trainees?.total_hours || 0),
-			tbt: toolboxtalks.length
-		});
-	}, []);
+	console.log({ data, items });
 
 	return (
 		<>
@@ -45,7 +58,7 @@ const index = ({ auth: { user }, toolboxtalks, trainees }) => {
 				<title> General: Analytics</title>
 			</Head>
 			<DashboardLayout>
-				<GeneralAnalyticsPage user={user} data={data} />
+				<GeneralAnalyticsPage user={user} items={items} data={data} />
 			</DashboardLayout>
 		</>
 	)

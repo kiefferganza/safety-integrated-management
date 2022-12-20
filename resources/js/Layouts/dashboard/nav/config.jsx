@@ -45,7 +45,7 @@ const navConfig = [
 		subheader: 'general',
 		items: [
 			{ title: 'HSE-dashboard', path: PATH_DASHBOARD.general.hse_dashboard, icon: ICONS.analytics },
-			{ title: 'file', path: PATH_DASHBOARD.general.file, icon: ICONS.file, disabled: true },
+			{ title: 'file', path: PATH_DASHBOARD.general.file, icon: ICONS.file },
 			{ title: 'employee', path: PATH_DASHBOARD.general.employee, icon: ICONS.employee, disabled: true },
 			{ title: 'inventory', path: PATH_DASHBOARD.general.inventory, icon: ICONS.ecommerce, disabled: true },
 			// { title: 'banking', path: PATH_DASHBOARD.general.banking, icon: ICONS.banking },

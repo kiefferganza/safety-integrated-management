@@ -63,8 +63,9 @@ const COVER_IMAGES = [
 ];
 
 
-export default function GeneralAnalyticsPage ({ user, data }) {
-	const { mainContractors, manHoursWorks, trainingHours, tbt } = data
+export default function GeneralAnalyticsPage ({ user, items }) {
+	const { totalMainContractors, totalSubContractors, tbt, trainingHours,
+		itds: { count, itdMonth, totalHoursByMonth, totalItd, totalParticipantsPerMonth, totalDays, itdsManual } } = items;
 	const theme = useTheme();
 
 	const { themeStretch } = useSettingsContext();
@@ -98,7 +99,17 @@ export default function GeneralAnalyticsPage ({ user, data }) {
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANHOURS WORKED"
-						total={manHoursWorks}
+						total={0}
+						data={[
+							{
+								label: "This Month",
+								total: totalHoursByMonth
+							},
+							{
+								label: "ITD",
+								total: (totalItd + itdsManual)
+							}
+						]}
 						icon={'mdi:clock-time-four-outline'}
 					/>
 				</Grid>
@@ -106,7 +117,17 @@ export default function GeneralAnalyticsPage ({ user, data }) {
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANPOWER"
-						total={mainContractors}
+						total={0}
+						data={[
+							{
+								label: "Contractor",
+								total: totalMainContractors
+							},
+							{
+								label: "Subcontractor",
+								total: totalSubContractors
+							}
+						]}
 						color="info"
 						icon={'simple-line-icons:user'}
 					/>
@@ -115,7 +136,17 @@ export default function GeneralAnalyticsPage ({ user, data }) {
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="HSE TRAINING HOURS"
-						total={trainingHours}
+						total={0}
+						data={[
+							{
+								label: "This Month",
+								total: trainingHours.thisMonth
+							},
+							{
+								label: "ITD",
+								total: trainingHours.itd
+							}
+						]}
 						color="warning"
 						icon={'mdi:clock-time-four-outline'}
 					/>
@@ -124,7 +155,17 @@ export default function GeneralAnalyticsPage ({ user, data }) {
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="TOOLBOX TALK"
-						total={tbt}
+						total={0}
+						data={[
+							{
+								label: "This Month",
+								total: tbt.thisMonth
+							},
+							{
+								label: "ITD",
+								total: tbt.itd
+							}
+						]}
 						color="error"
 						icon={'mdi:dropbox'}
 					/>
@@ -132,7 +173,7 @@ export default function GeneralAnalyticsPage ({ user, data }) {
 
 				<Grid item xs={12} md={6} lg={8}>
 					<AnalyticsWebsiteVisits
-						title=""
+						title="Trending Observation"
 						subheader=""
 						chart={{
 							labels: [
@@ -174,19 +215,15 @@ export default function GeneralAnalyticsPage ({ user, data }) {
 
 				<Grid item xs={12} md={6} lg={4}>
 					<AnalyticsCurrentVisits
-						title=""
+						title="Open vs Close"
 						chart={{
 							series: [
-								{ label: '', value: 4344 },
-								{ label: '', value: 5435 },
-								{ label: '', value: 1443 },
-								{ label: '', value: 4443 },
+								{ label: 'Open', value: 5435 },
+								{ label: 'Close', value: 4344 },
 							],
 							colors: [
 								theme.palette.primary.main,
-								theme.palette.info.main,
 								theme.palette.error.main,
-								theme.palette.warning.main,
 							],
 						}}
 					/>
@@ -194,8 +231,8 @@ export default function GeneralAnalyticsPage ({ user, data }) {
 
 				<Grid item xs={12} md={6} lg={8}>
 					<AnalyticsConversionRates
-						title="Conversion Rates"
-						subheader="(+43%) than last year"
+						title="Leading Indicators"
+						// subheader="(+43%) than last year"
 						chart={{
 							series: [
 								{ label: '', value: 400 },
@@ -215,28 +252,28 @@ export default function GeneralAnalyticsPage ({ user, data }) {
 
 				<Grid item xs={12} md={6} lg={4}>
 					<AnalyticsCurrentSubject
-						title="Current Subject"
+						title="Lagging Indicators"
 						chart={{
 							categories: ['', '', '', '', '', ''],
 							series: [
-								{ name: 'Series 1', data: [80, 50, 30, 40, 100, 20] },
-								{ name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
-								{ name: 'Series 3', data: [44, 76, 78, 13, 43, 10] },
+								{ name: '', data: [80, 50, 30, 40, 100, 20] },
+								{ name: '', data: [20, 30, 40, 80, 20, 80] },
+								{ name: '', data: [44, 76, 78, 13, 43, 10] },
 							],
 						}}
 					/>
 				</Grid>
 
 				<Grid item xs={12} md={6} lg={8}>
-					<AnalyticsNewsUpdate title="News Update" list={[]} />
+					{/* <AnalyticsNewsUpdate title="News Update" list={[]} /> */}
 				</Grid>
 
 				<Grid item xs={12} md={6} lg={4}>
-					<AnalyticsOrderTimeline title="Order Timeline" list={[]} />
+					{/* <AnalyticsOrderTimeline title="Order Timeline" list={[]} /> */}
 				</Grid>
 
 				<Grid item xs={12} md={6} lg={4}>
-					<AnalyticsTrafficBySite title="Traffic by Site" list={[]} />
+					{/* <AnalyticsTrafficBySite title="Traffic by Site" list={[]} /> */}
 				</Grid>
 
 				<Grid item xs={12} md={6} lg={8}>

@@ -54,17 +54,16 @@ Route::middleware('auth')->group(function ()
 	 * Management - User
 	 */
 	Route::post('/dashboard/user/{user_id}/follow', [UsersController::class, 'followUser']);
-	Route::post('/dashboard/user/change-password', [UsersController::class, 'change_password'])->name('management.user.change_pass');
 	Route::put('/dashboard/user/update-socials', [UsersController::class, 'update_socials'])->name('management.user.update_socials');
 	Route::get('/dashboard/user/profile', [UsersController::class, 'profile'])->name('management.user.profile');
 	Route::get('/dashboard/user/settings', fn () => Inertia::render("Dashboard/Management/User/Account/index"))->name('management.user.settings');
 	Route::get('/dashboard/user/profile/{user}', [UsersController::class, "show"])->name('management.user.show');
 
 	// CRUD
-	Route::middleware("can:update,App\Models\User")->group(function() {
-		Route::get('/dashboard/user/{user}/edit', [UsersController::class, 'edit_user']);
-		Route::post('/dashboard/user/{user}/update', [UsersController::class, 'update']);
-	});
+	Route::get('/dashboard/user/{user}/edit', [UsersController::class, 'edit_user'])->middleware('can:update,App\Models\User,user');
+	Route::post('/dashboard/user/{user}/update', [UsersController::class, 'update'])->middleware('can:update,App\Models\User,user');
+	Route::post('/dashboard/user/change-password', [UsersController::class, 'change_password'])->name('management.user.change_pass');
+	Route::post('/dashboard/user/delete', [UsersController::class, 'delete'])->middleware('can:delete,App\Models\User');
 	Route::middleware("can:view,App\Models\User")->group(function() {
 		Route::get('/dashboard/user/cards', [UsersController::class, 'cards'])->name('management.user.cards');
 		Route::get('/dashboard/user/list', [UsersController::class, 'index'])->name('management.user.list');

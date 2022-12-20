@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 // @mui
 import { alpha, useTheme } from '@mui/material/styles';
-import { Card, Typography } from '@mui/material';
+import { Box, Card, Typography } from '@mui/material';
 // utils
 import { bgGradient } from '@/utils/cssStyles';
 import { fShortenNumber } from '@/utils/formatNumber';
@@ -18,7 +18,7 @@ AnalyticsWidgetSummary.propTypes = {
 	total: PropTypes.number,
 };
 
-export default function AnalyticsWidgetSummary ({ title, total, icon, color = 'primary', sx, ...other }) {
+export default function AnalyticsWidgetSummary ({ title, total, icon, data, color = 'primary', sx, ...other }) {
 	const theme = useTheme();
 
 	return (
@@ -50,11 +50,27 @@ export default function AnalyticsWidgetSummary ({ title, total, icon, color = 'p
 				}}
 			/>
 
-			<Typography variant="h3">{fShortenNumber(total)}</Typography>
-
-			<Typography variant="subtitle2" sx={{ opacity: 0.64 }}>
+			<Typography variant="subtitle2" sx={{ opacity: 0.64, mb: 1 }}>
 				{title}
 			</Typography>
+
+			<Box display="flex" alignItems="center" gap={2} justifyContent="center">
+				{data.map(({ label, total }, idx) => (
+					<Box key={idx}>
+						<Typography variant="h5">{fShortenNumber(total) || 0}</Typography>
+						<Typography variant="subtitle2" sx={{ opacity: 0.64 }}>{label}</Typography>
+					</Box>
+				))}
+
+				{/* <Box>
+					<Typography variant="h5">{fShortenNumber(total)}</Typography>
+					<Typography variant="subtitle2" sx={{ opacity: 0.64 }}>{label}</Typography>
+				</Box>
+				<Box>
+					<Typography variant="h5">{fShortenNumber(2312312)}</Typography>
+					<Typography variant="subtitle2" sx={{ opacity: 0.64 }}>ITD</Typography>
+				</Box> */}
+			</Box>
 		</Card>
 	);
 }

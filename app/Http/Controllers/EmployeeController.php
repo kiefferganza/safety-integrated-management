@@ -41,7 +41,6 @@ class EmployeeController extends Controller
 			["tbl_employees.sub_id", $user->subscriber_id],
 			["tbl_employees.is_deleted", 0]
 		])
-		->with("followers")
 		->get();
 
 		return Inertia::render("Dashboard/Management/Employee/List/index", [
@@ -184,10 +183,6 @@ class EmployeeController extends Controller
 					$query->select("position_id", "position")->where("is_deleted", 0),
 				"department" => fn ($query) => 
 					$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
-				// "followers" => fn ($query) => 
-				// 	$query->select("user_id","following_id"),
-				// "following" => fn ($query) => 
-				// 	$query->select("user_id","following_id"),
 				"social_accounts"
 			]),
 			"trainingTypes" => TrainingType::get()

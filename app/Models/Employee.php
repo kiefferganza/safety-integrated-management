@@ -53,10 +53,6 @@ class Employee extends Model
 		return $this->hasMany(SocialAccount::class, "user_id", "user_id");
 	}
 
-	public function followers() {
-		return $this->hasMany(Follower::class, "following_id", "user_id");
-	}
-
 
 	public function getFullnameAttribute() {
 		return trim($this->attirbutes['firstname']). ' '  .trim($this->attributes['lastname']);
