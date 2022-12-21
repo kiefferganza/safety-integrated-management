@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Models\Employee;
-use App\Models\Follower;
+// use App\Models\Follower;
 use App\Models\SocialAccount;
 use App\Models\TrainingType;
 use App\Models\User;
@@ -19,6 +19,17 @@ use Illuminate\Validation\Rule;
 
 class UsersController extends Controller
 {
+
+	public function updateUserEmp() {
+		Employee::where([["employee_id", "!=", 1]])->update(["user_id" => NULL]);
+		$users = User::where("deleted", 0)->get(["user_id", "emp_id"])->toArray();
+		foreach ($users as $user) {
+			$emp = Employee::find($user['emp_id']);
+			if($emp) {
+				$emp->update(["user_id" => $user['user_id']]);
+			}
+		}
+	}
 	public function index()
 	{
 			$user = Auth::user();
@@ -78,7 +89,12 @@ class UsersController extends Controller
 
 		$user->save();
 
-		Employee::find($request->emp_id)->update(["user_id" => $user->user_id]);
+		$emp = Employee::find($request->emp_id);
+
+		if($emp) {
+			$emp->user_id = $user->user_id;
+			$emp->email = $user->email;
+		}
 
 		return redirect()->back()
 			->with('message', 'User added successfully')
@@ -176,8 +192,8 @@ class UsersController extends Controller
 
 		$user->save();
 
-		if($request->about) {
-			Employee::find($user->user_id)->update(["about" => $request->about]);
+		if($request->about && $user->emp_id) {
+			Employee::find($user->emp_id)->update(["about" => $request->about]);
 		}
 		
 		return redirect()->back()
@@ -241,14 +257,14 @@ class UsersController extends Controller
 	}
 
 
-	public function followUser($user_id) {
-		$user = Auth::user();
-		Follower::firstOrCreate([
-			"user_id" => $user->user_id,
-			"following_id" => $user_id,
-		]);
-		return redirect()->back();
-	}
+	// public function followUser($user_id) {
+	// 	$user = Auth::user();
+	// 	Follower::firstOrCreate([
+	// 		"user_id" => $user->user_id,
+	// 		"following_id" => $user_id,
+	// 	]);
+	// 	return redirect()->back();
+	// }
 
 
 	public function change_password(Request $request) {
