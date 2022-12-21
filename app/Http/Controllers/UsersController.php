@@ -20,16 +20,6 @@ use Illuminate\Validation\Rule;
 class UsersController extends Controller
 {
 
-	public function updateUserEmp() {
-		Employee::where([["employee_id", "!=", 1]])->update(["user_id" => NULL]);
-		$users = User::where("deleted", 0)->get(["user_id", "emp_id"])->toArray();
-		foreach ($users as $user) {
-			$emp = Employee::find($user['emp_id']);
-			if($emp) {
-				$emp->update(["user_id" => $user['user_id']]);
-			}
-		}
-	}
 	public function index()
 	{
 			$user = Auth::user();
