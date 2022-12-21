@@ -12,8 +12,14 @@ import { Head } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
+const TYPE_OPTIONS = {
+	1: "inHouse",
+	2: "client",
+	3: "thirdParty",
+	4: "induction"
+};
 
-export default function TrainingEditCreatePage ({ isEdit = false, details = null, currentTraining }) {
+export default function TrainingEditCreatePage ({ isEdit = false, details = null, currentTraining, type }) {
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -32,7 +38,7 @@ export default function TrainingEditCreatePage ({ isEdit = false, details = null
 						},
 						{
 							name: details ? `${details?.title} List` : 'List',
-							href: (isEdit && details) ? PATH_DASHBOARD.training[details?.url] : PATH_DASHBOARD.training.client,
+							href: (isEdit && details) ? PATH_DASHBOARD.training[details?.url] : type ? PATH_DASHBOARD.training[TYPE_OPTIONS[type]] : PATH_DASHBOARD.training.client,
 						},
 						{
 							name: isEdit ? 'Update course' : 'New training',

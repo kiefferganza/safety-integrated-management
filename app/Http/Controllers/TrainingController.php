@@ -106,7 +106,6 @@ class TrainingController extends Controller
 
 	public function store(TrainingRequest $request) {
 		$user = Auth::user();
-		// dd($request->all());
 
 		$sequence_no = $request->sequence_no;
 
