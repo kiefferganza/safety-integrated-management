@@ -53,7 +53,7 @@ const STATUS_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function TrainingClientList ({ trainings, module, url }) {
+export default function TrainingClientList ({ trainings, module, url, type }) {
 	const { load, stop } = useSwal();
 	const {
 		dense,
@@ -108,8 +108,6 @@ export default function TrainingClientList ({ trainings, module, url }) {
 		if (trainees.length <= 0 || files.length <= 0) return false;
 		return trainees.length === files.length;
 	}
-
-	console.log({ trainings });
 
 	useEffect(() => {
 		if (trainings && trainings?.length > 0) {
@@ -242,13 +240,13 @@ export default function TrainingClientList ({ trainings, module, url }) {
 						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{
 							name: module,
-							href: PATH_DASHBOARD.training.new,
+							href: PATH_DASHBOARD.training.new(type),
 						},
 						{ name: 'List' },
 					]}
 					action={
 						<Button
-							href={PATH_DASHBOARD.training.new}
+							href={PATH_DASHBOARD.training.new(type)}
 							component={Link}
 							preserveScroll
 							variant="contained"
@@ -456,7 +454,10 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 	inputData = stabilizedThis.map((el) => el[0]);
 
 	if (filterName) {
-		inputData = inputData.filter((training) => training.cms.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
+		inputData = inputData.filter((training) =>
+			training.cms.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
+			training.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+		);
 	}
 
 	if (filterStatus !== 'all') {

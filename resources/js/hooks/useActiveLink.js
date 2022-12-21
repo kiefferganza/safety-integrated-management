@@ -7,8 +7,9 @@ import { usePage } from "@inertiajs/inertia-react";
 export default function useActiveLink (path, deep = true, hasChild = false, childList) {
 	const { url } = usePage();
 
+
 	const urlSplit = url.split("/");
-	const pathSplit = path.split("/");
+	const pathSplit = path?.split("/");
 
 	const normalActive = (url === path);
 

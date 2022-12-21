@@ -24,7 +24,7 @@ class TrainingRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			"sequence_no" => "string|required",
+			"sequence_no" => "string",
 			"originator" => "string|required",
 			"project_code" => "string|required",
 			"discipline" => "string|required",

@@ -2,7 +2,6 @@
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
 import Label from '@/Components/label';
-import Iconify from '@/Components/iconify';
 import SvgColor from '@/Components/svg-color';
 
 // ----------------------------------------------------------------------
@@ -119,7 +118,7 @@ const navConfig = [
 				path: PATH_DASHBOARD.training.root,
 				icon: ICONS.training,
 				children: [
-					{ title: 'create', path: PATH_DASHBOARD.training.new },
+					{ title: 'create', path: PATH_DASHBOARD.training.new(2) },
 					{ title: 'client', path: PATH_DASHBOARD.training.client },
 					{ title: 'induction', path: PATH_DASHBOARD.training.induction },
 					{ title: 'in house', path: PATH_DASHBOARD.training.inHouse },

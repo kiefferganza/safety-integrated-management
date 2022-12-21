@@ -30,7 +30,8 @@ class TrainingController extends Controller
 		return Inertia::render("Dashboard/Management/Training/List/index", [
 			"trainings" => $trainings,
 			"module" => "Client",
-			"url" => "client"
+			"url" => "client",
+			"type" => 2
 		]);
 	}
 
@@ -47,7 +48,8 @@ class TrainingController extends Controller
 		return Inertia::render("Dashboard/Management/Training/List/index", [
 			"trainings" => $trainings,
 			"module" => "In House",
-			"url" => "in-house"
+			"url" => "in-house",
+			"type" => 1
 		]);
 	}
 
@@ -63,7 +65,8 @@ class TrainingController extends Controller
 		return Inertia::render("Dashboard/Management/Training/List/index", [
 			"trainings" => $trainings,
 			"module" => "Third Party",
-			"url" => "third-party"
+			"url" => "third-party",
+			"type" => 3
 		]);
 	}
 
@@ -79,28 +82,31 @@ class TrainingController extends Controller
 		return Inertia::render("Dashboard/Management/Training/List/index", [
 			"trainings" => $trainings,
 			"module" => "Induction",
-			"url" => "induction"
+			"url" => "induction",
+			"type" => 4
 		]);
 	}
 
 
-	public function create() {
+	public function create(Request $request) {
 		$trainings = Training::where([["is_deleted", false]])->get();
 
 		return Inertia::render("Dashboard/Management/Training/Create/index",[
 			"trainings" => $trainings,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
-			->where([
-				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0]
-			])
-			->get()
+				->where([
+					["tbl_position.is_deleted", 0],
+					["tbl_employees.is_deleted", 0]
+				])
+				->get(),
+			"type" => $request->query('type') ? $request->query('type') : 2,
 		]);
 	}
 
 
 	public function store(TrainingRequest $request) {
 		$user = Auth::user();
+		// dd($request->all());
 
 		$sequence_no = $request->sequence_no;
 
@@ -109,7 +115,7 @@ class TrainingController extends Controller
 			["type", (int)$request->type]
 		])->first();
 
-		if($seq_exist) {
+		if($seq_exist || !$sequence_no) {
 			$trainings = Training::where([["is_deleted", false], ["type", (int)$request->type]])->get();
 			$number_of_trainings = $trainings->count() + 1;
 
@@ -201,6 +207,7 @@ class TrainingController extends Controller
 		
 
 		return redirect()->back()
+		->with("trainings", Training::where([["is_deleted", false]])->get())
 		->with("message", "Training added successfully!")
 		->with("type", "success");
 	}

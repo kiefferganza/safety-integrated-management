@@ -23,7 +23,7 @@ TrainingNewEditForm.propTypes = {
 };
 
 export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
-	const { trainings } = usePage().props;
+	const { trainings, type } = usePage().props;
 	const [loadingSend, setLoadingSend] = useState(false);
 
 	const newTrainingSchema = Yup.object().shape({
@@ -64,7 +64,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		training_date: currentTraining?.training_date || '',
 		date_expired: currentTraining?.date_expired || '',
 		trainees: currentTraining?.trainees || [],
-		type: currentTraining?.type || "2",
+		type: currentTraining?.type || type || "2",
 		training_center: currentTraining?.training_center || '',
 		reviewed_by: currentTraining?.external_details?.reviewed_by || '',
 		approved_by: currentTraining?.external_details?.approved_by || '',
@@ -84,9 +84,9 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		formState: { isDirty }
 	} = methods;
 
-	const setSequenceNumber = (type) => {
+	const setSequenceNumber = (trType) => {
 		if (!isEdit || !currentTraining?.sequence_no && trainings) {
-			const trs = trainings.filter(tr => tr.type === +type);
+			const trs = trainings.filter(tr => tr.type === +trType);
 			const numOfLen = trs.length.toString().length;
 			setValue("sequence_no", "0".repeat(numOfLen === 1 ? 2 : numOfLen) + ((trs.length + 1) + ""));
 		}
@@ -95,20 +95,21 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 	useEffect(() => {
 		if (isEdit && currentTraining) {
 			reset(defaultValues);
-			setSequenceNumber(2)
+			setSequenceNumber(type)
 		}
 		if (!isEdit) {
 			reset(defaultValues);
-			setSequenceNumber(2)
+			setSequenceNumber(type)
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isEdit, currentTraining]);
+	}, [isEdit, currentTraining, trainings]);
 
 	const handleCreateAndSend = async (data) => {
 		try {
 			if (isEdit) {
 				Inertia.post(`/dashboard/training/${currentTraining.training_id}/edit`, data, {
 					preserveScroll: true,
+					resetOnSuccess: false,
 					onStart () {
 						setLoadingSend(true);
 					},

@@ -146,14 +146,13 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 						<Autocomplete
-
 							clearOnEscape
 							name="trainer"
 							options={personel}
 							fullWidth
 							freeSolo
 							inputValue={values.trainer}
-							getOptionLabel={(option) => (`${option?.firstname} ${option?.lastname}`)}
+							getOptionLabel={(option, value) => (`${option?.firstname} ${option?.lastname}`)}
 							renderOption={(props, option) => {
 								return (
 									<li {...props} key={option.employee_id}>
