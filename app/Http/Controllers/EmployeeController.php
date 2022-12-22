@@ -174,9 +174,8 @@ class EmployeeController extends Controller
 
 		return Inertia::render('Dashboard/Management/Employee/View/index', [
 			"employee" => $employee->load([
-				"trainings" => fn ($query) => 
-					$query->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
-					->where("is_deleted", 0),
+				"participated_trainings" => fn ($query) => 
+					$query->select("title", "type", "date_expired", "training_date", "training_hrs", "tbl_training_trainees.employee_id", "tbl_training_trainees.training_id")->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id"),
 				"company" => fn ($query) =>
 					$query->select("company_id", "company_name")->where("is_deleted", 0),
 				"position" => fn ($query) => 

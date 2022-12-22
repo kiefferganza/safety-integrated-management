@@ -20,7 +20,7 @@ const TODAY = new Date();
 
 export default function EmployeeProfile ({ employee }) {
 
-	const trainingSummary = employee?.trainings?.reduce((acc, curr) => {
+	const trainingSummary = employee?.participated_trainings?.reduce((acc, curr) => {
 		if (isAfter(TODAY, new Date(curr.date_expired))) {
 			acc.expired++;
 		} else {

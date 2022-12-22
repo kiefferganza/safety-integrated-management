@@ -64,7 +64,7 @@ export default function EmployeeProfilePage ({ employee }) {
 			value: 'trainings',
 			label: 'Trainings',
 			icon: <Iconify icon="mingcute:certificate-2-fill" />,
-			component: <EmployeeTrainings trainings={employee.trainings} />,
+			component: <EmployeeTrainings trainings={employee?.participated_trainings || []} />,
 		},
 		// {
 		// 	value: 'followers',
