@@ -41,11 +41,11 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		date_expired: Yup.string().required("Please add date range"),
 		type: Yup.string().required("Please select course type"),
 		// External
-		reviewed_by: Yup.string().when("type", (type, schema) => type == "3" ? schema.required() : schema.notRequired()),
-		approved_by: Yup.string().when("type", (type, schema) => type == "3" ? schema.required() : schema.notRequired()),
-		currency: Yup.string().when("type", (type, schema) => type == "3" ? schema.required() : schema.notRequired()),
-		course_price: Yup.string().when("type", (type, schema) => type == "3" ? schema.required() : schema.notRequired()),
-		training_center: Yup.string().when("type", (type, schema) => type == "3" ? schema.required() : schema.notRequired()),
+		reviewed_by: Yup.string().when("type", (type, schema) => type == "3" ? schema.required("Please select a reviwer") : schema.notRequired()),
+		approved_by: Yup.string().when("type", (type, schema) => type == "3" ? schema.required("Please select an approval") : schema.notRequired()),
+		currency: Yup.string().when("type", (type, schema) => type == "3" ? schema.required("Please select currency type") : schema.notRequired()),
+		course_price: Yup.string().when("type", (type, schema) => type == "3" ? schema.required("Please add a price") : schema.notRequired()),
+		training_center: Yup.string().when("type", (type, schema) => type == "3" ? schema.required("Training center is required") : schema.notRequired()),
 	});
 
 	const defaultValues = useMemo(() => ({
@@ -83,10 +83,9 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		setValue,
 		formState: { isDirty }
 	} = methods;
-
 	const setSequenceNumber = (trType) => {
-		if (!isEdit || !currentTraining?.sequence_no && trainings) {
-			const trs = trainings.filter(tr => tr.type === +trType);
+		if (!currentTraining?.sequence_no && trainings) {
+			const trs = trainings.filter(tr => tr.type === trType ? +trType : currentTraining?.type);
 			const numOfLen = trs.length.toString().length;
 			setValue("sequence_no", "0".repeat(numOfLen === 1 ? 2 : numOfLen) + ((trs.length + 1) + ""));
 		}

@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useSnackbar } from 'notistack';
 // @mui
 import { Stack, Dialog, Button, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 // components
@@ -12,6 +13,7 @@ const TrainingFileUploadDialog = ({
 	trainee,
 	...other
 }) => {
+	const { enqueueSnackbar } = useSnackbar();
 	const { setValue, watch } = useFormContext();
 
 	const [tmpFile, setTmpFile] = useState([]);
@@ -56,16 +58,14 @@ const TrainingFileUploadDialog = ({
 					user_id: trainee.user_id,
 					src: tmpFile[0] || null
 				}
-				// 	{
-				// 		"fullname": "Ayoub  Younis",
-				// 		"position": "Safety Officer ",
-				// 		"emp_id": 27,
-				// 		"user_id": 1,
-				// 		"src": null
-				// }
 			}
 			return tr;
 		});
+		if (trainee?.src) {
+			enqueueSnackbar("File updated successfully", { variant: "success" });
+		} else {
+			enqueueSnackbar("File saved successfully", { variant: "success" });
+		}
 		setValue('trainees', updatedTrainees, { shouldDirty: true, shouldValidate: true });
 	}
 

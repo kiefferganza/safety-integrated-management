@@ -89,7 +89,7 @@ class TrainingController extends Controller
 
 
 	public function create(Request $request) {
-		$trainings = Training::where([["is_deleted", false]])->get();
+		$trainings = Training::select("type")->where([["is_deleted", false]])->get();
 
 		return Inertia::render("Dashboard/Management/Training/Create/index",[
 			"trainings" => $trainings,
@@ -206,7 +206,7 @@ class TrainingController extends Controller
 		
 
 		return redirect()->back()
-		->with("trainings", Training::where([["is_deleted", false]])->get())
+		->with("trainings", Training::select("type")->where([["is_deleted", false]])->get())
 		->with("message", "Training added successfully!")
 		->with("type", "success");
 	}
@@ -248,6 +248,7 @@ class TrainingController extends Controller
 				["tbl_employees.is_deleted", 0]
 			])
 			->get(),
+			"trainings" => Training::select("type", 'training_id')->where([["is_deleted", false]])->get(),
 			"details" => $details,
 			"sequence_no" => $sequence
 		]);
@@ -255,7 +256,7 @@ class TrainingController extends Controller
 
 	public function update(TrainingRequest $request, Training $training) {
 		$user = Auth::user();
-	
+		
 		$training->originator = $request->originator;
 		$training->project_code = $request->project_code;
 		$training->discipline = $request->discipline;
@@ -273,6 +274,10 @@ class TrainingController extends Controller
 		$training->type = (int)$request->type;
 		$training->training_center = $request->training_center;
 		$training->increment("revision_no");
+
+		if($training->sequence_no === null) {
+			$training->sequence_no = $request->sequence_no;
+		}
 
 
 		$training->save();
