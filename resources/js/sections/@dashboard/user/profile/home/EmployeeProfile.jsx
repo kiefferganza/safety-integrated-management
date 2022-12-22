@@ -16,12 +16,11 @@ EmployeeProfile.propTypes = {
 	employee: PropTypes.object
 };
 
-const TODAY = new Date();
 
 export default function EmployeeProfile ({ employee }) {
 
 	const trainingSummary = employee?.participated_trainings?.reduce((acc, curr) => {
-		if (isAfter(TODAY, new Date(curr.date_expired))) {
+		if (isAfter(new Date(curr.training_date), new Date(curr.date_expired))) {
 			acc.expired++;
 		} else {
 			acc.valid++;
