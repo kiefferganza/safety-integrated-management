@@ -33,6 +33,10 @@ class Employee extends Model
 		return $this->hasMany(Training::class, "employee_id");
 	}
 
+	public function participated_trainings() {
+		return $this->hasMany(TrainingTrainees::class, "employee_id", "employee_id");
+	}
+
 	public function nationality() {
 		return $this->hasOne(Nationality::class, "id", "nationality");
 	}

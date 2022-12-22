@@ -19,12 +19,10 @@ Profile.propTypes = {
 	socialAccounts: PropTypes.array,
 };
 
-const TODAY = new Date();
-
 export default function Profile ({ user, employee, socialAccounts }) {
 
-	const trainingSummary = employee?.trainings?.reduce((acc, curr) => {
-		if (isAfter(TODAY, new Date(curr.date_expired))) {
+	const trainingSummary = employee?.participated_trainings?.reduce((acc, curr) => {
+		if (isAfter(new Date(curr.training_date), new Date(curr.date_expired))) {
 			acc.expired++;
 		} else {
 			acc.valid++;

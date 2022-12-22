@@ -2,18 +2,26 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { usePage } from '@inertiajs/inertia-react';
 // @mui
-import { Box, Card, Button, Typography, Stack, useTheme, Divider } from '@mui/material';
+import { Box, Card, Button, Typography, Stack, useTheme, Divider, ButtonBase } from '@mui/material';
 // components
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';
 import TrainingAnalitic from '../../training/TrainingAnalitic';
 import Label from '@/Components/label';
 import { getTrainingStatus } from '@/utils/formatDates';
+import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
 EmployeeTrainings.propTypes = {
 	trainings: PropTypes.array,
+};
+
+const TRAINING_TYPE = {
+	1: "in-house",
+	2: "client",
+	3: "third-party",
+	4: "induction"
 };
 
 export default function EmployeeTrainings ({ trainings }) {
@@ -94,49 +102,51 @@ TrainingCard.propTypes = {
 };
 
 function TrainingCard ({ training, trainingTypes }) {
-	const { title, training_hrs, date_expired, type } = training;
+	const { title, training_hrs, date_expired, type, training_id } = training;
 
 	const status = getTrainingStatus(date_expired);
-
 	return (
-		<Card
-			sx={{
-				p: 3,
-				display: 'flex',
-				alignItems: 'center',
-			}}
-		>
-			<Box
+		<ButtonBase sx={{ display: 'block', textAlign: 'initial' }} onClick={() => Inertia.visit(`/dashboard/training/${TRAINING_TYPE[type]}/${training_id}`)}>
+			<Card
 				sx={{
-					pl: 2,
-					pr: 1,
-					flexGrow: 1,
-					minWidth: 0,
+					p: 3,
+					display: 'flex',
+					alignItems: 'center',
 				}}
 			>
-				<Stack spacing={0.5} direction="row" alignItems="center" sx={{ color: 'text.secondary', mb: 1 }}>
-					<Iconify icon="mingcute:certificate-2-fill" width={16} sx={{ flexShrink: 0 }} />
+
+				<Box
+					sx={{
+						pl: 2,
+						pr: 1,
+						flexGrow: 1,
+						minWidth: 0,
+					}}
+				>
+					<Stack spacing={0.5} direction="row" alignItems="center" sx={{ color: 'text.secondary', mb: 1 }}>
+						<Iconify icon="mingcute:certificate-2-fill" width={16} sx={{ flexShrink: 0 }} />
+
+						<Typography variant="body2" component="span" noWrap>
+							{trainingTypes.find(tt => tt.training_type_id === type)?.title}
+						</Typography>
+					</Stack>
+					<Typography variant="subtitle2" noWrap>
+						{title}
+					</Typography>
 
 					<Typography variant="body2" component="span" noWrap>
-						{trainingTypes.find(tt => tt.training_type_id === type)?.title}
+						{training_hrs} hours
 					</Typography>
-				</Stack>
-				<Typography variant="subtitle2" noWrap>
-					{title}
-				</Typography>
+				</Box>
 
-				<Typography variant="body2" component="span" noWrap>
-					{training_hrs} hours
-				</Typography>
-			</Box>
-
-			<Label
-				variant="soft"
-				sx={{ textTransform: "capitalize" }}
-				color={status.color}
-			>
-				{status.text}
-			</Label>
-		</Card>
+				<Label
+					variant="soft"
+					sx={{ textTransform: "capitalize" }}
+					color={status.color}
+				>
+					{status.text}
+				</Label>
+			</Card>
+		</ButtonBase>
 	);
 }

@@ -96,9 +96,8 @@ class UsersController extends Controller
 		$user = Auth::user();
 		
 		$employee = Employee::where("employee_id", $user->emp_id)->with([
-			"trainings" => fn ($query) => 
-				$query->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
-				->where("is_deleted", 0),
+			"participated_trainings" => fn ($q) =>
+					$q->select("title", "type", "date_expired", "training_date", "training_hrs", "tbl_training_trainees.employee_id", "tbl_training_trainees.training_id")->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id")->where("tbl_trainings.is_deleted", 0),
 			"company" => fn ($query) =>
 				$query->select("company_id", "company_name")->where("is_deleted", 0),
 			"position" => fn ($query) => 
@@ -115,22 +114,27 @@ class UsersController extends Controller
 
 
 	public function show(User $user) {
+		if(Auth::user()->user_id === $user->user_id) {
+			return redirect()->route('management.user.profile');
+		}
+		
+		$users =  $user->load([
+			"employee" => fn ($query) => 
+				$query->with([
+					"participated_trainings" => fn ($q) =>
+						$q->select("title", "type", "date_expired", "training_date", "training_hrs", "tbl_training_trainees.employee_id", "tbl_training_trainees.training_id")->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id"),
+					"company" => fn ($query) =>
+						$query->select("company_id", "company_name")->where("is_deleted", 0),
+					"position" => fn ($query) => 
+						$query->select("position_id", "position")->where("is_deleted", 0),
+					"department" => fn ($query) => 
+						$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]])
+				]),
+			"social_accounts"
+		]);
+
 		return Inertia::render("Dashboard/Management/User/Profile/index", [
-			"user" => $user->load([
-				"employee" => fn ($query) => 
-					$query->with([
-						"trainings" => fn ($query) => 
-							$query->select("training_id","date_expired","training_date","training_hrs","type","title","employee_id")
-							->where("is_deleted", 0),
-						"company" => fn ($query) =>
-							$query->select("company_id", "company_name")->where("is_deleted", 0),
-						"position" => fn ($query) => 
-							$query->select("position_id", "position")->where("is_deleted", 0),
-						"department" => fn ($query) => 
-							$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]])
-					]),
-				"social_accounts"
-			]),
+			"user" => $users,
 			"trainingTypes" => TrainingType::get()
 		]);
 	}

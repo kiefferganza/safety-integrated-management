@@ -24,7 +24,6 @@ import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTraini
 // ----------------------------------------------------------------------
 
 export default function UserProfilePage ({ user }) {
-	console.log(user);
 	const { themeStretch } = useSettingsContext();
 
 	const [searchFriends, setSearchFriends] = useState('');
@@ -42,7 +41,7 @@ export default function UserProfilePage ({ user }) {
 			value: 'trainings',
 			label: 'Trainings',
 			icon: <Iconify icon="mingcute:certificate-2-fill" />,
-			component: <EmployeeTrainings trainings={user.employee.trainings} />,
+			component: <EmployeeTrainings trainings={user.employee?.participated_trainings || []} />,
 		},
 		// {
 		// 	value: 'followers',

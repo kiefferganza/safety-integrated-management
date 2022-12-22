@@ -27,4 +27,10 @@ class TrainingTrainees extends Model
 		'user_id',
 		'is_removed',
 	];
+
+
+	public function training() {
+		return $this->belongsTo(Training::class, "training_id");
+	}
+
 }
