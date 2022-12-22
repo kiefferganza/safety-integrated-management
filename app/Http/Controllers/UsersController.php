@@ -192,6 +192,11 @@ class UsersController extends Controller
 	}
 
 
+	public function destroy(Request $request) {
+		
+	}
+
+
 	public function edit_user(User $user) {
 		$user->employee = $user->employee()->first();
 		return Inertia::render("Dashboard/Management/User/Edit/index", ["user" => $user]);
