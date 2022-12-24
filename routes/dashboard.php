@@ -4,6 +4,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\UsersController;
@@ -117,5 +118,12 @@ Route::middleware('auth')->group(function ()
 	// Update
 	Route::post('dashboard/training/{training}/edit', [TrainingController::class, 'update']);
 	Route::get('dashboard/training/{training}/edit', [TrainingController::class, 'edit']);
+
+
+	/**
+	 * Management - Inspection
+	 */
+	// Lists
+	Route::get('dashboard/inspection/safety-observation/form', [InspectionController::class, "index"])->name('inspection.management.list');
 
 });

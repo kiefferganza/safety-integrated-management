@@ -13,11 +13,19 @@ export default function useActiveLink (path, deep = true, hasChild = false, chil
 
 	const normalActive = (url === path);
 
-
-	const deepActive = hasChild ? ((url === path) || (urlSplit[2] === pathSplit[2])) : (url === path || pathSplit[3] ? (pathSplit[3] === urlSplit[3] && urlSplit[2] === pathSplit[2]) : false);
-
+	const getDeepActive = () => {
+		if (hasChild) {
+			return (url === path) || (urlSplit[2] === pathSplit[2]);
+		} else {
+			if (pathSplit.length > 4) {
+				return (pathSplit[4] ? (pathSplit[4] === urlSplit[4] && urlSplit[3] === pathSplit[3] && urlSplit[2] === pathSplit[2]) : false);
+			} else {
+				return (pathSplit[3] ? (pathSplit[3] === urlSplit[3] && urlSplit[2] === pathSplit[2]) : false);
+			}
+		}
+	}
 	return {
-		active: childList ? childList.includes(urlSplit[2]) : deep ? deepActive : normalActive,
+		active: childList ? childList.includes(urlSplit[2]) : deep ? getDeepActive() : normalActive,
 		isExternalLink: path.includes('http'),
 	};
 }

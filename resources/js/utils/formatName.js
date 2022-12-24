@@ -12,6 +12,13 @@ export const getFullName = (user) => {
 };
 
 
+export const employeeName = (emp) => {
+	const fname = _.capitalize(emp?.firstname).trim();
+	const lname = _.capitalize(emp?.lastname).trim();
+	return `${fname} ${lname}`
+};
+
+
 export const getEmployeeName = (emp) => {
 	const fname = _.capitalize(emp?.firstname);
 	const mname = _.capitalize(emp?.middlename);
