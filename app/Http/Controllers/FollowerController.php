@@ -33,10 +33,10 @@ class FollowerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        //
-    }
+    // public function store(Request $request)
+    // {
+    //     //
+    // }
 
     /**
      * Display the specified resource.
@@ -44,10 +44,10 @@ class FollowerController extends Controller
      * @param  \App\Models\Follower  $follower
      * @return \Illuminate\Http\Response
      */
-    public function show(Follower $follower)
-    {
-        //
-    }
+    // public function show(Follower $follower)
+    // {
+    //     //
+    // }
 
     /**
      * Show the form for editing the specified resource.
@@ -55,10 +55,10 @@ class FollowerController extends Controller
      * @param  \App\Models\Follower  $follower
      * @return \Illuminate\Http\Response
      */
-    public function edit(Follower $follower)
-    {
-        //
-    }
+    // public function edit(Follower $follower)
+    // {
+    //     //
+    // }
 
     /**
      * Update the specified resource in storage.
@@ -67,10 +67,10 @@ class FollowerController extends Controller
      * @param  \App\Models\Follower  $follower
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Follower $follower)
-    {
-        //
-    }
+    // public function update(Request $request, Follower $follower)
+    // {
+    //     //
+    // }
 
     /**
      * Remove the specified resource from storage.
@@ -78,8 +78,8 @@ class FollowerController extends Controller
      * @param  \App\Models\Follower  $follower
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Follower $follower)
-    {
-        //
-    }
+    // public function destroy(Follower $follower)
+    // {
+    //     //
+    // }
 }

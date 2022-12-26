@@ -22,7 +22,7 @@ export default function NavAccount () {
 	const { auth: { user } } = usePage().props;
 
 	return (
-		<MuiLink href="/dashboard/user/account" component={Link} preserveScroll underline="none" color="inherit">
+		<MuiLink href="/dashboard/user/profile" component={Link} preserveScroll underline="none" color="inherit">
 			<StyledRoot>
 				<CustomAvatar src={getCurrentUserImage(user) || null} alt={getCurrentUserName(user)} />
 
@@ -32,7 +32,7 @@ export default function NavAccount () {
 					</Typography>
 
 					<Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
-						{user?.employee?.position || user?.position || ""}
+						{user?.employee?.position || ""}
 					</Typography>
 				</Box>
 			</StyledRoot>
