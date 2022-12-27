@@ -43,6 +43,7 @@ import { useSwal } from '@/hooks/useSwal';
 import { Inertia } from '@inertiajs/inertia';
 import { employeeName } from '@/utils/formatName';
 import { InspectionTableRow, InspectionTableToolbar } from '@/sections/@dashboard/inspection/list';
+import InspectionAnalytic from '@/sections/@dashboard/inspection/InspectionAnalytic';
 
 // ----------------------------------------------------------------------
 
@@ -59,6 +60,7 @@ const TABLE_HEAD = [
 
 
 const InspectionListPage = ({ employees = [], canWrite = false, user, inspections }) => {
+	const theme = useTheme();
 	const { themeStretch } = useSettingsContext();
 	const { load, stop } = useSwal();
 	const {
@@ -170,7 +172,9 @@ const InspectionListPage = ({ employees = [], canWrite = false, user, inspection
 		(!dataFiltered.length && !!filterType) ||
 		(!dataFiltered.length && !!filterStartDate);
 
-	const getLengthByType = (status) => tableData.filter((item) => item.type === status).length;
+	const getLengthByType = (type) => tableData.filter((item) => item.type === type).length;
+
+	const getPercentByType = (type) => (getLengthByType(type) / tableData.length) * 100;
 
 	const TABS = [
 		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
@@ -270,16 +274,55 @@ const InspectionListPage = ({ employees = [], canWrite = false, user, inspection
 					}
 				/>
 
-				{/* <Card sx={{ mb: 5 }}>
+				<Card sx={{ mb: 5 }}>
 					<Scrollbar>
 						<Stack
 							direction="row"
 							divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
 							sx={{ py: 2 }}
 						>
+							<InspectionAnalytic
+								title="Total"
+								total={tableData.length}
+								percent={100}
+								icon="heroicons:document-chart-bar"
+								color={theme.palette.info.main}
+							/>
+
+							<InspectionAnalytic
+								title="Submitted"
+								total={getLengthByType('submitted')}
+								percent={getPercentByType('submitted')}
+								icon="heroicons:document-magnifying-glass"
+								color={theme.palette.success.main}
+							/>
+
+							<InspectionAnalytic
+								title="Review"
+								total={getLengthByType('review')}
+								percent={getPercentByType('review')}
+								icon="heroicons:document-minus"
+								color={theme.palette.warning.main}
+							/>
+
+							<InspectionAnalytic
+								title="Verify & Approve"
+								total={getLengthByType('verify')}
+								percent={getPercentByType('verify')}
+								icon="heroicons:document-check"
+								color={theme.palette.error.main}
+							/>
+
+							<InspectionAnalytic
+								title="Closeout"
+								total={getLengthByType('closeout')}
+								percent={getPercentByType('closeout')}
+								icon="heroicons:document-arrow-up"
+								color={theme.palette.error.main}
+							/>
 						</Stack>
 					</Scrollbar>
-				</Card> */}
+				</Card>
 
 				<Card>
 					<Tabs

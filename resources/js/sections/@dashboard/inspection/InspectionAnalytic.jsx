@@ -9,7 +9,7 @@ import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 
-EmployeeAnalytic.propTypes = {
+InspectionAnalytic.propTypes = {
 	icon: PropTypes.string,
 	title: PropTypes.string,
 	color: PropTypes.string,
@@ -17,7 +17,7 @@ EmployeeAnalytic.propTypes = {
 	percent: PropTypes.number,
 };
 
-export default function EmployeeAnalytic ({ title, total, icon, color, percent }) {
+export default function InspectionAnalytic ({ title, total, icon, color, percent }) {
 	return (
 		<Stack direction="row" alignItems="center" justifyContent="center" sx={{ width: 1, minWidth: 200 }}>
 			<Stack alignItems="center" justifyContent="center" sx={{ position: 'relative' }}>
@@ -46,7 +46,7 @@ export default function EmployeeAnalytic ({ title, total, icon, color, percent }
 				<Typography variant="subtitle2">
 					{fShortenNumber(total) || 0}{' '}
 					<Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
-						employees
+						inspections
 					</Box>
 				</Typography>
 			</Stack>

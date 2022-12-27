@@ -5,7 +5,7 @@ const index = ({ companies, departments, positions, users }) => {
 	return (
 		<DashboardLayout>
 			<EmployeeCreateEditPage
-				currentEmployee={{}}
+				currentEmployee={null}
 				companies={companies}
 				departments={departments}
 				positions={positions}
