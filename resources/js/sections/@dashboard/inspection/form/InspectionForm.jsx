@@ -1,6 +1,5 @@
 import { RHFTextField } from '@/Components/hook-form'
-import useResponsive from '@/hooks/useResponsive';
-import { Autocomplete, Chip, Divider, Grid, Stack, TextField } from '@mui/material'
+import { Autocomplete, Chip, Divider, Stack, TextField, Typography } from '@mui/material'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
@@ -8,11 +7,10 @@ import React, { useState } from 'react'
 import { useFormContext } from 'react-hook-form';
 import { format } from 'date-fns';
 
-const InspectionForm = ({ personel }) => {
+const InspectionForm = ({ personel, isDesktop }) => {
 	const [cc, setCC] = useState([]);
 	const [time, setTime] = useState(null);
 	const [inspDate, setInspDate] = useState(null);
-	const isDesktop = useResponsive('up', 'sm');
 	const { setValue, watch, formState: { errors } } = useFormContext();
 	const values = watch();
 
@@ -39,7 +37,10 @@ const InspectionForm = ({ personel }) => {
 
 	return (
 		<Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
-			<Stack alignItems="flex-end" spacing={2}>
+			<Stack spacing={3}>
+				<Typography variant="h6" sx={{ color: 'text.disabled' }}>
+					Project Info
+				</Typography>
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
 					<RHFTextField
@@ -64,6 +65,12 @@ const InspectionForm = ({ personel }) => {
 					<RHFTextField name="document_level" label="Level (Optional)" />
 
 				</Stack>
+			</Stack>
+
+			<Stack spacing={3}>
+				<Typography variant="h6" sx={{ color: 'text.disabled' }}>
+					Inspection Detail
+				</Typography>
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
@@ -109,7 +116,12 @@ const InspectionForm = ({ personel }) => {
 					/>
 
 				</Stack>
+			</Stack>
 
+			<Stack spacing={3}>
+				<Typography variant="h6" sx={{ color: 'text.disabled' }}>
+					Inspection Date & Time
+				</Typography>
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 					{isDesktop ? (
 						<DesktopDatePicker
@@ -156,6 +168,7 @@ const InspectionForm = ({ personel }) => {
 
 				</Stack>
 			</Stack>
+
 		</Stack>
 	)
 }

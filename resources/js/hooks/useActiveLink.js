@@ -24,9 +24,7 @@ export default function useActiveLink (path, deep = true, hasChild = false, chil
 			}
 		}
 	}
-	if (childList ? childList.includes(urlSplit[2]) : deep ? getDeepActive() : normalActive) {
-		console.log(path, pathSplit, pathSplit.length);
-	}
+
 	return {
 		active: childList ? childList.includes(urlSplit[2]) : deep ? getDeepActive() : normalActive,
 		isExternalLink: path.includes('http'),
