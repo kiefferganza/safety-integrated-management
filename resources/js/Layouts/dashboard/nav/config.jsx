@@ -134,6 +134,10 @@ const navConfig = [
 				icon: ICONS.inspection,
 				children: [
 					{
+						title: "Create",
+						path: PATH_DASHBOARD.inspection.new
+					},
+					{
 						title: "Safety Observation",
 						path: PATH_DASHBOARD.inspection.safetyObservation,
 						children: [
