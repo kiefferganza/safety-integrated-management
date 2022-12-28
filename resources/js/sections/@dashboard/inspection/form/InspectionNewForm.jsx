@@ -131,11 +131,11 @@ const InspectionNewForm = ({ currentInspection }) => {
 						);
 					})}
 				</Stepper>
-				<Box display={activeStep !== 1 ? "none" : "block"}>
+				<Box display={activeStep !== 0 ? "none" : "block"}>
 					<InspectionForm personel={personel} />
 				</Box>
 
-				<Box display={activeStep !== 0 ? "none" : "block"}>
+				<Box display={activeStep !== 1 ? "none" : "block"}>
 					<InspectionCloseoutForm />
 				</Box>
 

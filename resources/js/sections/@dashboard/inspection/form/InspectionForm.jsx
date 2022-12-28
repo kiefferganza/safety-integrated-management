@@ -23,7 +23,7 @@ const InspectionForm = ({ personel }) => {
 
 	const handleChangeDate = (val) => {
 		setInspDate(val);
-		// setValue('inspected_date', format(val, "d-MMM-yyyy"), { shouldDirty: true, shouldValidate: true });
+		setValue('inspected_date', format(val, "d-MMM-yyyy"), { shouldDirty: true, shouldValidate: true });
 	}
 
 	const getAutocompleteValue = (id) => {
