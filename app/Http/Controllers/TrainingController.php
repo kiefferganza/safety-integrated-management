@@ -417,7 +417,7 @@ class TrainingController extends Controller
 					Storage::delete("public/media/training/" . $file["src"]);
 				}
 			}
-			TrainingFiles::destroy($training_files);
+			TrainingFiles::destroy($training_files[0]);
 		}
 
 		Training::destroy($trainings);
