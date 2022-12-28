@@ -348,7 +348,7 @@ const InspectionNewForm = ({ currentInspection }) => {
 						);
 					})}
 				</Stepper>
-				<Box display={activeStep !== 2 ? "none" : "block"}>
+				<Box display={activeStep !== 0 ? "none" : "block"}>
 					<InspectionForm personel={personel} isDesktop={isDesktop} />
 				</Box>
 
@@ -356,7 +356,7 @@ const InspectionNewForm = ({ currentInspection }) => {
 					<InspectionCloseoutForm />
 				</Box>
 
-				<Box display={activeStep !== 0 ? "none" : "block"}>
+				<Box display={activeStep !== 2 ? "none" : "block"}>
 					<Box sx={{ width: theme => theme.breakpoints.values.sm, margin: 'auto' }}>
 						<Typography textAlign="center" variant="h4">Please choose a preferred date.</Typography>
 						<Stack spacing={5} sx={{ mt: 3 }}>
