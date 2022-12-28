@@ -21,6 +21,8 @@ class Employee extends Model
 
 	protected $guarded = [];
 
+	protected $appends = ['fullname'];
+
 	public function position() {
 		return $this->hasOne(Position::class, "position_id", "position");
 	}
@@ -59,6 +61,6 @@ class Employee extends Model
 
 
 	public function getFullnameAttribute() {
-		return trim($this->attirbutes['firstname']). ' '  .trim($this->attributes['lastname']);
+		return trim($this->attributes['firstname']) . ' '  . trim($this->attributes['lastname']);
 	}
 }

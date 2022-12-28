@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Inspection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,4 +47,32 @@ class InspectionController extends Controller
 			"inspections" => $inspections,
 		]);
 	}
+
+
+
+	public function create() {
+		$user = Auth::user();
+
+		$count_inspections = Inspection::where('is_deleted', 0)->count();
+
+		$number_of_items =  $count_inspections + 1;
+		$number_of_digits = strlen((string) $number_of_items);
+		$number_of_zeroes =  5 - $number_of_digits;
+
+		$sequence_no_zeros = '';
+		for ($i = 0; $i <= $number_of_zeroes; $i++) {
+			$sequence_no_zeros = $sequence_no_zeros . "0";
+		}
+
+		return Inertia::render("Dashboard/Management/Inspection/Create/index", [
+			"personel" =>  Employee::select("employee_id", "firstname", "lastname")->where([
+				["is_deleted", 0],
+				["employee_id", "!=", $user->emp_id]
+			])->get(),
+			"sequence_no" => $sequence_no_zeros . $number_of_items,
+		]);
+	}
+
+
+
 }

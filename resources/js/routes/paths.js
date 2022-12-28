@@ -132,6 +132,7 @@ export const PATH_DASHBOARD = {
 
 	inspection: {
 		root: path(ROOTS_DASHBOARD, '/inspection'),
+		new: path(ROOTS_DASHBOARD, '/inspection/new'),
 		safetyObservation: path(ROOTS_DASHBOARD, '/inspection/safety-observation'),
 		form: path(ROOTS_DASHBOARD, '/inspection/safety-observation/form'),
 		report: path(ROOTS_DASHBOARD, '/inspection/safety-observation/report'),

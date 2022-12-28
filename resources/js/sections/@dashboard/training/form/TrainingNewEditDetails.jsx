@@ -99,7 +99,7 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 		if (findPerson) {
 			return `${findPerson.firstname} ${findPerson.lastname}`
 		}
-		return '';
+		return null;
 	}
 
 	return (

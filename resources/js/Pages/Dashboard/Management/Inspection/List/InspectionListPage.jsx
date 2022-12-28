@@ -59,8 +59,9 @@ const TABLE_HEAD = [
 ];
 
 
-const InspectionListPage = ({ employees = [], canWrite = false, user, inspections }) => {
+const InspectionListPage = ({ user, inspections }) => {
 	const theme = useTheme();
+	console.log(theme);
 	const { themeStretch } = useSettingsContext();
 	const { load, stop } = useSwal();
 	const {
@@ -261,16 +262,14 @@ const InspectionListPage = ({ employees = [], canWrite = false, user, inspection
 						},
 					]}
 					action={
-						canWrite ? (
-							<Button
-								href={PATH_DASHBOARD.employee.new}
-								component={Link}
-								variant="contained"
-								startIcon={<Iconify icon="eva:plus-fill" />}
-							>
-								New Inspection
-							</Button>
-						) : null
+						<Button
+							href={PATH_DASHBOARD.inspection.new}
+							component={Link}
+							variant="contained"
+							startIcon={<Iconify icon="eva:plus-fill" />}
+						>
+							New Inspection
+						</Button>
 					}
 				/>
 
