@@ -138,7 +138,7 @@ const navConfig = [
 						path: PATH_DASHBOARD.inspection.new
 					},
 					{
-						title: "Safety Observation",
+						title: "Site",
 						path: PATH_DASHBOARD.inspection.safetyObservation,
 						children: [
 							{ title: 'list', path: PATH_DASHBOARD.inspection.list },
