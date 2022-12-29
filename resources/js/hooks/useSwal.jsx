@@ -17,7 +17,7 @@ export function useSwal () {
 		});
 	}
 
-	function warning (title = "", text = "", options = {}) {
+	function warning (title = "", text = "", confirmText = 'Yes, delete it!', options = {}) {
 		return Swal.fire({
 			title: title,
 			text: text,
@@ -27,7 +27,7 @@ export function useSwal () {
 				confirmButton: 'btn btn-alt-danger m-1',
 				cancelButton: 'btn btn-alt-secondary m-1'
 			},
-			confirmButtonText: 'Yes, delete it!',
+			confirmButtonText: confirmText,
 			...options
 		})
 	}

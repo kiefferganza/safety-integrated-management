@@ -25,7 +25,7 @@ const index = () => {
 							},
 							{
 								name: 'Inpections',
-								href: PATH_DASHBOARD.inspection.form,
+								href: PATH_DASHBOARD.inspection.list,
 							},
 							{
 								name: "New Inspection",

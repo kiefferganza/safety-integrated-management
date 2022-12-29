@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\Inspection;
+use App\Models\InspectionReportList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -74,5 +75,64 @@ class InspectionController extends Controller
 	}
 
 
+	public function store(Request $request) {
+		$user = Auth::user();
+
+		$inspection = new Inspection;
+		$inspection->project_code = $request->project_code;
+		$inspection->sequence_no = $request->sequence_no;
+		$inspection->form_number = $request->form_number;
+		$inspection->location = $request->location;
+		$inspection->inspected_by = $request->inspected_by;
+		$inspection->accompanied_by = $request->accompanied_by;
+		$inspection->inspected_date = $request->inspected_date;
+		$inspection->inspected_time = $request->inspected_time;
+		$inspection->contract_no = $request->contract_no;
+		$inspection->avg_score = $request->avg_score;
+		$inspection->reviewer_id = (int)$request->reviewer_id;
+		$inspection->verifier_id = (int)$request->verifier_id;
+		$inspection->date_issued = $request->date_issued;
+		$inspection->date_due = $request->date_due;
+		$inspection->employee_id = $user->emp_id;
+		$inspection->status = $request->status;
+		$inspection->revision_no = 0;
+		$inspection->is_deleted = 0;
+		
+		$inspection->save();
+		$inspection_id = $inspection->inspection_id;
+
+		$sections_merged = array_merge($request->sectionA, $request->sectionB, $request->sectionC, $request->sectionC_B, $request->sectionD, $request->sectionE);
+
+		$sections = array();
+
+		foreach ($sections_merged as $section) {
+			$photo_before = null;
+			if($section["photo_before"] !== null) {
+				$file = $section["photo_before"]->getClientOriginalName();
+				$extension = pathinfo($file, PATHINFO_EXTENSION);
+				$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
+				$section["photo_before"]->storeAs('media/inspection', $file_name, 'public');
+				$photo_before = $file_name;
+			}
+			$sections[] = [
+				"inspection_id" => $inspection_id,
+				"employee_id" => $user->emp_id,
+				"ref_num" => (int)$section["refNumber"],
+				"section_title" => $section["title"],
+				"ref_score" => (int)$section["score"],
+				"photo_before" => $photo_before,
+				"findings" => $section["findings"],
+				"date_submitted" => $request->date_issued,
+				"is_deleted" => 0
+			];
+		}
+
+		InspectionReportList::insert($sections);
+
+		return redirect()->route('inspection.management.list')
+		->with("message", "Inspection added successfully!")
+		->with("type", "success");
+
+	}
 
 }

@@ -61,7 +61,6 @@ const TABLE_HEAD = [
 
 const InspectionListPage = ({ user, inspections }) => {
 	const theme = useTheme();
-	console.log(theme);
 	const { themeStretch } = useSettingsContext();
 	const { load, stop } = useSwal();
 	const {
@@ -132,7 +131,7 @@ const InspectionListPage = ({ user, inspections }) => {
 			case 1:
 			case 0:
 				result.classType = 'warning';
-				result.text = '"IN PROGRESS"';
+				result.text = 'IN PROGRESS';
 				break;
 			case 2:
 				result.classType = 'error';

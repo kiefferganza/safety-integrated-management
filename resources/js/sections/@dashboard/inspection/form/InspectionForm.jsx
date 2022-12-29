@@ -6,11 +6,14 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import React, { useState } from 'react'
 import { useFormContext } from 'react-hook-form';
 import { format } from 'date-fns';
+import useResponsive from '@/hooks/useResponsive';
 
-const InspectionForm = ({ personel, isDesktop }) => {
+const InspectionForm = ({ personel }) => {
+	const isDesktop = useResponsive('up', 'sm');
 	const [cc, setCC] = useState([]);
 	const [time, setTime] = useState(null);
 	const [inspDate, setInspDate] = useState(null);
+	const [dueDate, setDueDate] = useState(null);
 	const { setValue, watch, formState: { errors } } = useFormContext();
 	const values = watch();
 
@@ -22,6 +25,11 @@ const InspectionForm = ({ personel, isDesktop }) => {
 	const handleChangeDate = (val) => {
 		setInspDate(val);
 		setValue('inspected_date', format(val, "d-MMM-yyyy"), { shouldDirty: true, shouldValidate: true });
+	}
+
+	const handleChangeDueDate = (val) => {
+		setValue('date_due', format(val, "yyyy-MM-dd"), { shouldDirty: true, shouldValidate: true });
+		setDueDate(val);
 	}
 
 	const getAutocompleteValue = (id) => {
@@ -78,12 +86,11 @@ const InspectionForm = ({ personel, isDesktop }) => {
 
 					<RHFTextField disabled name="inspected_by" label="Inspected By" />
 
-					<RHFTextField name="location" label="Location" />
+					<RHFTextField name="contract_no" label="Contract No." />
 
 				</Stack>
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-
 
 					<RHFTextField name="accompanied_by" label="Accompanied By" />
 
@@ -123,10 +130,34 @@ const InspectionForm = ({ personel, isDesktop }) => {
 					Inspection Date & Time
 				</Typography>
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
+					<TextField value={format(new Date(), 'MMMM dd, yyyy')} fullWidth label="Date Issued" disabled />
+					{isDesktop ? (
+						<DesktopDatePicker
+							label="Due Date"
+							inputFormat="yyyy-MM-dd"
+							value={dueDate}
+							disablePast
+							onChange={handleChangeDueDate}
+							renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.date_due?.message} helperText={errors?.date_due?.message} />}
+						/>
+					) : (
+						<MobileDatePicker
+							label="Due Date"
+							inputFormat="yyyy-MM-dd"
+							value={dueDate}
+							onChange={handleChangeDueDate}
+							renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.date_due?.message} helperText={errors?.date_due?.message} />}
+						/>
+					)}
+
+					<RHFTextField name="location" label="Location" />
+
+				</Stack>
+				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 					{isDesktop ? (
 						<DesktopDatePicker
 							label="Inspected Date"
-							inputFormat="MM/dd/yyyy"
+							inputFormat="d-MMM-yyyy"
 							value={inspDate}
 							onChange={handleChangeDate}
 							renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.inspected_date?.message} helperText={errors?.inspected_date?.message} />}
@@ -134,7 +165,7 @@ const InspectionForm = ({ personel, isDesktop }) => {
 					) : (
 						<MobileDatePicker
 							label="Inspected Date"
-							inputFormat="MM/dd/yyyy"
+							inputFormat="d-MMM-yyyy"
 							value={inspDate}
 							onChange={handleChangeDate}
 							renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.inspected_date?.message} helperText={errors?.inspected_date?.message} />}
@@ -164,7 +195,6 @@ const InspectionForm = ({ personel, isDesktop }) => {
 						}
 						renderInput={(params) => <TextField label="Add CC" {...params} fullWidth />}
 					/>
-
 
 				</Stack>
 			</Stack>

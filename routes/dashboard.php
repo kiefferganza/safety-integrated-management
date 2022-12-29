@@ -124,7 +124,8 @@ Route::middleware('auth')->group(function ()
 	 * Management - Inspection
 	 */
 	// Lists
-	Route::get('dashboard/inspection/safety-observation/form', [InspectionController::class, "index"])->name('inspection.management.list');
+	Route::get('dashboard/inspection/safety-observation/list', [InspectionController::class, "index"])->name('inspection.management.list');
 	Route::get('dashboard/inspection/new', [InspectionController::class, "create"])->name('inspection.management.new');
+	Route::post('dashboard/inspection/new', [InspectionController::class, "store"])->name('inspection.management.store');
 
 });

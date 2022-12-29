@@ -5,8 +5,9 @@ export const HeadingTH = styled(Box)`
 	background-color: #B2C8DF;
 	padding: 5px;
 	color: black;
-	fontWeight: 600;
+	font-weight: 700;
 	border: 1px solid #000;
+	font-size: 0.875rem;
 `;
 
 export const TRow = styled(Box)`
