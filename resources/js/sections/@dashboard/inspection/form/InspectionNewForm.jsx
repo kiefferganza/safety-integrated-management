@@ -16,15 +16,21 @@ import { format } from 'date-fns';
 import UnsatisfactoryItems from './UnsatisfactoryItems';
 import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
+import TimeFrame from './TimeFrame';
 
-const steps = ['Inspection Details', 'Closeout Report', 'Unsatisfactory Items'];
+const steps = ['General Info', 'Inspection Report', 'Time Frame', 'Evidence'];
 
 const InspectionNewForm = () => {
 	const { warning } = useSwal();
 	const { sequence_no, personel, auth: { user } } = usePage().props;
 	const [loading, setLoading] = useState(false);
 	const [activeStep, setActiveStep] = useState(0);
-	const [completed, setCompleted] = useState({});
+	const [completed, setCompleted] = useState({
+		0: false,
+		1: false,
+		2: false,
+		3: false
+	});
 
 	const newInspectionSchema = Yup.object().shape({
 		project_code: Yup.string().required('Project Code is required'),
@@ -41,28 +47,28 @@ const InspectionNewForm = () => {
 		verifier_id: Yup.string().required('Verifier is required'),
 		sectionA: Yup.array().of(Yup.object().shape({
 			score: Yup.string().required(),
-			findings: Yup.string().when("score", (score, schema) => (score === "2" || score === "3") && activeStep === 2 ? schema.required() : schema.notRequired())
+			findings: Yup.string().when("score", (score, schema) => (score === "2" || score === "3") && activeStep === 3 ? schema.required() : schema.notRequired())
 		})),
 		sectionB: Yup.array().of(Yup.object().shape({
 			score: Yup.string().required(),
-			findings: Yup.string().when("score", (score, schema) => (score === "2" || score === "3") && activeStep === 2 ? schema.required() : schema.notRequired())
+			findings: Yup.string().when("score", (score, schema) => (score === "2" || score === "3") && activeStep === 3 ? schema.required() : schema.notRequired())
 		})),
 		sectionC: Yup.array().of(Yup.object().shape({
 			score: Yup.string().required(),
-			findings: Yup.string().when("score", (score, schema) => (score === "2" || score === "3") && activeStep === 2 ? schema.required() : schema.notRequired())
+			findings: Yup.string().when("score", (score, schema) => (score === "2" || score === "3") && activeStep === 3 ? schema.required() : schema.notRequired())
 		})),
 		sectionC_B: Yup.array().of(Yup.object().shape({
 			score: Yup.string().required(),
-			findings: Yup.string().when("score", (score, schema) => (score === "2" || score === "3") && activeStep === 2 ? schema.required() : schema.notRequired())
+			findings: Yup.string().when("score", (score, schema) => (score === "2" || score === "3") && activeStep === 3 ? schema.required() : schema.notRequired())
 		})),
 		sectionD: Yup.array().of(Yup.object().shape({
 			score: Yup.string().required(),
-			findings: Yup.string().when("score", (score, schema) => (score === "2" || score === "3") && activeStep === 2 ? schema.required() : schema.notRequired())
+			findings: Yup.string().when("score", (score, schema) => (score === "2" || score === "3") && activeStep === 3 ? schema.required() : schema.notRequired())
 		})),
 		sectionE: Yup.array().of(Yup.object().shape({
 			title: Yup.string(),
 			score: Yup.string().when("title", (title, schema) => title !== "" ? schema.required() : schema.notRequired()),
-			findings: Yup.string().when("score", (score, schema) => (score === "2" || score === "3") && activeStep === 2 ? schema.required() : schema.notRequired())
+			findings: Yup.string().when("score", (score, schema) => (score === "2" || score === "3") && activeStep === 3 ? schema.required() : schema.notRequired())
 		})),
 	});
 
@@ -472,7 +478,7 @@ const InspectionNewForm = () => {
 		let result = null;
 		switch (activeStep) {
 			case 0:
-				result = await trigger(["contract_no", "project_code", "originator", "discipline", "document_type", "location", "accompanied_by", "inspected_date", "inspected_time", "reviewer_id", "verifier_id", "date_due"]);
+				result = await trigger(["contract_no", "project_code", "originator", "discipline", "document_type", "location", "accompanied_by", "inspected_date", "inspected_time", "reviewer_id", "verifier_id"]);
 				if (result) {
 					const formNumber = `${values?.project_code}-${values?.originator}-${values?.discipline}-${values?.document_type}-${values?.document_zone ? values?.document_zone + "-" : ""}${values?.document_level ? values?.document_level + "-" : ""}${values?.sequence_no}`;
 					setValue("form_number", formNumber);
@@ -480,6 +486,9 @@ const InspectionNewForm = () => {
 				break;
 			case 1:
 				result = await trigger(["sectionA", "sectionB", "sectionC", "sectionC_B", "sectionD"]);
+				break;
+			case 2:
+				result = await trigger("date_due");
 				break;
 			default:
 				break;
@@ -532,6 +541,10 @@ const InspectionNewForm = () => {
 				</Box>
 
 				<Box display={activeStep !== 2 ? "none" : "block"}>
+					<TimeFrame />
+				</Box>
+
+				<Box display={activeStep !== 3 ? "none" : "block"}>
 					<UnsatisfactoryItems />
 				</Box>
 
@@ -545,8 +558,8 @@ const InspectionNewForm = () => {
 						Back
 					</Button>
 					<Box sx={{ flex: '1 1 auto' }} />
-					<LoadingButton loading={loading} variant="contained" size="large" onClick={activeStep === steps.length - 1 || completed[2] ? handleSubmit(onSubmit) : handleNext}>
-						{activeStep === steps.length - 1 || completed[2] ? 'Create' : 'Next'}
+					<LoadingButton loading={loading} variant="contained" size="large" onClick={activeStep === steps.length - 1 || (completed[3] && activeStep === 2) ? handleSubmit(onSubmit) : handleNext}>
+						{activeStep === steps.length - 1 || (completed[3] && activeStep === 2) ? 'Create' : 'Next'}
 					</LoadingButton>
 				</Box>
 			</Card>

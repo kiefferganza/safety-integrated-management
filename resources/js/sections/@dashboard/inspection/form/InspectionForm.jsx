@@ -1,5 +1,5 @@
 import { RHFTextField } from '@/Components/hook-form'
-import { Autocomplete, Chip, Divider, Stack, TextField, Typography } from '@mui/material'
+import { Autocomplete, Box, Chip, Divider, Stack, TextField, Typography } from '@mui/material'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
@@ -47,7 +47,7 @@ const InspectionForm = ({ personel }) => {
 		<Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
 			<Stack spacing={3}>
 				<Typography variant="h6" sx={{ color: 'text.disabled' }}>
-					Project Info
+					Project Detail
 				</Typography>
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
@@ -73,6 +73,14 @@ const InspectionForm = ({ personel }) => {
 					<RHFTextField name="document_level" label="Level (Optional)" />
 
 				</Stack>
+				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
+
+					<RHFTextField disabled name="sequence_no" label="Sequence No." />
+
+					<Box width={1} />
+					<Box width={1} />
+
+				</Stack>
 			</Stack>
 
 			<Stack spacing={3}>
@@ -82,18 +90,53 @@ const InspectionForm = ({ personel }) => {
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-					<RHFTextField disabled name="sequence_no" label="Squence No." />
+					<RHFTextField name="contract_no" label="Contract No." />
 
 					<RHFTextField disabled name="inspected_by" label="Inspected By" />
 
-					<RHFTextField name="contract_no" label="Contract No." />
+					<RHFTextField name="accompanied_by" label="Accompanied By" />
+
 
 				</Stack>
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-					<RHFTextField name="accompanied_by" label="Accompanied By" />
+					<RHFTextField name="location" label="Location" />
 
+					{isDesktop ? (
+						<DesktopDatePicker
+							label="Inspected Date"
+							inputFormat="d-MMM-yyyy"
+							value={inspDate}
+							onChange={handleChangeDate}
+							renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.inspected_date?.message} helperText={errors?.inspected_date?.message} />}
+						/>
+					) : (
+						<MobileDatePicker
+							label="Inspected Date"
+							inputFormat="d-MMM-yyyy"
+							value={inspDate}
+							onChange={handleChangeDate}
+							renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.inspected_date?.message} helperText={errors?.inspected_date?.message} />}
+						/>
+					)}
+
+					<TimePicker
+						label="Inspected Time"
+						value={time}
+						onChange={handleChangeTime}
+						renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.inspected_time?.message} helperText={errors?.inspected_time?.message} />}
+					/>
+
+				</Stack>
+			</Stack>
+
+			<Stack spacing={3}>
+				<Typography variant="h6" sx={{ color: 'text.disabled' }}>
+					Action & Closeout Details <Typography variant="caption" fontStyle="italic">(Email Notification)</Typography>
+				</Typography>
+
+				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 					<PersonelAutocomplete
 						value={getAutocompleteValue(values.reviewer_id)}
 						onChange={(_event, newValue) => {
@@ -121,64 +164,6 @@ const InspectionForm = ({ personel }) => {
 						label="Verified By"
 						error={errors?.verifier_id?.message}
 					/>
-
-				</Stack>
-			</Stack>
-
-			<Stack spacing={3}>
-				<Typography variant="h6" sx={{ color: 'text.disabled' }}>
-					Inspection Date & Time
-				</Typography>
-				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-					<TextField value={format(new Date(), 'MMMM dd, yyyy')} fullWidth label="Date Issued" disabled />
-					{isDesktop ? (
-						<DesktopDatePicker
-							label="Due Date"
-							inputFormat="yyyy-MM-dd"
-							value={dueDate}
-							disablePast
-							onChange={handleChangeDueDate}
-							renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.date_due?.message} helperText={errors?.date_due?.message} />}
-						/>
-					) : (
-						<MobileDatePicker
-							label="Due Date"
-							inputFormat="yyyy-MM-dd"
-							value={dueDate}
-							onChange={handleChangeDueDate}
-							renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.date_due?.message} helperText={errors?.date_due?.message} />}
-						/>
-					)}
-
-					<RHFTextField name="location" label="Location" />
-
-				</Stack>
-				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-					{isDesktop ? (
-						<DesktopDatePicker
-							label="Inspected Date"
-							inputFormat="d-MMM-yyyy"
-							value={inspDate}
-							onChange={handleChangeDate}
-							renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.inspected_date?.message} helperText={errors?.inspected_date?.message} />}
-						/>
-					) : (
-						<MobileDatePicker
-							label="Inspected Date"
-							inputFormat="d-MMM-yyyy"
-							value={inspDate}
-							onChange={handleChangeDate}
-							renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.inspected_date?.message} helperText={errors?.inspected_date?.message} />}
-						/>
-					)}
-
-					<TimePicker
-						label="Inspected Time"
-						value={time}
-						onChange={handleChangeTime}
-						renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.inspected_time?.message} helperText={errors?.inspected_time?.message} />}
-					/>
-
 					<Autocomplete
 						multiple
 						freeSolo

@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { useFieldArray, useFormContext, Controller } from "react-hook-form";
 import { getScoreColor } from "@/utils/inspection";
 import Image from "@/Components/image";
+import Iconify from "@/Components/iconify";
 
 const sectionE_arr = [
 	"Oil spillage",
@@ -368,35 +369,49 @@ const InspectionCloseoutForm = ({ setCompleted }) => {
 						</Box>
 
 						<Box sx={{ mt: 3 }} borderLeft={1} borderRight={1} borderTop={1}>
-							<Box display="grid" gridTemplateColumns="1fr 130px 90px" borderBottom={1}>
+							<Box display="grid" gridTemplateColumns="1fr 110px 100px" borderBottom={1}>
 								<Box sx={{ p: '5px' }} borderRight={1}>
-									<Typography variant="body2" width={1} color="#000">Average Score (TS ÷ TNIM)</Typography>
+									<Typography variant="body2" width={1} color="#000" fontWeight="700">Average Score (TS ÷ TNIM)</Typography>
 								</Box>
 								<Box sx={{ p: '5px' }} borderRight={1}>
-									<Typography textAlign="center" variant="body2" width={1}>TS</Typography>
+									<Typography textAlign="center" variant="body2" width={1} fontWeight="700">TS</Typography>
 								</Box>
 								<Box sx={{ p: '5px' }}>
-									<Typography textAlign="center" variant="body2" width={1}>{values.avg_score}</Typography>
+									<Typography textAlign="center" variant="body2" width={1} fontWeight="700">{values.avg_score}</Typography>
 								</Box>
 							</Box>
-							<Box display="grid" gridTemplateColumns="1fr 130px 90px" borderBottom={1}>
+							<Box display="grid" gridTemplateColumns="1fr 110px 100px" borderBottom={1}>
 								<Box sx={{ p: '5px' }} borderRight={1}>
 									<Typography variant="body2" width={1} color="#000">The Average Score Must Range Between</Typography>
 								</Box>
 								<Box sx={{ p: '5px' }} borderRight={1}>
 									<Typography textAlign="center" variant="body2" width={1}>1.00 - 1.25</Typography>
 								</Box>
-								<Box sx={{ p: '5px' }}>
-									<Typography textAlign="center" variant="body2" width={1}>Passed</Typography>
+								<Box display="grid" gridTemplateColumns="1fr 32px">
+									<Box borderRight={1} sx={{ p: '5px' }}>
+										<Typography textAlign="center" variant="body2" width={1}>Passed</Typography>
+									</Box>
+									<Box display="flex" alignItems="center" justifyContent="center">
+										{parseFloat(values.avg_score) <= 1.25 && (
+											<Iconify icon="material-symbols:check-small" sx={{ color: "success.main" }} />
+										)}
+									</Box>
 								</Box>
 							</Box>
-							<Box display="grid" gridTemplateColumns="1fr 130px 90px">
+							<Box display="grid" gridTemplateColumns="1fr 110px 100px">
 								<Box sx={{ p: '5px' }} borderRight={1}></Box>
 								<Box sx={{ p: '5px' }} borderRight={1}>
 									<Typography textAlign="center" variant="body2" width={1}>{">1.25"}</Typography>
 								</Box>
-								<Box sx={{ p: '5px' }}>
-									<Typography textAlign="center" variant="body2" width={1}>Failed</Typography>
+								<Box display="grid" gridTemplateColumns="1fr 32px">
+									<Box borderRight={1} sx={{ p: '5px' }}>
+										<Typography textAlign="center" variant="body2" width={1}>Failed</Typography>
+									</Box>
+									<Box display="flex" alignItems="center" justifyContent="center">
+										{parseFloat(values.avg_score) > 1.25 && (
+											<Iconify icon="material-symbols:check-small" sx={{ color: "error.main" }} />
+										)}
+									</Box>
 								</Box>
 							</Box>
 						</Box>
@@ -433,13 +448,13 @@ function SSelect ({ name, setCompleted, ...other }) {
 		if (isAllPassed) {
 			setCompleted(curr => ({
 				...curr,
-				2: true
+				3: true
 			}));
 			setValue("status", 2);
 		} else {
 			setCompleted(curr => ({
 				...curr,
-				2: false
+				3: false
 			}));
 			setValue("status", 1);
 		}
