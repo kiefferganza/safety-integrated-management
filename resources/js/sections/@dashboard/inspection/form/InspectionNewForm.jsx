@@ -97,6 +97,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '1',
 				title: "Welfare facilities, drinking water, toilets, washing",
+				tableName: "Offices/Welfare Facilities",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -106,6 +107,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '2',
 				title: "Office Cleanliness",
+				tableName: "Offices/Welfare Facilities",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -115,6 +117,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '3',
 				title: "Fire Prevention (including electrical testing of installation Extinguishers.",
+				tableName: "Offices/Welfare Facilities",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -124,6 +127,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '4',
 				title: "START Cards completed for all task taking place?",
+				tableName: "Offices/Welfare Facilities",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -133,6 +137,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '5',
 				title: "Records of all toolbox talk (Document and signature pages attached)",
+				tableName: "Offices/Welfare Facilities",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -142,6 +147,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '6',
 				title: "First Aid Cover and Kit Present",
+				tableName: "Offices/Welfare Facilities",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -153,6 +159,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '7',
 				title: "Method statement & TAB in place/Briefings (STARRT)",
+				tableName: "Monitoring/Control",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -162,6 +169,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '8',
 				title: "MSDS/COSHH Assessment",
+				tableName: "Monitoring/Control",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -171,6 +179,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '9',
 				title: "Permits inc. to enter, shut down, at height etc.",
+				tableName: "Monitoring/Control",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -180,6 +189,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '10',
 				title: "Weekly Inspection Registers, Plant, scaffold, nets etc.",
+				tableName: "Monitoring/Control",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -189,6 +199,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '11',
 				title: "Toolbox Talks",
+				tableName: "Monitoring/Control",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -198,6 +209,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '12',
 				title: "Induction & Training",
+				tableName: "Monitoring/Control",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -207,6 +219,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '13',
 				title: "Plant Certification",
+				tableName: "Monitoring/Control",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -218,6 +231,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '14',
 				title: "Traffic Management",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -227,6 +241,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '15',
 				title: "Flammable Liquids, LPG/Cylinder storage and use",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -236,6 +251,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '16',
 				title: "Working at Height & Edge Protection",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -245,6 +261,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '17',
 				title: "Site Access & Egress, Public Safety, lighting",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -254,6 +271,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '18',
 				title: "Cranes & Lifting Equipment/Tackle",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -263,6 +281,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '19',
 				title: "Mobile Plant/ Equipment's",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -272,6 +291,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '20',
 				title: "Hot Works & Fire Precautions",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -281,6 +301,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '21',
 				title: "Tidiness/Housekeeping &Storage of Materials",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -292,6 +313,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '22',
 				title: "Manual Handling",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -301,6 +323,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '23',
 				title: "Excavation (inc. barriers, access into, shoring etc.)",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -310,6 +333,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '24',
 				title: "Scaffolding, Mobile Towers, Ladders & Stepladders",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -319,6 +343,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '25',
 				title: "Underground & Overhead Services",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -328,6 +353,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '26',
 				title: "Power Tools/ PAT Testing",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -337,6 +363,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '27',
 				title: "Temporary Electrical Supplies/Leads",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -346,6 +373,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '28',
 				title: "Personal Protective Equipment",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -355,6 +383,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '29',
 				title: "Confined Spaces",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -364,6 +393,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '30',
 				title: "Noise",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -373,6 +403,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '31',
 				title: "Security",
+				tableName: "Site Operations",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -384,6 +415,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '32',
 				title: "Fuels and oils in correct containers, with secondary containment and release controls",
+				tableName: "Environmental",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -393,6 +425,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '33',
 				title: "Drip Trays for static plant",
+				tableName: "Environmental",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -402,6 +435,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: '34',
 				title: "Dust control",
+				tableName: "Environmental",
 				score: '',
 				photo_before: "",
 				findings: "",
@@ -413,6 +447,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: "35",
 				title: "",
+				tableName: "Others, please Specify",
 				score: "",
 				photo_before: "",
 				findings: "",
@@ -422,6 +457,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: "36",
 				title: "",
+				tableName: "Others, please Specify",
 				score: "",
 				photo_before: "",
 				findings: "",
@@ -431,6 +467,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: "37",
 				title: "",
+				tableName: "Others, please Specify",
 				score: "",
 				photo_before: "",
 				findings: "",
@@ -440,6 +477,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: "38",
 				title: "",
+				tableName: "Others, please Specify",
 				score: "",
 				photo_before: "",
 				findings: "",
@@ -449,6 +487,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: "39",
 				title: "",
+				tableName: "Others, please Specify",
 				score: "",
 				photo_before: "",
 				findings: "",
@@ -458,6 +497,7 @@ const InspectionNewForm = () => {
 			{
 				refNumber: "40",
 				title: "",
+				tableName: "Others, please Specify",
 				score: "",
 				photo_before: "",
 				findings: "",

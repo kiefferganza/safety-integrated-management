@@ -13,7 +13,6 @@ const InspectionForm = ({ personel }) => {
 	const [cc, setCC] = useState([]);
 	const [time, setTime] = useState(null);
 	const [inspDate, setInspDate] = useState(null);
-	const [dueDate, setDueDate] = useState(null);
 	const { setValue, watch, formState: { errors } } = useFormContext();
 	const values = watch();
 
@@ -25,11 +24,6 @@ const InspectionForm = ({ personel }) => {
 	const handleChangeDate = (val) => {
 		setInspDate(val);
 		setValue('inspected_date', format(val, "d-MMM-yyyy"), { shouldDirty: true, shouldValidate: true });
-	}
-
-	const handleChangeDueDate = (val) => {
-		setValue('date_due', format(val, "yyyy-MM-dd"), { shouldDirty: true, shouldValidate: true });
-		setDueDate(val);
 	}
 
 	const getAutocompleteValue = (id) => {

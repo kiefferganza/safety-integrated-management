@@ -11,44 +11,27 @@ use Inertia\Inertia;
 
 class InspectionController extends Controller
 {
+
 	public function index()
 	{
 		$user = Auth::user();
 
 		$emp_id = $user->user_id;
 
-		$inspections =	Inspection::select("inspection_id","employee_id", "reviewer_id", "verifier_id","accompanied_by", "date_issued", "form_number", "status")
+		$inspections =	Inspection::select("inspection_id","employee_id", "reviewer_id", "verifier_id","accompanied_by", "date_issued", "form_number", "status", "revision_no", "location", "contract_no", "inspected_by", "inspected_date","inspected_time", "avg_score", "date_issued","date_due")
 		->whereRaw("(employee_id = ? AND is_deleted = 0) OR (reviewer_id = ? AND status = 1 AND is_deleted = 0) OR (verifier_id = ? AND status = 2 AND is_deleted = 0) OR (status != 0 AND is_deleted = 0)", array($emp_id, $emp_id, $emp_id))
 		->with([
 			"submitted",
 			"reviewer",
-			"verifier"
+			"verifier",
+			"report_list" => fn($q) => $q->orderBy("ref_num")
 		])
-		->get()
-		->toArray();
-
-		$submitted = array();
-		$review = array();
-		$verify = array();
-		$closeout = array();
-
-		foreach ($inspections as $inspection) {
-			if($inspection["employee_id"] === $emp_id) {
-				$submitted[] = $inspection;
-			}else if($inspection["reviewer_id"] === $emp_id && $inspection["status"] === 1){
-				$review[] = $inspection;
-			}else if($inspection["verifier_id"] === $emp_id && $inspection["status"] === 2){
-				$verify[] = $inspection;
-			}else if($inspection["status"] !== 0) {
-				$closeout[] = $inspection;
-			}
-		}
+		->get();
 
 		return Inertia::render("Dashboard/Management/Inspection/List/index", [
 			"inspections" => $inspections,
 		]);
 	}
-
 
 
 	public function create() {
@@ -134,5 +117,67 @@ class InspectionController extends Controller
 		->with("type", "success");
 
 	}
+
+
+	public function edit(Inspection $inspection) {
+		$user = Auth::user();
+		
+		if($inspection->employee_id !== $user->emp_id) {
+			return redirect()->back();
+		}
+
+		return Inertia::render("Dashboard/Management/Inspection/Edit/index", [
+			"inspection" => $inspection->load([
+				"report_list" => fn($q) => $q->select("list_id", "inspection_id", "ref_num", "ref_score", "photo_before", "findings", "photo_after", "action_taken", "employee_id", "date_submitted", "item_status")->whereIn("ref_score", [2,3])->orderBy("ref_num")
+			]),
+		]);
+	}
+
+
+	public function review(Inspection $inspection) {
+		$user = Auth::user();
+		
+		if($inspection->reviewer_id !== $user->emp_id) {
+			return redirect()->back();
+		}
+
+		return Inertia::render("Dashboard/Management/Inspection/Review/index", [
+			"inspection" => $inspection->load([
+				"report_list" => function($q) use ($inspection) {
+					$q->select("list_id", "inspection_id", "ref_num", "ref_score", "photo_before", "findings", "photo_after", "action_taken", "employee_id", "date_submitted", "item_status");
+					if($inspection->status === 4) {
+						return $q->where("item_status", 2)->orderBy("ref_num");
+					}
+					return $q->whereIn("ref_score", [2,3])->orderBy("ref_num");
+				}
+			]),
+		]);
+	}
+
+
+	public function verify(Inspection $inspection) {
+		$user = Auth::user();
+		
+		if($inspection->verifier_id !== $user->emp_id) {
+			return redirect()->back();
+		}
+
+		return Inertia::render("Dashboard/Management/Inspection/Verify/index", [
+			"inspection" => $inspection->load([
+				"report_list" => fn($q) => $q->select("list_id", "inspection_id", "ref_num", "ref_score", "photo_before", "findings", "photo_after", "action_taken", "employee_id", "date_submitted", "item_status")->whereIn("ref_score", [2,3])->orderBy("ref_num")
+			]),
+		]);
+	}
+
+	public function delete(Request $request) {
+		if(isset($request->ids)) {
+			Inspection::whereIn("inspection_id", $request->ids)->update(["is_deleted" => 1]);
+		}
+
+		return redirect()->back()
+		->with("message",	"Item deleted successfully!")
+		->with("type", "success");
+	}
+
 
 }

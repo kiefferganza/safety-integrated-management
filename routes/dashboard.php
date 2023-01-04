@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InspectionController;
+use App\Http\Controllers\InspectionReportController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\UsersController;
@@ -127,5 +128,13 @@ Route::middleware('auth')->group(function ()
 	Route::get('dashboard/inspection/safety-observation/list', [InspectionController::class, "index"])->name('inspection.management.list');
 	Route::get('dashboard/inspection/new', [InspectionController::class, "create"])->name('inspection.management.new');
 	Route::post('dashboard/inspection/new', [InspectionController::class, "store"])->name('inspection.management.store');
+	Route::post('dashboard/inspection/delete', [InspectionController::class, "delete"])->name('inspection.management.delete');
+	// CRUD
+	Route::get('dashboard/inspection/{inspection}/edit', [InspectionController::class, "edit"]);
+	Route::post('dashboard/inspection/{inspection}/edit', [InspectionReportController::class, "update"]);
+	Route::get('dashboard/inspection/{inspection}/review', [InspectionController::class, "review"]);
+	Route::post('dashboard/inspection/{inspection}/review', [InspectionReportController::class, "review_update"]);
+	Route::get('dashboard/inspection/{inspection}/verify', [InspectionController::class, "verify"]);
+	Route::post('dashboard/inspection/{inspection}/verify', [InspectionReportController::class, "verify_update"]);
 
 });

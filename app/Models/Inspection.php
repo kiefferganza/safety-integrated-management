@@ -30,4 +30,9 @@ class Inspection extends Model
 		return $this->hasOne(Employee::class, "employee_id", "verifier_id");
 	}
 
+
+	public function report_list() {
+		return $this->hasMany(InspectionReportList::class, "inspection_id");
+	}
+
 }

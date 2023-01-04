@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import InspectionListPage from "./InspectionListPage";
 

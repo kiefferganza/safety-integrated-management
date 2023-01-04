@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import {
@@ -44,17 +44,18 @@ import { Inertia } from '@inertiajs/inertia';
 import { employeeName } from '@/utils/formatName';
 import { InspectionTableRow, InspectionTableToolbar } from '@/sections/@dashboard/inspection/list';
 import InspectionAnalytic from '@/sections/@dashboard/inspection/InspectionAnalytic';
+import { differenceInDays } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
 	{ id: 'form_number', label: 'CMS Number', align: 'left' },
-	{ id: 'accompanied_by', label: 'Accompanied By', align: 'left' },
+	{ id: 'accompanied_by', label: 'Accompanied', align: 'left' },
 	{ id: 'submitted', label: 'Submitted', align: 'left' },
 	{ id: 'reviewer', label: 'Action', align: 'left' },
 	{ id: 'verifier', label: 'Verify', align: 'left' },
-	{ id: 'date_issued', label: 'Date Created', align: 'left' },
-	{ id: 'status', label: 'Status', align: 'left' },
+	{ id: 'date_issued', label: 'Created', align: 'left' },
+	{ id: 'status', label: 'Status', align: 'center' },
 	{ id: '' },
 ];
 
@@ -80,15 +81,16 @@ const InspectionListPage = ({ user, inspections }) => {
 		onChangeDense,
 		onChangePage,
 		onChangeRowsPerPage,
-	} = useTable();
+	} = useTable({
+		defaultOrderBy: "date_issued",
+		defaultOrder: "desc"
+	});
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [tableData, setTableData] = useState([]);
 
 	const [filterName, setFilterName] = useState('');
-
-	const [filterStatus, setFilterStatus] = useState('all');
 
 	const [filterType, setFilterType] = useState('all');
 
@@ -98,7 +100,6 @@ const InspectionListPage = ({ user, inspections }) => {
 		inputData: tableData,
 		comparator: getComparator(order, orderBy),
 		filterName,
-		filterStatus,
 		filterType,
 		filterStartDate,
 	});
@@ -116,7 +117,8 @@ const InspectionListPage = ({ user, inspections }) => {
 				reviewer_id: inspection.reviewer_id,
 				verifier_id: inspection.verifier_id,
 				status: inspection.status,
-			})
+			}),
+			dueStatus: getDueDateStatus(inspection.date_due)
 		}));
 		setTableData(data || []);
 	}, [user, inspections]);
@@ -151,7 +153,7 @@ const InspectionListPage = ({ user, inspections }) => {
 	const getInspectionType = ({ employee_id, reviewer_id, verifier_id, status }) => {
 		if (employee_id === user.emp_id) {
 			return 'submitted';
-		} else if (reviewer_id === user.emp_id && status === 1) {
+		} else if (reviewer_id === user.emp_id && (status === 1 || status === 4)) {
 			return 'review';
 		} else if (verifier_id === user.emp_id && status === 2) {
 			return 'verify';
@@ -161,14 +163,29 @@ const InspectionListPage = ({ user, inspections }) => {
 		return 'closeout';
 	}
 
+	const getDueDateStatus = (dueDate) => {
+		const diff = differenceInDays(new Date(dueDate), new Date);
+
+		if (diff === 0) {
+			return {
+				text: "Active Today",
+				classType: "warning"
+			}
+		}
+
+		return {
+			text: diff > 0 ? `Active ${diff} days` : `Overdue ${Math.abs(diff)} days`,
+			classType: diff > 0 ? "success" : "error"
+		}
+	}
+
 	const denseHeight = dense ? 56 : 76;
 
 	const isFiltered =
-		filterStatus !== 'all' || filterType !== 'all' || filterName !== '' || !!filterStartDate;
+		filterType !== 'all' || filterName !== '' || !!filterStartDate;
 
 	const isNotFound =
 		(!dataFiltered.length && !!filterName) ||
-		(!dataFiltered.length && !!filterStatus) ||
 		(!dataFiltered.length && !!filterType) ||
 		(!dataFiltered.length && !!filterStartDate);
 
@@ -192,11 +209,6 @@ const InspectionListPage = ({ user, inspections }) => {
 		setOpenConfirm(false);
 	};
 
-	const handleFilterStatus = (event, newValue) => {
-		setPage(0);
-		setFilterStatus(newValue);
-	};
-
 	const handleFilterType = (event, newValue) => {
 		setPage(0);
 		setFilterType(newValue);
@@ -209,7 +221,7 @@ const InspectionListPage = ({ user, inspections }) => {
 	};
 
 	const handleDeleteRow = (id) => {
-		Inertia.delete(`/dashboard/employee/${id}/delete`, {
+		Inertia.post(route('inspection.management.delete'), { ids: [id] }, {
 			onStart: () => {
 				load("Deleting company", "Please wait...");
 			},
@@ -219,7 +231,7 @@ const InspectionListPage = ({ user, inspections }) => {
 	};
 
 	const handleDeleteRows = (selected) => {
-		Inertia.post(route('management.employee.delete-multiple'), { ids: selected }, {
+		Inertia.post(route('inspection.management.delete'), { ids: selected }, {
 			onStart: () => {
 				load(`Deleting ${selected.length} companies`, "Please wait...");
 			},
@@ -234,7 +246,6 @@ const InspectionListPage = ({ user, inspections }) => {
 
 	const handleResetFilter = () => {
 		setFilterName('');
-		setFilterStatus('all');
 		setFilterType('all');
 		setFilterStartDate(null);
 	};
@@ -468,7 +479,6 @@ function applyFilter ({
 	inputData,
 	comparator,
 	filterName,
-	filterStatus,
 	filterType,
 	filterStartDate,
 }) {
@@ -485,10 +495,6 @@ function applyFilter ({
 	if (filterName) {
 		inputData = inputData.filter(
 			(inspection) => inspection.form_number.toLowerCase().includes(filterName.toLowerCase()));
-	}
-
-	if (filterStatus !== 'all') {
-		inputData = inputData.filter((inspection) => inspection.status.code === filterStatus);
 	}
 
 	if (filterType !== 'all') {

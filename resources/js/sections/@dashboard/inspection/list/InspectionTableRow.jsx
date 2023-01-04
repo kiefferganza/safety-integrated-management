@@ -24,6 +24,7 @@ import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
+import ReportDialog from '../details/ReportDialog';
 
 // ----------------------------------------------------------------------
 
@@ -35,6 +36,7 @@ InspectionTableRow.propTypes = {
 };
 
 export default function InspectionTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+	const [openDetail, setOpenDetail] = useState(false);
 	const [openConfirm, setOpenConfirm] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
 
@@ -53,6 +55,10 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 	const handleClosePopover = () => {
 		setOpenPopover(null);
 	};
+
+	const handleCLoseDetail = () => {
+		setOpenDetail(false);
+	}
 
 	return (
 		<>
@@ -73,13 +79,23 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 
 				<TableCell align="left">{fDate(row.date_issued)}</TableCell>
 
-				<TableCell align="left">
-					<Label
-						variant="soft"
-						color={row.status.classType}
-					>
-						{row.status.text}
-					</Label>
+				<TableCell align="center">
+					<Stack direction="row" alignItems="center" gap={1}>
+						<Label
+							variant="soft"
+							color={row.status.classType}
+						>
+							{row.status.text}
+						</Label>
+						{row.type !== "closeout" && (
+							<Label
+								variant="soft"
+								color={row.dueStatus.classType}
+							>
+								{row.dueStatus.text}
+							</Label>
+						)}
+					</Stack>
 				</TableCell>
 
 				<TableCell align="right">
@@ -93,24 +109,48 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 				<MenuItem
 					onClick={() => {
 						handleClosePopover();
-						Inertia.visit(`/dashboard/employee/${row.id}`, {
-							only: ['employee'],
-							preserveScroll: true
-						});
+						setOpenDetail(true);
 					}}
 				>
 					<Iconify icon="eva:eye-fill" />
 					View
 				</MenuItem>
-				<MenuItem
-					component={Link}
-					href={PATH_DASHBOARD.employee.edit(row.employee_id)}
-					preserveScroll
-					onClick={handleClosePopover}
-				>
-					<Iconify icon="eva:edit-fill" />
-					Edit
-				</MenuItem>
+				{row.type === "submitted" && (
+					<MenuItem
+						component={Link}
+						href={PATH_DASHBOARD.inspection.edit(row.inspection_id)}
+						preserveScroll
+						onClick={handleClosePopover}
+					>
+						<Iconify icon="eva:edit-fill" />
+						Edit
+					</MenuItem>
+				)}
+
+				{row.type === "review" && (
+					<MenuItem
+						component={Link}
+						href={PATH_DASHBOARD.inspection.review(row.inspection_id)}
+						preserveScroll
+						onClick={handleClosePopover}
+					>
+						<Iconify icon="fontisto:preview" />
+						Review
+					</MenuItem>
+				)}
+
+				{row.type === "verify" && (
+					<MenuItem
+						component={Link}
+						href={PATH_DASHBOARD.inspection.verify(row.inspection_id)}
+						preserveScroll
+						onClick={handleClosePopover}
+					>
+						<Iconify icon="pajamas:review-checkmark" />
+						Verify
+					</MenuItem>
+				)}
+
 
 				<Divider sx={{ borderStyle: 'dashed' }} />
 
@@ -136,6 +176,11 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 						Delete
 					</Button>
 				}
+			/>
+			<ReportDialog
+				open={openDetail}
+				onClose={handleCLoseDetail}
+				inspection={row}
 			/>
 		</>
 	);
