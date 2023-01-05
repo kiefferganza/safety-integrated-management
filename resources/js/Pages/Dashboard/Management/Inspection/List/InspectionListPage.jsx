@@ -462,7 +462,7 @@ const getNumberOfObservation = (reports) => reports.filter(report => report.ref_
 
 const getNumberOfPositiveObservation = (reports) => reports.filter(report => report.ref_score === 1).length;
 
-const getNumberOfNegativeObservation = (reports) => reports.filter(report => (report.ref_score === 2 || report.ref_score === 3) && report.item_status !== "2" && report.item_status !== null).length;
+const getNumberOfNegativeObservation = (reports) => reports.filter(report => ((report.ref_score === 2 || report.ref_score === 3) && report.ref_score !== 4) && report.item_status !== "2" && report.item_status !== null).length;
 
 
 const getInspectionStatus = (status) => {
