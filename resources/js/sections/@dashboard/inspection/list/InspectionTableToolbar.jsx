@@ -24,6 +24,7 @@ export default function EmployeeTableToolbar ({
 	onResetFilter,
 	filterStartDate,
 	onFilterStartDate,
+	right
 }) {
 	return (
 		<Stack
@@ -33,7 +34,7 @@ export default function EmployeeTableToolbar ({
 				xs: 'column',
 				md: 'row',
 			}}
-			sx={{ px: 2.5, py: 3 }}
+			sx={{ px: 2.5, py: 1 }}
 		>
 			<DatePicker
 				label="Date Created"
@@ -74,6 +75,7 @@ export default function EmployeeTableToolbar ({
 					Clear
 				</Button>
 			)}
+			{right}
 		</Stack>
 	);
 }

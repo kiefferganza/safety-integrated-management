@@ -21,7 +21,6 @@ class InspectionController extends Controller
 		$inspections =	Inspection::select("inspection_id","employee_id", "reviewer_id", "verifier_id","accompanied_by", "date_issued", "form_number", "status", "revision_no", "location", "contract_no", "inspected_by", "inspected_date","inspected_time", "avg_score", "date_issued","date_due")
 		->whereRaw("(employee_id = ? AND is_deleted = 0) OR (reviewer_id = ? AND status = 1 AND is_deleted = 0) OR (verifier_id = ? AND status = 2 AND is_deleted = 0) OR (status != 0 AND is_deleted = 0)", array($emp_id, $emp_id, $emp_id))
 		->with([
-			"submitted",
 			"reviewer",
 			"verifier",
 			"report_list" => fn($q) => $q->orderBy("ref_num")
@@ -169,6 +168,17 @@ class InspectionController extends Controller
 		]);
 	}
 
+
+	public function findings(Inspection $inspection) {
+
+		return Inertia::render("Dashboard/Management/Inspection/Details/index", [
+			"inspection" => $inspection->load(["report_list" => fn($q) => $q->where("item_status", "!=", null)])
+				->only(["inspection_id", "form_number", "report_list", "revision_no", "location", "date_issued"])
+		]);
+	}
+
+
+
 	public function delete(Request $request) {
 		if(isset($request->ids)) {
 			Inspection::whereIn("inspection_id", $request->ids)->update(["is_deleted" => 1]);
@@ -178,6 +188,7 @@ class InspectionController extends Controller
 		->with("message",	"Item deleted successfully!")
 		->with("type", "success");
 	}
+
 
 
 }

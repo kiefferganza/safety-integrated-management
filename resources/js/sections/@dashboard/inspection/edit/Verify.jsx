@@ -39,8 +39,8 @@ const Verify = ({ inspection }) => {
 
 
 	const handleSave = (data) => {
-
-		Inertia.post(`/dashboard/inspection/${inspection.inspection_id}/verify`, { ...data, fails: true }, {
+		const isCloseout = data.reports.every(rep => rep.item_status == 2);
+		Inertia.post(`/dashboard/inspection/${inspection.inspection_id}/verify`, { ...data, fails: isCloseout }, {
 			preserveScroll: true,
 			onStart () {
 				load("Please wait");
@@ -190,7 +190,7 @@ const Verify = ({ inspection }) => {
 												</Box>
 											</Stack>
 											{sec?.findings && (
-												<Typography>{sec.findings}</Typography>
+												<Typography sx={{ wordBreak: "break-all", fontSize: "13px" }}>{sec.findings}</Typography>
 											)}
 										</Box>
 									</Stack>
@@ -227,7 +227,7 @@ const Verify = ({ inspection }) => {
 												</Box>
 											</Stack>
 											{sec?.action_taken && (
-												<Typography>{sec.action_taken}</Typography>
+												<Typography sx={{ wordBreak: "break-all", fontSize: "13px" }}>{sec.action_taken}</Typography>
 											)}
 										</Box>
 									</Stack>
@@ -253,6 +253,7 @@ const Verify = ({ inspection }) => {
 					variant="contained"
 					loading={loading}
 					onClick={handleCloseout}
+					disabled={(isDirty)}
 				>
 					Closeout
 				</LoadingButton>

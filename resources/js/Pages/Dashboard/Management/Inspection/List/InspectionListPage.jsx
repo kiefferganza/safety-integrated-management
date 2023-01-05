@@ -14,6 +14,8 @@ import {
 	Container,
 	IconButton,
 	TableContainer,
+	Typography,
+	Box,
 } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
@@ -51,10 +53,13 @@ import { differenceInDays } from 'date-fns';
 const TABLE_HEAD = [
 	{ id: 'form_number', label: 'CMS Number', align: 'left' },
 	{ id: 'accompanied_by', label: 'Accompanied', align: 'left' },
-	{ id: 'submitted', label: 'Submitted', align: 'left' },
-	{ id: 'reviewer', label: 'Action', align: 'left' },
-	{ id: 'verifier', label: 'Verify', align: 'left' },
+	{ id: 'inspected_by', label: 'Submitted', align: 'center' },
+	{ id: 'reviewer', label: 'Action', align: 'center' },
+	{ id: 'verifier', label: 'Verify', align: 'center' },
 	{ id: 'date_issued', label: 'Created', align: 'left' },
+	{ id: 'totalObservation', label: 'No. Obs', align: 'right' },
+	{ id: 'negativeObservation', label: 'No. Obs closeout', align: 'right' },
+	{ id: 'positiveObservation', label: 'No. Positive Obs', align: 'right' },
 	{ id: 'status', label: 'Status', align: 'center' },
 	{ id: '' },
 ];
@@ -108,7 +113,6 @@ const InspectionListPage = ({ user, inspections }) => {
 		const data = inspections?.map(inspection => ({
 			...inspection,
 			id: inspection.inspection_id,
-			submitted: employeeName(inspection.submitted).trim(),
 			reviewer: employeeName(inspection.reviewer).trim(),
 			verifier: employeeName(inspection.verifier).trim(),
 			status: getInspectionStatus(inspection.status),
@@ -118,37 +122,14 @@ const InspectionListPage = ({ user, inspections }) => {
 				verifier_id: inspection.verifier_id,
 				status: inspection.status,
 			}),
+			totalObservation: getNumberOfObservation(inspection.report_list),
+			positiveObservation: getNumberOfPositiveObservation(inspection.report_list),
+			negativeObservation: getNumberOfNegativeObservation(inspection.report_list),
 			dueStatus: getDueDateStatus(inspection.date_due)
 		}));
 		setTableData(data || []);
 	}, [user, inspections]);
 
-	const getInspectionStatus = (status) => {
-		let result = {
-			code: status,
-			classType: 'default',
-			text: ''
-		};
-		switch (status) {
-			case 1:
-			case 0:
-				result.classType = 'warning';
-				result.text = 'IN PROGRESS';
-				break;
-			case 2:
-				result.classType = 'error';
-				result.text = 'WAITING FOR CLOSURE';
-				break;
-			case 3:
-				result.classType = 'success';
-				result.text = 'CLOSED';
-				break;
-			default:
-				result.classType = 'error';
-				result.text = 'FOR REVISION'
-		}
-		return result;
-	}
 
 	const getInspectionType = ({ employee_id, reviewer_id, verifier_id, status }) => {
 		if (employee_id === user.emp_id) {
@@ -163,21 +144,6 @@ const InspectionListPage = ({ user, inspections }) => {
 		return 'closeout';
 	}
 
-	const getDueDateStatus = (dueDate) => {
-		const diff = differenceInDays(new Date(dueDate), new Date);
-
-		if (diff === 0) {
-			return {
-				text: "Active Today",
-				classType: "warning"
-			}
-		}
-
-		return {
-			text: diff > 0 ? `Active ${diff} days` : `Overdue ${Math.abs(diff)} days`,
-			classType: diff > 0 ? "success" : "error"
-		}
-	}
 
 	const denseHeight = dense ? 56 : 76;
 
@@ -327,7 +293,7 @@ const InspectionListPage = ({ user, inspections }) => {
 								total={getLengthByType('closeout')}
 								percent={getPercentByType('closeout')}
 								icon="heroicons:document-arrow-up"
-								color={theme.palette.error.main}
+								color={theme.palette.success.main}
 							/>
 						</Stack>
 					</Scrollbar>
@@ -367,6 +333,21 @@ const InspectionListPage = ({ user, inspections }) => {
 						onFilterStartDate={(newValue) => {
 							setFilterStartDate(newValue);
 						}}
+						right={
+							<Box>
+								<Typography variant="subtitle2" sx={{ mb: 1, color: "text.secondary" }}>Legends:</Typography>
+								<Stack direction="row" justifyContent="space-between" gap={1} sx={{ mb: 1 }}>
+									<Label variant="outlined" color="warning">I P = In Progress</Label>
+									<Label variant="outlined" color="error">W F C = Waiting For Closure</Label>
+									<Label variant="outlined" color="success">C = Closed</Label>
+								</Stack>
+								<Stack direction="row" justifyContent="space-between" gap={1}>
+									<Label variant="outlined" color="error">F R = For Revision</Label>
+									<Label variant="outlined" color="success">A.D. = Active Days</Label>
+									<Label variant="outlined" color="error">O.D = Overdue Days</Label>
+								</Stack>
+							</Box>
+						}
 					/>
 
 					<TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -412,6 +393,9 @@ const InspectionListPage = ({ user, inspections }) => {
 											tableData.map((row) => row.id)
 										)
 									}
+									sx={{
+										"&>tr th": { whiteSpace: "nowrap" }
+									}}
 								/>
 
 								<TableBody>
@@ -470,6 +454,66 @@ const InspectionListPage = ({ user, inspections }) => {
 			/>
 		</>
 	);
+}
+
+
+const getNumberOfObservation = (reports) => reports.filter(report => report.ref_score !== 0 && report.ref_score !== 4).length;
+
+
+const getNumberOfPositiveObservation = (reports) => reports.filter(report => report.ref_score === 1).length;
+
+const getNumberOfNegativeObservation = (reports) => reports.filter(report => (report.ref_score === 2 || report.ref_score === 3) && report.item_status !== "2" && report.item_status !== null).length;
+
+
+const getInspectionStatus = (status) => {
+	let result = {
+		code: status,
+		classType: 'default',
+		text: '',
+		tooltip: '',
+	};
+	switch (status) {
+		case 1:
+		case 0:
+			result.classType = 'warning';
+			result.text = 'I P';
+			result.tooltip = 'In Progress';
+			break;
+		case 2:
+			result.classType = 'error';
+			result.text = 'W F C';
+			result.tooltip = 'Waiting For Closure';
+			break;
+		case 3:
+			result.classType = 'success';
+			result.text = 'C';
+			result.tooltip = 'Closed';
+			break;
+		default:
+			result.classType = 'error';
+			result.text = 'F R'
+			result.tooltip = 'For Revision'
+	}
+	return result;
+}
+
+
+const getDueDateStatus = (dueDate) => {
+	const diff = differenceInDays(new Date(dueDate), new Date);
+
+	if (diff === 0) {
+		return {
+			text: "A.T.",
+			tooltip: "Active Today",
+			classType: "warning"
+		}
+	}
+
+	return {
+		text: diff > 0 ? `${diff} A.D.` : `${Math.abs(diff)} O.D.`,
+		tooltip: diff > 0 ? `Active ${diff} days` : `Overdue ${Math.abs(diff)}`,
+		classType: diff > 0 ? "success" : "error"
+	}
 }
 
 

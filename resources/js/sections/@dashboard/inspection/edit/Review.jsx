@@ -173,7 +173,7 @@ const Review = ({ inspection }) => {
 												</Box>
 											</Stack>
 											{sec?.findings && (
-												<Typography>{sec.findings}</Typography>
+												<Typography sx={{ wordBreak: "break-all", fontSize: "13px" }}>{sec.findings}</Typography>
 											)}
 										</Box>
 									</Stack>

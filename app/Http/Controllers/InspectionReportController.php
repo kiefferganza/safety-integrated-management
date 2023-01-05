@@ -79,7 +79,7 @@ class InspectionReportController extends Controller
 	}
 
 
-	public function verify_update(Inspection $inspection,Request $request) {
+	public function verify_update(Inspection $inspection, Request $request) {
 		foreach ($request->reports as $report) {
 			$inspection_report = InspectionReportList::find($report["list_id"]);
 			if($inspection_report) {
@@ -88,14 +88,16 @@ class InspectionReportController extends Controller
 			}
 		}
 		
-		if(isset($request->fails)) {
+		if($request->fails) {
 			$inspection->status = 4;
+		}else {
+			$inspection->status = 3;
 		}
 
 		$inspection->increment('revision_no');
 		$inspection->save();
 
-		return redirect()->back()
+		return redirect()->route("inspection.management.list")
 		->with("message", $inspection->form_number . " updated successfully!")
 		->with("type", "success");
 		

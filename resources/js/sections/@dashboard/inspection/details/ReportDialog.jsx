@@ -20,6 +20,8 @@ const ReportDialog = ({ open, onClose, inspection }) => {
 			url = `/dashboard/inspection/${inspection.id}/review`;
 		} else if (inspection.type === "verify") {
 			url = `/dashboard/inspection/${inspection.id}/verify`;
+		} else {
+			url = `/dashboard/inspection/${inspection.id}/findings`;
 		}
 		onClose();
 		Inertia.visit(url);
@@ -58,15 +60,13 @@ const ReportDialog = ({ open, onClose, inspection }) => {
 					<ReportList inspection={inspection} />
 				</DialogContentText>
 			</DialogContent>
-			{inspection.status !== "closeout" && (
-				<DialogActions sx={{ margin: "auto" }}>
-					<Button
-						onClick={handleViewFindings}
-						variant="contained"
-						endIcon={<Iconify icon="material-symbols:chevron-right" />}
-					>View Findings</Button>
-				</DialogActions>
-			)}
+			<DialogActions sx={{ margin: "auto" }}>
+				<Button
+					onClick={handleViewFindings}
+					variant="contained"
+					endIcon={<Iconify icon="material-symbols:chevron-right" />}
+				>View Findings</Button>
+			</DialogActions>
 		</Dialog>
 	)
 }

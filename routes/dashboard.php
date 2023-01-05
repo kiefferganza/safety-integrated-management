@@ -136,5 +136,6 @@ Route::middleware('auth')->group(function ()
 	Route::post('dashboard/inspection/{inspection}/review', [InspectionReportController::class, "review_update"]);
 	Route::get('dashboard/inspection/{inspection}/verify', [InspectionController::class, "verify"]);
 	Route::post('dashboard/inspection/{inspection}/verify', [InspectionReportController::class, "verify_update"]);
+	Route::get('dashboard/inspection/{inspection}/findings', [InspectionController::class, "findings"]);
 
 });

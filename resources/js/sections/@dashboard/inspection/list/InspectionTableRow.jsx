@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { Inertia } from '@inertiajs/inertia';
-import { Link, usePage, } from '@inertiajs/inertia-react';
+import { Link, } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from '@/routes/paths';
 // @mui
 import {
@@ -14,8 +13,7 @@ import {
 	MenuItem,
 	TableCell,
 	IconButton,
-	Typography,
-	Avatar,
+	Tooltip,
 } from '@mui/material';
 // utils
 import { fDate } from '@/utils/formatTime';
@@ -67,33 +65,43 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 					<Checkbox checked={selected} onClick={onSelectRow} />
 				</TableCell>
 
-				<TableCell align="left" sx={{ textTransform: 'capitalize' }}>{row.form_number}</TableCell>
+				<TableCell align="left" sx={{ textTransform: 'capitalize', whiteSpace: "nowrap" }}>{row.form_number}</TableCell>
 
-				<TableCell align="left">{row.accompanied_by}</TableCell>
+				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.accompanied_by}</TableCell>
 
-				<TableCell align="left">{row.submitted}</TableCell>
+				<TableCell align="center" sx={{ whiteSpace: "nowrap" }}>{row.inspected_by}</TableCell>
 
-				<TableCell align="left">{row.reviewer}</TableCell>
+				<TableCell align="center" sx={{ whiteSpace: "nowrap" }}>{row.reviewer}</TableCell>
 
-				<TableCell align="left">{row.verifier}</TableCell>
+				<TableCell align="center" sx={{ whiteSpace: "nowrap" }}>{row.verifier}</TableCell>
 
-				<TableCell align="left">{fDate(row.date_issued)}</TableCell>
+				<TableCell align="center" sx={{ whiteSpace: "nowrap" }}>{fDate(row.date_issued)}</TableCell>
+
+				<TableCell align="right" sx={{ whiteSpace: "nowrap" }}>{row?.totalObservation}</TableCell>
+
+				<TableCell align="right" sx={{ whiteSpace: "nowrap" }}>{row?.negativeObservation}</TableCell>
+
+				<TableCell align="right" sx={{ whiteSpace: "nowrap" }}>{row?.positiveObservation}</TableCell>
 
 				<TableCell align="center">
 					<Stack direction="row" alignItems="center" gap={1}>
-						<Label
-							variant="soft"
-							color={row.status.classType}
-						>
-							{row.status.text}
-						</Label>
-						{row.type !== "closeout" && (
+						<Tooltip title={row.status.tooltip}>
 							<Label
 								variant="soft"
-								color={row.dueStatus.classType}
+								color={row.status.classType}
 							>
-								{row.dueStatus.text}
+								{row.status.text}
 							</Label>
+						</Tooltip>
+						{(row.type !== "closeout" && row.status.text !== "C") && (
+							<Tooltip title={row.dueStatus.tooltip}>
+								<Label
+									variant="soft"
+									color={row.dueStatus.classType}
+								>
+									{row.dueStatus.text}
+								</Label>
+							</Tooltip>
 						)}
 					</Stack>
 				</TableCell>
