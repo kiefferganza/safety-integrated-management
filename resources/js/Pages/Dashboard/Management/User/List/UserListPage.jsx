@@ -235,6 +235,7 @@ export default function UserListPage ({ users }) {
 								percent={100}
 								icon="material-symbols:supervisor-account"
 								color={theme.palette.info.main}
+								listTitle="user"
 							/>
 
 							<EmployeeAnalytic
@@ -243,6 +244,7 @@ export default function UserListPage ({ users }) {
 								percent={getPercentByStatus('active')}
 								icon="mdi:account-badge"
 								color={theme.palette.success.main}
+								listTitle="user"
 							/>
 
 							<EmployeeAnalytic
@@ -251,6 +253,7 @@ export default function UserListPage ({ users }) {
 								percent={getPercentByStatus('inactive')}
 								icon="mdi:account-cancel"
 								color={theme.palette.error.main}
+								listTitle="user"
 							/>
 
 						</Stack>

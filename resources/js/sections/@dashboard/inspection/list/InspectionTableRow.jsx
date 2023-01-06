@@ -67,8 +67,6 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 
 				<TableCell align="left" sx={{ textTransform: 'capitalize', whiteSpace: "nowrap" }}>{row.form_number}</TableCell>
 
-				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.accompanied_by}</TableCell>
-
 				<TableCell align="center" sx={{ whiteSpace: "nowrap" }}>{row.inspected_by}</TableCell>
 
 				<TableCell align="center" sx={{ whiteSpace: "nowrap" }}>{row.reviewer}</TableCell>
@@ -84,7 +82,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 				<TableCell align="right" sx={{ whiteSpace: "nowrap" }}>{row?.positiveObservation}</TableCell>
 
 				<TableCell align="center">
-					<Stack direction="row" alignItems="center" gap={1}>
+					<Stack direction="row" alignItems="center" justifyContent="center" gap={1}>
 						<Tooltip title={row.status.tooltip}>
 							<Label
 								variant="soft"

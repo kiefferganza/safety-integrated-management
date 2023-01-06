@@ -170,9 +170,8 @@ class InspectionController extends Controller
 
 
 	public function findings(Inspection $inspection) {
-
 		return Inertia::render("Dashboard/Management/Inspection/Details/index", [
-			"inspection" => $inspection->load(["report_list" => fn($q) => $q->where("item_status", "!=", null)])
+			"inspection" => $inspection->load(["report_list" => fn($q) => $q->where("ref_score",  2)->orWhere("ref_score",  3)])
 				->only(["inspection_id", "form_number", "report_list", "revision_no", "location", "date_issued"])
 		]);
 	}

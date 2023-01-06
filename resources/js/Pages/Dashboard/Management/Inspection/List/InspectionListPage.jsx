@@ -16,6 +16,7 @@ import {
 	TableContainer,
 	Typography,
 	Box,
+	Popover,
 } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
@@ -52,15 +53,14 @@ import { differenceInDays } from 'date-fns';
 
 const TABLE_HEAD = [
 	{ id: 'form_number', label: 'CMS Number', align: 'left' },
-	{ id: 'accompanied_by', label: 'Accompanied', align: 'left' },
 	{ id: 'inspected_by', label: 'Submitted', align: 'center' },
 	{ id: 'reviewer', label: 'Action', align: 'center' },
 	{ id: 'verifier', label: 'Verify', align: 'center' },
 	{ id: 'date_issued', label: 'Created', align: 'left' },
-	{ id: 'totalObservation', label: 'No. Obs', align: 'right' },
-	{ id: 'negativeObservation', label: 'No. Obs closeout', align: 'right' },
-	{ id: 'positiveObservation', label: 'No. Positive Obs', align: 'right' },
-	{ id: 'status', label: 'Status', align: 'center' },
+	{ id: 'totalObservation', label: 'O', align: 'right' },
+	{ id: 'negativeObservation', label: 'N', align: 'right' },
+	{ id: 'positiveObservation', label: 'P', align: 'right' },
+	{ id: 'status', label: 'S', align: 'center' },
 	{ id: '' },
 ];
 
@@ -91,6 +91,8 @@ const InspectionListPage = ({ user, inspections }) => {
 		defaultOrder: "desc"
 	});
 
+	const [anchorLegendEl, setAnchorLegendEl] = useState(null);
+
 	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [tableData, setTableData] = useState([]);
@@ -99,12 +101,15 @@ const InspectionListPage = ({ user, inspections }) => {
 
 	const [filterType, setFilterType] = useState('all');
 
+	const [filterStatus, setFilterStatus] = useState('');
+
 	const [filterStartDate, setFilterStartDate] = useState(null);
 
 	const dataFiltered = applyFilter({
 		inputData: tableData,
 		comparator: getComparator(order, orderBy),
 		filterName,
+		filterStatus,
 		filterType,
 		filterStartDate,
 	});
@@ -148,11 +153,12 @@ const InspectionListPage = ({ user, inspections }) => {
 	const denseHeight = dense ? 56 : 76;
 
 	const isFiltered =
-		filterType !== 'all' || filterName !== '' || !!filterStartDate;
+		filterType !== 'all' || filterName !== '' || !!filterStartDate || filterStatus !== '';
 
 	const isNotFound =
 		(!dataFiltered.length && !!filterName) ||
 		(!dataFiltered.length && !!filterType) ||
+		(!dataFiltered.length && !!filterStatus) ||
 		(!dataFiltered.length && !!filterStartDate);
 
 	const getLengthByType = (type) => tableData.filter((item) => item.type === type).length;
@@ -164,7 +170,20 @@ const InspectionListPage = ({ user, inspections }) => {
 		{ value: 'submitted', label: 'Submitted', color: 'default', count: getLengthByType('submitted') },
 		{ value: 'review', label: 'Review', color: 'warning', count: getLengthByType('review') },
 		{ value: 'verify', label: 'Verify & Approve', color: 'success', count: getLengthByType('verify') },
-		{ value: 'closeout', label: 'Closeout', color: 'error', count: getLengthByType('closeout') }
+		{ value: 'closeout', label: 'Closeout', color: 'error', count: getLengthByType('closeout') },
+	];
+
+	const getActiveDays = tableData.filter(item => item.dueStatus.classType === "success").length;
+	const getDueDays = tableData.filter(item => item.dueStatus.classType === "error").length;
+	const getStatusLength = (status) => tableData.filter(item => item.status.text === status).length;
+
+	const STATUS_TABS = [
+		{ value: 'I P', label: 'In Progress', color: 'warning', count: getStatusLength('I P') },
+		{ value: 'W F C', label: 'Waiting For Closure', color: 'error', count: getStatusLength('W F C') },
+		{ value: 'C', label: 'Closed', color: 'success', count: getStatusLength('C') },
+		{ value: 'F R', label: 'For Revision', color: 'error', count: getStatusLength('F R') },
+		{ value: 'A.D.', label: 'Active Days', color: 'success', count: getActiveDays },
+		{ value: 'O.D.', label: 'Overdue Days', color: 'error', count: getDueDays }
 	];
 
 	const handleOpenConfirm = () => {
@@ -175,11 +194,17 @@ const InspectionListPage = ({ user, inspections }) => {
 		setOpenConfirm(false);
 	};
 
-	const handleFilterType = (event, newValue) => {
+	const handleFilterType = (_event, newValue) => {
 		setPage(0);
 		setFilterType(newValue);
 	};
 
+	const handleFilterStatus = (_event, newValue) => {
+		if (newValue) {
+			setPage(0);
+			setFilterStatus(newValue);
+		}
+	}
 
 	const handleFilterName = (event) => {
 		setPage(0);
@@ -214,7 +239,18 @@ const InspectionListPage = ({ user, inspections }) => {
 		setFilterName('');
 		setFilterType('all');
 		setFilterStartDate(null);
+		setFilterStatus('');
 	};
+
+	const handlePopoverLegendOpen = (event) => {
+		setAnchorLegendEl(event.currentTarget);
+	};
+
+	const handlePopoverLegendClose = () => {
+		setAnchorLegendEl(null);
+	};
+
+	const open = Boolean(anchorLegendEl);
 
 	return (
 		<>
@@ -300,27 +336,54 @@ const InspectionListPage = ({ user, inspections }) => {
 				</Card>
 
 				<Card>
-					<Tabs
-						value={filterType}
-						onChange={handleFilterType}
-						sx={{
-							px: 2,
-							bgcolor: 'background.neutral',
-						}}
-					>
-						{TABS.map((tab) => (
+					<Stack direction="row" alignItems="center" sx={{ px: 2, bgcolor: 'background.neutral' }}>
+						<Tabs
+							value={filterType}
+							onChange={handleFilterType}
+							sx={{ width: 1, flex: .7 }}
+						>
+							{TABS.map((tab) => (
+								<Tab
+									key={tab.value}
+									value={tab.value}
+									label={tab.label}
+									icon={
+										<Label color={tab.color} sx={{ mr: 1 }}>
+											{tab.count}
+										</Label>
+									}
+								/>
+							))}
+						</Tabs>
+						<Tabs
+							sx={{ flex: .5 }}
+							value={filterStatus}
+							onChange={handleFilterStatus}
+						>
 							<Tab
-								key={tab.value}
-								value={tab.value}
-								label={tab.label}
-								icon={
-									<Label color={tab.color} sx={{ mr: 1 }}>
-										{tab.count}
-									</Label>
-								}
+								label="Legend"
+								color="info"
+								value={false}
+								icon={<Label color="info" sx={{ mr: 1 }}>L</Label>}
+								aria-owns={open ? 'mouse-over-popover' : undefined}
+								aria-haspopup="true"
+								onMouseEnter={handlePopoverLegendOpen}
+								onMouseLeave={handlePopoverLegendClose}
 							/>
-						))}
-					</Tabs>
+							{STATUS_TABS.map((tab) => (
+								<Tab
+									key={tab.value}
+									value={tab.value}
+									label={tab.label}
+									icon={
+										<Label color={tab.color} sx={{ mr: 1 }}>
+											{tab.count}
+										</Label>
+									}
+								/>
+							))}
+						</Tabs>
+					</Stack>
 
 					<Divider />
 
@@ -333,21 +396,21 @@ const InspectionListPage = ({ user, inspections }) => {
 						onFilterStartDate={(newValue) => {
 							setFilterStartDate(newValue);
 						}}
-						right={
-							<Box>
-								<Typography variant="subtitle2" sx={{ mb: 1, color: "text.secondary" }}>Legends:</Typography>
-								<Stack direction="row" justifyContent="space-between" gap={1} sx={{ mb: 1 }}>
-									<Label variant="outlined" color="warning">I P = In Progress</Label>
-									<Label variant="outlined" color="error">W F C = Waiting For Closure</Label>
-									<Label variant="outlined" color="success">C = Closed</Label>
-								</Stack>
-								<Stack direction="row" justifyContent="space-between" gap={1}>
-									<Label variant="outlined" color="error">F R = For Revision</Label>
-									<Label variant="outlined" color="success">A.D. = Active Days</Label>
-									<Label variant="outlined" color="error">O.D = Overdue Days</Label>
-								</Stack>
-							</Box>
-						}
+					// right={
+					// 	<Box>
+					// 		<Typography variant="subtitle2" sx={{ mb: 1, color: "text.secondary" }}>Legends:</Typography>
+					// 		<Stack direction="row" justifyContent="space-between" gap={1} sx={{ mb: 1 }}>
+					// 			<Label variant="outlined" color="warning">I P = In Progress</Label>
+					// 			<Label variant="outlined" color="error">W F C = Waiting For Closure</Label>
+					// 			<Label variant="outlined" color="success">C = Closed</Label>
+					// 		</Stack>
+					// 		<Stack direction="row" justifyContent="space-between" gap={1}>
+					// 			<Label variant="outlined" color="error">F R = For Revision</Label>
+					// 			<Label variant="outlined" color="success">A.D. = Active Days</Label>
+					// 			<Label variant="outlined" color="error">O.D. = Overdue Days</Label>
+					// 		</Stack>
+					// 	</Box>
+					// }
 					/>
 
 					<TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -452,13 +515,53 @@ const InspectionListPage = ({ user, inspections }) => {
 					</Button>
 				}
 			/>
+			<Popover
+				id="mouse-over-popover"
+				sx={{
+					pointerEvents: 'none',
+				}}
+				open={open}
+				anchorEl={anchorLegendEl}
+				anchorOrigin={{
+					vertical: 'bottom',
+					horizontal: 'left',
+				}}
+				transformOrigin={{
+					vertical: 'top',
+					horizontal: 'left',
+				}}
+				onClose={handlePopoverLegendClose}
+				disableRestoreFocus
+			>
+				<Box sx={{ px: 2.5, py: 3 }}>
+					<Typography variant="subtitle2" sx={{ mb: 1, color: "text.secondary" }}>Status Legends:</Typography>
+					<Stack direction="row" justifyContent="space-between" gap={1} sx={{ mb: 1.5 }}>
+						<Label variant="outlined" color="warning">I P = In Progress</Label>
+						<Label variant="outlined" color="error">W F C = Waiting For Closure</Label>
+						<Label variant="outlined" color="success">C = Closed</Label>
+					</Stack>
+					<Stack direction="row" justifyContent="space-between" gap={1} sx={{ mb: 1.5 }}>
+						<Label variant="outlined" color="error">F R = For Revision</Label>
+						<Label variant="outlined" color="success">A.D. = Active Days</Label>
+						<Label variant="outlined" color="error">O.D. = Overdue Days</Label>
+					</Stack>
+					<Typography variant="subtitle2" sx={{ mb: 1, color: "text.secondary" }}>Table Title Legends:</Typography>
+					<Stack direction="row" justifyContent="space-between" gap={1} sx={{ mb: 1.5 }}>
+						<Label variant="outlined" color="default">O = Number of Observation</Label>
+						<Label variant="outlined" color="default">P. = Number of Positive Observation</Label>
+					</Stack>
+					<Stack direction="row" gap={1} sx={{ mb: 1.5 }}>
+						<Label variant="outlined" color="default">N = Number of Negative Observation</Label>
+						<Label variant="outlined" color="default">S = Statuses</Label>
+					</Stack>
+				</Box>
+			</Popover>
 		</>
 	);
 }
 
 
-const getNumberOfObservation = (reports) => reports.filter(report => report.ref_score !== 0 && report.ref_score !== 4).length;
-
+const getNumberOfObservation = (reports) => reports.filter(report => report.ref_score !== 0 && report.ref_score !== 4 && report.ref_score !== null).length;
 
 const getNumberOfPositiveObservation = (reports) => reports.filter(report => report.ref_score === 1).length;
 
@@ -512,7 +615,8 @@ const getDueDateStatus = (dueDate) => {
 	return {
 		text: diff > 0 ? `${diff} A.D.` : `${Math.abs(diff)} O.D.`,
 		tooltip: diff > 0 ? `Active ${diff} days` : `Overdue ${Math.abs(diff)}`,
-		classType: diff > 0 ? "success" : "error"
+		classType: diff > 0 ? "success" : "error",
+		type: diff > 0 ? 'A.D.' : 'O.D.',
 	}
 }
 
@@ -524,6 +628,7 @@ function applyFilter ({
 	comparator,
 	filterName,
 	filterType,
+	filterStatus,
 	filterStartDate,
 }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
@@ -543,6 +648,14 @@ function applyFilter ({
 
 	if (filterType !== 'all') {
 		inputData = inputData.filter((inspection) => inspection.type === filterType);
+	}
+
+	if (filterStatus !== '') {
+		if (filterStatus === 'A.D.' || filterStatus === 'O.D.') {
+			inputData = inputData.filter((inspection) => inspection.dueStatus.type === filterStatus);
+		} else {
+			inputData = inputData.filter((inspection) => inspection.status.text === filterStatus);
+		}
 	}
 
 	if (filterStartDate) {
