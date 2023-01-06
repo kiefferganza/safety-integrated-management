@@ -20,7 +20,7 @@ const TrainingProjectDetails = ({ isEdit, updateSequence }) => {
 		<Box sx={{ p: 3 }}>
 			<Stack direction={{ xs: 'column', md: 'row' }} alignItems="center" sx={{ mb: 3 }}>
 				<Typography variant="h6" sx={{ color: 'text.disabled', flex: 1 }}>
-					Project Info
+					Project Detail
 				</Typography>
 				<RHFSelect
 					disabled={isEdit}
@@ -66,6 +66,13 @@ const TrainingProjectDetails = ({ isEdit, updateSequence }) => {
 						<RHFTextField name="document_zone" label="Zone (Optional)" />
 
 						<RHFTextField name="document_level" label="Level (Optional)" />
+
+					</Stack>
+					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
+
+						<RHFTextField disabled name="sequence_no" label="Squence No." fullWidth />
+						<Box width={1} />
+						<Box width={1} />
 
 					</Stack>
 				</Stack>

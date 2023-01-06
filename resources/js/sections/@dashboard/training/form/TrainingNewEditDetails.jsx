@@ -136,9 +136,9 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 				<Stack alignItems="flex-end" spacing={2}>
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-						<RHFTextField disabled name="sequence_no" label="Squence No." fullWidth />
-
 						<RHFTextField name="title" label="Course Title" fullWidth />
+
+						<RHFTextField name="contract_no" label="Contract No." fullWidth />
 
 						<RHFTextField name="location" label="Training Location" fullWidth />
 
@@ -186,9 +186,9 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 						/>
 
 
-						<RHFTextField name="contract_no" label="Contract No." fullWidth />
-
 						<RHFTextField name="training_hrs" label="Training Hours" type="number" fullWidth />
+
+						<Box width={1} />
 
 					</Stack>
 
