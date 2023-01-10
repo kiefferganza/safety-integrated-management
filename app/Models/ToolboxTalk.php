@@ -13,7 +13,14 @@ class ToolboxTalk extends Model
 
 	protected $primaryKey = 'tbt_id';
 
+	const CREATED_AT = 'date_created';
+
 	protected $guarded = [];
+
+
+	public function owner() {
+		return $this->belongsTo(Employee::class, "employee_id", "employee_id");
+	}
 
 
 	public function participants() {

@@ -119,7 +119,7 @@ const InspectionForm = ({ personel }) => {
 						label="Inspected Time"
 						value={time}
 						onChange={handleChangeTime}
-						renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.inspected_time?.message} helperText={errors?.inspected_time?.message} />}
+						renderInput={(params) => <TextField {...params} readOnly fullWidth error={!!errors?.inspected_time?.message} helperText={errors?.inspected_time?.message} />}
 					/>
 
 				</Stack>

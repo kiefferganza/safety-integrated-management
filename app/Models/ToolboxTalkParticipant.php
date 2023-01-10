@@ -13,6 +13,10 @@ class ToolboxTalkParticipant extends Model
 
 	protected $primaryKey = 'tbtp_id';
 
+	const CREATED_AT = 'date_added';
+	const UPDATED_AT = 'date_updated';
+
+	protected $guarded = [];
 
 	public function employee() {
 		return $this->belongsTo(Employee::class, "employee_id");

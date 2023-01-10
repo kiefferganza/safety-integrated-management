@@ -112,6 +112,7 @@ export const PATH_DASHBOARD = {
 	// Toolbox Talks
 	toolboxTalks: {
 		root: path(ROOTS_DASHBOARD, '/toolbox-talks'),
+		new: (type) => type ? path(ROOTS_DASHBOARD, `/toolbox-talks/new?type=${type}`) : path(ROOTS_DASHBOARD, '/toolbox-talks/new'),
 		civil: path(ROOTS_DASHBOARD, '/toolbox-talks/civil'),
 		electrical: path(ROOTS_DASHBOARD, '/toolbox-talks/electrical'),
 		mechanical: path(ROOTS_DASHBOARD, '/toolbox-talks/mechanical'),
@@ -133,9 +134,9 @@ export const PATH_DASHBOARD = {
 	inspection: {
 		root: path(ROOTS_DASHBOARD, '/inspection'),
 		new: path(ROOTS_DASHBOARD, '/inspection/new'),
-		safetyObservation: path(ROOTS_DASHBOARD, '/inspection/safety-observation'),
-		list: path(ROOTS_DASHBOARD, '/inspection/safety-observation/list'),
-		report: path(ROOTS_DASHBOARD, '/inspection/safety-observation/report'),
+		safetyObservation: path(ROOTS_DASHBOARD, '/inspection/site'),
+		list: path(ROOTS_DASHBOARD, '/inspection/site/list'),
+		report: path(ROOTS_DASHBOARD, '/inspection/site/report'),
 		machineries: path(ROOTS_DASHBOARD, '/inspection/machineries'),
 		toolsAndEquipments: path(ROOTS_DASHBOARD, '/inspection/tools-and-equipments'),
 		edit: (id) => path(ROOTS_DASHBOARD, `/inspection/${id}/edit`),

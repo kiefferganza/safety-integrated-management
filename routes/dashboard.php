@@ -7,8 +7,11 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionReportController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\ToolboxTalkController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\UsersController;
+use App\Models\ToolboxTalk;
+use App\Models\ToolboxTalkParticipant;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -125,7 +128,7 @@ Route::middleware('auth')->group(function ()
 	 * Management - Inspection
 	 */
 	// Lists
-	Route::get('dashboard/inspection/safety-observation/list', [InspectionController::class, "index"])->name('inspection.management.list');
+	Route::get('dashboard/inspection/site/list', [InspectionController::class, "index"])->name('inspection.management.list');
 	Route::get('dashboard/inspection/new', [InspectionController::class, "create"])->name('inspection.management.new');
 	Route::post('dashboard/inspection/new', [InspectionController::class, "store"])->name('inspection.management.store');
 	Route::post('dashboard/inspection/delete', [InspectionController::class, "delete"])->name('inspection.management.delete');
@@ -137,5 +140,18 @@ Route::middleware('auth')->group(function ()
 	Route::get('dashboard/inspection/{inspection}/verify', [InspectionController::class, "verify"]);
 	Route::post('dashboard/inspection/{inspection}/verify', [InspectionReportController::class, "verify_update"]);
 	Route::get('dashboard/inspection/{inspection}/findings', [InspectionController::class, "findings"]);
+
+
+	/**
+	 * Management - ToolboxTalks
+	 */
+	Route::get('dashboard/toolbox-talks/civil', [ToolboxTalkController::class, "civil_list"])->name('toolboxtalk.management.civil');
+	Route::get('dashboard/toolbox-talks/electrical', [ToolboxTalkController::class, "electrical_list"])->name('toolboxtalk.management.electrical');
+	Route::get('dashboard/toolbox-talks/mechanical', [ToolboxTalkController::class, "mechanical_list"])->name('toolboxtalk.management.mechanical');
+	Route::get('dashboard/toolbox-talks/camp', [ToolboxTalkController::class, "camp_list"])->name('toolboxtalk.management.camp');
+	Route::get('dashboard/toolbox-talks/office', [ToolboxTalkController::class, "office_list"])->name('toolboxtalk.management.office');
+	Route::get('dashboard/toolbox-talks/new', [ToolboxTalkController::class, "create"])->name('toolboxtalk.management.new');
+	Route::post('dashboard/toolbox-talks/new', [ToolboxTalkController::class, "store"])->name('toolboxtalk.management.store');
+	// Route::post('dashboard/toolbox-talks/delete', [ToolboxTalkController::class, "delete"])->name('toolboxtalk.management.delete');
 
 });

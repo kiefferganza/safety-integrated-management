@@ -156,11 +156,12 @@ const navConfig = [
 				path: PATH_DASHBOARD.toolboxTalks.root,
 				icon: ICONS.toolboxTalks,
 				children: [
-					{ title: 'civil', path: PATH_DASHBOARD.toolboxTalks.civil, disabled: true },
-					{ title: 'electrical', path: PATH_DASHBOARD.toolboxTalks.electrical, disabled: true },
-					{ title: 'mechanical', path: PATH_DASHBOARD.toolboxTalks.mechanical, disabled: true },
-					{ title: 'camp', path: PATH_DASHBOARD.toolboxTalks.camp, disabled: true },
-					{ title: 'office', path: PATH_DASHBOARD.toolboxTalks.office, disabled: true },
+					{ title: 'create', path: PATH_DASHBOARD.toolboxTalks.new("1") },
+					{ title: 'civil', path: PATH_DASHBOARD.toolboxTalks.civil },
+					{ title: 'electrical', path: PATH_DASHBOARD.toolboxTalks.electrical },
+					{ title: 'mechanical', path: PATH_DASHBOARD.toolboxTalks.mechanical },
+					{ title: 'camp', path: PATH_DASHBOARD.toolboxTalks.camp },
+					{ title: 'office', path: PATH_DASHBOARD.toolboxTalks.office },
 					{ title: 'man hour reports', path: PATH_DASHBOARD.toolboxTalks.manHourReports, disabled: true },
 					{ title: 'man day reports', path: PATH_DASHBOARD.toolboxTalks.manDayReports, disabled: true },
 				]

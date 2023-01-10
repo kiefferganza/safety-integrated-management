@@ -1,0 +1,127 @@
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { Link, } from '@inertiajs/inertia-react';
+import { PATH_DASHBOARD } from '@/routes/paths';
+// @mui
+import {
+	// Link,
+	Stack,
+	Button,
+	Divider,
+	Checkbox,
+	TableRow,
+	MenuItem,
+	TableCell,
+	IconButton,
+} from '@mui/material';
+// utils
+import { fDate } from '@/utils/formatTime';
+// components
+import Label from '@/Components/label';
+import Iconify from '@/Components/iconify';
+import MenuPopover from '@/Components/menu-popover';
+import ConfirmDialog from '@/Components/confirm-dialog';
+
+// ----------------------------------------------------------------------
+
+ToolboxTalkTableRow.propTypes = {
+	row: PropTypes.object,
+	selected: PropTypes.bool,
+	onDeleteRow: PropTypes.func,
+	onSelectRow: PropTypes.func,
+};
+
+export default function ToolboxTalkTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+	const [openConfirm, setOpenConfirm] = useState(false);
+	const [openPopover, setOpenPopover] = useState(null);
+
+	const handleOpenConfirm = () => {
+		setOpenConfirm(true);
+	};
+
+	const handleCloseConfirm = () => {
+		setOpenConfirm(false);
+	};
+
+	const handleOpenPopover = (event) => {
+		setOpenPopover(event.currentTarget);
+	};
+
+	const handleClosePopover = () => {
+		setOpenPopover(null);
+	};
+
+	return (
+		<>
+			<TableRow hover selected={selected} sx={{ width: 1 }}>
+				<TableCell padding="checkbox">
+					<Checkbox checked={selected} onClick={onSelectRow} />
+				</TableCell>
+
+				<TableCell align="left" sx={{ textTransform: 'capitalize', whiteSpace: "nowrap" }}>{row.cms}</TableCell>
+
+				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.title}</TableCell>
+
+				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.conducted_by}</TableCell>
+
+				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.location}</TableCell>
+
+				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.participants_count}</TableCell>
+
+				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{fDate(row.date_conducted)}</TableCell>
+
+				<TableCell align="left">
+					<Label
+						variant="soft"
+						color={row.status.statusClass}
+					>
+						{row.status.text}
+					</Label>
+				</TableCell>
+
+				<TableCell align="right">
+					<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
+						<Iconify icon="eva:more-vertical-fill" />
+					</IconButton>
+				</TableCell>
+			</TableRow>
+
+			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
+				<MenuItem
+					onClick={() => {
+						handleClosePopover();
+						setOpenDetail(true);
+					}}
+				>
+					<Iconify icon="eva:eye-fill" />
+					View
+				</MenuItem>
+
+				<Divider sx={{ borderStyle: 'dashed' }} />
+
+				<MenuItem
+					onClick={() => {
+						handleOpenConfirm();
+						handleClosePopover();
+					}}
+					sx={{ color: 'error.main' }}
+				>
+					<Iconify icon="eva:trash-2-outline" />
+					Delete
+				</MenuItem>
+			</MenuPopover>
+
+			<ConfirmDialog
+				open={openConfirm}
+				onClose={handleCloseConfirm}
+				title="Delete"
+				content="Are you sure want to delete?"
+				action={
+					<Button variant="contained" color="error" onClick={onDeleteRow}>
+						Delete
+					</Button>
+				}
+			/>
+		</>
+	);
+}
