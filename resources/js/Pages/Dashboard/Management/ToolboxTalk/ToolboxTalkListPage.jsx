@@ -288,6 +288,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 								percent={100}
 								icon="tabler:clock-hour-3"
 								color={theme.palette.warning.main}
+								subtitle="hours"
 							/>
 
 							<ToolboxTalkAnalytic
@@ -296,6 +297,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 								percent={100}
 								icon="akar-icons:people-group"
 								color={theme.palette.success.main}
+								subtitle="participant(s)"
 							/>
 						</Stack>
 					</Scrollbar>

@@ -15,9 +15,10 @@ ToolboxTalkAnalytic.propTypes = {
 	color: PropTypes.string,
 	total: PropTypes.number,
 	percent: PropTypes.number,
+	subtitle: PropTypes.string
 };
 
-export default function ToolboxTalkAnalytic ({ title, total, icon, color, percent }) {
+export default function ToolboxTalkAnalytic ({ title, total, icon, color, percent, subtitle = "" }) {
 	return (
 		<Stack direction="row" alignItems="center" justifyContent="center" sx={{ width: 1, minWidth: 200 }}>
 			<Stack alignItems="center" justifyContent="center" sx={{ position: 'relative' }}>
@@ -46,7 +47,7 @@ export default function ToolboxTalkAnalytic ({ title, total, icon, color, percen
 				<Typography variant="subtitle2">
 					{fShortenNumber(total) || 0}{' '}
 					<Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
-						toolbox
+						{subtitle || "toolbox"}
 					</Box>
 				</Typography>
 			</Stack>
