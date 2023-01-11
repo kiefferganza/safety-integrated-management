@@ -10,12 +10,12 @@ use Inertia\Inertia;
 
 class ToolboxTalkController extends Controller
 {
-  function index() {
+  public function index() {
 
 	}
 
 
-	function civil_list() {
+	public function civil_list() {
 		// dd(ToolboxTalkService::getListByType(1));
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CivilList", [
 			"tbt" => ToolboxTalkService::getListByType(1)
@@ -24,7 +24,7 @@ class ToolboxTalkController extends Controller
 
 
 
-	function electrical_list() {
+	public function electrical_list() {
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/ElectricalList", [
 			"tbt" => ToolboxTalkService::getListByType(2)
 		]);
@@ -32,7 +32,7 @@ class ToolboxTalkController extends Controller
 
 
 	
-	function mechanical_list() {
+	public function mechanical_list() {
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/MechanicalList", [
 			"tbt" => ToolboxTalkService::getListByType(3)
 		]);
@@ -40,7 +40,7 @@ class ToolboxTalkController extends Controller
 
 
 
-	function camp_list() {
+	public function camp_list() {
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CampList", [
 			"tbt" => ToolboxTalkService::getListByType(4)
 		]);
@@ -48,9 +48,19 @@ class ToolboxTalkController extends Controller
 
 
 
-	function office_list() {
+	public function office_list() {
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/OfficeList", [
 			"tbt" => ToolboxTalkService::getListByType(5)
+		]);
+	}
+
+	public function view(ToolboxTalk $tbt) {
+		return Inertia::render("Dashboard/Management/ToolboxTalk/View/index", [
+			"tbt" => $tbt->load([
+				"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->with("position"),
+				"conducted"	=> fn ($q) => $q->select("employee_id", "firstname", "lastname"),
+				"file" => fn ($q) => $q->select("tbt_id","img_src")
+			])
 		]);
 	}
 

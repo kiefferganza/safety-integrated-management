@@ -89,10 +89,8 @@ export default function ToolboxTalkTableRow ({ row, selected, onSelectRow, onDel
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						setOpenDetail(true);
-					}}
+					href={PATH_DASHBOARD.toolboxTalks.view(row.id)}
+					component={Link}
 				>
 					<Iconify icon="eva:eye-fill" />
 					View

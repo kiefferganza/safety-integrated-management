@@ -206,7 +206,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 
 										<TableCell align="center">{row.fullname}</TableCell>
 
-										<TableCell align="center">{row.position}</TableCell>
+										<TableCell align="center" sx={{ textTransform: "capitalize" }}>{row.position}</TableCell>
 
 										<TableCell align="center">
 											{row?.src ? (
@@ -310,7 +310,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 				)}
 
 				<Box sx={{ mt: 10, mb: 2 }}>
-					<Typography textAlign="center" variant="body2">&copy; FIAFI Group Company, 2022. All Rights Reserved.</Typography>
+					<Typography textAlign="center" variant="body2">&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Typography>
 				</Box>
 			</Card>
 		</>

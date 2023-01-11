@@ -9,10 +9,9 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import { useSettingsContext } from '@/Components/settings';
 // sections
-import ToolboxTalkNewEditForm from "@/sections/@dashboard/toolboxtalks/form/ToolboxTalkNewEditForm";
 import { formatCms } from "@/utils/tablesUtils";
 import Label from "@/Components/label";
-
+import ToolboxTalkDetail from "@/sections/@dashboard/toolboxtalks/details/ToolboxTalkDetail";
 const TYPE_OPTIONS = {
 	"1": 'civil',
 	"2": 'electrical',
@@ -29,12 +28,12 @@ const index = ({ tbt }) => {
 	return (
 		<>
 			<Head>
-				<title>Toolbox Talk: Update</title>
+				<title>{cms}</title>
 			</Head>
 			<DashboardLayout>
 				<Container maxWidth={themeStretch ? false : 'lg'}>
 					<CustomBreadcrumbs
-						heading={"Create new toolbox talk"}
+						heading={cms.toUpperCase()}
 						links={[
 							{
 								name: 'Dashboard',
@@ -48,16 +47,8 @@ const index = ({ tbt }) => {
 								name: cms.toUpperCase()
 							},
 						]}
-						action={
-							<Label
-								variant="soft"
-								color={tbt?.status === "1" ? "success" : "warning"}
-							>
-								{tbt?.status === "1" ? "Completed" : "Incomplete"}
-							</Label>
-						}
 					/>
-					<ToolboxTalkNewEditForm isEdit tbt={tbt} />
+					<ToolboxTalkDetail tbt={tbt} />
 				</Container>
 			</DashboardLayout>
 		</>
