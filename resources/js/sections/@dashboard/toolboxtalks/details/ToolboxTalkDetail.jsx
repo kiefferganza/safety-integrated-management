@@ -136,7 +136,7 @@ const ToolboxTalkDetail = ({ tbt }) => {
 
 									<TableCell align="left">Position</TableCell>
 
-									<TableCell align="left">Signature</TableCell>
+									<TableCell align="left">Certificate</TableCell>
 
 								</TableRow>
 							</TableHead>
