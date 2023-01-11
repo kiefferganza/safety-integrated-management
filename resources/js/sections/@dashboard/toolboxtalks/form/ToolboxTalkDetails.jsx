@@ -67,18 +67,26 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 
 	const handleDropSingleFile = useCallback((acceptedFiles) => {
 		const file = acceptedFiles[0];
-		setValue("img_src", Object.assign(file, {
-			preview: URL.createObjectURL(file),
-		}));
+		if (file) {
+			setValue("status", "1", { shouldDirty: true });
+			setValue("img_src", Object.assign(file, {
+				preview: URL.createObjectURL(file),
+			}));
+		}
 	}, []);
 
-	const handleSelectParticipants = (index) => {
-		setValue(`participants.${index}.selected`, !values.participants[index].selected, { shouldValidate: true });
+	const handleRemoveFile = () => {
+		setValue("status", "0");
+		setValue("img_src", null, { shouldDirty: true });
 	}
 
-	const handleRemove = (emp_id) => {
-		const idx = values.participants.findIndex(p => p.employee_id === emp_id);
-		setValue(`participants.${idx}.selected`, false, { shouldValidate: true });
+	const handleSelectParticipants = (index) => {
+		const isSelected = !values.participants[index].selected;
+		setValue(`participants.${index}.selected`, isSelected, { shouldValidate: true, shouldDirty: true });
+	}
+
+	const handleRemove = (idx) => {
+		setValue(`participants.${idx}.selected`, false, { shouldValidate: true, shouldDirty: true });
 	}
 
 	return (
@@ -120,13 +128,11 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 						<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 							<Autocomplete
 								fullWidth
-								value={getAutocompleteValue(values.conducted_by_id)}
+								value={getAutocompleteValue(values.conducted_by)}
 								onChange={(_event, newValue) => {
 									if (newValue) {
-										setValue('conducted_by_id', newValue.id, { shouldValidate: true, shouldDirty: true });
-										setValue('conducted_by', newValue.label, { shouldValidate: true, shouldDirty: true });
+										setValue('conducted_by', newValue.id, { shouldValidate: true, shouldDirty: true });
 									} else {
-										setValue('conducted_by_id', '', { shouldValidate: true, shouldDirty: true });
 										setValue('conducted_by', '', { shouldValidate: true, shouldDirty: true });
 									}
 								}}
@@ -169,6 +175,7 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 								label="Time Conducted"
 								value={values?.time_conducted}
 								onChange={handleChangeTime}
+								inputFormat={"HH:mm"}
 								renderInput={(params) =>
 									<TextField {...params} readOnly fullWidth error={!!errors?.time_conducted?.message} helperText={errors?.time_conducted?.message} />
 								}
@@ -222,9 +229,12 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 
 										<TableBody>
 											{values.participants?.filter(p => p.selected)?.map((row, index) => {
+												const nameIndex = values.participants.findIndex(p => p.employee_id === row.employee_id);
+												const err = errors?.participants ? errors?.participants[nameIndex] : {};
+
 												return (
 													<TableRow
-														key={index}
+														key={row.employee_id}
 														sx={{
 															borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
 														}}
@@ -244,16 +254,28 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 														<TableCell align="left">{row.position.position}</TableCell>
 
 														<TableCell align="center">
-															<RHFTextField
-																name={`participants.${values.participants.findIndex(p => p.employee_id === row.employee_id)}.time`}
+															{/* <RHFTextField
+																name={`participants.${nameIndex}.time`}
 																size="small"
 																type="number"
 																sx={{ width: { sm: 1, md: "50%" } }}
+															/> */}
+															<TextField
+																name={`participants.${nameIndex}.time`}
+																value={row.time}
+																onChange={(e) => {
+																	setValue(`participants.${nameIndex}.time`, e.target.value, { shoudValidate: true, shouldDirty: true });
+																}}
+																size="small"
+																type="number"
+																sx={{ width: { sm: 1, md: "50%" } }}
+																error={!!err?.time?.message}
+																helperText={err?.time?.message}
 															/>
 														</TableCell>
 
 														<TableCell align="right">
-															<IconButton onClick={() => handleRemove(row.employee_id)}>
+															<IconButton onClick={() => handleRemove(nameIndex)}>
 																<Iconify icon="eva:trash-2-outline" sx={{ color: 'error.main' }} />
 															</IconButton>
 														</TableCell>
@@ -273,7 +295,7 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 								<Typography variant="h6" sx={{ color: 'text.disabled' }}>
 									Attached File
 								</Typography>
-								<Upload file={values.img_src} onDrop={handleDropSingleFile} onDelete={() => setValue("img_src", null)} />
+								<Upload files={values.img_src ? [values.img_src] : []} multiple onDrop={handleDropSingleFile} onRemove={handleRemoveFile} />
 							</Box>
 						</Stack>
 

@@ -8,8 +8,8 @@ export default function useActiveLink (path, deep = true, hasChild = false, chil
 	const { url } = usePage();
 
 
-	const urlSplit = url.split("/");
-	const pathSplit = path?.split("/");
+	const urlSplit = url.split("/").map(u => u.split("?")[0]);
+	const pathSplit = path?.split("/").map(u => u.split("?")[0]);
 
 	const normalActive = (url === path);
 

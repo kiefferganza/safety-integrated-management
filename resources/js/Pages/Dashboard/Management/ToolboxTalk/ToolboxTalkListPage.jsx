@@ -80,8 +80,8 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 		onChangePage,
 		onChangeRowsPerPage,
 	} = useTable({
-		// defaultOrderBy: "date_issued",
-		// defaultOrder: "desc"
+		defaultOrderBy: "date_created",
+		defaultOrder: "desc"
 	});
 
 	const [openConfirm, setOpenConfirm] = useState(false);
@@ -173,27 +173,27 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 	};
 
 	const handleDeleteRow = (id) => {
-		// Inertia.post(route('inspection.management.delete'), { ids: [id] }, {
-		// 	onStart: () => {
-		// 		load("Deleting company", "Please wait...");
-		// 	},
-		// 	onFinish: stop,
-		// 	preserveScroll: true
-		// });
+		Inertia.post(route('toolboxtalk.management.delete'), { ids: [id] }, {
+			onStart: () => {
+				load("Deleting company", "Please wait...");
+			},
+			onFinish: stop,
+			preserveScroll: true
+		});
 	};
 
 	const handleDeleteRows = (selected) => {
-		// Inertia.post(route('inspection.management.delete'), { ids: selected }, {
-		// 	onStart: () => {
-		// 		load(`Deleting ${selected.length} companies`, "Please wait...");
-		// 	},
-		// 	onFinish: () => {
-		// 		setSelected([]);
-		// 		setPage(0);
-		// 		stop();
-		// 	},
-		// 	preserveScroll: true
-		// });
+		Inertia.post(route('toolboxtalk.management.delete'), { ids: selected }, {
+			onStart: () => {
+				load(`Deleting ${selected.length} companies`, "Please wait...");
+			},
+			onFinish: () => {
+				setSelected([]);
+				setPage(0);
+				stop();
+			},
+			preserveScroll: true
+		});
 	};
 
 	const handleResetFilter = () => {
@@ -352,12 +352,6 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 							}
 							action={
 								<Stack direction="row">
-									<Tooltip title="Print">
-										<IconButton color="primary">
-											<Iconify icon="eva:printer-fill" />
-										</IconButton>
-									</Tooltip>
-
 									<Tooltip title="Delete">
 										<IconButton color="primary" onClick={handleOpenConfirm}>
 											<Iconify icon="eva:trash-2-outline" />
@@ -379,7 +373,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 									onSelectAllRows={(checked) =>
 										onSelectAllRows(
 											checked,
-											tableData.map((row) => row.id)
+											dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.id)
 										)
 									}
 									sx={{
@@ -466,8 +460,10 @@ function applyFilter ({
 	inputData = stabilizedThis.map((el) => el[0]);
 
 	if (filterName) {
-		inputData = inputData.filter(
-			(toolbox) => toolbox.cms.toLowerCase().includes(filterName.toLowerCase()));
+		inputData = inputData.filter((toolbox) =>
+			toolbox.cms.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
+			toolbox.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+		);
 	}
 
 	if (filterStatus !== 'all') {

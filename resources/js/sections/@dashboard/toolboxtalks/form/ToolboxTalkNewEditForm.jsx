@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 // form
@@ -15,7 +15,7 @@ import FormProvider from '@/Components/hook-form';
 import { usePage } from '@inertiajs/inertia-react';
 import ToolboxTalkProjectDetails from './ToolboxTalkProjectDetails';
 import ToolboxTalkDetails from './ToolboxTalkDetails';
-import { format } from 'date-fns';
+import { format, formatISO } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
@@ -44,12 +44,12 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		participants: Yup.array().of(Yup.object().shape({
 			employee_id: Yup.string().required(),
 			selected: Yup.boolean(),
-			time: Yup.string().when("selected", (selected, schema) => selected ? schema.required("Hours is required") : schema.notRequired())
+			time: Yup.string().when("selected", (selected, schema) => selected ? schema.nullable().required("Hours is required") : schema.notRequired())
 		})),
 	});
 
-	const defaultValues = {
-		sequence_no: tbt?.sequence_no || sequences[tbt_type] || '',
+	const defaultValues = useMemo(() => ({
+		sequence_no: tbt?.sequence_no || isEdit ? sequences[tbt?.tbt_type] : sequences[tbt_type] || '',
 		project_code: tbt?.project_code || '',
 		originator: tbt?.originator || '',
 		discipline: tbt?.discipline || '',
@@ -61,18 +61,37 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		contract_no: tbt?.contract_no || '',
 		tbt_type: tbt?.tbt_type || tbt_type,
 		conducted_by: tbt?.conducted_by || '',
-		conducted_by_id: tbt?.conducted_by_id || '',
 		date_conducted: tbt?.date_conducted || null,
-		time_conducted: tbt?.time_conducted || null,
+		time_conducted: tbt?.time_conducted ? formatISO(new Date(1999, 1, 1, tbt?.time_conducted.split(":")[0], tbt?.time_conducted.split(":")[1], 0), { representation: 'complete' }) : null,
 		description: tbt?.description || "",
 		participants: getParticipants(),
-		img_src: ""
-	};
+		img_src: tbt?.file ? { path: `/storage/media/toolboxtalks/${tbt.file.img_src}`, name: tbt.file.img_src.split('/').at(-1) } : null,
+		prev_file: tbt?.file?.img_src || null,
+		status: tbt?.status || "0"
+	}), [tbt]);
 
 	function getParticipants () {
-		const p = participants.map(p => ({ ...p, selected: false }));
+		const p = participants.map(p => {
+			let isSelected = null;
+			if (tbt?.participants) {
+				isSelected = tbt.participants.find(participant => participant.employee_id === p.employee_id);
+			}
+
+			return {
+				...p,
+				selected: isSelected ? true : false,
+				time: isSelected ? isSelected?.pivot?.time : ""
+			}
+		});
 		return p;
 	}
+
+	useEffect(() => {
+		if (isEdit && tbt) {
+			reset(defaultValues);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isEdit, tbt]);
 
 	const methods = useForm({
 		resolver: yupResolver(NewTBTSchema),
@@ -81,6 +100,7 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 
 	const {
 		handleSubmit,
+		reset,
 		formState: { isDirty }
 	} = methods;
 
@@ -90,8 +110,7 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 			time_conducted: format(new Date(data.time_conducted), 'HH:mm'),
 			participants: data.participants.filter(p => p.selected)
 		};
-		Inertia.post(
-			isEdit ? PATH_DASHBOARD.employee.edit(tbt.tbt_id) : route("toolboxtalk.management.store"), newData,
+		Inertia.post(isEdit && tbt ? PATH_DASHBOARD.toolboxTalks.edit(tbt.tbt_id) : route("toolboxtalk.management.store"), newData,
 			{
 				preserveScroll: true,
 				preserveState: true,
@@ -100,6 +119,7 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 				},
 				onFinish () {
 					setLoading(false);
+					reset(defaultValues);
 				}
 			}
 		);

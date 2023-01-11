@@ -2,12 +2,55 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Request;
 use App\Models\ToolboxTalk;
 use App\Models\ToolboxTalkFile;
 use App\Models\ToolboxTalkParticipant;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ToolboxTalkService {
+
+	private $cms;
+
+	public function __construct($input = false){
+		$this->cms = $this->getCms($input);
+	}
+
+
+	public function getRouteByType($tbt_type) {
+		$redirect_route = "civil";
+
+		switch ($tbt_type) {
+			case '2':
+				$redirect_route = "electrical";
+				break;
+			case "3":
+				$redirect_route = "mechanical";
+			case "4":
+				$redirect_route = "camp";
+			case "5":
+				$redirect_route = "office";
+			default:
+				break;
+		}
+		return $redirect_route;
+	}
+
+	public function getCms($input) {
+		if($input) {
+			$cms = sprintf("%s-%s-%s-%s", $input["project_code"], $input["originator"],$input["discipline"],$input["document_type"]);
+			if($input["document_zone"]) {
+				$cms .= "-". $input["document_zone"];
+			}
+			if($input["document_level"]) {
+				$cms .= "-". $input["document_level"];
+			}
+			$cms .= "-" . $input["sequence_no"];
+			return strtoupper($cms);
+		}
+		return false;
+	}
 
 	public static function getListByType(int $type) {
 		// $user = Auth::user();
@@ -18,7 +61,8 @@ class ToolboxTalkService {
 			["is_deleted", 0]
 		])
 		->with([
-			"participants" => fn ($q) => $q->select("firstname", "lastname")
+			"participants" => fn ($q) => $q->select("firstname", "lastname"),
+			"conducted"
 		])
 		->orderBy('date_created')
 		->get();
@@ -27,7 +71,7 @@ class ToolboxTalkService {
 	}
 
 
-	public static function getSequenceNo() {
+	public function getSequenceNo() {
 		$tbt = ToolboxTalk::select("is_deleted", "tbt_type")->where('is_deleted', 0)->get()->toArray();
 
 		$sequences = array(
@@ -70,14 +114,14 @@ class ToolboxTalkService {
 	}
 
 
-	public static function insertGetID($input) {
+	public function insertGetID($input) {
 		$user = Auth::user();
 		$tbt = new ToolboxTalk;
 
 		$sequence = ToolboxTalk::where('is_deleted', 0)->where("tbt_type", $input["tbt_type"])->count() + 1;
 
 		$tbt->employee_id = $user->emp_id;
-		$tbt->sequence_no = str_repeat("0", $sequence) . $sequence;
+		$tbt->sequence_no = str_repeat("0", strlen((string) $sequence)) . $sequence;
 		$tbt->originator = $input["originator"];
 		$tbt->project_code = $input["project_code"];
 		$tbt->discipline = $input["discipline"];
@@ -91,7 +135,6 @@ class ToolboxTalkService {
 		$tbt->date_conducted = $input["date_conducted"];
 		$tbt->time_conducted = $input["time_conducted"];
 		$tbt->conducted_by = $input["conducted_by"];
-		$tbt->conducted_by_id = $input["conducted_by_id"];
 		$tbt->description = $input["description"];
 		$tbt->status = $input["img_src"] !== null;
 
@@ -101,7 +144,7 @@ class ToolboxTalkService {
 	}
 
 
-	public static function insertParticipants($participants, $tbt_id) {
+	public function insertParticipants($participants, $tbt_id) {
 		foreach ($participants as $participant) {
 			$tbt_participants = new ToolboxTalkParticipant;
 			$tbt_participants->employee_id = $participant["employee_id"];
@@ -113,10 +156,10 @@ class ToolboxTalkService {
 		}
 	}
 
-	public static function insertFile($file, $tbt_id) {
+	public function insertFile($file, $tbt_id) {
 		$newfile = $file->getClientOriginalName();
 		$extension = pathinfo($newfile, PATHINFO_EXTENSION);
-		$file_name = pathinfo($newfile, PATHINFO_FILENAME). "-" . time(). "." . $extension;
+		$file_name = $this->cms. "-" . date("Y-m-d"). "." . $extension; 
 		$file->storeAs('media/toolboxtalks', $file_name, 'public');
 
 		$tbt_file = new ToolboxTalkFile;
@@ -127,6 +170,58 @@ class ToolboxTalkService {
 
 	}
 
+
+	public function update(ToolboxTalk $tbt, Request $request) {
+		if($tbt->sequence_no === "") {
+			$tbt->sequence_no = $request->sequence_no;
+		}
+		$tbt->originator = $request->originator;
+		$tbt->project_code = $request->project_code;
+		$tbt->discipline = $request->discipline;
+		$tbt->document_type = $request->document_type;
+		$tbt->document_zone = $request->document_zone;
+		$tbt->document_level = $request->document_level;
+		$tbt->title = $request->title;
+		$tbt->location = $request->location;
+		$tbt->contract_no = $request->contract_no;
+		$tbt->tbt_type = $request->tbt_type;
+		$tbt->date_conducted = $request->date_conducted;
+		$tbt->time_conducted = $request->time_conducted;
+		$tbt->conducted_by = $request->conducted_by;
+		$tbt->description = $request->description;
+		$tbt->status = $request->status;
+		$tbt->increment("revision_no");
+
+		ToolboxTalkParticipant::where("tbt_id", $tbt->tbt_id)->delete();
+		$this->insertParticipants($request->participants, $tbt->tbt_id);
+
+		$hasOldFile = (isset($request->prev_file) && $request->prev_file !== null) && Storage::exists("public/media/toolboxtalks/" . $request->prev_file);
+
+		// DELETE OLD FILE
+		if($hasOldFile && ($request->img_src === null || $request->hasFile("img_src"))) {
+			Storage::delete("public/media/toolboxtalks/" . $request->prev_file);
+			$oldFile = ToolboxTalkFile::where("tbt_id", $tbt->tbt_id);
+			if($oldFile) {
+				$oldFile->delete();
+			}
+		}
+
+		if($request->hasFile("img_src")) {
+			// INSERT NEW FILE
+			$this->insertFile($request->img_src, $tbt->tbt_id);
+		}
+
+		return $tbt->save();
+	}
+
+
+	public function soft_delete($ids) {
+		if(!empty($ids)) {
+			ToolboxTalk::whereIn("tbt_id", $ids)->update(["is_deleted" => 1]);
+			ToolboxTalkParticipant::whereIn("tbt_id", $ids)->update(["is_removed" => 1]);
+			ToolboxTalkFile::whereIn("tbt_id", $ids)->update(["is_deleted" => 1]);
+		}
+	}
 
 
 }

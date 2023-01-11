@@ -10,8 +10,6 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ToolboxTalkController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\UsersController;
-use App\Models\ToolboxTalk;
-use App\Models\ToolboxTalkParticipant;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -150,8 +148,12 @@ Route::middleware('auth')->group(function ()
 	Route::get('dashboard/toolbox-talks/mechanical', [ToolboxTalkController::class, "mechanical_list"])->name('toolboxtalk.management.mechanical');
 	Route::get('dashboard/toolbox-talks/camp', [ToolboxTalkController::class, "camp_list"])->name('toolboxtalk.management.camp');
 	Route::get('dashboard/toolbox-talks/office', [ToolboxTalkController::class, "office_list"])->name('toolboxtalk.management.office');
+	// CRUD
 	Route::get('dashboard/toolbox-talks/new', [ToolboxTalkController::class, "create"])->name('toolboxtalk.management.new');
 	Route::post('dashboard/toolbox-talks/new', [ToolboxTalkController::class, "store"])->name('toolboxtalk.management.store');
+	Route::get('dashboard/toolbox-talks/{tbt}/edit', [ToolboxTalkController::class, "edit"]);
+	Route::post('dashboard/toolbox-talks/{tbt}/edit', [ToolboxTalkController::class, "update"]);
+	Route::post('dashboard/toolbox-talks/delete', [ToolboxTalkController::class, "soft_delete"])->name('toolboxtalk.management.delete');
 	// Route::post('dashboard/toolbox-talks/delete', [ToolboxTalkController::class, "delete"])->name('toolboxtalk.management.delete');
 
 });

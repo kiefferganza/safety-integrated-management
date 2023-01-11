@@ -214,7 +214,7 @@ const InspectionListPage = ({ user, inspections }) => {
 	const handleDeleteRow = (id) => {
 		Inertia.post(route('inspection.management.delete'), { ids: [id] }, {
 			onStart: () => {
-				load("Deleting company", "Please wait...");
+				load("Deleting inspection", "Please wait...");
 			},
 			onFinish: stop,
 			preserveScroll: true
@@ -224,7 +224,7 @@ const InspectionListPage = ({ user, inspections }) => {
 	const handleDeleteRows = (selected) => {
 		Inertia.post(route('inspection.management.delete'), { ids: selected }, {
 			onStart: () => {
-				load(`Deleting ${selected.length} companies`, "Please wait...");
+				load(`Deleting ${selected.length} inspections`, "Please wait...");
 			},
 			onFinish: () => {
 				setSelected([]);

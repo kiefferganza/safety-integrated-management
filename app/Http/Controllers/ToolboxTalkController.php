@@ -16,6 +16,7 @@ class ToolboxTalkController extends Controller
 
 
 	function civil_list() {
+		// dd(ToolboxTalkService::getListByType(1));
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CivilList", [
 			"tbt" => ToolboxTalkService::getListByType(1)
 		]);
@@ -55,41 +56,64 @@ class ToolboxTalkController extends Controller
 
 
 	public function create(Request $request) {
+		$tbtService = new ToolboxTalkService();
+
 		return Inertia::render("Dashboard/Management/ToolboxTalk/Create/index", [
-			"sequences" => ToolboxTalkService::getSequenceNo(),
+			"sequences" => $tbtService->getSequenceNo(),
 			"participants" => (new EmployeeService())->personels()->position()->get(),
 			"tbt_type" => $request->type ? $request->type : "1"
 		]);
 	}
 
+
 	public function store(Request $request) {
-		$tbt_id = ToolboxTalkService::insertGetID($request->all());
+		$tbtService = new ToolboxTalkService($request);
+		$tbt_id = $tbtService->insertGetID($request->all());
 		if(!$tbt_id) {
 			abort(500, "Something went wrong!");
 		}
-		if(isset($request->img_src) && $request->img_src !== null) {
-			ToolboxTalkService::insertFile($request->img_src, $tbt_id);
-		}
-		ToolboxTalkService::insertParticipants($request->participants, $tbt_id);
 
-		$redirect_route = "civil";
-
-		switch ($request->tbt_type) {
-			case '2':
-				$redirect_route = "electrical";
-				break;
-			case "3":
-				$redirect_route = "mechanical";
-			case "4":
-				$redirect_route = "camp";
-			case "5":
-				$redirect_route = "office";
-			default:
-				break;
+		if($request->hasFile("img_src")) {
+			$tbtService->insertFile($request->img_src, $tbt_id);
 		}
+		$tbtService->insertParticipants($request->participants, $tbt_id);
+
+		$redirect_route = $tbtService->getRouteByType($request->tbt_type);
 
 		return redirect()->route('toolboxtalk.management.'.$redirect_route)
 		->with("message", "Toolbox talk added successfully!")
+		->with("type", "success");
+	}
+
+
+	public function edit(ToolboxTalk $tbt) {
+		$tbtService = new ToolboxTalkService();
+		return Inertia::render("Dashboard/Management/ToolboxTalk/Edit/index", [
+			"sequences" => $tbtService->getSequenceNo(),
+			"tbt" => $tbt->load(["participants", "file"]),
+			"participants" => (new EmployeeService())->personels()->position()->get(),
+		]);
+	}
+
+
+	public function update(ToolboxTalk $tbt, Request $request) {
+		$tbtService = new ToolboxTalkService($request);
+		$updated = $tbtService->update($tbt, $request);
+		if(!$updated) {
+			abort(500, "Something went wrong!");
+		}
+
+		return redirect()->back()
+		->with("message", "Toolbox talk updated successfully!")
+		->with("type", "success");
+	}
+
+
+	public function soft_delete(Request $request) {
+		(new ToolboxTalkService)->soft_delete($request->ids);
+		
+		return redirect()->back()
+		->with("message", "Toolbox talk deleted successfully!")
 		->with("type", "success");
 	}
 
