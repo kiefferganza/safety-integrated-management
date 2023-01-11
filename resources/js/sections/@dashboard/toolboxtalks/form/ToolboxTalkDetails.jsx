@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import ToolboxTalkEmployeeDialog from './ToolboxTalkEmployeeDialog';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 // form
 import { useFormContext } from 'react-hook-form';
 // @mui
@@ -89,6 +89,15 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 		setValue(`participants.${idx}.selected`, false, { shouldValidate: true, shouldDirty: true });
 	}
 
+	const handleChangeParticipantTime = (value, idx) => {
+		console.log(isValid(value));
+		if (isValid(value)) {
+			const hours = value.getHours() === 0 ? 24 : value.getHours();
+			setValue(`participants.${idx}.time`, hours, { shoudValidate: true, shouldDirty: true });
+			setValue(`participants.${idx}.timeRaw`, value);
+		}
+	}
+
 	return (
 		<>
 			<Box sx={{ p: 3 }}>
@@ -156,7 +165,7 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 									onChange={handleChangeDate}
 									disableMaskedInput
 									renderInput={(params) =>
-										<TextField {...params} readOnly fullWidth error={!!errors?.date_conducted?.message} helperText={errors?.date_conducted?.message} />
+										<TextField {...params} fullWidth error={!!errors?.date_conducted?.message} helperText={errors?.date_conducted?.message} />
 									}
 								/>
 							) : (
@@ -166,7 +175,7 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 									value={values?.date_conducted}
 									onChange={handleChangeDate}
 									renderInput={(params) =>
-										<TextField {...params} readOnly fullWidth error={!!errors?.date_conducted?.message} helperText={errors?.date_conducted?.message} />
+										<TextField {...params} fullWidth error={!!errors?.date_conducted?.message} helperText={errors?.date_conducted?.message} />
 									}
 								/>
 							)}
@@ -177,7 +186,7 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 								onChange={handleChangeTime}
 								inputFormat={"HH:mm"}
 								renderInput={(params) =>
-									<TextField {...params} readOnly fullWidth error={!!errors?.time_conducted?.message} helperText={errors?.time_conducted?.message} />
+									<TextField {...params} inputProps={{ ...params.inputProps, readOnly: true }} fullWidth error={!!errors?.time_conducted?.message} helperText={errors?.time_conducted?.message} />
 								}
 							/>
 
@@ -220,7 +229,7 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 
 												<TableCell align="left">Position</TableCell>
 
-												<TableCell align="center">Hours</TableCell>
+												<TableCell align="center">Time</TableCell>
 
 												<TableCell align="right"></TableCell>
 
@@ -234,7 +243,7 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 
 												return (
 													<TableRow
-														key={row.employee_id}
+														key={index}
 														sx={{
 															borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
 														}}
@@ -254,23 +263,13 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 														<TableCell align="left">{row.position.position}</TableCell>
 
 														<TableCell align="center">
-															{/* <RHFTextField
-																name={`participants.${nameIndex}.time`}
-																size="small"
-																type="number"
-																sx={{ width: { sm: 1, md: "50%" } }}
-															/> */}
-															<TextField
-																name={`participants.${nameIndex}.time`}
-																value={row.time}
-																onChange={(e) => {
-																	setValue(`participants.${nameIndex}.time`, e.target.value, { shoudValidate: true, shouldDirty: true });
-																}}
-																size="small"
-																type="number"
-																sx={{ width: { sm: 1, md: "50%" } }}
-																error={!!err?.time?.message}
-																helperText={err?.time?.message}
+															<TimePicker
+																onChange={(value) => handleChangeParticipantTime(value, nameIndex)}
+																value={row?.timeRaw}
+																views={["hours"]}
+																inputFormat="k"
+																ampm={false}
+																renderInput={(params) => <TextField {...params} inputProps={{ ...params.inputProps, readOnly: true, placeholder: 'time' }} readOnly error={!!err?.time?.message} helperText={err?.time?.message} sx={{ width: "45%" }} size="small" />}
 															/>
 														</TableCell>
 

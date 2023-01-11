@@ -15,12 +15,14 @@ ToolboxTalkPDF.propTypes = {
 	cms: PropTypes.string,
 };
 
+const PER_PAGE = 15;
+
 export default function ToolboxTalkPDF ({ tbt, cms }) {
 
 
 	const documents = useMemo(() => {
-		if (tbt.participants.length > 10) {
-			const chunkSize = 10;
+		if (tbt.participants.length > PER_PAGE) {
+			const chunkSize = PER_PAGE;
 			let arr = [];
 			for (let i = 0; i < tbt.participants.length; i += chunkSize) {
 				const chunk = tbt.participants.slice(i, i + chunkSize);
@@ -117,14 +119,18 @@ export default function ToolboxTalkPDF ({ tbt, cms }) {
 								</View>
 
 								<View style={styles.tableCell_2}>
-									<Text style={styles.subtitle2}>Name</Text>
+									<Text style={[styles.subtitle2, { marginLeft: 24 }]}>Name</Text>
 								</View>
 
 								<View style={[styles.tableCell_2]}>
-									<Text style={styles.subtitle2}>Position</Text>
+									<Text style={[styles.subtitle2, { marginLeft: 32 }]}>Position</Text>
 								</View>
 
-								<View style={styles.tableCell_1}>
+								<View style={[styles.tableCell_2]}>
+									<Text style={[styles.subtitle2, { marginLeft: 32 }]}>Time</Text>
+								</View>
+
+								<View style={styles.tableCell_3}>
 									<Text style={styles.subtitle2}>Signature</Text>
 								</View>
 							</View>
@@ -134,26 +140,30 @@ export default function ToolboxTalkPDF ({ tbt, cms }) {
 							{doc?.map((item, idx) => (
 								<View style={styles.tableRow} key={idx}>
 									<View style={styles.tableCell_1}>
-										<Text style={{ paddingLeft: 8 }}>{(idx + 1) + (index * 10)}</Text>
+										<Text style={{ paddingLeft: 8 }}>{(idx + 1) + (index * PER_PAGE)}</Text>
 									</View>
 
 									<View style={styles.tableCell_2}>
-										<Text>{item.fullname}</Text>
+										<Text style={{ marginLeft: 24 }}>{item.fullname}</Text>
 									</View>
 
 									<View style={[styles.tableCell_2]}>
-										<Text style={{ textTransform: 'capitalize' }}>{item.position.position}</Text>
+										<Text style={{ textTransform: 'capitalize', marginLeft: 32 }}>{item.position.position}</Text>
 									</View>
 
-									<View style={styles.tableCell_1}>
+									<View style={styles.tableCell_2}>
+										<Text style={{ marginLeft: 32 }}>{item.pivot.time}</Text>
+									</View>
+
+									<View style={styles.tableCell_3}>
 									</View>
 								</View>
 							))}
-							{doc.length < 10 && (
-								Array.from(Array(10 - doc.length).keys()).map((col, idx) => (
+							{doc.length < PER_PAGE && (
+								Array.from(Array(PER_PAGE - doc.length).keys()).map((col, idx) => (
 									<View style={styles.tableRow} key={col}>
 										<View style={styles.tableCell_1}>
-											<Text style={{ paddingLeft: 8 }}>{doc.length + ((idx + 1) + (index * 10))}</Text>
+											<Text style={{ paddingLeft: 8 }}>{doc.length + ((idx + 1) + (index * PER_PAGE))}</Text>
 										</View>
 
 										<View style={styles.tableCell_2}>
@@ -162,7 +172,10 @@ export default function ToolboxTalkPDF ({ tbt, cms }) {
 										<View style={[styles.tableCell_2]}>
 										</View>
 
-										<View style={styles.tableCell_1}>
+										<View style={[styles.tableCell_2]}>
+										</View>
+
+										<View style={styles.tableCell_3}>
 										</View>
 									</View>
 								))
@@ -170,8 +183,8 @@ export default function ToolboxTalkPDF ({ tbt, cms }) {
 						</View>
 					</View>
 
-					<View style={[styles.mb40, { marginTop: 64 }]}>
-						<View style={{ marginBottom: 72 }}>
+					<View style={[styles.mb40, { marginTop: 40 }]}>
+						<View style={{ marginBottom: 56 }}>
 							<View style={[styles.gridContainer, styles.mb16]}>
 								<Text style={styles.subtitle2}>Remarks</Text>
 							</View>

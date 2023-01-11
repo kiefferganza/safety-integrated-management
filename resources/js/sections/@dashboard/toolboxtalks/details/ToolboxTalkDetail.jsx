@@ -136,7 +136,9 @@ const ToolboxTalkDetail = ({ tbt }) => {
 
 									<TableCell align="left">Position</TableCell>
 
-									<TableCell align="left">Certificate</TableCell>
+									<TableCell align="center">Time</TableCell>
+
+									<TableCell align="center">Signature</TableCell>
 
 								</TableRow>
 							</TableHead>
@@ -155,14 +157,15 @@ const ToolboxTalkDetail = ({ tbt }) => {
 
 										<TableCell align="left" sx={{ textTransform: "capitalize" }}>{row.position?.position}</TableCell>
 
-										<TableCell align="left">
-											{tbt?.file ? (
+										<TableCell align="center">{row.pivot.time}</TableCell>
+										<TableCell align="center">
+											{/* {tbt?.file ? (
 												<MuiLink href={`/storage/media/toolboxtalks/${tbt?.file?.img_src}`} target="_blank">
 													{excerpt(tbt?.file?.img_src)}
 												</MuiLink>
 											) : (
 												"N/A"
-											)}
+											)} */}
 										</TableCell>
 
 									</TableRow>

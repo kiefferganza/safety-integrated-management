@@ -57,12 +57,12 @@ const styles = StyleSheet.create({
 		padding: '4px 0 2px 0',
 		flexDirection: 'row',
 		borderBottomWidth: 1,
-		borderStyle: 'solid'
+		borderStyle: 'solid',
 	},
 	noBorder: { paddingTop: 8, paddingBottom: 0, borderBottomWidth: 0 },
-	tableCell_1: { width: '18%' },
-	tableCell_2: { width: '32%' },
-	tableCell_3: { width: '35%' },
+	tableCell_1: { width: '15%' },
+	tableCell_2: { width: '50%' },
+	tableCell_3: { width: '15%' },
 });
 
 export default styles;

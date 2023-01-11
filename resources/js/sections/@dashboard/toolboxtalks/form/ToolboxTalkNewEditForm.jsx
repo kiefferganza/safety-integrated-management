@@ -15,7 +15,7 @@ import FormProvider from '@/Components/hook-form';
 import { usePage } from '@inertiajs/inertia-react';
 import ToolboxTalkProjectDetails from './ToolboxTalkProjectDetails';
 import ToolboxTalkDetails from './ToolboxTalkDetails';
-import { format, formatISO } from 'date-fns';
+import { addHours, format, formatISO } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		participants: Yup.array().of(Yup.object().shape({
 			employee_id: Yup.string().required(),
 			selected: Yup.boolean(),
-			time: Yup.string().when("selected", (selected, schema) => selected ? schema.nullable().required("Hours is required") : schema.notRequired())
+			time: Yup.string().when("selected", (selected, schema) => selected ? schema.nullable().required("Time is required") : schema.notRequired())
 		})),
 	});
 
@@ -71,6 +71,8 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 	}), [tbt]);
 
 	function getParticipants () {
+		const date = new Date();
+
 		const p = participants.map(p => {
 			let isSelected = null;
 			if (tbt?.participants) {
@@ -80,7 +82,8 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 			return {
 				...p,
 				selected: isSelected ? true : false,
-				time: isSelected ? isSelected?.pivot?.time : ""
+				time: isSelected ? isSelected?.pivot?.time : "",
+				timeRaw: isSelected ? date.setHours(isSelected.pivot.time == 24 ? 0 : +isSelected.pivot.time) : null
 			}
 		});
 		return p;
