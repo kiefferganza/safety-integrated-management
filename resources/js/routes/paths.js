@@ -112,6 +112,7 @@ export const PATH_DASHBOARD = {
 	// Toolbox Talks
 	toolboxTalks: {
 		root: path(ROOTS_DASHBOARD, '/toolbox-talks'),
+		view: (id) => path(ROOTS_DASHBOARD, `/toolbox-talks/${id}/view`),
 		new: (type) => type ? path(ROOTS_DASHBOARD, `/toolbox-talks/new?type=${type}`) : path(ROOTS_DASHBOARD, '/toolbox-talks/new?type=1'),
 		edit: (id) => path(ROOTS_DASHBOARD, `/toolbox-talks/${id}/edit`),
 		civil: path(ROOTS_DASHBOARD, '/toolbox-talks/civil'),

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 // @mui
 import { Collapse } from '@mui/material';
 // hooks
@@ -18,9 +18,22 @@ NavList.propTypes = {
 
 export default function NavList ({ data, depth, hasChild }) {
 	const { can } = usePage().props;
+	const navItemRef = useRef();
 	const { active, isExternalLink } = useActiveLink(data.path, true, hasChild, data?.childList);
 
 	const [open, setOpen] = useState(active);
+
+	function delay (time) {
+		return new Promise(resolve => setTimeout(resolve, time));
+	}
+
+	useEffect(() => {
+		if (active && navItemRef.current && navItemRef) {
+			delay(600).then(() => {
+				navItemRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			})
+		}
+	}, [active, navItemRef]);
 
 	const handleToggle = () => {
 		setOpen(!open);
@@ -39,6 +52,7 @@ export default function NavList ({ data, depth, hasChild }) {
 				active={active}
 				isExternalLink={isExternalLink}
 				onClick={handleToggle}
+				ref={navItemRef}
 			/>
 
 			{hasChild && (

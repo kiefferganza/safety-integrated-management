@@ -10,18 +10,11 @@ import Iconify from '../../iconify';
 //
 import { StyledItem, StyledIcon, StyledDotIcon } from './styles';
 import { Link } from '@inertiajs/inertia-react';
+import { forwardRef } from 'react';
 
 // ----------------------------------------------------------------------
 
-NavItem.propTypes = {
-	open: PropTypes.bool,
-	active: PropTypes.bool,
-	item: PropTypes.object,
-	depth: PropTypes.number,
-	isExternalLink: PropTypes.bool,
-};
-
-export default function NavItem ({ item, depth, open, active, isExternalLink, ...other }) {
+const NavItem = forwardRef(({ item, depth, open, active, isExternalLink, ...other }, ref) => {
 	const { translate } = useLocales();
 
 	const { title, path, icon, info, children, disabled, caption, roles } = item;
@@ -30,6 +23,7 @@ export default function NavItem ({ item, depth, open, active, isExternalLink, ..
 
 	const renderContent = (
 		<StyledItem
+			ref={ref}
 			depth={depth}
 			active={active}
 			disabled={disabled}
@@ -103,4 +97,14 @@ export default function NavItem ({ item, depth, open, active, isExternalLink, ..
 	};
 
 	return <RoleBasedGuard roles={roles}> {renderItem()} </RoleBasedGuard>;
-}
+});
+
+NavItem.propTypes = {
+	open: PropTypes.bool,
+	active: PropTypes.bool,
+	item: PropTypes.object,
+	depth: PropTypes.number,
+	isExternalLink: PropTypes.bool,
+};
+
+export default NavItem
