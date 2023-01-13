@@ -137,6 +137,7 @@ class ToolboxTalkService {
 		$tbt->conducted_by = $input["conducted_by"];
 		$tbt->description = $input["description"];
 		$tbt->status = $input["img_src"] !== null;
+		$tbt->remarks = $input["remarks"];
 
 		$tbt->save();
 
@@ -190,6 +191,7 @@ class ToolboxTalkService {
 		$tbt->conducted_by = $request->conducted_by;
 		$tbt->description = $request->description;
 		$tbt->status = $request->status;
+		$tbt->remarks = $request->remarks;
 		$tbt->increment("revision_no");
 
 		ToolboxTalkParticipant::where("tbt_id", $tbt->tbt_id)->delete();

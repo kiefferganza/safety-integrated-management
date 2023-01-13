@@ -130,7 +130,7 @@ export default function ToolboxTalkPDF ({ tbt, cms }) {
 									<Text style={[styles.subtitle2, { marginLeft: 32 }]}>Time</Text>
 								</View>
 
-								<View style={styles.tableCell_3}>
+								<View style={[styles.tableCell_1, { marginRight: 16 }]}>
 									<Text style={styles.subtitle2}>Signature</Text>
 								</View>
 							</View>
@@ -189,10 +189,7 @@ export default function ToolboxTalkPDF ({ tbt, cms }) {
 								<Text style={styles.subtitle2}>Remarks</Text>
 							</View>
 							<View style={{ width: '100%', borderBottom: 1 }}>
-							</View>
-							<View style={{ width: '100%', borderBottom: 1, marginTop: 18 }}>
-							</View>
-							<View style={{ width: '100%', borderBottom: 1, marginTop: 18 }}>
+								<Text style={styles.body1}>{tbt?.remarks}</Text>
 							</View>
 						</View>
 						<View>

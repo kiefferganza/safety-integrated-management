@@ -67,7 +67,8 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		participants: getParticipants(),
 		img_src: tbt?.file ? { path: `/storage/media/toolboxtalks/${tbt.file.img_src}`, name: tbt.file.img_src.split('/').at(-1) } : null,
 		prev_file: tbt?.file?.img_src || null,
-		status: tbt?.status || "0"
+		status: tbt?.status || "0",
+		remarks: tbt?.remarks || ""
 	}), [tbt]);
 
 	function getParticipants () {

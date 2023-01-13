@@ -82,7 +82,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 		onChangePage,
 		onChangeRowsPerPage,
 	} = useTable({
-		defaultOrderBy: "date_conducted",
+		defaultOrderBy: "date_created",
 		defaultOrder: "desc"
 	});
 

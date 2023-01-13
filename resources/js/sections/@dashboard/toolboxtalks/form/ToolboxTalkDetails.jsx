@@ -196,6 +196,10 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 							<RHFTextField label="Activity" fullWidth multiline name="description" rows={3} />
 						</Stack>
 
+						<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
+							<RHFTextField label="Remarks" fullWidth multiline name="remarks" rows={3} />
+						</Stack>
+
 						<Divider sx={{ my: 3, borderStyle: 'dashed', width: 1 }} />
 
 						<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3, width: 1 }}>
