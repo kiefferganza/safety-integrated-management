@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import { Stack, Typography, Box, CircularProgress } from '@mui/material';
 // utils
-import { fShortenNumber } from '@/utils/formatNumber';
+// import { fShortenNumber } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 
@@ -14,11 +14,10 @@ ToolboxTalkAnalytic.propTypes = {
 	title: PropTypes.string,
 	color: PropTypes.string,
 	total: PropTypes.number,
-	percent: PropTypes.number,
-	subtitle: PropTypes.string
+	percent: PropTypes.number
 };
 
-export default function ToolboxTalkAnalytic ({ title, total, icon, color, percent, subtitle = "" }) {
+export default function ToolboxTalkAnalytic ({ title, total, icon, color, percent }) {
 	return (
 		<Stack direction="row" alignItems="center" justifyContent="center" sx={{ width: 1, minWidth: 200 }}>
 			<Stack alignItems="center" justifyContent="center" sx={{ position: 'relative' }}>
@@ -45,10 +44,8 @@ export default function ToolboxTalkAnalytic ({ title, total, icon, color, percen
 				<Typography variant="h6">{title}</Typography>
 
 				<Typography variant="subtitle2">
-					{fShortenNumber(total) || 0}{' '}
-					<Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
-						{subtitle || "toolbox"}
-					</Box>
+					{/* {fShortenNumber(total) || 0} */}
+					{total ? total.toLocaleString("en-US") : 0}
 				</Typography>
 			</Stack>
 		</Stack>

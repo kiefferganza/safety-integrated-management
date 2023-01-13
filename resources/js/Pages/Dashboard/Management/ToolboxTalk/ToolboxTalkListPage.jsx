@@ -18,7 +18,7 @@ import {
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
-import { fDate } from '@/utils/formatTime';
+import { fDate, fTimestamp } from '@/utils/formatTime';
 // components
 import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
@@ -43,6 +43,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { ToolboxTalkTableRow, ToolboxTalkTableToolbar } from '@/sections/@dashboard/toolboxtalks/list';
 import ToolboxTalkAnalytic from '@/sections/@dashboard/toolboxtalks/ToolboxTalkAnalytic';
 import { formatCms } from '@/utils/tablesUtils';
+import { endOfMonth, startOfMonth } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
@@ -53,6 +54,7 @@ const TABLE_HEAD = [
 	{ id: 'location', label: 'Location', align: 'left' },
 	{ id: 'participants_count', label: 'Participants', align: 'left' },
 	{ id: 'date_conducted', label: 'Date Conducted', align: 'left' },
+	{ id: 'attachment', label: 'Attachment', align: 'left' },
 	{ id: 'status', label: 'Status', align: 'left' },
 	{ id: '' },
 ];
@@ -80,7 +82,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 		onChangePage,
 		onChangeRowsPerPage,
 	} = useTable({
-		defaultOrderBy: "date_created",
+		defaultOrderBy: "date_conducted",
 		defaultOrder: "desc"
 	});
 
@@ -94,12 +96,15 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 
 	const [filterStartDate, setFilterStartDate] = useState(null);
 
-	const dataFiltered = applyFilter({
+	const [filterEndDate, setFilterEndDate] = useState(null);
+
+	const { dataFiltered, analytic } = applyFilter({
 		inputData: tableData,
 		comparator: getComparator(order, orderBy),
 		filterName,
 		filterStatus,
 		filterStartDate,
+		filterEndDate
 	});
 
 	useEffect(() => {
@@ -107,6 +112,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 			...toolbox,
 			id: toolbox.tbt_id,
 			cms: formatCms(toolbox),
+			attachment: 'Y',
 			participants_count: toolbox.participants?.length,
 			status: getStatus(toolbox?.status)
 		}));
@@ -139,7 +145,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 
 	const denseHeight = dense ? 56 : 76;
 
-	const isFiltered = filterName !== '' || !!filterStartDate || filterStatus !== 'all';
+	const isFiltered = filterName !== '' || !!filterStartDate || filterEndDate || filterStatus !== 'all';
 
 	const isNotFound =
 		(!dataFiltered.length && !!filterName) ||
@@ -199,34 +205,15 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 	const handleResetFilter = () => {
 		setFilterName('');
 		setFilterStartDate(null);
+		setFilterEndDate(null);
 		setFilterStatus('all');
 	};
-
-	const ANALYTIC = useMemo(() => {
-		return tbt.reduce((acc, curr) => {
-			acc.manpower += curr.participants.length;
-			acc.manHours += curr.participants.reduce((acc, curr) => acc += curr.pivot.time || 0, 0)
-			if (curr.status === "1") {
-				acc.completed++;
-			} else {
-				acc.incomplete++;
-			}
-			return acc;
-		}, {
-			manpower: 0,
-			manHours: 0,
-			completed: 0,
-			incomplete: 0,
-		});
-	}, [tbt]);
-
-	const getStatusPercent = (total) => (total / tableData.length) * 100;
 
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Inpection List"
+					heading="Toolbox Talk List"
 					links={[
 						{
 							name: 'Dashboard',
@@ -267,37 +254,35 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 							/>
 
 							<ToolboxTalkAnalytic
-								title="Completed"
-								total={ANALYTIC.completed}
-								percent={getStatusPercent(ANALYTIC.completed)}
-								icon="carbon:task-complete"
+								title="Location"
+								total={analytic.location}
+								percent={100}
+								icon="material-symbols:location-on"
 								color={theme.palette.success.main}
 							/>
 
 							<ToolboxTalkAnalytic
-								title="Incomplete"
-								total={ANALYTIC.incomplete}
-								percent={getStatusPercent(ANALYTIC.incomplete)}
-								icon="ic:baseline-pending-actions"
+								title="Average Month"
+								total={analytic.average}
+								percent={100}
+								icon="mdi:percent-circle-outline"
 								color={theme.palette.warning.main}
 							/>
 
 							<ToolboxTalkAnalytic
 								title="Man Hours"
-								total={ANALYTIC.manHours}
+								total={analytic.manHours}
 								percent={100}
 								icon="tabler:clock-hour-3"
 								color={theme.palette.warning.main}
-								subtitle="hours"
 							/>
 
 							<ToolboxTalkAnalytic
-								title="Participants"
-								total={ANALYTIC.manpower}
+								title="Manpower"
+								total={analytic.manpower}
 								percent={100}
 								icon="akar-icons:people-group"
 								color={theme.palette.success.main}
-								subtitle="participant(s)"
 							/>
 						</Stack>
 					</Scrollbar>
@@ -333,9 +318,16 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 						isFiltered={isFiltered}
 						onFilterName={handleFilterName}
 						filterStartDate={filterStartDate}
+						filterEndDate={filterEndDate}
 						onResetFilter={handleResetFilter}
 						onFilterStartDate={(newValue) => {
+							if (filterEndDate) {
+								setFilterEndDate(null);
+							}
 							setFilterStartDate(newValue);
+						}}
+						onFilterEndDate={(newValue) => {
+							setFilterEndDate(newValue);
 						}}
 					/>
 
@@ -448,6 +440,7 @@ function applyFilter ({
 	filterName,
 	filterStatus,
 	filterStartDate,
+	filterEndDate,
 }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -458,6 +451,7 @@ function applyFilter ({
 	});
 
 	inputData = stabilizedThis.map((el) => el[0]);
+	let analytic = null;
 
 	if (filterName) {
 		inputData = inputData.filter((toolbox) =>
@@ -470,12 +464,75 @@ function applyFilter ({
 		inputData = inputData.filter((toolbox) => toolbox.status.code === filterStatus);
 	}
 
-	if (filterStartDate) {
-		const filterDate = fDate(filterStartDate);
-		inputData = inputData.filter(toolbox => fDate(toolbox.date_conducted) === filterDate);
+	if (filterStartDate && !filterEndDate) {
+		const startDateTimestamp = fTimestamp(filterStartDate);
+		inputData = inputData.filter(toolbox => fTimestamp(toolbox.date_conducted) >= startDateTimestamp);
 	}
 
-	return inputData;
+	if (filterStartDate && filterEndDate) {
+		const startDateTimestamp = fTimestamp(filterStartDate);
+		const endDateTimestamp = fTimestamp(filterEndDate);
+		inputData = inputData.filter(
+			(toolbox) =>
+				fTimestamp(toolbox.date_conducted) >= startDateTimestamp &&
+				fTimestamp(toolbox.date_conducted) <= endDateTimestamp
+		);
+		analytic = getAverage(inputData, filterStartDate, filterEndDate);
+	} else {
+		analytic = getAverage(inputData);
+	}
+
+	return {
+		dataFiltered: inputData,
+		analytic
+	};
+}
+
+const today = new Date;
+const currentStartMonth = fTimestamp(startOfMonth(today));
+const currentEndMonth = fTimestamp(endOfMonth(today));
+
+function getAverage (data, start = null, end = null) {
+	const startMonth = start ? fTimestamp(start) : currentStartMonth;
+	const endMonth = end ? fTimestamp(end) : currentEndMonth;
+	const locations = [];
+
+	const tbtByMonth = data.reduce((acc, toolbox) => {
+		if (fTimestamp(toolbox.date_conducted) >= startMonth && fTimestamp(toolbox.date_conducted) <= endMonth) {
+			if (toolbox.date_conducted in acc) {
+				acc[toolbox.date_conducted].hours += toolbox.participants.reduce((acc, curr) => acc += curr.pivot.time || 0, 0);
+				acc[toolbox.date_conducted].participants += toolbox.participants.length;
+				acc[toolbox.date_conducted].location += 1;
+			} else {
+				acc[toolbox.date_conducted] = {
+					hours: toolbox.participants.reduce((acc, curr) => acc += curr.pivot.time || 0, 0),
+					participants: toolbox.participants.length,
+				}
+			}
+			locations.push(toolbox.location.toLowerCase().trim());
+		}
+		return acc;
+	}, {});
+	const tbtByMonthArr = Object.values(tbtByMonth);
+
+	const calculate = tbtByMonthArr.reduce((acc, curr) => {
+		acc.manpower += curr.participants;
+		acc.manHoursTotal += curr.hours;
+		return acc;
+	}, {
+		manpower: 0,
+		manHoursTotal: 0
+	});
+
+	const manHours = calculate.manHoursTotal * tbtByMonthArr.length;
+	const average = manHours / tbtByMonthArr.length
+
+	return {
+		...calculate,
+		location: new Set(locations).size,
+		manHours,
+		average
+	};
 }
 
 

@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
-import { Stack, InputAdornment, TextField, MenuItem, Button } from '@mui/material';
+import { Stack, InputAdornment, TextField, Button } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 // components
 import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 
-const INPUT_WIDTH = 160;
+const INPUT_WIDTH = 170;
 
 ToolboxTalkTableToolbar.propTypes = {
 	isFiltered: PropTypes.bool,
@@ -23,8 +23,9 @@ export default function ToolboxTalkTableToolbar ({
 	onFilterName,
 	onResetFilter,
 	filterStartDate,
+	filterEndDate,
 	onFilterStartDate,
-	right
+	onFilterEndDate
 }) {
 	return (
 		<Stack
@@ -36,10 +37,33 @@ export default function ToolboxTalkTableToolbar ({
 			}}
 			sx={{ px: 2.5, py: 1 }}
 		>
+
 			<DatePicker
-				label="Date Created"
+				label="Start date"
 				value={filterStartDate}
 				onChange={onFilterStartDate}
+				inputFormat="dd MMM yyyy"
+				openTo="year"
+				views={['year', 'month', 'day']}
+				renderInput={(params) => (
+					<TextField
+						{...params}
+						fullWidth
+						sx={{
+							maxWidth: { md: INPUT_WIDTH },
+						}}
+					/>
+				)}
+			/>
+
+			<DatePicker
+				label="End date"
+				value={filterEndDate}
+				onChange={onFilterEndDate}
+				inputFormat="dd MMM yyyy"
+				openTo="year"
+				views={['year', 'month', 'day']}
+				minDate={filterStartDate || new Date}
 				renderInput={(params) => (
 					<TextField
 						{...params}
@@ -75,7 +99,6 @@ export default function ToolboxTalkTableToolbar ({
 					Clear
 				</Button>
 			)}
-			{right}
 		</Stack>
 	);
 }

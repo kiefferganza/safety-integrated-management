@@ -71,6 +71,8 @@ export default function ToolboxTalkTableRow ({ row, selected, onSelectRow, onDel
 
 				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{fDate(row.date_conducted)}</TableCell>
 
+				<TableCell align="center" sx={{ whiteSpace: "nowrap", fontWeight: 600 }}>{row.attachment}</TableCell>
+
 				<TableCell align="left">
 					<Label
 						variant="soft"
