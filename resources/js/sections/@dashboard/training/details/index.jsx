@@ -39,6 +39,8 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 
 	const getTotalAmmount = training?.external_details && training?.type === 3 ? training?.trainees?.length * (parseInt(training?.external_details?.course_price)) : 0;
 
+	console.log(training);
+
 	return (
 		<>
 			<TrainingToolbar training={training} module={module} url={url} />
@@ -185,9 +187,9 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 								<TableRow>
 									<TableCell align="left">S.no</TableCell>
 
-									<TableCell align="center">Name</TableCell>
+									<TableCell align="left">Name</TableCell>
 
-									<TableCell align="center">Position</TableCell>
+									<TableCell align="left">Position</TableCell>
 
 									<TableCell align="center">Certificate</TableCell>
 
@@ -204,9 +206,9 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 									>
 										<TableCell align="left">{index + 1}</TableCell>
 
-										<TableCell align="center">{row.fullname}</TableCell>
+										<TableCell align="left">{row.fullname}</TableCell>
 
-										<TableCell align="center" sx={{ textTransform: "capitalize" }}>{row.position}</TableCell>
+										<TableCell align="left" sx={{ textTransform: "capitalize" }}>{row.position}</TableCell>
 
 										<TableCell align="center">
 											{row?.src ? (
@@ -228,6 +230,14 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 				{training?.external_details && training.type === 3 && (
 					<>
 						<Box sx={{ pt: 5 }}>
+							<Box width={1} sx={{ mb: 10 }}>
+								<Box>
+									<Typography variant="body1" sx={{ mb: 2 }} fontWeight={700}>Remarks</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" width={1} borderBottom={1}>{training?.remarks}</Typography>
+								</Box>
+							</Box>
 							<Grid container spacing={{ xs: 2, md: 8 }}>
 								<Grid item xs={12} sm={4}>
 									<Box sx={{ mb: 3 }}>
@@ -307,6 +317,29 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 							</Stack>
 						</Stack>
 					</>
+				)}
+
+				{training.type !== 3 && (
+					<Box sx={{ my: 10 }}>
+						<Box width={1} sx={{ mb: 10 }}>
+							<Box>
+								<Typography variant="body1" sx={{ mb: 1 }} fontWeight={700}>Remarks</Typography>
+							</Box>
+							<Box>
+								<Typography variant="body1" width={1} borderBottom={1}>{training?.remarks}</Typography>
+							</Box>
+						</Box>
+						<Box width={200}>
+							<Box borderBottom={1}>
+								<Typography variant="body1" textAlign="center">
+									{`${training?.user_employee?.fullname}`}
+								</Typography>
+							</Box>
+							<Box>
+								<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Requested by</Typography>
+							</Box>
+						</Box>
+					</Box>
 				)}
 
 				<Box sx={{ mt: 10, mb: 2 }}>

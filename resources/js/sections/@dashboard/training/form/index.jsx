@@ -70,6 +70,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		approved_by: currentTraining?.external_details?.approved_by || '',
 		currency: currentTraining?.external_details?.currency || '',
 		course_price: currentTraining?.external_details?.course_price || '',
+		remarks: currentTraining?.remarks || ''
 	}), [currentTraining]);
 
 	const methods = useForm({

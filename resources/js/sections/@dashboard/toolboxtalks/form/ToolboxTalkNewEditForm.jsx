@@ -45,7 +45,11 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 			employee_id: Yup.string().required(),
 			selected: Yup.boolean(),
 			time: Yup.string().when("selected", (selected, schema) => selected ? schema.nullable().required("Time is required") : schema.notRequired())
-		})),
+		})).test({
+			name: 'participants_required',
+			message: 'Please add at least 1 participant',
+			test: (val) => val.some(v => v.selected),
+		}),
 	});
 
 	const defaultValues = useMemo(() => ({
@@ -107,6 +111,7 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		reset,
 		formState: { isDirty }
 	} = methods;
+
 
 	const onSubmit = async (data) => {
 		const newData = {

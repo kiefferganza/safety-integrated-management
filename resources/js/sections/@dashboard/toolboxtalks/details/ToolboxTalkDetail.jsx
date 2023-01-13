@@ -178,10 +178,10 @@ const ToolboxTalkDetail = ({ tbt }) => {
 				<Box sx={{ mt: 10 }} width={1} display="inline-block">
 					<Box width={1} sx={{ mb: 10 }}>
 						<Box>
-							<Typography variant="body1" sx={{ mb: 1 }} fontWeight={700}>Remarks</Typography>
+							<Typography variant="body1" sx={{ mb: 2 }} fontWeight={700}>Remarks</Typography>
 						</Box>
 						<Box>
-							<Typography variant="body1" sx={{ pl: 1 }} width={1} borderBottom={1}>{tbt?.remarks}</Typography>
+							<Typography variant="body1" width={1} borderBottom={1}>{tbt?.remarks}</Typography>
 						</Box>
 					</Box>
 					<Box width={200}>

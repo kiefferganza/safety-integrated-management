@@ -82,15 +82,15 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 
 	const handleSelectParticipants = (index) => {
 		const isSelected = !values.participants[index].selected;
-		setValue(`participants.${index}.selected`, isSelected, { shouldValidate: true, shouldDirty: true });
+		setValue(`participants.${index}.selected`, isSelected);
+		clearErrors("participants")
 	}
 
 	const handleRemove = (idx) => {
-		setValue(`participants.${idx}.selected`, false, { shouldValidate: true, shouldDirty: true });
+		setValue(`participants.${idx}.selected`, false);
 	}
 
 	const handleChangeParticipantTime = (value, idx) => {
-		console.log(isValid(value));
 		if (isValid(value)) {
 			const hours = value.getHours() === 0 ? 24 : value.getHours();
 			setValue(`participants.${idx}.time`, hours, { shoudValidate: true, shouldDirty: true });

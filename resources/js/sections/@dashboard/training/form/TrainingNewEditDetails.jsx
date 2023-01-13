@@ -239,6 +239,10 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 						</Stack>
 					)}
 
+					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
+						<RHFTextField label="Remarks" fullWidth multiline name="remarks" rows={3} />
+					</Stack>
+
 				</Stack>
 
 			</Stack>
