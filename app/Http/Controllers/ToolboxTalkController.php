@@ -11,7 +11,9 @@ use Inertia\Inertia;
 class ToolboxTalkController extends Controller
 {
   public function index() {
-
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/All", [
+			"tbt" => ToolboxTalkService::getList(1)
+		]);
 	}
 
 

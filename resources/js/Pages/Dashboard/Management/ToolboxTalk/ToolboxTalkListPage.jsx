@@ -47,6 +47,15 @@ import { endOfMonth, startOfMonth } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
+const TYPES = {
+	'All': 0,
+	'Civil': 1,
+	'Electrical': 2,
+	'Mechanical': 3,
+	'Camp': 4,
+	'Office': 5,
+};
+
 const TABLE_HEAD = [
 	{ id: 'form_number', label: 'CMS Number', align: 'left' },
 	{ id: 'title', label: 'Title', align: 'left' },
@@ -60,7 +69,7 @@ const TABLE_HEAD = [
 ];
 
 
-const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
+const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType = false }) => {
 	const theme = useTheme();
 	const { themeStretch } = useSettingsContext();
 	const { load, stop } = useSwal();
@@ -98,11 +107,14 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 
 	const [filterEndDate, setFilterEndDate] = useState(null);
 
+	const [filterType, setFilterType] = useState([]);
+
 	const { dataFiltered, analytic } = applyFilter({
 		inputData: tableData,
 		comparator: getComparator(order, orderBy),
 		filterName,
 		filterStatus,
+		filterType,
 		filterStartDate,
 		filterEndDate
 	});
@@ -112,7 +124,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 			...toolbox,
 			id: toolbox.tbt_id,
 			cms: formatCms(toolbox),
-			attachment: 'Y',
+			attachment: toolbox.file ? "Y" : "N",
 			participants_count: toolbox.participants?.length,
 			status: getStatus(toolbox?.status)
 		}));
@@ -178,6 +190,34 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 		setFilterName(event.target.value);
 	};
 
+	const handleFilterType = (event) => {
+		const {
+			target: { value },
+		} = event;
+		const isAll = value.some(val => val === "All");
+		let newVal = typeof value === 'string' ? value.split(',') : value;
+
+		const isAllChecked = filterType.some(val => val === "All");
+
+		if (typeof value !== 'string') {
+			if (isAllChecked && !isAll) {
+				newVal = [];
+			} else if (isAll && (newVal.length === 1 || newVal.at(-1) === "All")) {
+				newVal = [
+					'All',
+					'Civil',
+					'Electrical',
+					'Mechanical',
+					'Camp',
+					'Office',
+				]
+			} else {
+				newVal = value.filter(val => val !== "All");
+			}
+		}
+		setFilterType(newVal);
+	};
+
 	const handleDeleteRow = (id) => {
 		Inertia.post(route('toolboxtalk.management.delete'), { ids: [id] }, {
 			onStart: () => {
@@ -207,6 +247,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 		setFilterStartDate(null);
 		setFilterEndDate(null);
 		setFilterStatus('all');
+		setFilterType([]);
 	};
 
 	return (
@@ -319,7 +360,10 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1" }) => {
 						onFilterName={handleFilterName}
 						filterStartDate={filterStartDate}
 						filterEndDate={filterEndDate}
+						filterType={filterType}
+						onFilterType={handleFilterType}
 						onResetFilter={handleResetFilter}
+						selectType={selectType}
 						onFilterStartDate={(newValue) => {
 							if (filterEndDate) {
 								setFilterEndDate(null);
@@ -439,6 +483,7 @@ function applyFilter ({
 	comparator,
 	filterName,
 	filterStatus,
+	filterType,
 	filterStartDate,
 	filterEndDate,
 }) {
@@ -467,6 +512,11 @@ function applyFilter ({
 	if (filterStartDate && !filterEndDate) {
 		const startDateTimestamp = fTimestamp(filterStartDate);
 		inputData = inputData.filter(toolbox => fTimestamp(toolbox.date_conducted) >= startDateTimestamp);
+	}
+
+	if (filterType.length !== 0 && !filterType.includes("All")) {
+		const types = filterType.map(ft => TYPES[ft]);
+		inputData = inputData.filter((toolbox) => types.indexOf(+toolbox.tbt_type) !== -1);
 	}
 
 	if (filterStartDate && filterEndDate) {

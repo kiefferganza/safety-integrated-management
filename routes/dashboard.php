@@ -143,6 +143,7 @@ Route::middleware('auth')->group(function ()
 	/**
 	 * Management - ToolboxTalks
 	 */
+	Route::get('dashboard/toolbox-talks/all', [ToolboxTalkController::class, "index"])->name('toolboxtalk.management.all');
 	Route::get('dashboard/toolbox-talks/civil', [ToolboxTalkController::class, "civil_list"])->name('toolboxtalk.management.civil');
 	Route::get('dashboard/toolbox-talks/electrical', [ToolboxTalkController::class, "electrical_list"])->name('toolboxtalk.management.electrical');
 	Route::get('dashboard/toolbox-talks/mechanical', [ToolboxTalkController::class, "mechanical_list"])->name('toolboxtalk.management.mechanical');

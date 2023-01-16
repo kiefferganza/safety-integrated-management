@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Stack, InputAdornment, TextField, Button } from '@mui/material';
+import { Stack, InputAdornment, TextField, Button, FormControl, InputLabel, Select, OutlinedInput, MenuItem, Checkbox, ListItemText } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 // components
 import Iconify from '@/Components/iconify';
@@ -7,14 +7,38 @@ import Iconify from '@/Components/iconify';
 // ----------------------------------------------------------------------
 
 const INPUT_WIDTH = 170;
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+	PaperProps: {
+		style: {
+			maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+			width: 140
+		},
+	},
+};
+
+const types = [
+	'All',
+	'Civil',
+	'Electrical',
+	'Mechanical',
+	'Camp',
+	'Office',
+];
 
 ToolboxTalkTableToolbar.propTypes = {
 	isFiltered: PropTypes.bool,
 	filterName: PropTypes.string,
+	filterType: PropTypes.array,
 	onFilterName: PropTypes.func,
+	onFilterType: PropTypes.func,
 	onResetFilter: PropTypes.func,
 	onFilterStartDate: PropTypes.func,
+	onFilterEndDate: PropTypes.func,
 	filterStartDate: PropTypes.instanceOf(Date),
+	filterEndDate: PropTypes.instanceOf(Date),
+	selectType: PropTypes.bool
 };
 
 export default function ToolboxTalkTableToolbar ({
@@ -25,7 +49,10 @@ export default function ToolboxTalkTableToolbar ({
 	filterStartDate,
 	filterEndDate,
 	onFilterStartDate,
-	onFilterEndDate
+	onFilterEndDate,
+	filterType = [],
+	onFilterType,
+	selectType
 }) {
 	return (
 		<Stack
@@ -35,7 +62,7 @@ export default function ToolboxTalkTableToolbar ({
 				xs: 'column',
 				md: 'row',
 			}}
-			sx={{ px: 2.5, py: 1 }}
+			sx={{ px: 2, py: 1 }}
 		>
 
 			<DatePicker
@@ -74,6 +101,30 @@ export default function ToolboxTalkTableToolbar ({
 					/>
 				)}
 			/>
+
+			{selectType && (
+				<FormControl sx={{ width: 1, maxWidth: 140 }}>
+					<InputLabel id="tbt-type-label">TBT Type</InputLabel>
+					<Select
+						labelId="tbt-type-label"
+						id="tbt-type"
+						multiple
+						value={filterType}
+						onChange={onFilterType}
+						input={<OutlinedInput label="TBT Type" />}
+						renderValue={(selected) => selected.join(', ')}
+						MenuProps={MenuProps}
+						fullWidth
+					>
+						{types.map((name) => (
+							<MenuItem sx={{ px: 0 }} key={name} value={name}>
+								<Checkbox checked={filterType?.indexOf(name) > -1} />
+								<ListItemText primary={name} />
+							</MenuItem>
+						))}
+					</Select>
+				</FormControl>
+			)}
 
 			<TextField
 				fullWidth

@@ -52,6 +52,20 @@ class ToolboxTalkService {
 		return false;
 	}
 
+	public static function getList() {
+		$toolbox_talks = ToolboxTalk::where("is_deleted", 0)
+		->with([
+			"participants" => fn ($q) => $q->select("firstname", "lastname"),
+			"file" => fn ($q) => $q->select("tbt_id","img_src"),
+			"conducted"
+		])
+		->orderBy('date_created')
+		->get();
+
+		return $toolbox_talks;
+	}
+
+
 	public static function getListByType(int $type) {
 		// $user = Auth::user();
 
@@ -62,6 +76,7 @@ class ToolboxTalkService {
 		])
 		->with([
 			"participants" => fn ($q) => $q->select("firstname", "lastname"),
+			"file" => fn ($q) => $q->select("tbt_id","img_src"),
 			"conducted"
 		])
 		->orderBy('date_created')

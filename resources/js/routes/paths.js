@@ -111,7 +111,7 @@ export const PATH_DASHBOARD = {
 
 	// Toolbox Talks
 	toolboxTalks: {
-		root: path(ROOTS_DASHBOARD, '/toolbox-talks'),
+		root: path(ROOTS_DASHBOARD, '/toolbox-talks/all'),
 		view: (id) => path(ROOTS_DASHBOARD, `/toolbox-talks/${id}/view`),
 		new: (type) => type ? path(ROOTS_DASHBOARD, `/toolbox-talks/new?type=${type}`) : path(ROOTS_DASHBOARD, '/toolbox-talks/new?type=1'),
 		edit: (id) => path(ROOTS_DASHBOARD, `/toolbox-talks/${id}/edit`),
@@ -121,7 +121,6 @@ export const PATH_DASHBOARD = {
 		camp: path(ROOTS_DASHBOARD, '/toolbox-talks/camp'),
 		office: path(ROOTS_DASHBOARD, '/toolbox-talks/office'),
 		manHourReports: path(ROOTS_DASHBOARD, '/toolbox-talks/man-hour-reports'),
-		manDayReports: path(ROOTS_DASHBOARD, '/toolbox-talks/man-day-reports'),
 	},
 
 	// Incident
