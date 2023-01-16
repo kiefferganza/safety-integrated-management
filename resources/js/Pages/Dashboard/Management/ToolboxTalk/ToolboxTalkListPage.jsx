@@ -500,16 +500,18 @@ function getAverage (data, start = null, end = null) {
 	const tbtByMonth = data.reduce((acc, toolbox) => {
 		if (fTimestamp(toolbox.date_conducted) >= startMonth && fTimestamp(toolbox.date_conducted) <= endMonth) {
 			if (toolbox.date_conducted in acc) {
-				acc[toolbox.date_conducted].hours += toolbox.participants.reduce((acc, curr) => acc += curr.pivot.time || 0, 0);
+				// acc[toolbox.date_conducted].hours += toolbox.participants.reduce((acc, curr) => acc += curr.pivot.time || 0, 0);
+				acc[toolbox.date_conducted].hours += toolbox.participants.reduce((acc, curr) => acc += 9, 0);
 				acc[toolbox.date_conducted].participants += toolbox.participants.length;
 				acc[toolbox.date_conducted].location += 1;
 			} else {
 				acc[toolbox.date_conducted] = {
-					hours: toolbox.participants.reduce((acc, curr) => acc += curr.pivot.time || 0, 0),
+					// hours: toolbox.participants.reduce((acc, curr) => acc += curr.pivot.time || 0, 0),
+					hours: toolbox.participants.reduce((acc, curr) => acc += 9, 0),
 					participants: toolbox.participants.length,
 				}
 			}
-			locations.push(toolbox.location.toLowerCase().trim());
+			locations.push(toolbox.location.trim());
 		}
 		return acc;
 	}, {});
@@ -525,11 +527,12 @@ function getAverage (data, start = null, end = null) {
 	});
 
 	const manHours = calculate.manHoursTotal * tbtByMonthArr.length;
-	const average = manHours / tbtByMonthArr.length
+	const average = Math.ceil(calculate.manpower / tbtByMonthArr.length);
+	const locationSet = new Set(locations);
 
 	return {
 		...calculate,
-		location: new Set(locations).size,
+		location: locationSet.size,
 		manHours,
 		average
 	};

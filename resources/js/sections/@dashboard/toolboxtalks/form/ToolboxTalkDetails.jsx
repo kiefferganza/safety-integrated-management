@@ -47,12 +47,12 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 	}
 
 	const handleChangeDate = (date) => {
-		setValue("date_conducted", format(date, 'yyyy-MM-dd 00:00:00'));
+		setValue("date_conducted", format(date, 'yyyy-MM-dd 00:00:00'), { shouldDirty: true });
 		clearErrors("date_conducted");
 	}
 
 	const handleChangeTime = (date) => {
-		setValue("time_conducted", format(date, 'yyyy-MM-dd HH:mm'));
+		setValue("time_conducted", format(date, 'yyyy-MM-dd HH:mm'), { shouldDirty: true });
 		clearErrors("time_conducted");
 	}
 
@@ -82,7 +82,8 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 
 	const handleSelectParticipants = (index) => {
 		const isSelected = !values.participants[index].selected;
-		setValue(`participants.${index}.selected`, isSelected);
+		setValue(`participants.${index}.selected`, isSelected, { shouldDirty: true });
+		setValue(`participants.${index}.time`, "9");
 		clearErrors("participants")
 	}
 
@@ -90,13 +91,13 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 		setValue(`participants.${idx}.selected`, false);
 	}
 
-	const handleChangeParticipantTime = (value, idx) => {
-		if (isValid(value)) {
-			const hours = value.getHours() === 0 ? 24 : value.getHours();
-			setValue(`participants.${idx}.time`, hours, { shoudValidate: true, shouldDirty: true });
-			setValue(`participants.${idx}.timeRaw`, value);
-		}
-	}
+	// const handleChangeParticipantTime = (value, idx) => {
+	// 	if (isValid(value)) {
+	// 		const hours = value.getHours() === 0 ? 24 : value.getHours();
+	// 		setValue(`participants.${idx}.time`, hours, { shoudValidate: true, shouldDirty: true });
+	// 		setValue(`participants.${idx}.timeRaw`, value);
+	// 	}
+	// }
 
 	return (
 		<>
@@ -267,14 +268,15 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 														<TableCell align="left">{row.position.position}</TableCell>
 
 														<TableCell align="center">
-															<TimePicker
+															9
+															{/* <TimePicker
 																onChange={(value) => handleChangeParticipantTime(value, nameIndex)}
 																value={row?.timeRaw}
 																views={["hours"]}
 																inputFormat="k"
 																ampm={false}
 																renderInput={(params) => <TextField {...params} inputProps={{ ...params.inputProps, readOnly: true, placeholder: 'time' }} readOnly error={!!err?.time?.message} helperText={err?.time?.message} sx={{ width: "45%" }} size="small" />}
-															/>
+															/> */}
 														</TableCell>
 
 														<TableCell align="right">

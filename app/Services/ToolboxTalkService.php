@@ -150,7 +150,8 @@ class ToolboxTalkService {
 			$tbt_participants = new ToolboxTalkParticipant;
 			$tbt_participants->employee_id = $participant["employee_id"];
 			$tbt_participants->user_id = $participant["sub_id"];
-			$tbt_participants->time = $participant["time"];
+			// $tbt_participants->time = $participant["time"];
+			$tbt_participants->time = "9";
 			$tbt_participants->tbt_id = $tbt_id;
 			$tbt_participants->is_removed = 0;
 			$tbt_participants->save();

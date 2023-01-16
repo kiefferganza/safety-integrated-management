@@ -16,7 +16,6 @@ class ToolboxTalkController extends Controller
 
 
 	public function civil_list() {
-		// dd(ToolboxTalkService::getListByType(1));
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CivilList", [
 			"tbt" => ToolboxTalkService::getListByType(1)
 		]);
