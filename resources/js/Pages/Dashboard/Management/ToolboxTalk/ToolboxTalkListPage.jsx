@@ -69,7 +69,7 @@ const TABLE_HEAD = [
 ];
 
 
-const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType = false }) => {
+const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType = false, addTypeHeader = false }) => {
 	const theme = useTheme();
 	const { themeStretch } = useSettingsContext();
 	const { load, stop } = useSwal();
@@ -402,7 +402,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 								<TableHeadCustom
 									order={order}
 									orderBy={orderBy}
-									headLabel={TABLE_HEAD}
+									headLabel={addTypeHeader ? [...TABLE_HEAD.slice(0, 6), TABLE_HEAD.at(6), { id: "tbt_type", label: "TBT Type", align: "left" }, TABLE_HEAD.at(7), TABLE_HEAD.at(8)] : TABLE_HEAD}
 									rowCount={tableData.length}
 									numSelected={selected.length}
 									onSort={onSort}
@@ -425,6 +425,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 											selected={selected.includes(row.id)}
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
+											addTypeHeader={addTypeHeader}
 										/>
 									))}
 

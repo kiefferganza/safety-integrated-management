@@ -1,13 +1,14 @@
 // mui
-import { Box, Card, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Link as MuiLink } from "@mui/material";
+import { Box, Card, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Link as MuiLink, IconButton } from "@mui/material";
 // utils
 import { fDate } from "@/utils/formatTime";
 import { excerpt } from "@/utils/exercpt";
+import { formatCms } from "@/utils/tablesUtils";
 // components
 import ToolboxTalkToolbar from "./ToolboxTalkToolbar";
 import Image from "@/Components/image";
-import { formatCms } from "@/utils/tablesUtils";
 import Scrollbar from "@/Components/scrollbar";
+import Iconify from "@/Components/iconify";
 
 
 const ToolboxTalkDetail = ({ tbt }) => {
@@ -112,9 +113,13 @@ const ToolboxTalkDetail = ({ tbt }) => {
 								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Attachment</Typography>
 							</Box>
 							<Box>
-								<Typography variant="body1" sx={{ color: 'text.secondary' }}>
-									{tbt?.file ? "Yes" : "No"}
-								</Typography>
+								{tbt?.file ? (
+									<IconButton color="primary" component={MuiLink} href={`/storage/media/toolboxtalks/${tbt?.file?.img_src}`} target="_blank" >
+										<Iconify icon="material-symbols:attachment" />
+									</IconButton>
+								) : (
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>No</Typography>
+								)}
 							</Box>
 						</Box>
 					</Grid>

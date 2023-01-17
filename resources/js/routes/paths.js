@@ -120,7 +120,7 @@ export const PATH_DASHBOARD = {
 		mechanical: path(ROOTS_DASHBOARD, '/toolbox-talks/mechanical'),
 		camp: path(ROOTS_DASHBOARD, '/toolbox-talks/camp'),
 		office: path(ROOTS_DASHBOARD, '/toolbox-talks/office'),
-		manHourReports: path(ROOTS_DASHBOARD, '/toolbox-talks/man-hour-reports'),
+		tbtReport: path(ROOTS_DASHBOARD, '/toolbox-talks/reports'),
 	},
 
 	// Incident

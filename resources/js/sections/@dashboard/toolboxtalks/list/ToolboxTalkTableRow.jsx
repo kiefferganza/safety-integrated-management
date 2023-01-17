@@ -32,7 +32,16 @@ ToolboxTalkTableRow.propTypes = {
 	onSelectRow: PropTypes.func,
 };
 
-export default function ToolboxTalkTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+const TYPES = {
+	"0": 'All',
+	"1": 'Civil',
+	"2": 'Electrical',
+	"3": 'Mechanical',
+	"4": 'Camp',
+	"5": 'Office',
+};
+
+export default function ToolboxTalkTableRow ({ row, selected, onSelectRow, onDeleteRow, addTypeHeader = false }) {
 	const [openConfirm, setOpenConfirm] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
 
@@ -72,6 +81,10 @@ export default function ToolboxTalkTableRow ({ row, selected, onSelectRow, onDel
 				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{fDate(row.date_conducted)}</TableCell>
 
 				<TableCell align="center" sx={{ whiteSpace: "nowrap", fontWeight: 600 }}>{row.attachment}</TableCell>
+
+				{addTypeHeader && (
+					<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{TYPES[row.tbt_type]}</TableCell>
+				)}
 
 				<TableCell align="left">
 					<Label

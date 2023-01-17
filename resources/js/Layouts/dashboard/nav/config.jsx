@@ -163,7 +163,7 @@ const navConfig = [
 					{ title: 'mechanical', path: PATH_DASHBOARD.toolboxTalks.mechanical },
 					{ title: 'camp', path: PATH_DASHBOARD.toolboxTalks.camp },
 					{ title: 'office', path: PATH_DASHBOARD.toolboxTalks.office },
-					{ title: 'reports', path: PATH_DASHBOARD.toolboxTalks.manHourReports, disabled: true },
+					{ title: 'reports', path: PATH_DASHBOARD.toolboxTalks.tbtReport },
 				]
 			},
 
