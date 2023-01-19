@@ -14,8 +14,7 @@ import Iconify from '@/Components/iconify';
 import EmptyContent from '@/Components/empty-content';
 
 const TODAY = new Date;
-const CURRENT_YEAR = getYear(TODAY);
-const CURRENT_MONTH = getMonth(TODAY) + 2;
+const CURRENT_MONTH = getMonth(TODAY) + 1;
 const MONTH_NAMES = {
 	1: 'January',
 	2: 'February',
@@ -33,7 +32,7 @@ const MONTH_NAMES = {
 
 const TBTReportPage = ({ positions, tbt }) => {
 	const { themeStretch } = useSettingsContext();
-	const [yearSelected, setYearSelected] = useState(CURRENT_YEAR);
+	const [yearSelected, setYearSelected] = useState(null);
 	const [monthSelected, setMonthSelected] = useState(CURRENT_MONTH);
 	const [positionData, setPositionData] = useState({});
 	const [loading, setLoading] = useState(true);
@@ -61,7 +60,8 @@ const TBTReportPage = ({ positions, tbt }) => {
 
 	useEffect(() => {
 		const tbtByYear = getTbtByYear({ tbt, positions });
-		calculateMhMpByPosition(tbtByYear[yearSelected][monthSelected]);
+		setYearSelected(Object.keys(tbtByYear)[0]);
+		calculateMhMpByPosition(tbtByYear[Object.keys(tbtByYear)[0]][monthSelected]);
 		setData(tbtByYear);
 
 		setLoading(false);
