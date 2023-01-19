@@ -55,7 +55,7 @@ class ToolboxTalkService {
 	public static function getList() {
 		$toolbox_talks = ToolboxTalk::where("is_deleted", 0)
 		->with([
-			"participants" => fn ($q) => $q->select("firstname", "lastname", "position"),
+			"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct(),
 			"file" => fn ($q) => $q->select("tbt_id","img_src"),
 			"conducted"
 		])
@@ -75,7 +75,7 @@ class ToolboxTalkService {
 			["is_deleted", 0]
 		])
 		->with([
-			"participants" => fn ($q) => $q->select("firstname", "lastname"),
+			"participants" => fn ($q) => $q->select("firstname", "lastname")->distinct(),
 			"file" => fn ($q) => $q->select("tbt_id","img_src"),
 			"conducted"
 		])

@@ -265,7 +265,7 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 															</Box>
 														</TableCell>
 
-														<TableCell align="left">{row.position.position}</TableCell>
+														<TableCell align="left">{row?.position?.position}</TableCell>
 
 														<TableCell align="center">
 															9

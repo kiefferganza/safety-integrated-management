@@ -13,7 +13,7 @@ import Iconify from "@/Components/iconify";
 
 const ToolboxTalkDetail = ({ tbt }) => {
 	const cms = formatCms(tbt);
-
+	console.log(tbt.participants);
 	return (
 		<>
 			<ToolboxTalkToolbar tbt={tbt} cms={cms} />

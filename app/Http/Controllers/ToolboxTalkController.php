@@ -22,7 +22,7 @@ class ToolboxTalkController extends Controller
 		return Inertia::render("Dashboard/Management/ToolboxTalk/Report/index", [
 			"tbt" => ToolboxTalk::select("tbt_id", "tbt_type", "date_conducted")->where("is_deleted", 0)
 								->with([
-									"participants" => fn ($q) => $q->select("firstname", "lastname", "position")
+									"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct()
 								])
 								->orderBy('date_conducted')
 								->get(),
@@ -34,7 +34,7 @@ class ToolboxTalkController extends Controller
 	public function view(ToolboxTalk $tbt) {
 		return Inertia::render("Dashboard/Management/ToolboxTalk/View/index", [
 			"tbt" => $tbt->load([
-				"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->with("position"),
+				"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct()->with("position"),
 				"conducted"	=> fn ($q) => $q->select("employee_id", "firstname", "lastname"),
 				"file" => fn ($q) => $q->select("tbt_id","img_src")
 			])
@@ -77,7 +77,7 @@ class ToolboxTalkController extends Controller
 		$tbtService = new ToolboxTalkService();
 		return Inertia::render("Dashboard/Management/ToolboxTalk/Edit/index", [
 			"sequences" => $tbtService->getSequenceNo(),
-			"tbt" => $tbt->load(["participants", "file"]),
+			"tbt" => $tbt->load(["participants" => fn($q) => $q->distinct(), "file"]),
 			"participants" => (new EmployeeService())->personels()->position()->get(),
 		]);
 	}
