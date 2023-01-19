@@ -4,15 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TrainingRequest;
 use App\Models\Employee;
-use App\Models\Position;
 use App\Models\Training;
 use App\Models\TrainingExternal;
 use App\Models\TrainingFiles;
 use App\Models\TrainingTrainees;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -412,12 +409,14 @@ class TrainingController extends Controller
 			$training_files = TrainingFiles::whereIn("training_id", $training_ids)
 			->get(["training_files_id","training_id", "src"])->toArray();
 
-			foreach ($training_files as $file) {
-				if(Storage::exists("public/media/training/" . $file["src"])) {
-					Storage::delete("public/media/training/" . $file["src"]);
+			if(!empty($training_files)) {
+				foreach ($training_files as $file) {
+					if(Storage::exists("public/media/training/" . $file["src"])) {
+						Storage::delete("public/media/training/" . $file["src"]);
+					}
 				}
+				TrainingFiles::destroy($training_files[0]);
 			}
-			TrainingFiles::destroy($training_files[0]);
 		}
 
 		Training::destroy($trainings);
