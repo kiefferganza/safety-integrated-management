@@ -15,7 +15,7 @@ import FormProvider from '@/Components/hook-form';
 import { usePage } from '@inertiajs/inertia-react';
 import ToolboxTalkProjectDetails from './ToolboxTalkProjectDetails';
 import ToolboxTalkDetails from './ToolboxTalkDetails';
-import { addHours, format, formatISO } from 'date-fns';
+import { format, formatISO } from 'date-fns';
 
 // ----------------------------------------------------------------------
 

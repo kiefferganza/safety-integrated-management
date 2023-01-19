@@ -3,7 +3,7 @@ import { m } from 'framer-motion';
 import { alpha, styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
 //
-import Logo from '../logo';
+import Logo from '../logo/FavLogo';
 import ProgressBar from '../progress-bar';
 
 // ----------------------------------------------------------------------

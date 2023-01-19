@@ -16,7 +16,7 @@ const index = () => {
 	return (
 		<>
 			<Head>
-				<title>New ToolboxTalk</title>
+				<title>New Toolbox Talk</title>
 			</Head>
 			<DashboardLayout>
 				<Container maxWidth={themeStretch ? false : 'lg'}>

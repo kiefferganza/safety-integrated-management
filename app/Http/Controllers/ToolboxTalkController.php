@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Position;
 use App\Models\ToolboxTalk;
 use App\Services\EmployeeService;
 use App\Services\ToolboxTalkService;
@@ -17,43 +18,18 @@ class ToolboxTalkController extends Controller
 	}
 
 
-	public function civil_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CivilList", [
-			"tbt" => ToolboxTalkService::getListByType(1)
+	public function reportList() {
+		return Inertia::render("Dashboard/Management/ToolboxTalk/Report/index", [
+			"tbt" => ToolboxTalk::select("tbt_id", "tbt_type", "date_conducted")->where("is_deleted", 0)
+								->with([
+									"participants" => fn ($q) => $q->select("firstname", "lastname", "position")
+								])
+								->orderBy('date_conducted')
+								->get(),
+			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->user_id)->get()
 		]);
 	}
 
-
-
-	public function electrical_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/ElectricalList", [
-			"tbt" => ToolboxTalkService::getListByType(2)
-		]);
-	}
-
-
-	
-	public function mechanical_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/MechanicalList", [
-			"tbt" => ToolboxTalkService::getListByType(3)
-		]);
-	}
-
-
-
-	public function camp_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CampList", [
-			"tbt" => ToolboxTalkService::getListByType(4)
-		]);
-	}
-
-
-
-	public function office_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/OfficeList", [
-			"tbt" => ToolboxTalkService::getListByType(5)
-		]);
-	}
 
 	public function view(ToolboxTalk $tbt) {
 		return Inertia::render("Dashboard/Management/ToolboxTalk/View/index", [
@@ -126,6 +102,45 @@ class ToolboxTalkController extends Controller
 		return redirect()->back()
 		->with("message", "Toolbox talk deleted successfully!")
 		->with("type", "success");
+	}
+
+
+	public function civil_list() {
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CivilList", [
+			"tbt" => ToolboxTalkService::getListByType(1)
+		]);
+	}
+
+
+
+	public function electrical_list() {
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/ElectricalList", [
+			"tbt" => ToolboxTalkService::getListByType(2)
+		]);
+	}
+
+
+	
+	public function mechanical_list() {
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/MechanicalList", [
+			"tbt" => ToolboxTalkService::getListByType(3)
+		]);
+	}
+
+
+
+	public function camp_list() {
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CampList", [
+			"tbt" => ToolboxTalkService::getListByType(4)
+		]);
+	}
+
+
+
+	public function office_list() {
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/OfficeList", [
+			"tbt" => ToolboxTalkService::getListByType(5)
+		]);
 	}
 
 

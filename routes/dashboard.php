@@ -149,6 +149,7 @@ Route::middleware('auth')->group(function ()
 	Route::get('dashboard/toolbox-talks/mechanical', [ToolboxTalkController::class, "mechanical_list"])->name('toolboxtalk.management.mechanical');
 	Route::get('dashboard/toolbox-talks/camp', [ToolboxTalkController::class, "camp_list"])->name('toolboxtalk.management.camp');
 	Route::get('dashboard/toolbox-talks/office', [ToolboxTalkController::class, "office_list"])->name('toolboxtalk.management.office');
+	Route::get('dashboard/toolbox-talks/report', [ToolboxTalkController::class, "reportList"])->name('toolboxtalk.management.report');
 	// CRUD
 	Route::get('dashboard/toolbox-talks/{tbt}/view', [ToolboxTalkController::class, "view"]);
 	Route::get('dashboard/toolbox-talks/new', [ToolboxTalkController::class, "create"])->name('toolboxtalk.management.new');

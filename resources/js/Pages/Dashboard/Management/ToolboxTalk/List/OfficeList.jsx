@@ -6,7 +6,7 @@ const OfficeList = ({ tbt }) => {
 	return (
 		<>
 			<Head>
-				<title>Toolboxtalks: Office</title>
+				<title>Toolbox Talks: Office</title>
 			</Head>
 			<DashboardLayout>
 				<ToolboxTalkListPage tbt={tbt || []} moduleName="Office" type="5" />

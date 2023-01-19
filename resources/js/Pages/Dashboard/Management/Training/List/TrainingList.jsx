@@ -469,18 +469,18 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 	}
 
 	if (filterStartDate && !filterEndDate) {
-		inputData = inputData.filter((training) => fTimestamp(training.training_date) >= fTimestamp(filterStartDate));
+		inputData = inputData.filter((training) => fTimestamp(training.training_date) >= filterStartDate.setHours(0, 0, 0, 0));
 	}
 
 	if (!filterStartDate && filterEndDate) {
-		inputData = inputData.filter((training) => fTimestamp(training.date_expired) <= fTimestamp(filterEndDate));
+		inputData = inputData.filter((training) => fTimestamp(training.date_expired) <= filterEndDate.setHours(0, 0, 0, 0));
 	}
 
 	if (filterStartDate && filterEndDate) {
 		inputData = inputData.filter(
 			(training) =>
-				fTimestamp(training.training_date) >= fTimestamp(filterStartDate) &&
-				fTimestamp(training.date_expired) <= fTimestamp(filterEndDate)
+				fTimestamp(training.training_date) >= filterStartDate.setHours(0, 0, 0, 0) &&
+				fTimestamp(training.date_expired) <= filterEndDate.setHours(0, 0, 0, 0)
 		);
 	}
 

@@ -1,18 +1,18 @@
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import ToolboxTalkListPage from "../ToolboxTalkListPage";
 import { Head } from '@inertiajs/inertia-react';
+import TBTReportPage from "./TBTReportPage";
 
-const CivilList = ({ tbt }) => {
+const index = ({ positions, tbt }) => {
 	return (
 		<>
 			<Head>
-				<title>Toolbox Talks: Civil</title>
+				<title>Toolbox Talks: Report</title>
 			</Head>
 			<DashboardLayout>
-				<ToolboxTalkListPage tbt={tbt || []} type="1" />
+				<TBTReportPage positions={positions} tbt={tbt} />
 			</DashboardLayout>
 		</>
 	)
 }
 
-export default CivilList
+export default index

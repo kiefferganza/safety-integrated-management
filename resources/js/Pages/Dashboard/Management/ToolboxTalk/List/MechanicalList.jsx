@@ -6,7 +6,7 @@ const MechanicalList = ({ tbt }) => {
 	return (
 		<>
 			<Head>
-				<title>Toolboxtalks: Mechanical</title>
+				<title>Toolbox Talks: Mechanical</title>
 			</Head>
 			<DashboardLayout>
 				<ToolboxTalkListPage tbt={tbt || []} moduleName="Mechanical" type="3" />

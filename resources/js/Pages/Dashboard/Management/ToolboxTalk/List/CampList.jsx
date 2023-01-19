@@ -6,7 +6,7 @@ const CivilList = ({ tbt }) => {
 	return (
 		<>
 			<Head>
-				<title>Toolboxtalks: Camp</title>
+				<title>Toolbox Talks: Camp</title>
 			</Head>
 			<DashboardLayout>
 				<ToolboxTalkListPage tbt={tbt || []} moduleName="Camp" type="4" />

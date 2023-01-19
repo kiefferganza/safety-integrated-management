@@ -215,6 +215,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 				newVal = value.filter(val => val !== "All");
 			}
 		}
+		setPage(0);
 		setFilterType(newVal);
 	};
 
@@ -511,8 +512,8 @@ function applyFilter ({
 	}
 
 	if (filterStartDate && !filterEndDate) {
-		const startDateTimestamp = fTimestamp(filterStartDate);
-		inputData = inputData.filter(toolbox => fTimestamp(toolbox.date_conducted) >= startDateTimestamp);
+		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
+		inputData = inputData.filter(toolbox => fTimestamp(new Date(toolbox.date_conducted)) >= startDateTimestamp);
 	}
 
 	if (filterType.length !== 0 && !filterType.includes("All")) {
@@ -521,8 +522,8 @@ function applyFilter ({
 	}
 
 	if (filterStartDate && filterEndDate) {
-		const startDateTimestamp = fTimestamp(filterStartDate);
-		const endDateTimestamp = fTimestamp(filterEndDate);
+		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
+		const endDateTimestamp = filterEndDate.setHours(0, 0, 0, 0);
 		inputData = inputData.filter(
 			(toolbox) =>
 				fTimestamp(toolbox.date_conducted) >= startDateTimestamp &&
@@ -552,13 +553,13 @@ function getAverage (data, start = null, end = null) {
 		if (fTimestamp(toolbox.date_conducted) >= startMonth && fTimestamp(toolbox.date_conducted) <= endMonth) {
 			if (toolbox.date_conducted in acc) {
 				// acc[toolbox.date_conducted].hours += toolbox.participants.reduce((acc, curr) => acc += curr.pivot.time || 0, 0);
-				acc[toolbox.date_conducted].hours += toolbox.participants.reduce((acc, curr) => acc += 9, 0);
+				acc[toolbox.date_conducted].hours += toolbox.participants.reduce((acc) => acc += 9, 0);
 				acc[toolbox.date_conducted].participants += toolbox.participants.length;
 				acc[toolbox.date_conducted].location += 1;
 			} else {
 				acc[toolbox.date_conducted] = {
 					// hours: toolbox.participants.reduce((acc, curr) => acc += curr.pivot.time || 0, 0),
-					hours: toolbox.participants.reduce((acc, curr) => acc += 9, 0),
+					hours: toolbox.participants.reduce((acc) => acc += 9, 0),
 					participants: toolbox.participants.length,
 				}
 			}

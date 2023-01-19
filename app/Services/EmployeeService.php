@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Employee;
+use App\Models\Position;
 use Illuminate\Support\Facades\Auth;
 
 class EmployeeService {
@@ -20,7 +21,13 @@ class EmployeeService {
 	}
 
 	public function position() {
-		return $this->personels->with("position");
+		if($this->personels) {
+			return $this->personels->with([
+				"position" => fn($q) => $q->where("is_deleted", 0)
+			]);
+		}else {
+			return Position::where("is_deleted", 0)->get();
+		}
 	}
 
 	public function get() {

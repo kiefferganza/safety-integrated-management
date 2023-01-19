@@ -6,7 +6,7 @@ const CivilList = ({ tbt }) => {
 	return (
 		<>
 			<Head>
-				<title>Toolboxtalks: All</title>
+				<title>Toolbox Talks: All</title>
 			</Head>
 			<DashboardLayout>
 				<ToolboxTalkListPage tbt={tbt || []} selectType addTypeHeader moduleName="All" />
