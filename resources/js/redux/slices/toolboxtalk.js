@@ -231,7 +231,7 @@ function calculateMhMpByPosition (tbtByDate) {
 			let safeManhours = mpMh.totalManhours;
 			const prevMonth = monthsObj[currMonth[0] - 1];
 
-			if (prevMonth?.safeManhours === safeManhours) {
+			if (prevMonth?.totalManhours === safeManhours) {
 				safeManhours += prevMonth.safeManhours;
 			}
 
