@@ -8,6 +8,7 @@ import productReducer from './slices/product';
 import calendarReducer from './slices/calendar';
 import kanbanReducer from './slices/kanban';
 import employeeReducer from './slices/employee';
+import toolboxtalkReducer from './slices/toolboxtalk';
 
 // ----------------------------------------------------------------------
 
@@ -32,13 +33,15 @@ const employeePersistConfig = {
 	whitelist: ["employees"],
 };
 
+
 const rootReducer = combineReducers({
 	mail: mailReducer,
 	chat: chatReducer,
 	calendar: calendarReducer,
 	kanban: kanbanReducer,
 	product: persistReducer(productPersistConfig, productReducer),
-	employee: persistReducer(employeePersistConfig, employeeReducer)
+	employee: persistReducer(employeePersistConfig, employeeReducer),
+	toolboxtalk: toolboxtalkReducer
 });
 
 export { rootPersistConfig, rootReducer };

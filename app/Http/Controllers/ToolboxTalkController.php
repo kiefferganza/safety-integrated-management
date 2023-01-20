@@ -13,19 +13,20 @@ class ToolboxTalkController extends Controller
 {
   public function index() {
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/All", [
-			"tbt" => ToolboxTalkService::getList(1)
+			"tbt" => ToolboxTalkService::getList(),
+			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->user_id)->get()
 		]);
 	}
 
 
 	public function reportList() {
 		return Inertia::render("Dashboard/Management/ToolboxTalk/Report/index", [
-			"tbt" => ToolboxTalk::select("tbt_id", "tbt_type", "date_conducted")->where("is_deleted", 0)
-								->with([
-									"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct()
-								])
-								->orderBy('date_conducted')
-								->get(),
+			// "tbt" => ToolboxTalk::select("tbt_id", "tbt_type", "date_conducted")->where("is_deleted", 0)
+			// 					->with([
+			// 						"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct()
+			// 					])
+			// 					->orderBy('date_conducted')
+			// 					->get(),
 			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->user_id)->get()
 		]);
 	}
@@ -68,6 +69,11 @@ class ToolboxTalkController extends Controller
 		$redirect_route = $tbtService->getRouteByType($request->tbt_type);
 
 		return redirect()->route('toolboxtalk.management.'.$redirect_route)
+		->with("tbt_created", ToolboxTalk::find($tbt_id)->with([
+			"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct()->with("position"),
+			"conducted"	=> fn ($q) => $q->select("employee_id", "firstname", "lastname"),
+			"file" => fn ($q) => $q->select("tbt_id","img_src")
+		]))
 		->with("message", "Toolbox talk added successfully!")
 		->with("type", "success");
 	}
@@ -91,6 +97,11 @@ class ToolboxTalkController extends Controller
 		}
 
 		return redirect()->back()
+		->with("updated_tbt", $tbt->load([
+			"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct()->with("position"),
+			"conducted"	=> fn ($q) => $q->select("employee_id", "firstname", "lastname"),
+			"file" => fn ($q) => $q->select("tbt_id","img_src")
+		]))
 		->with("message", "Toolbox talk updated successfully!")
 		->with("type", "success");
 	}

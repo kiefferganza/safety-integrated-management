@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\UsersController;
 use App\Models\Employee;
+use App\Models\Position;
+use App\Models\ToolboxTalk;
 use App\Models\User;
 use ExpoSDK\Expo;
 use ExpoSDK\ExpoMessage;
@@ -37,6 +39,20 @@ Route::middleware('auth')->group(function ()
 					$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
 				"followers"
 			])->where("is_deleted", 0)->get(),
+		];
+	});
+
+	Route::get('toolbox-talks', function() {
+		return [
+			"tbt" => ToolboxTalk::where("is_deleted", 0)
+				->with([
+					"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct(),
+					"file" => fn ($q) => $q->select("tbt_id","img_src"),
+					"conducted"
+				])
+				->orderBy('date_conducted')
+				->get(),
+			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->user_id)->get()
 		];
 	});
 	

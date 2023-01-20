@@ -1,8 +1,18 @@
+import { useEffect } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import ToolboxTalkListPage from "../ToolboxTalkListPage";
 import { Head } from '@inertiajs/inertia-react';
+import { useDispatch } from '@/redux/store';
+import { convertTbtByYear, setToolboxTalk } from "@/redux/slices/toolboxtalk";
 
-const CivilList = ({ tbt }) => {
+const CivilList = ({ tbt, positions }) => {
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		dispatch(setToolboxTalk(tbt));
+		convertTbtByYear({ tbt, positions });
+	}, []);
+
 	return (
 		<>
 			<Head>

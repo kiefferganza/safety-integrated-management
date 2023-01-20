@@ -1,17 +1,21 @@
 import { useEffect, useState } from 'react';
 // mui
-import { Box, Card, Container, IconButton, Stack, TextField, Typography } from '@mui/material';
+import { Box, Card, Checkbox, Container, FormControl, IconButton, InputLabel, ListItemText, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import { StyledGridBox, StyledTableCell, StyledTableHead } from './tbtReportStyle';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
+// redux
+import { dispatch, useSelector } from '@/redux/store';
 // Components
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs/CustomBreadcrumbs';
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import { useSettingsContext } from '@/Components/settings';
-import { getDaysInMonth, getMonth, getYear } from 'date-fns';
+import { getMonth, getYear } from 'date-fns';
 import Scrollbar from '@/Components/scrollbar';
 import Iconify from '@/Components/iconify';
 import EmptyContent from '@/Components/empty-content';
+import { convertTbtByYear, getTbts, } from '@/redux/slices/toolboxtalk';
 
 const TODAY = new Date;
 const CURRENT_MONTH = getMonth(TODAY) + 1;
@@ -30,75 +34,107 @@ const MONTH_NAMES = {
 	12: 'December',
 }
 
-const TBTReportPage = ({ positions, tbt }) => {
+const TYPES = {
+	'All': 0,
+	'Civil': 1,
+	'Electrical': 2,
+	'Mechanical': 3,
+	'Camp': 4,
+	'Office': 5,
+};
+
+const TBTReportPage = ({ positions }) => {
+	const { toolboxTalks, tbtByYear, tbtYearTotalByPosition, totalTbtByYear, isLoading } = useSelector(state => state.toolboxtalk);
 	const { themeStretch } = useSettingsContext();
 	const [yearSelected, setYearSelected] = useState(null);
 	const [monthSelected, setMonthSelected] = useState(CURRENT_MONTH);
-	const [positionData, setPositionData] = useState({});
-	const [loading, setLoading] = useState(true);
-
-	const [data, setData] = useState(null);
-
-	const calculateMhMpByPosition = (month) => {
-		const monthArr = Object.values(month).filter(v => v);
-		const posData = monthArr.reduce((acc, curr) => {
-			Object.entries(curr.positions).forEach(tupple => {
-				if (tupple[0] in acc) {
-					acc[tupple[0]].mp += tupple[1];
-					acc[tupple[0]].mh += (tupple[1] * 9);
-				} else {
-					acc[tupple[0]] = {
-						mp: tupple[1],
-						mh: tupple[1] * 9
-					};
-				}
-			});
-			return acc;
-		}, {});
-		setPositionData(posData);
-	}
+	const [filterType, setFilterType] = useState([
+		'All',
+		'Civil',
+		'Electrical',
+		'Mechanical',
+		'Camp',
+		'Office',
+	]);
 
 	useEffect(() => {
-		const tbtByYear = getTbtByYear({ tbt, positions });
-		setYearSelected(Object.keys(tbtByYear)[0]);
-		calculateMhMpByPosition(tbtByYear[Object.keys(tbtByYear)[0]][monthSelected]);
-		setData(tbtByYear);
+		if (tbtByYear === null || tbtYearTotalByPosition === null || toolboxTalks === null) {
+			dispatch(getTbts());
+		}
+		if (yearSelected === null && tbtByYear !== null) {
+			setYearSelected(Object.keys(tbtByYear).at(0) || 0);
+		}
+	}, [tbtByYear, tbtYearTotalByPosition, totalTbtByYear]);
 
-		setLoading(false);
-	}, [tbt]);
+	const handleDateChange = (value) => {
+		setYearSelected(getYear(value));
+		setMonthSelected(getMonth(value) + 1);
+	}
 
-	if (loading && !data) {
+
+	const handleFilterType = (event) => {
+		const {
+			target: { value },
+		} = event;
+		const isAll = value.some(val => val === "All");
+		let newVal = typeof value === 'string' ? value.split(',') : value;
+
+		const isAllChecked = filterType.some(val => val === "All");
+
+		if (typeof value !== 'string') {
+			if (isAllChecked && !isAll) {
+				newVal = [];
+			} else if (isAll && (newVal.length === 1 || newVal.at(-1) === "All")) {
+				newVal = [
+					'All',
+					'Civil',
+					'Electrical',
+					'Mechanical',
+					'Camp',
+					'Office',
+				]
+			} else {
+				newVal = value.filter(val => val !== "All");
+			}
+		}
+		if (newVal.length > 0) {
+			const types = newVal.map(ft => TYPES[ft]);
+			const filteredTbt = toolboxTalks.filter((toolbox) => types.indexOf(+toolbox.tbt_type) !== -1);
+			convertTbtByYear({ tbt: filteredTbt, positions });
+		} else {
+			convertTbtByYear({ tbt: toolboxTalks, positions });
+		}
+		setFilterType(newVal);
+	};
+
+	if (isLoading || !tbtByYear || yearSelected === null) {
 		return <LoadingScreen />
 	}
 
-	const handleYearChange = (e) => {
-		setYearSelected(e.target.value);
-		calculateMhMpByPosition(data[e.target.value][monthSelected]);
-	}
-
-	const handleMonthChange = (e) => {
-		setMonthSelected(e.target.value);
-		calculateMhMpByPosition(data[yearSelected][e.target.value]);
+	if (Object.keys(tbtByYear).length === 0 || yearSelected === 0 || !(yearSelected in tbtByYear)) {
+		return <NoData
+			themeStretch={themeStretch}
+			yearSelected={yearSelected}
+			monthSelected={monthSelected}
+			onChange={handleDateChange}
+			filterType={filterType}
+			onTypeChange={handleFilterType}
+		/>
 	}
 
 	const handleNextMonth = () => {
 		const m = monthSelected === 12 ? 1 : monthSelected + 1;
 		setMonthSelected(m);
-		calculateMhMpByPosition(data[yearSelected][m]);
 	}
 
 	const handlePrevMonth = () => {
 		const m = monthSelected === 1 ? 12 : monthSelected - 1;
 		setMonthSelected(m);
-		calculateMhMpByPosition(data[yearSelected][m]);
 	}
 
-	const days = data[yearSelected][monthSelected];
-	const totalMpMh = Object.values(positionData).reduce((acc, curr) => {
-		acc.mp += curr.mp;
-		acc.mh += curr.mh;
-		return acc;
-	}, { mp: 0, mh: 0 });
+	const days = tbtByYear[yearSelected][monthSelected] || {};
+	const positionData = tbtYearTotalByPosition[yearSelected][monthSelected] || {};
+	const tbtTotal = totalTbtByYear[yearSelected][monthSelected] || {}
 
 	return (
 		<>
@@ -118,35 +154,49 @@ const TBTReportPage = ({ positions, tbt }) => {
 							name: 'Report',
 						},
 					]}
-					action={
-						<Stack direction="row" gap={1}>
-							<TextField
-								select
-								fullWidth
-								SelectProps={{ native: true }}
-								label="Year"
-								size="small"
-								value={yearSelected}
-								onChange={handleYearChange}
-							>
-								{Object.keys(data).map((yr) => <option value={yr} key={yr}>{yr}</option>)}
-							</TextField>
-							<TextField
-								select
-								fullWidth
-								SelectProps={{ native: true }}
-								label="Months"
-								size="small"
-								value={monthSelected}
-								onChange={handleMonthChange}
-								sx={{ minWidth: 130 }}
-							>
-								{Object.entries(MONTH_NAMES).map((m) => <option value={m[0]} key={m[0]}>{m[1]}</option>)}
-							</TextField>
-						</Stack>
-					}
 				/>
 				<Card sx={{ p: 2 }}>
+					<Stack direction="row" gap={1} justifyContent="end" sx={{ mb: 2 }}>
+						<FormControl sx={{ width: 1, maxWidth: 140 }} size='small'>
+							<InputLabel id="tbt-type-label">TBT Type</InputLabel>
+							<Select
+								labelId="tbt-type-label"
+								id="tbt-type"
+								label="TBT Type"
+								multiple
+								value={filterType}
+								onChange={handleFilterType}
+								renderValue={(selected) => selected.join(', ')}
+								fullWidth
+							>
+								{Object.keys(TYPES).map((name) => (
+									<MenuItem sx={{ px: 0 }} key={name} value={name}>
+										<Checkbox checked={filterType?.indexOf(name) > -1} />
+										<ListItemText primary={name} />
+									</MenuItem>
+								))}
+							</Select>
+						</FormControl>
+						<MobileDatePicker
+							label="Select Date"
+							value={new Date(yearSelected, monthSelected - 1, 1)}
+							onChange={handleDateChange}
+							inputFormat="MMM yyyy"
+							openTo="year"
+							showToolbar={false}
+							views={['year', 'month']}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									size="small"
+									fullWidth
+									sx={{
+										maxWidth: { md: 160 },
+									}}
+								/>
+							)}
+						/>
+					</Stack>
 					<Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
 						<Box>
 							<IconButton size="large" onClick={handlePrevMonth}>
@@ -229,10 +279,10 @@ const TBTReportPage = ({ positions, tbt }) => {
 										</StyledTableCell>
 									))}
 									<StyledTableCell sx={{ gridColumn: "span 2" }}>
-										<Typography variant="subtitle2" textAlign="center" fontWeight={700} width={1}>{totalMpMh.mp}</Typography>
+										<Typography variant="subtitle2" textAlign="center" fontWeight={700} width={1}>{tbtTotal?.totalManpower}</Typography>
 									</StyledTableCell>
 									<StyledTableCell sx={{ gridColumn: "span 2" }}>
-										<Typography variant="subtitle2" textAlign="center" fontWeight={700} width={1}>{totalMpMh.mh}</Typography>
+										<Typography variant="subtitle2" textAlign="center" fontWeight={700} width={1}>{tbtTotal?.totalManhours}</Typography>
 									</StyledTableCell>
 								</StyledGridBox>
 								<StyledGridBox gridTemplateColumns={`repeat(${Object.keys(days).length + 11}, minmax(40px, 1fr))`}>
@@ -258,7 +308,7 @@ const TBTReportPage = ({ positions, tbt }) => {
 										)
 									})}
 									<StyledTableCell sx={{ gridColumn: "span 2" }}>
-										<Typography variant="subtitle2" textAlign="center" fontWeight={700} width={1}>{totalMpMh.mh}</Typography>
+										<Typography variant="subtitle2" textAlign="center" fontWeight={700} width={1}>{tbtTotal?.totalManpower}</Typography>
 									</StyledTableCell>
 									<StyledTableCell sx={{ gridColumn: "span 2" }}>
 										<Typography variant="subtitle2" textAlign="center" width={1}></Typography>
@@ -267,6 +317,81 @@ const TBTReportPage = ({ positions, tbt }) => {
 							</Stack>
 						</Scrollbar>
 					)}
+					{tbtTotal.totalManpowerAveDaysWork >= 0 && (
+						<Stack alignItems="end" sx={{ my: 2 }}>
+							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Total Manpower</Typography>
+								</Box>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.totalManpower}</Typography>
+								</Box>
+							</Box>
+
+							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Hours</Typography>
+								</Box>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>9</Typography>
+								</Box>
+							</Box>
+
+							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Total Manhours</Typography>
+								</Box>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.totalManhours}</Typography>
+								</Box>
+							</Box>
+
+							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Safe Manhours</Typography>
+								</Box>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.safeManhours}</Typography>
+								</Box>
+							</Box>
+
+							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Manpower Ave./Days Work</Typography>
+								</Box>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.totalManpowerAveDaysWork}</Typography>
+								</Box>
+							</Box>
+
+							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Manpower Ave./Day</Typography>
+								</Box>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.totalManpowerAveDay}</Typography>
+								</Box>
+							</Box>
+
+							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Days Work</Typography>
+								</Box>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.daysWork}</Typography>
+								</Box>
+							</Box>
+
+							<Box display="grid" gridTemplateColumns="220px 140px" border={1}>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Days w/o Work</Typography>
+								</Box>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.daysWoWork}</Typography>
+								</Box>
+							</Box>
+						</Stack>
+					)}
 				</Card>
 			</Container>
 		</>
@@ -274,101 +399,76 @@ const TBTReportPage = ({ positions, tbt }) => {
 }
 
 
-function getTbtByYear ({ tbt = [], positions = [] }) {
-	const tbtByDate = tbt.reduce((acc, toolbox) => {
-		const dateConducted = new Date(toolbox.date_conducted);
-		const year = getYear(dateConducted);
-		const month = getMonth(dateConducted) + 1; // getMonth is zero index add 1 to match the object
-		const day = dateConducted.getDate();
-
-		const MONTHS = {
-			1: [...Array(getDaysInMonth(new Date(year, 0, 1))).keys()].reduce((acc, x) => {
-				acc[x + 1] = null;
-				return acc;
-			}, {}), // Jan,
-			2: [...Array(getDaysInMonth(new Date(year, 1, 1))).keys()].reduce((acc, x) => {
-				acc[x + 1] = null;
-				return acc;
-			}, {}), // Feb,
-			3: [...Array(getDaysInMonth(new Date(year, 2, 1))).keys()].reduce((acc, x) => {
-				acc[x + 1] = null;
-				return acc;
-			}, {}), // Mar,
-			4: [...Array(getDaysInMonth(new Date(year, 3, 1))).keys()].reduce((acc, x) => {
-				acc[x + 1] = null;
-				return acc;
-			}, {}), // Apr,
-			5: [...Array(getDaysInMonth(new Date(year, 4, 1))).keys()].reduce((acc, x) => {
-				acc[x + 1] = null;
-				return acc;
-			}, {}), // May,
-			6: [...Array(getDaysInMonth(new Date(year, 5, 1))).keys()].reduce((acc, x) => {
-				acc[x + 1] = null;
-				return acc;
-			}, {}), // June,
-			7: [...Array(getDaysInMonth(new Date(year, 6, 1))).keys()].reduce((acc, x) => {
-				acc[x + 1] = null;
-				return acc;
-			}, {}), // July,
-			8: [...Array(getDaysInMonth(new Date(year, 7, 1))).keys()].reduce((acc, x) => {
-				acc[x + 1] = null;
-				return acc;
-			}, {}), // Aug,
-			9: [...Array(getDaysInMonth(new Date(year, 8, 1))).keys()].reduce((acc, x) => {
-				acc[x + 1] = null;
-				return acc;
-			}, {}), // Sept,
-			10: [...Array(getDaysInMonth(new Date(year, 9, 1))).keys()].reduce((acc, x) => {
-				acc[x + 1] = null;
-				return acc;
-			}, {}), // Oct,
-			11: [...Array(getDaysInMonth(new Date(year, 10, 1))).keys()].reduce((acc, x) => {
-				acc[x + 1] = null;
-				return acc;
-			}, {}), // Nov,
-			12: [...Array(getDaysInMonth(new Date(year, 11, 1))).keys()].reduce((acc, x) => {
-				acc[x + 1] = null;
-				return acc;
-			}, {}), // Dec,
-		}
-
-		if (year in acc) {
-			if (acc[year][month][day] !== null) {
-				acc[year][month][day].manpower += toolbox.participants.length;
-				acc[year][month][day].positions = getPositionParticipant(positions, toolbox.participants, acc[year][month][day].positions);
-				acc[year][month][day].tbt.push(toolbox);
-			} else {
-				acc[year][month][day] = {
-					manpower: toolbox.participants.length,
-					positions: getPositionParticipant(positions, toolbox.participants),
-					tbt: [toolbox]
-				};
-			}
-		} else {
-			acc[year] = MONTHS;
-
-			acc[year][month][day] = {
-				manpower: toolbox.participants.length,
-				positions: getPositionParticipant(positions, toolbox.participants),
-				tbt: [toolbox]
-			};
-		}
-		return acc;
-	}, {});
-	return tbtByDate;
-}
-
-function getPositionParticipant (positions, participants = [], defaultValue = {}) {
-	return participants.reduce((participantObj, currParticipant) => {
-		const pos = positions.find(pos => pos.position_id === currParticipant.position);
-		const position = pos.position.trim();
-		if (position in participantObj) {
-			participantObj[position] += 1;
-		} else {
-			participantObj[position] = 1;
-		}
-		return participantObj;
-	}, defaultValue);
+function NoData ({ themeStretch, yearSelected, monthSelected, onChange, filterType, onTypeChange }) {
+	return (
+		<Container maxWidth={themeStretch ? false : 'xl'}>
+			<CustomBreadcrumbs
+				heading="Toolbox Talk Report"
+				links={[
+					{
+						name: 'Dashboard',
+						href: PATH_DASHBOARD.root,
+					},
+					{
+						name: 'Toolbox Talk',
+						href: PATH_DASHBOARD.toolboxTalks.root,
+					},
+					{
+						name: 'Report',
+					},
+				]}
+			/>
+			<Card sx={{ p: 2 }}>
+				<Stack direction="row" gap={1} justifyContent="end">
+					<FormControl sx={{ width: 1, maxWidth: 140 }} size='small'>
+						<InputLabel id="tbt-type-label">TBT Type</InputLabel>
+						<Select
+							labelId="tbt-type-label"
+							id="tbt-type"
+							label="TBT Type"
+							multiple
+							value={filterType}
+							onChange={onTypeChange}
+							renderValue={(selected) => selected.join(', ')}
+							fullWidth
+						>
+							{Object.keys(TYPES).map((name) => (
+								<MenuItem sx={{ px: 0 }} key={name} value={name}>
+									<Checkbox checked={filterType?.indexOf(name) > -1} />
+									<ListItemText primary={name} />
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+					<MobileDatePicker
+						label="Select Date"
+						value={new Date(yearSelected || 2022, monthSelected - 1, 1)}
+						onChange={onChange}
+						inputFormat="MMM yyyy"
+						openTo="year"
+						showToolbar={false}
+						views={['year', 'month']}
+						renderInput={(params) => (
+							<TextField
+								{...params}
+								fullWidth
+								size="small"
+								sx={{
+									maxWidth: { md: 160 },
+								}}
+							/>
+						)}
+					/>
+				</Stack>
+				<EmptyContent
+					title="No Data"
+					sx={{
+						'& span.MuiBox-root': { height: 160 },
+					}}
+				/>
+			</Card>
+		</Container>
+	)
 }
 
 export default TBTReportPage
