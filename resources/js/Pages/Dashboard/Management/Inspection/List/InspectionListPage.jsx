@@ -21,7 +21,7 @@ import {
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
-import { fDate } from '@/utils/formatTime';
+import { fDate, fTimestamp } from '@/utils/formatTime';
 // components
 import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
@@ -105,6 +105,8 @@ const InspectionListPage = ({ user, inspections }) => {
 
 	const [filterStartDate, setFilterStartDate] = useState(null);
 
+	const [filterEndDate, setFilterEndDate] = useState(null);
+
 	const dataFiltered = applyFilter({
 		inputData: tableData,
 		comparator: getComparator(order, orderBy),
@@ -112,6 +114,7 @@ const InspectionListPage = ({ user, inspections }) => {
 		filterStatus,
 		filterType,
 		filterStartDate,
+		filterEndDate
 	});
 
 	useEffect(() => {
@@ -153,13 +156,14 @@ const InspectionListPage = ({ user, inspections }) => {
 	const denseHeight = dense ? 56 : 76;
 
 	const isFiltered =
-		filterType !== 'all' || filterName !== '' || !!filterStartDate || filterStatus !== '';
+		filterType !== 'all' || filterName !== '' || !!filterStartDate || !!filterEndDate || filterStatus !== '';
 
 	const isNotFound =
 		(!dataFiltered.length && !!filterName) ||
 		(!dataFiltered.length && !!filterType) ||
 		(!dataFiltered.length && !!filterStatus) ||
 		(!dataFiltered.length && !!filterStartDate);
+	(!dataFiltered.length && !!filterEndDate);
 
 	const getLengthByType = (type) => tableData.filter((item) => item.type === type).length;
 
@@ -392,25 +396,17 @@ const InspectionListPage = ({ user, inspections }) => {
 						isFiltered={isFiltered}
 						onFilterName={handleFilterName}
 						filterStartDate={filterStartDate}
+						filterEndDate={filterEndDate}
 						onResetFilter={handleResetFilter}
 						onFilterStartDate={(newValue) => {
+							if (filterEndDate) {
+								setFilterEndDate(null);
+							}
 							setFilterStartDate(newValue);
 						}}
-					// right={
-					// 	<Box>
-					// 		<Typography variant="subtitle2" sx={{ mb: 1, color: "text.secondary" }}>Legends:</Typography>
-					// 		<Stack direction="row" justifyContent="space-between" gap={1} sx={{ mb: 1 }}>
-					// 			<Label variant="outlined" color="warning">I P = In Progress</Label>
-					// 			<Label variant="outlined" color="error">W F C = Waiting For Closure</Label>
-					// 			<Label variant="outlined" color="success">C = Closed</Label>
-					// 		</Stack>
-					// 		<Stack direction="row" justifyContent="space-between" gap={1}>
-					// 			<Label variant="outlined" color="error">F R = For Revision</Label>
-					// 			<Label variant="outlined" color="success">A.D. = Active Days</Label>
-					// 			<Label variant="outlined" color="error">O.D. = Overdue Days</Label>
-					// 		</Stack>
-					// 	</Box>
-					// }
+						onFilterEndDate={(newValue) => {
+							setFilterEndDate(newValue);
+						}}
 					/>
 
 					<TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -630,6 +626,7 @@ function applyFilter ({
 	filterType,
 	filterStatus,
 	filterStartDate,
+	filterEndDate
 }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -658,9 +655,19 @@ function applyFilter ({
 		}
 	}
 
-	if (filterStartDate) {
-		const filterDate = fDate(filterStartDate);
-		inputData = inputData.filter(insp => fDate(insp.date_issued) === filterDate);
+	if (filterStartDate && !filterEndDate) {
+		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
+		inputData = inputData.filter(insp => fTimestamp(new Date(insp.date_issued)) >= startDateTimestamp);
+	}
+
+	if (filterStartDate && filterEndDate) {
+		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
+		const endDateTimestamp = filterEndDate.setHours(0, 0, 0, 0);
+		inputData = inputData.filter(
+			(insp) =>
+				fTimestamp(new Date(insp.date_issued)) >= startDateTimestamp &&
+				fTimestamp(new Date(insp.date_issued)) <= endDateTimestamp
+		);
 	}
 
 	return inputData;

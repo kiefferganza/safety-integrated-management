@@ -14,7 +14,9 @@ EmployeeTableToolbar.propTypes = {
 	onFilterName: PropTypes.func,
 	onResetFilter: PropTypes.func,
 	onFilterStartDate: PropTypes.func,
+	onFilterEndDate: PropTypes.func,
 	filterStartDate: PropTypes.instanceOf(Date),
+	filterEndDate: PropTypes.instanceOf(Date),
 };
 
 export default function EmployeeTableToolbar ({
@@ -23,8 +25,9 @@ export default function EmployeeTableToolbar ({
 	onFilterName,
 	onResetFilter,
 	filterStartDate,
+	filterEndDate,
 	onFilterStartDate,
-	right
+	onFilterEndDate,
 }) {
 	return (
 		<Stack
@@ -37,9 +40,31 @@ export default function EmployeeTableToolbar ({
 			sx={{ px: 2.5, py: 1 }}
 		>
 			<DatePicker
-				label="Date Created"
+				label="Start Date"
 				value={filterStartDate}
 				onChange={onFilterStartDate}
+				inputFormat="dd MMM yyyy"
+				openTo="year"
+				views={['year', 'month', 'day']}
+				renderInput={(params) => (
+					<TextField
+						{...params}
+						fullWidth
+						sx={{
+							maxWidth: { md: INPUT_WIDTH },
+						}}
+					/>
+				)}
+			/>
+
+			<DatePicker
+				label="End Date"
+				value={filterEndDate}
+				onChange={onFilterEndDate}
+				inputFormat="dd MMM yyyy"
+				openTo="year"
+				views={['year', 'month', 'day']}
+				minDate={filterStartDate || new Date}
 				renderInput={(params) => (
 					<TextField
 						{...params}
@@ -75,7 +100,6 @@ export default function EmployeeTableToolbar ({
 					Clear
 				</Button>
 			)}
-			{right}
 		</Stack>
 	);
 }
