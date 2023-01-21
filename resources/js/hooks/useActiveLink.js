@@ -13,22 +13,26 @@ export default function useActiveLink (path, deep = true, hasChild = false, chil
 
 	const normalActive = (url === path);
 
+	if (pathSplit[1] === "employee" && childList) {
+		console.log({ pathSplit, urlSplit });
+		console.log(childList.includes(urlSplit[2]), childList, urlSplit[2]);
+	}
+
 
 	const getDeepActive = () => {
 		if (hasChild) {
-			return (url === path) || pathSplit[2] ? (urlSplit[1] === pathSplit[1] || urlSplit[2] === pathSplit[2]) : (urlSplit[1] === pathSplit[1]);
+			if (childList) return childList.includes(urlSplit[1]);
+
+			if (url === path) return true;
+
+			return pathSplit[2] ? (urlSplit[1] === pathSplit[1] || urlSplit[2] === pathSplit[2]) : (urlSplit[1] === pathSplit[1]);
 		} else {
 			return url === path;
-			// if (pathSplit.length > 4) {
-			// 	return (pathSplit[4] ? (pathSplit[4] === urlSplit[4] && urlSplit[3] === pathSplit[3] && urlSplit[2] === pathSplit[2]) : false);
-			// } else {
-			// 	return (pathSplit[3] ? (pathSplit[3] === urlSplit[3] && urlSplit[2] === pathSplit[2]) : false);
-			// }
 		}
 	}
 
 	return {
-		active: childList ? childList.includes(urlSplit[2]) : deep ? getDeepActive() : normalActive,
+		active: deep ? getDeepActive() : normalActive,
 		isExternalLink: path.includes('http'),
 	};
 }

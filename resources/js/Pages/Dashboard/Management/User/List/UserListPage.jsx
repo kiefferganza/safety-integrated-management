@@ -122,16 +122,16 @@ export default function UserListPage ({ users }) {
 
 	const getLengthByStatus = (status) => {
 		if (status === 'active') {
-			return tableData.filter((item) => item.status === 1).length;
+			return dataFiltered.filter((item) => item.status === 1).length;
 		} else {
-			return tableData.filter((item) => item.status !== 1).length;
+			return dataFiltered.filter((item) => item.status !== 1).length;
 		}
 	}
 
-	const getPercentByStatus = (status) => (getLengthByStatus(status) / tableData.length) * 100;
+	const getPercentByStatus = (status) => (getLengthByStatus(status) / dataFiltered.length) * 100;
 
 	const STATUS_OPTIONS = [
-		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
+		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
 		{ value: 'active', label: 'Active', color: 'success', count: getLengthByStatus('active') },
 		{ value: 'deactivated', label: 'Deactivated', color: 'error', count: getLengthByStatus('deactivated') }
 	];
@@ -165,7 +165,7 @@ export default function UserListPage ({ users }) {
 	}
 
 	const handleDeleteRow = (id) => {
-		const deleteRow = tableData.filter((row) => row.id !== id);
+		const deleteRow = tableData.filter((row) => row.user_id !== id);
 		setSelected([]);
 		setTableData(deleteRow);
 
@@ -177,7 +177,7 @@ export default function UserListPage ({ users }) {
 	};
 
 	const handleDeleteRows = (selected) => {
-		const deleteRows = tableData.filter((row) => !selected.includes(row.id));
+		const deleteRows = tableData.filter((row) => !selected.includes(row.user_id));
 		setSelected([]);
 		setTableData(deleteRows);
 
@@ -231,7 +231,7 @@ export default function UserListPage ({ users }) {
 						>
 							<EmployeeAnalytic
 								title="Total"
-								total={tableData.length}
+								total={dataFiltered.length}
 								percent={100}
 								icon="material-symbols:supervisor-account"
 								color={theme.palette.info.main}
@@ -301,11 +301,11 @@ export default function UserListPage ({ users }) {
 						<TableSelectedAction
 							dense={dense}
 							numSelected={selected.length}
-							rowCount={tableData.length}
+							rowCount={dataFiltered.length}
 							onSelectAllRows={(checked) =>
 								onSelectAllRows(
 									checked,
-									tableData.map((row) => row.id)
+									dataFiltered.map((row) => row.user_id)
 								)
 							}
 							action={
@@ -323,13 +323,13 @@ export default function UserListPage ({ users }) {
 									order={order}
 									orderBy={orderBy}
 									headLabel={TABLE_HEAD}
-									rowCount={tableData.length}
+									rowCount={dataFiltered.length}
 									numSelected={selected.length}
 									onSort={onSort}
 									onSelectAllRows={(checked) =>
 										onSelectAllRows(
 											checked,
-											tableData.map((row) => row.id)
+											dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.user_id)
 										)
 									}
 								/>

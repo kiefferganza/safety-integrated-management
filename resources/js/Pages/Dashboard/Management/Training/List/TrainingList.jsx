@@ -342,11 +342,11 @@ export default function TrainingClientList ({ trainings, module, url, type }) {
 						<TableSelectedAction
 							dense={dense}
 							numSelected={selected.length}
-							rowCount={tableData.length}
+							rowCount={dataFiltered.length}
 							onSelectAllRows={(checked) =>
 								onSelectAllRows(
 									checked,
-									tableData.map((row) => row.id)
+									dataFiltered.map((row) => row.id)
 								)
 							}
 							action={
@@ -364,13 +364,13 @@ export default function TrainingClientList ({ trainings, module, url, type }) {
 									order={order}
 									orderBy={orderBy}
 									headLabel={TABLE_HEAD}
-									rowCount={tableData.length}
+									rowCount={dataFiltered.length}
 									numSelected={selected.length}
 									onSort={onSort}
 									onSelectAllRows={(checked) =>
 										onSelectAllRows(
 											checked,
-											tableData.map((row) => row.id)
+											dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.id)
 										)
 									}
 								/>

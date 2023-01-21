@@ -142,16 +142,16 @@ export default function EmployeeListPage ({ employees, unassignedUsers, canWrite
 		(!dataFiltered.length && !!filterEndDate) ||
 		(!dataFiltered.length && !!filterStartDate);
 
-	const getLengthByStatus = (status) => tableData.filter((item) => item.status === status).length;
+	const getLengthByStatus = (status) => dataFiltered.filter((item) => item.status === status).length;
 
-	const getPercentByStatus = (status) => (getLengthByStatus(status) / tableData.length) * 100;
+	const getPercentByStatus = (status) => (getLengthByStatus(status) / dataFiltered.length) * 100;
 
-	const getUnassignedEmployeeLength = () => tableData.filter((item) => !item.user_id).length;
+	const getUnassignedEmployeeLength = () => dataFiltered.filter((item) => !item.user_id).length;
 
-	const getPercentUnassignedEmployee = () => (getUnassignedEmployeeLength() / tableData.length) * 100;
+	const getPercentUnassignedEmployee = () => (getUnassignedEmployeeLength() / dataFiltered.length) * 100;
 
 	const TABS = [
-		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
+		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
 		{ value: 'active', label: 'Active', color: 'success', count: getLengthByStatus('active') },
 		{ value: 'inactive', label: 'Inactive', color: 'warning', count: getLengthByStatus('inactive') },
 		{ value: 'unassigned', label: 'Unassigned', color: 'error', count: getUnassignedEmployeeLength() }
@@ -170,7 +170,7 @@ export default function EmployeeListPage ({ employees, unassignedUsers, canWrite
 		setOpenConfirm(false);
 	};
 
-	const handleFilterStatus = (event, newValue) => {
+	const handleFilterStatus = (_event, newValue) => {
 		setPage(0);
 		setFilterStatus(newValue);
 	};
@@ -278,7 +278,7 @@ export default function EmployeeListPage ({ employees, unassignedUsers, canWrite
 						>
 							<EmployeeAnalytic
 								title="Total"
-								total={tableData.length}
+								total={dataFiltered.length}
 								percent={100}
 								icon="material-symbols:supervisor-account"
 								color={theme.palette.info.main}
@@ -351,6 +351,7 @@ export default function EmployeeListPage ({ employees, unassignedUsers, canWrite
 						onFilterPosition={handleFilterPosition}
 						onFilterStartDate={(newValue) => {
 							setFilterStartDate(newValue);
+							setPage(0)
 						}}
 					/>
 
@@ -358,11 +359,11 @@ export default function EmployeeListPage ({ employees, unassignedUsers, canWrite
 						<TableSelectedAction
 							dense={dense}
 							numSelected={selected.length}
-							rowCount={tableData.length}
+							rowCount={dataFiltered.length}
 							onSelectAllRows={(checked) =>
 								onSelectAllRows(
 									checked,
-									tableData.map((row) => row.id)
+									dataFiltered.map((row) => row.id)
 								)
 							}
 							action={
@@ -388,13 +389,13 @@ export default function EmployeeListPage ({ employees, unassignedUsers, canWrite
 									order={order}
 									orderBy={orderBy}
 									headLabel={TABLE_HEAD}
-									rowCount={tableData.length}
+									rowCount={dataFiltered.length}
 									numSelected={selected.length}
 									onSort={onSort}
 									onSelectAllRows={(checked) =>
 										onSelectAllRows(
 											checked,
-											tableData.map((row) => row.id)
+											dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.id)
 										)
 									}
 								/>

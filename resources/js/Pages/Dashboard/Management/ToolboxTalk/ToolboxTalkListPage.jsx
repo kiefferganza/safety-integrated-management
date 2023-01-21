@@ -380,11 +380,11 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 						<TableSelectedAction
 							dense={dense}
 							numSelected={selected.length}
-							rowCount={tableData.length}
+							rowCount={dataFiltered.length}
 							onSelectAllRows={(checked) =>
 								onSelectAllRows(
 									checked,
-									tableData.map((row) => row.id)
+									dataFiltered.map((row) => row.id)
 								)
 							}
 							action={

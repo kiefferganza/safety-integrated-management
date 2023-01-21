@@ -165,21 +165,21 @@ const InspectionListPage = ({ user, inspections }) => {
 		(!dataFiltered.length && !!filterStartDate);
 	(!dataFiltered.length && !!filterEndDate);
 
-	const getLengthByType = (type) => tableData.filter((item) => item.type === type).length;
+	const getLengthByType = (type) => dataFiltered.filter((item) => item.type === type).length;
 
-	const getPercentByType = (type) => (getLengthByType(type) / tableData.length) * 100;
+	const getPercentByType = (type) => (getLengthByType(type) / dataFiltered.length) * 100;
 
 	const TABS = [
-		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
+		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
 		{ value: 'submitted', label: 'Submitted', color: 'default', count: getLengthByType('submitted') },
 		{ value: 'review', label: 'Review', color: 'warning', count: getLengthByType('review') },
 		{ value: 'verify', label: 'Verify & Approve', color: 'success', count: getLengthByType('verify') },
 		{ value: 'closeout', label: 'Closeout', color: 'error', count: getLengthByType('closeout') },
 	];
 
-	const getActiveDays = tableData.filter(item => item.dueStatus.classType === "success").length;
-	const getDueDays = tableData.filter(item => item.dueStatus.classType === "error").length;
-	const getStatusLength = (status) => tableData.filter(item => item.status.text === status).length;
+	const getActiveDays = dataFiltered.filter(item => item.dueStatus.classType === "success").length;
+	const getDueDays = dataFiltered.filter(item => item.dueStatus.classType === "error").length;
+	const getStatusLength = (status) => dataFiltered.filter(item => item.status.text === status).length;
 
 	const STATUS_TABS = [
 		{ value: 'I P', label: 'In Progress', color: 'warning', count: getStatusLength('I P') },
@@ -243,6 +243,7 @@ const InspectionListPage = ({ user, inspections }) => {
 		setFilterName('');
 		setFilterType('all');
 		setFilterStartDate(null);
+		setFilterEndDate(null);
 		setFilterStatus('');
 	};
 
@@ -298,7 +299,7 @@ const InspectionListPage = ({ user, inspections }) => {
 						>
 							<InspectionAnalytic
 								title="Total"
-								total={tableData.length}
+								total={dataFiltered.length}
 								percent={100}
 								icon="heroicons:document-chart-bar"
 								color={theme.palette.info.main}
@@ -413,11 +414,11 @@ const InspectionListPage = ({ user, inspections }) => {
 						<TableSelectedAction
 							dense={dense}
 							numSelected={selected.length}
-							rowCount={tableData.length}
+							rowCount={dataFiltered.length}
 							onSelectAllRows={(checked) =>
 								onSelectAllRows(
 									checked,
-									tableData.map((row) => row.id)
+									dataFiltered.map((row) => row.id)
 								)
 							}
 							action={
@@ -449,7 +450,7 @@ const InspectionListPage = ({ user, inspections }) => {
 									onSelectAllRows={(checked) =>
 										onSelectAllRows(
 											checked,
-											tableData.map((row) => row.id)
+											dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.id)
 										)
 									}
 									sx={{
