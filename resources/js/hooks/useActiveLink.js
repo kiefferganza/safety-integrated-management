@@ -13,12 +13,6 @@ export default function useActiveLink (path, deep = true, hasChild = false, chil
 
 	const normalActive = (url === path);
 
-	if (pathSplit[1] === "employee" && childList) {
-		console.log({ pathSplit, urlSplit });
-		console.log(childList.includes(urlSplit[2]), childList, urlSplit[2]);
-	}
-
-
 	const getDeepActive = () => {
 		if (hasChild) {
 			if (childList) return childList.includes(urlSplit[1]);

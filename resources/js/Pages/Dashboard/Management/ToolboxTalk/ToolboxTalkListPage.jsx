@@ -43,7 +43,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { ToolboxTalkTableRow, ToolboxTalkTableToolbar } from '@/sections/@dashboard/toolboxtalks/list';
 import ToolboxTalkAnalytic from '@/sections/@dashboard/toolboxtalks/ToolboxTalkAnalytic';
 import { formatCms } from '@/utils/tablesUtils';
-import { endOfMonth, startOfMonth } from 'date-fns';
+import { endOfMonth } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
@@ -164,10 +164,10 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 		(!dataFiltered.length && !!filterStatus) ||
 		(!dataFiltered.length && !!filterStartDate);
 
-	const getLengthByStatus = (status) => tableData.filter((item) => item.status.code === status).length;
+	const getLengthByStatus = (status) => dataFiltered.filter((item) => item.status.code === status).length;
 
 	const TABS = [
-		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
+		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
 		{ value: '1', label: 'Completed', color: 'success', count: getLengthByStatus('1') },
 		{ value: '0', label: 'Incomplete', color: 'error', count: getLengthByStatus('0') },
 	];
@@ -289,7 +289,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 						>
 							<ToolboxTalkAnalytic
 								title="Total"
-								total={tableData.length}
+								total={dataFiltered.length}
 								percent={100}
 								icon="heroicons:document-chart-bar"
 								color={theme.palette.info.main}
@@ -498,7 +498,7 @@ function applyFilter ({
 	});
 
 	inputData = stabilizedThis.map((el) => el[0]);
-	let analytic = null;
+	let analytic = getAverage(inputData);
 
 	if (filterName) {
 		inputData = inputData.filter((toolbox) =>
@@ -540,9 +540,9 @@ function applyFilter ({
 	};
 }
 
-const today = new Date;
-const currentStartMonth = fTimestamp(startOfMonth(today));
-const currentEndMonth = fTimestamp(endOfMonth(today));
+
+const currentStartMonth = fTimestamp(new Date(2000, 0, 1));
+const currentEndMonth = fTimestamp(endOfMonth(new Date));
 
 function getAverage (data, start = null, end = null) {
 	const startMonth = start ? fTimestamp(start) : currentStartMonth;
@@ -578,7 +578,7 @@ function getAverage (data, start = null, end = null) {
 		manHoursTotal: 0
 	});
 
-	const manHours = calculate.manHoursTotal * tbtByMonthArr.length;
+	const manHours = calculate.manHoursTotal;
 	const average = Math.ceil(calculate.manpower / tbtByMonthArr.length);
 	const locationSet = new Set(locations);
 
@@ -589,6 +589,5 @@ function getAverage (data, start = null, end = null) {
 		average
 	};
 }
-
 
 export default ToolboxTalkListPage
