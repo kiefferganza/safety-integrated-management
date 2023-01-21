@@ -57,6 +57,7 @@ class ToolboxTalkController extends Controller
 	public function store(Request $request) {
 		$tbtService = new ToolboxTalkService($request);
 		$tbt_id = $tbtService->insertGetID($request->all());
+		
 		if(!$tbt_id) {
 			abort(500, "Something went wrong!");
 		}
@@ -69,11 +70,6 @@ class ToolboxTalkController extends Controller
 		$redirect_route = $tbtService->getRouteByType($request->tbt_type);
 
 		return redirect()->route('toolboxtalk.management.'.$redirect_route)
-		->with("tbt_created", ToolboxTalk::find($tbt_id)->with([
-			"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct()->with("position"),
-			"conducted"	=> fn ($q) => $q->select("employee_id", "firstname", "lastname"),
-			"file" => fn ($q) => $q->select("tbt_id","img_src")
-		]))
 		->with("message", "Toolbox talk added successfully!")
 		->with("type", "success");
 	}
@@ -97,11 +93,6 @@ class ToolboxTalkController extends Controller
 		}
 
 		return redirect()->back()
-		->with("updated_tbt", $tbt->load([
-			"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct()->with("position"),
-			"conducted"	=> fn ($q) => $q->select("employee_id", "firstname", "lastname"),
-			"file" => fn ($q) => $q->select("tbt_id","img_src")
-		]))
 		->with("message", "Toolbox talk updated successfully!")
 		->with("type", "success");
 	}

@@ -130,10 +130,11 @@ class ToolboxTalkService {
 
 
 	public function insertGetID($input) {
-		$user = Auth::user();
-		$tbt = new ToolboxTalk;
-
+		$user = \auth()->user();
+		
 		$sequence = ToolboxTalk::where('is_deleted', 0)->where("tbt_type", $input["tbt_type"])->count() + 1;
+		
+		$tbt = new ToolboxTalk();
 
 		$tbt->employee_id = $user->emp_id;
 		$tbt->sequence_no = str_repeat("0", strlen((string) $sequence)) . $sequence;
@@ -161,16 +162,25 @@ class ToolboxTalkService {
 
 
 	public function insertParticipants($participants, $tbt_id) {
+		$participants_arr = [];
 		foreach ($participants as $participant) {
-			$tbt_participants = new ToolboxTalkParticipant;
-			$tbt_participants->employee_id = $participant["employee_id"];
-			$tbt_participants->user_id = $participant["sub_id"];
+			$participants_arr[] = [
+				"employee_id" => $participant["employee_id"],
+				"user_id" =>$participant["sub_id"],
+				"time" => "9",
+				"tbt_id" => $tbt_id,
+				"is_removed" => 0,
+			];
+			// $tbt_participants = new ToolboxTalkParticipant;
+			// $tbt_participants->employee_id = $participant["employee_id"];
+			// $tbt_participants->user_id = $participant["sub_id"];
 			// $tbt_participants->time = $participant["time"];
-			$tbt_participants->time = "9";
-			$tbt_participants->tbt_id = $tbt_id;
-			$tbt_participants->is_removed = 0;
-			$tbt_participants->save();
+			// $tbt_participants->time = "9";
+			// $tbt_participants->tbt_id = $tbt_id;
+			// $tbt_participants->is_removed = 0;
+			// $tbt_participants->save();
 		}
+		ToolboxTalkParticipant::insert($participants_arr);
 	}
 
 	public function insertFile($file, $tbt_id) {

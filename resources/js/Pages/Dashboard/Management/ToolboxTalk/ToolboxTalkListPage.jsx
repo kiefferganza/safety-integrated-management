@@ -222,7 +222,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 	const handleDeleteRow = (id) => {
 		Inertia.post(route('toolboxtalk.management.delete'), { ids: [id] }, {
 			onStart: () => {
-				load("Deleting company", "Please wait...");
+				load("Deleting toolbox talk", "Please wait...");
 			},
 			onFinish: stop,
 			preserveScroll: true
@@ -232,7 +232,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 	const handleDeleteRows = (selected) => {
 		Inertia.post(route('toolboxtalk.management.delete'), { ids: selected }, {
 			onStart: () => {
-				load(`Deleting ${selected.length} companies`, "Please wait...");
+				load(`Deleting ${selected.length} toolbox talks`, "Please wait...");
 			},
 			onFinish: () => {
 				setSelected([]);
