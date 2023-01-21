@@ -139,16 +139,16 @@ export default function TrainingClientList ({ trainings, module, url, type }) {
 
 	const isNotFound = (!dataFiltered.length && !!filterName) || (!dataFiltered.length && !!filterStatus);
 
-	const getLengthByStatus = (status) => tableData.filter((item) => item.status.text === status);
+	const getLengthByStatus = (status) => dataFiltered.filter((item) => item.status.text === status);
 
-	const getPercentByStatus = (status) => (getLengthByStatus(status).length / tableData.length) * 100;
+	const getPercentByStatus = (status) => (getLengthByStatus(status).length / dataFiltered.length) * 100;
 
 	const getTotalHours = (trainings_arr) => trainings_arr.reduce((acc, curr) => acc += curr.training_hrs, 0);
 
-	const getCertificateLength = (bool) => tableData.filter(data => data.completed === bool).length;
+	const getCertificateLength = (bool) => dataFiltered.filter(data => data.completed === bool).length;
 
 	const TABS = [
-		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
+		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
 		{ value: 'Valid', label: 'Valid', color: 'success', count: getLengthByStatus('Valid').length },
 		{ value: 'Soon to Expire', label: 'Soon to Expire', color: 'warning', count: getLengthByStatus('Soon to Expire').length },
 		{ value: 'Expired', label: 'Expired', color: 'error', count: getLengthByStatus('Expired').length },
@@ -266,8 +266,8 @@ export default function TrainingClientList ({ trainings, module, url, type }) {
 						>
 							<TrainingAnalitic
 								title="Total"
-								total={tableData.length}
-								hours={getTotalHours(trainings)}
+								total={dataFiltered.length}
+								hours={getTotalHours(dataFiltered)}
 								percent={100}
 								icon="material-symbols:supervisor-account"
 								color={theme.palette.info.main}
