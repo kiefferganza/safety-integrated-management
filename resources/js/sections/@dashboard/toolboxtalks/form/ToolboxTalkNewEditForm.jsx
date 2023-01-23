@@ -41,6 +41,7 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		date_conducted: Yup.string().nullable().required("Conducted Date is required"),
 		time_conducted: Yup.string().nullable().required("Time conducted is required"),
 		description: Yup.string().required("Activity is required"),
+		job_description: Yup.string().required("Job description is required"),
 		moc_wo_no: Yup.string().required("MOC/WO is required"),
 		site: Yup.string().required("Site/Shop in charge is required"),
 		participants: Yup.array().of(Yup.object().shape({

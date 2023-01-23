@@ -72,7 +72,7 @@ const ToolboxTalkDetail = ({ tbt }) => {
 								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Job Description</Typography>
 							</Box>
 							<Box minHeight={24}>
-								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{tbt.description}</Typography>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{tbt?.job_description}</Typography>
 							</Box>
 						</Box>
 
