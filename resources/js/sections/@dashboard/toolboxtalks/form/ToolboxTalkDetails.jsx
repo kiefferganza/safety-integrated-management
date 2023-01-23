@@ -131,7 +131,7 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 
 							<RHFTextField name="contract_no" label="Contract No." fullWidth />
 
-							<RHFTextField name="location" label="Location" fullWidth />
+							<RHFTextField name="location" label="Station/Location" fullWidth />
 
 						</Stack>
 
