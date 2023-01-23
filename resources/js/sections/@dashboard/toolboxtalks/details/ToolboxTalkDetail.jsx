@@ -139,15 +139,17 @@ const ToolboxTalkDetail = ({ tbt }) => {
 							</Box>
 						</Box>
 
-						<Box sx={{ mb: 1 }}>
+						<Box sx={{ mb: 1 }} maxWidth="160px">
 							<Box>
 								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Attachment</Typography>
 							</Box>
 							<Box minHeight={24}>
-								{tbt?.file ? (
-									<IconButton color="primary" component={MuiLink} href={`/storage/media/toolboxtalks/${tbt?.file?.img_src}`} target="_blank" >
-										<Iconify icon="material-symbols:attachment" />
-									</IconButton>
+								{tbt?.file.length > 0 ? (
+									tbt?.file.map(f => (
+										<IconButton color="primary" component={MuiLink} href={`/storage/media/toolboxtalks/${f?.img_src}`} target="_blank" >
+											<Iconify icon="material-symbols:attachment" />
+										</IconButton>
+									))
 								) : (
 									<Typography variant="body1" sx={{ color: 'text.secondary' }}>No</Typography>
 								)}

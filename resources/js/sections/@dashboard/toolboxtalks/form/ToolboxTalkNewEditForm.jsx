@@ -72,8 +72,9 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		time_conducted: tbt?.time_conducted ? formatISO(new Date(1999, 1, 1, tbt?.time_conducted.split(":")[0], tbt?.time_conducted.split(":")[1], 0), { representation: 'complete' }) : null,
 		description: tbt?.description || "",
 		participants: getParticipants(),
-		img_src: tbt?.file ? { path: `/storage/media/toolboxtalks/${tbt.file.img_src}`, name: tbt.file.img_src.split('/').at(-1) } : null,
-		prev_file: tbt?.file?.img_src || null,
+		img_src: tbt?.file ? tbt?.file?.map(f => (
+			{ path: `/storage/media/toolboxtalks/${f.img_src}`, name: f.img_src.split('/').at(-1), id: f.tbt_img_id }
+		)) : null,
 		status: tbt?.status || "0",
 		remarks: tbt?.remarks || ""
 	}), [tbt]);
@@ -107,10 +108,8 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		handleSubmit,
 		reset,
 		setError,
-		formState: { isDirty, errors }
+		formState: { isDirty }
 	} = methods;
-
-	console.log({ resErrors, errors });
 
 	useEffect(() => {
 		if (isEdit && tbt) {
@@ -126,11 +125,22 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 
 
 	const onSubmit = async (data) => {
-		const newData = {
+		let newData = {
 			...data,
 			time_conducted: format(new Date(data.time_conducted), 'HH:mm'),
-			participants: data.participants.filter(p => p.selected)
+			participants: data.participants.filter(p => p.selected),
+			status: data.img_src.length > 0 ? 1 : 0
 		};
+
+		if (isEdit && tbt) {
+			const removed_files = tbt.file.filter((prevFile) => data.img_src.findIndex(f => f.id == prevFile.tbt_img_id
+			) === -1);
+			newData.removed_files = removed_files;
+
+			const files = data.img_src.filter(f => f instanceof File);
+			newData.img_src = files;
+		}
+
 		Inertia.post(isEdit && tbt ? PATH_DASHBOARD.toolboxTalks.edit(tbt.tbt_id) : route("toolboxtalk.management.store"), newData,
 			{
 				preserveScroll: true,
@@ -140,7 +150,6 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 				},
 				onFinish () {
 					setLoading(false);
-					reset(defaultValues);
 				}
 			}
 		);

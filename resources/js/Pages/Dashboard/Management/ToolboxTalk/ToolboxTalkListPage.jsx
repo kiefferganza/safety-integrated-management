@@ -124,7 +124,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 			...toolbox,
 			id: toolbox.tbt_id,
 			cms: formatCms(toolbox),
-			attachment: toolbox.file ? "Y" : "N",
+			attachment: toolbox.file.length > 0 ? "Y" : "N",
 			participants_count: toolbox.participants?.length,
 			status: getStatus(toolbox?.status)
 		}));

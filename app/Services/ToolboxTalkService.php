@@ -186,18 +186,25 @@ class ToolboxTalkService {
 		ToolboxTalkParticipant::insert($participants_arr);
 	}
 
-	public function insertFile($file, $tbt_id) {
-		$newfile = $file->getClientOriginalName();
-		$extension = pathinfo($newfile, PATHINFO_EXTENSION);
-		$file_name = $this->cms. "-" . date("Y-m-d"). "." . $extension; 
-		$file->storeAs('media/toolboxtalks', $file_name, 'public');
+	public function insertFile($files, $tbt_id) {
+		$filesToInsert = array();
 
-		$tbt_file = new ToolboxTalkFile;
-		$tbt_file->img_src = $file_name;
-		$tbt_file->tbt_id = $tbt_id;
-		$tbt_file->type = "attachment";
-		$tbt_file->save();
+		foreach ($files as $idx => $file) {
+			$newfile = $file->getClientOriginalName();
+			$extension = pathinfo($newfile, PATHINFO_EXTENSION);
+			$file_name = date("Ymds"). $idx . '-' .$newfile. "." . $extension; 
+			$file->storeAs('media/toolboxtalks', $file_name, 'public');
 
+			$filesToInsert[] = [
+				"img_src" => $file_name,
+				"type" => "attachment",
+				"tbt_id" => $tbt_id
+			];
+		}
+
+		if(!empty($filesToInsert)) {
+			ToolboxTalkFile::insert($filesToInsert);
+		}
 	}
 
 
@@ -230,18 +237,22 @@ class ToolboxTalkService {
 		ToolboxTalkParticipant::where("tbt_id", $tbt->tbt_id)->delete();
 		$this->insertParticipants($request->participants, $tbt->tbt_id);
 
-		$hasOldFile = (isset($request->prev_file) && $request->prev_file !== null) && Storage::exists("public/media/toolboxtalks/" . $request->prev_file);
 
 		// DELETE OLD FILE
-		if($hasOldFile && ($request->img_src === null || $request->hasFile("img_src"))) {
-			Storage::delete("public/media/toolboxtalks/" . $request->prev_file);
-			$oldFile = ToolboxTalkFile::where("tbt_id", $tbt->tbt_id);
-			if($oldFile) {
-				$oldFile->delete();
+		if(isset($request->removed_files) && !empty($request->removed_files)) {
+			$oldFileIds = array();
+			foreach ($request->removed_files as $oldFile) {
+				if(Storage::exists("public/media/toolboxtalks/" . $oldFile["img_src"])) {
+					Storage::delete("public/media/toolboxtalks/" . $oldFile["img_src"]);
+				}
+				$oldFileIds[] = (int)$oldFile["tbt_img_id"];
+			}
+			if(!empty($oldFileIds)) {
+				ToolboxTalkFile::whereIn("tbt_img_id", $oldFileIds)->delete();
 			}
 		}
 
-		if($request->hasFile("img_src")) {
+		if(!empty($request->img_src)) {
 			// INSERT NEW FILE
 			$this->insertFile($request->img_src, $tbt->tbt_id);
 		}

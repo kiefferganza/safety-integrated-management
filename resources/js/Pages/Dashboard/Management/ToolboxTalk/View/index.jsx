@@ -10,7 +10,6 @@ import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import { useSettingsContext } from '@/Components/settings';
 // sections
 import { formatCms } from "@/utils/tablesUtils";
-import Label from "@/Components/label";
 import ToolboxTalkDetail from "@/sections/@dashboard/toolboxtalks/details/ToolboxTalkDetail";
 const TYPE_OPTIONS = {
 	"1": 'civil',

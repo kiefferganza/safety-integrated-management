@@ -34,7 +34,7 @@ class ToolboxTalk extends Model
 
 
 	public function file() {
-		return $this->hasOne(ToolboxTalkFile::class, "tbt_id", "tbt_id");
+		return $this->hasMany(ToolboxTalkFile::class, "tbt_id", "tbt_id");
 	}
 	
 

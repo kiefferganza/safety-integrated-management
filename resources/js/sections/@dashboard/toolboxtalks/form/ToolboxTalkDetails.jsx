@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import ToolboxTalkEmployeeDialog from './ToolboxTalkEmployeeDialog';
 import { format, isValid } from 'date-fns';
 // form
-import { useFormContext } from 'react-hook-form';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 // @mui
 import { Box, Stack, Divider, Typography, TextField, Autocomplete, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, IconButton, FormHelperText } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -30,7 +30,12 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 	const { auth: { user } } = usePage().props;
 	const [openParticipants, setOpenParticipants] = useState(false);
 	const isDesktop = useResponsive('up', 'sm');
-	const { setValue, watch, clearErrors, formState: { errors } } = useFormContext();
+	const { setValue, watch, clearErrors, formState: { errors }, control } = useFormContext();
+	const { append, remove } = useFieldArray({
+		control, // control props comes from useForm (optional: if you are using FormContext)
+		name: "img_src", // unique name for your Field Array
+	});
+
 	const values = watch();
 
 	const handleOpenParticipants = () => {
@@ -66,18 +71,20 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 	}
 
 	const handleDropSingleFile = useCallback((acceptedFiles) => {
-		const file = acceptedFiles[0];
-		if (file) {
-			setValue("status", "1", { shouldDirty: true });
-			setValue("img_src", Object.assign(file, {
+		const newFiles = acceptedFiles.map((file) =>
+			Object.assign(file, {
 				preview: URL.createObjectURL(file),
-			}));
-		}
+			})
+		);
+
+		append(newFiles);
 	}, []);
 
-	const handleRemoveFile = () => {
-		setValue("status", "0");
-		setValue("img_src", null, { shouldDirty: true });
+	const handleRemoveFile = (inputFile) => {
+		const removedFileIdx = values.img_src.findIndex((file) => file?.name === inputFile?.name);
+		if (removedFileIdx !== -1) {
+			remove(removedFileIdx);
+		}
 	}
 
 	const handleSelectParticipants = (index) => {
@@ -310,7 +317,7 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 								<Typography variant="h6" sx={{ color: 'text.disabled' }}>
 									Attached File
 								</Typography>
-								<Upload files={values.img_src ? [values.img_src] : []} multiple onDrop={handleDropSingleFile} onRemove={handleRemoveFile} />
+								<Upload files={values.img_src || []} multiple onDrop={handleDropSingleFile} onRemove={handleRemoveFile} />
 							</Box>
 						</Stack>
 
