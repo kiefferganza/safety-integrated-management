@@ -14,8 +14,8 @@ export function getLastTwoWeeks (date) {
 export function getTrainingStatus (training_date, date_expired) {
 	const dateExpiredTwoWeeksBeforeDate = getLastTwoWeeks(date_expired);
 
-	const start = new Date(training_date)
-	const end = new Date(date_expired);
+	const start = new Date().setHours(0, 0, 0, 0)
+	const end = new Date(date_expired).setHours(0, 0, 0, 0);
 
 	if (isAfter(start, end) || isEqual(start, end)) {
 		return {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/inertia-react';
 import * as Yup from 'yup';
 // form
@@ -22,7 +22,7 @@ const steps = ['General Info', 'Inspection Report', 'Time Frame', 'Evidence'];
 
 const InspectionNewForm = () => {
 	const { warning } = useSwal();
-	const { sequence_no, personel, auth: { user } } = usePage().props;
+	const { sequence_no, personel, auth: { user }, errors: resErrors } = usePage().props;
 	const [loading, setLoading] = useState(false);
 	const [activeStep, setActiveStep] = useState(0);
 	const [completed, setCompleted] = useState({
@@ -511,8 +511,18 @@ const InspectionNewForm = () => {
 		defaultValues,
 	});
 
-	const { watch, trigger, handleSubmit, setValue, formState: { errors } } = methods;
+	const { watch, trigger, handleSubmit, setValue, setError } = methods;
 	const values = watch();
+
+	useEffect(() => {
+		if (Object.keys(resErrors).length !== 0) {
+			for (const key in resErrors) {
+				setError(key, { type: "custom", message: resErrors[key] });
+			}
+		}
+	}, [resErrors]);
+
+
 
 	const handleNext = async () => {
 		let result = null;

@@ -62,49 +62,80 @@ const ToolboxTalkDetail = ({ tbt }) => {
 							<Box>
 								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">TBT Title</Typography>
 							</Box>
-							<Box>
+							<Box minHeight={24}>
 								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{tbt.title}</Typography>
 							</Box>
 						</Box>
 
 						<Box sx={{ mb: 1 }}>
 							<Box>
-								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Project Location</Typography>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Job Description</Typography>
 							</Box>
+							<Box minHeight={24}>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{tbt.description}</Typography>
+							</Box>
+						</Box>
+
+						<Box sx={{ mb: 1 }}>
 							<Box>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Station/Location</Typography>
+							</Box>
+							<Box minHeight={24}>
 								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{tbt.location}</Typography>
 							</Box>
 						</Box>
 
 						<Box sx={{ mb: 1 }}>
 							<Box>
-								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Contract No.</Typography>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Site/Shop in charge</Typography>
 							</Box>
-							<Box>
-								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{tbt.contract_no}</Typography>
+							<Box minHeight={24}>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{tbt?.site}</Typography>
 							</Box>
 						</Box>
+
 					</Grid>
 					<Grid item xs={12} sm={6}>
 						<Box sx={{ mb: 1 }}>
 							<Box>
-								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Date of TBT</Typography>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Contract No.</Typography>
 							</Box>
-							<Box>
-								<Typography variant="body1" sx={{ color: 'text.secondary' }}>
-									{tbt?.date_conducted ? fDate(tbt.date_conducted) : ''}
-								</Typography>
+							<Box minHeight={24}>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{tbt.contract_no}</Typography>
 							</Box>
 						</Box>
 
 						<Box sx={{ mb: 1 }}>
 							<Box>
-								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Time of TBT</Typography>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">MOC/WO No.</Typography>
 							</Box>
-							<Box>
+							<Box minHeight={24}>
 								<Typography variant="body1" sx={{ color: 'text.secondary' }}>
-									{tbt?.time_conducted}
+									{tbt?.moc_wo_no}
 								</Typography>
+							</Box>
+						</Box>
+
+						<Box sx={{ mb: 1, display: "flex", justifyContent: "space-between" }}>
+							<Box width={.5}>
+								<Box>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Date of TBT</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>
+										{tbt?.date_conducted ? fDate(tbt.date_conducted) : ''}
+									</Typography>
+								</Box>
+							</Box>
+							<Box width={.5}>
+								<Box>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Time of TBT</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>
+										{tbt?.time_conducted}
+									</Typography>
+								</Box>
 							</Box>
 						</Box>
 
@@ -112,7 +143,7 @@ const ToolboxTalkDetail = ({ tbt }) => {
 							<Box>
 								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Attachment</Typography>
 							</Box>
-							<Box>
+							<Box minHeight={24}>
 								{tbt?.file ? (
 									<IconButton color="primary" component={MuiLink} href={`/storage/media/toolboxtalks/${tbt?.file?.img_src}`} target="_blank" >
 										<Iconify icon="material-symbols:attachment" />
@@ -186,7 +217,7 @@ const ToolboxTalkDetail = ({ tbt }) => {
 							<Typography variant="body1" sx={{ mb: 2 }} fontWeight={700}>Remarks</Typography>
 						</Box>
 						<Box>
-							<Typography variant="body1" width={1} borderBottom={1}>{tbt?.remarks}</Typography>
+							<Typography variant="body1" sx={{ minHeight: 24 }} width={1} borderBottom={1}>{tbt?.remarks}</Typography>
 						</Box>
 					</Box>
 					<Box width={200}>

@@ -51,17 +51,17 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 					<Checkbox checked={selected} onClick={onSelectRow} />
 				</TableCell>
 
-				<TableCell sx={{ textTransform: "uppercase" }}>{cms}</TableCell>
+				<TableCell sx={{ whiteSpace: "nowrap", textTransform: "uppercase" }}>{cms}</TableCell>
 
-				<TableCell>{title}</TableCell>
+				<TableCell sx={{ whiteSpace: "nowrap" }}>{title}</TableCell>
 
-				<TableCell align="center">{traninees_count}</TableCell>
+				<TableCell sx={{ whiteSpace: "nowrap" }} align="center">{traninees_count}</TableCell>
 
-				<TableCell>{fDate(training_date)}</TableCell>
+				<TableCell sx={{ whiteSpace: "nowrap" }}>{fDate(training_date)}</TableCell>
 
-				<TableCell>{fDate(date_expired)}</TableCell>
+				<TableCell sx={{ whiteSpace: "nowrap" }}>{fDate(date_expired)}</TableCell>
 
-				<TableCell>
+				<TableCell sx={{ whiteSpace: "nowrap" }}>
 					<Label
 						variant="soft"
 						color={completed ? "success" : "warning"}
@@ -70,7 +70,7 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 					</Label>
 				</TableCell>
 
-				<TableCell align="center">
+				<TableCell sx={{ whiteSpace: "nowrap" }} align="center">
 					<Label
 						variant="soft"
 						color={status.color}

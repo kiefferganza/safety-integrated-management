@@ -23,7 +23,7 @@ TrainingNewEditForm.propTypes = {
 };
 
 export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
-	const { trainings, type } = usePage().props;
+	const { trainings, type, errors: resErrors } = usePage().props;
 	const [loadingSend, setLoadingSend] = useState(false);
 
 	const newTrainingSchema = Yup.object().shape({
@@ -82,6 +82,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		reset,
 		handleSubmit,
 		setValue,
+		setError,
 		formState: { isDirty }
 	} = methods;
 	const setSequenceNumber = (trType) => {
@@ -101,8 +102,13 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 			reset(defaultValues);
 			setSequenceNumber(type)
 		}
+		if (Object.keys(resErrors).length !== 0) {
+			for (const key in resErrors) {
+				setError(key, { type: "custom", message: resErrors[key] });
+			}
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isEdit, currentTraining, trainings]);
+	}, [isEdit, currentTraining, trainings, resErrors]);
 
 	const handleCreateAndSend = async (data) => {
 		try {

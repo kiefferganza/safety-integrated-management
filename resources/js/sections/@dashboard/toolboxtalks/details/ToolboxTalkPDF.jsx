@@ -71,32 +71,55 @@ export default function ToolboxTalkPDF ({ tbt, cms }) {
 							</View>
 
 							<View style={{ flexDirection: 'column' }}>
-								<Text style={styles.subtitle2}>Project Location</Text>
+								<Text style={styles.subtitle2}>Job Description</Text>
+								<View style={{ width: '100%' }}>
+									<Text style={[styles.underlineText, styles.body1]}>{tbt?.description}</Text>
+								</View>
+							</View>
+
+							<View style={{ flexDirection: 'column' }}>
+								<Text style={styles.subtitle2}>Station/Location</Text>
 								<View style={{ width: '100%' }}>
 									<Text style={[styles.underlineText, styles.body1]}>{tbt.location}</Text>
 								</View>
 							</View>
 
 							<View style={{ flexDirection: 'column' }}>
-								<Text style={styles.subtitle2}>Contract No.</Text>
+								<Text style={styles.subtitle2}>Site/Shop in charge</Text>
 								<View style={{ width: '100%' }}>
-									<Text style={[styles.underlineText, styles.body1]}>{tbt.contract_no}</Text>
+									<Text style={[styles.underlineText, styles.body1]}>{tbt?.site}</Text>
 								</View>
 							</View>
 						</View>
 
 						<View style={[styles.col6, { paddingLeft: 8 }]}>
 							<View style={{ flexDirection: 'column' }}>
-								<Text style={styles.subtitle2}>Date of TBT</Text>
+								<Text style={styles.subtitle2}>Contract No.</Text>
 								<View style={{ width: '100%' }}>
-									<Text style={[styles.underlineText, styles.body1]}>{tbt?.date_conducted ? fDate(new Date(tbt.date_conducted)) : ""}</Text>
+									<Text style={[styles.underlineText, styles.body1]}>{tbt.contract_no}</Text>
 								</View>
 							</View>
 
 							<View style={{ flexDirection: 'column' }}>
-								<Text style={styles.subtitle2}>Time of TBT</Text>
-								<View style={{ width: '100%' }}>
-									<Text style={[styles.underlineText, styles.body1]}>{tbt.time_conducted}</Text>
+								<Text style={styles.subtitle2}>MOC/WO No.</Text>
+								<View style={{ width: '100%', minHeight: 16 }}>
+									<Text style={[styles.underlineText, styles.body1]}>{tbt?.moc_wo_no}</Text>
+								</View>
+							</View>
+
+							<View style={{ flexDirection: 'row', justifyContent: "space-between" }}>
+								<View style={{ flexDirection: 'column', width: '50%' }}>
+									<Text style={styles.subtitle2}>Date of TBT</Text>
+									<View style={{ width: '100%' }}>
+										<Text style={[styles.underlineText, styles.body1]}>{tbt?.date_conducted ? fDate(new Date(tbt.date_conducted)) : ""}</Text>
+									</View>
+								</View>
+
+								<View style={{ flexDirection: 'column', width: '50%' }}>
+									<Text style={styles.subtitle2}>Time of TBT</Text>
+									<View style={{ width: '100%' }}>
+										<Text style={[styles.underlineText, styles.body1]}>{tbt.time_conducted}</Text>
+									</View>
 								</View>
 							</View>
 
@@ -188,7 +211,7 @@ export default function ToolboxTalkPDF ({ tbt, cms }) {
 							<View style={[styles.gridContainer, styles.mb16]}>
 								<Text style={styles.subtitle2}>Remarks</Text>
 							</View>
-							<View style={{ width: '100%', borderBottom: 1 }}>
+							<View style={{ width: '100%', borderBottom: 1, minHeight: 16 }}>
 								<Text style={styles.body1}>{tbt?.remarks}</Text>
 							</View>
 						</View>

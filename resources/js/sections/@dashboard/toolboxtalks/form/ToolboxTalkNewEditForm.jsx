@@ -26,7 +26,7 @@ ToolboxTalkNewEditForm.propTypes = {
 
 export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 	const [loading, setLoading] = useState(false);
-	const { sequences, participants, tbt_type } = usePage().props;
+	const { sequences, participants, tbt_type, errors: resErrors } = usePage().props;
 
 	const NewTBTSchema = Yup.object().shape({
 		project_code: Yup.string().required('Project Code is required'),
@@ -34,13 +34,15 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		discipline: Yup.string().required('Discipline is required'),
 		document_type: Yup.string().required('Project Type is required'),
 		title: Yup.string().required('Course title is required'),
-		location: Yup.string().required('Location is required'),
+		location: Yup.string().required('Station/Location is required'),
 		contract_no: Yup.string().required("Contract no. is required"),
 		tbt_type: Yup.string().required("Please select toolboxtalks type"),
 		conducted_by: Yup.string().required("Please select a personel"),
 		date_conducted: Yup.string().nullable().required("Conducted Date is required"),
 		time_conducted: Yup.string().nullable().required("Time conducted is required"),
 		description: Yup.string().required("Activity is required"),
+		moc_wo_no: Yup.string().required("MOC/WO is required"),
+		site: Yup.string().required("Site/Shop in charge is required"),
 		participants: Yup.array().of(Yup.object().shape({
 			employee_id: Yup.string().required(),
 			selected: Yup.boolean(),
@@ -94,12 +96,6 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		return p;
 	}
 
-	useEffect(() => {
-		if (isEdit && tbt) {
-			reset(defaultValues);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isEdit, tbt]);
 
 	const methods = useForm({
 		resolver: yupResolver(NewTBTSchema),
@@ -109,8 +105,23 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 	const {
 		handleSubmit,
 		reset,
-		formState: { isDirty }
+		setError,
+		formState: { isDirty, errors }
 	} = methods;
+
+	console.log({ resErrors, errors });
+
+	useEffect(() => {
+		if (isEdit && tbt) {
+			reset(defaultValues);
+		}
+		if (Object.keys(resErrors).length !== 0) {
+			for (const key in resErrors) {
+				setError(key, { type: "custom", message: resErrors[key] });
+			}
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isEdit, tbt, resErrors]);
 
 
 	const onSubmit = async (data) => {

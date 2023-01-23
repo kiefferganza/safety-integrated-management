@@ -154,6 +154,9 @@ class ToolboxTalkService {
 		$tbt->description = $input["description"];
 		$tbt->status = $input["img_src"] !== null;
 		$tbt->remarks = $input["remarks"];
+		$tbt->job_description = $input["job_description"];
+		$tbt->moc_wo_no = $input["moc_wo_no"];
+		$tbt->site = $input["site"];
 
 		$tbt->save();
 
@@ -218,6 +221,10 @@ class ToolboxTalkService {
 		$tbt->description = $request->description;
 		$tbt->status = $request->status;
 		$tbt->remarks = $request->remarks;
+		$tbt->job_description = $request->job_description;
+		$tbt->moc_wo_no = $request->moc_wo_no;
+		$tbt->site = $request->site;
+
 		$tbt->increment("revision_no");
 
 		ToolboxTalkParticipant::where("tbt_id", $tbt->tbt_id)->delete();
