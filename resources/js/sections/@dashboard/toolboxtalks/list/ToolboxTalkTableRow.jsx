@@ -21,7 +21,6 @@ import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
-import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
@@ -71,6 +70,8 @@ export default function ToolboxTalkTableRow ({ row, selected, onSelectRow, onDel
 				<TableCell align="left" sx={{ textTransform: 'uppercase', whiteSpace: "nowrap" }}>{row.cms}</TableCell>
 
 				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.title}</TableCell>
+
+				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.description}</TableCell>
 
 				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.conducted?.fullname || row.conducted_by}</TableCell>
 

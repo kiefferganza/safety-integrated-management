@@ -40,8 +40,7 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		conducted_by: Yup.string().required("Please select a personel"),
 		date_conducted: Yup.string().nullable().required("Conducted Date is required"),
 		time_conducted: Yup.string().nullable().required("Time conducted is required"),
-		description: Yup.string().required("Activity is required"),
-		job_description: Yup.string().required("Job description is required"),
+		description: Yup.string().required("Job description is required"),
 		moc_wo_no: Yup.string().required("MOC/WO is required"),
 		site: Yup.string().required("Site/Shop in charge is required"),
 		participants: Yup.array().of(Yup.object().shape({
@@ -68,13 +67,16 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		contract_no: tbt?.contract_no || '',
 		tbt_type: tbt?.tbt_type || tbt_type,
 		conducted_by: tbt?.conducted_by || '',
+		moc_wo_no: tbt?.moc_wo_no || '',
+		site: tbt?.site || '',
 		date_conducted: tbt?.date_conducted || null,
 		time_conducted: tbt?.time_conducted ? formatISO(new Date(1999, 1, 1, tbt?.time_conducted.split(":")[0], tbt?.time_conducted.split(":")[1], 0), { representation: 'complete' }) : null,
 		description: tbt?.description || "",
 		participants: getParticipants(),
-		img_src: tbt?.file ? tbt?.file?.map(f => (
-			{ path: `/storage/media/toolboxtalks/${f.img_src}`, name: f.img_src.split('/').at(-1), id: f.tbt_img_id }
-		)) : null,
+		// img_src: tbt?.file ? tbt?.file?.map(f => (
+		// 	{ path: `/storage/media/toolboxtalks/${f.img_src}`, name: f.img_src.split('/').at(-1), id: f.tbt_img_id }
+		// )) : null,
+		img_src: [],
 		status: tbt?.status || "0",
 		remarks: tbt?.remarks || ""
 	}), [tbt]);
@@ -108,12 +110,20 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		handleSubmit,
 		reset,
 		setError,
+		setValue,
 		formState: { isDirty }
 	} = methods;
 
 	useEffect(() => {
 		if (isEdit && tbt) {
 			reset(defaultValues);
+			const files = tbt?.file?.map(f => (
+				{ path: `/storage/media/toolboxtalks/${f.img_src}`, name: f.img_src.split('/').at(-1), id: f.tbt_img_id }
+			))
+			setValue("img_src", files);
+		}
+		if (!isEdit) {
+			// reset(defaultValues);
 		}
 		if (Object.keys(resErrors).length !== 0) {
 			for (const key in resErrors) {

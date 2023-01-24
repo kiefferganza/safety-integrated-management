@@ -202,17 +202,18 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 
 						<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-							<RHFTextField name="job_description" label="Job Description" fullWidth />
-
 							<RHFTextField name="moc_wo_no" label="MOC/WO No." fullWidth />
 
 							<RHFTextField name="site" label="Site/Shop in charge" fullWidth />
 
+							<Box width={1} />
+
 						</Stack>
 
 						<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-							<RHFTextField label="Activity" fullWidth multiline name="description" rows={3} />
+							<RHFTextField label="Job Description" fullWidth multiline name="description" rows={3} />
 						</Stack>
+
 
 						<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 							<RHFTextField label="Remarks" fullWidth multiline name="remarks" rows={3} />

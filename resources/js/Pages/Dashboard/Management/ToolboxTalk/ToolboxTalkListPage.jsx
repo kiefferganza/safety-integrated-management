@@ -59,6 +59,7 @@ const TYPES = {
 const TABLE_HEAD = [
 	{ id: 'form_number', label: 'CMS Number', align: 'left' },
 	{ id: 'title', label: 'Title', align: 'left' },
+	{ id: 'description', label: 'Job', align: 'left' },
 	{ id: 'conducted_by', label: 'Conducted By', align: 'left' },
 	{ id: 'location', label: 'Location', align: 'left' },
 	{ id: 'participants_count', label: 'Participants', align: 'left' },
