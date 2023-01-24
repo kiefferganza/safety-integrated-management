@@ -1,7 +1,7 @@
-
+import { useEffect, useState } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Button } from '@mui/material';
+import { Grid, Container, Button, TextField } from '@mui/material';
 // _mock_
 import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewProducts } from '@/_mock/arrays';
 // components
@@ -17,7 +17,9 @@ import {
 	AnalyticsWidgetSummary,
 	AnalyticsCurrentSubject,
 	AnalyticsConversionRates,
-} from '../../../../sections/@dashboard/general/analytics';
+	AnalyticsTBTLine,
+	AnalyticsTBTWorkDays
+} from '@/sections/@dashboard/general/analytics';
 import { AppWelcome } from '@/sections/@dashboard/general/app';
 import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
 import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
@@ -63,12 +65,32 @@ const COVER_IMAGES = [
 ];
 
 
-export default function GeneralAnalyticsPage ({ user, items }) {
+export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear }) {
+	const [tbtYearSelected, setTbtYearSelected] = useState(null);
+	const [tbtWorkMonthSelected, setTbtWorkMonthSelected] = useState("1");
 	const { totalMainContractors, totalSubContractors, tbt, trainingHours,
 		itds: { count, itdMonth, totalHoursByMonth, totalItd, totalParticipantsPerMonth, totalDays, itdsManual } } = items;
+
 	const theme = useTheme();
 
 	const { themeStretch } = useSettingsContext();
+
+	useEffect(() => {
+		if (totalTbtByYear) {
+			setTbtYearSelected(Object.keys(totalTbtByYear).at(0));
+		}
+	}, [totalTbtByYear]);
+
+	const tbtSelectedYear = tbtYearSelected ? totalTbtByYear[tbtYearSelected] : false;
+
+	const tbtMpMhSmh = tbtSelectedYear ? Object.values(tbtSelectedYear).reduce((acc, curr) => {
+		acc.mp.push(curr.totalManpower);
+		acc.mh.push(curr.totalManhours);
+		acc.smh.push(curr.safeManhours);
+		return acc;
+	}, { mp: [], mh: [], smh: [] }) : { mp: [], mh: [], smh: [] };
+
+	const tbtMonth = tbtSelectedYear ? tbtSelectedYear[tbtWorkMonthSelected] : {};
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -168,6 +190,112 @@ export default function GeneralAnalyticsPage ({ user, items }) {
 						]}
 						color="error"
 						icon={'mdi:dropbox'}
+					/>
+				</Grid>
+
+				<Grid item xs={12} md={6} lg={8}>
+					<AnalyticsTBTLine
+						title="Monthly Toolbox Talk"
+						chart={{
+							labels: [
+								`Jan ${tbtYearSelected}`,
+								`Feb ${tbtYearSelected}`,
+								`Mar ${tbtYearSelected}`,
+								`Apr ${tbtYearSelected}`,
+								`May ${tbtYearSelected}`,
+								`Jun ${tbtYearSelected}`,
+								`Jul ${tbtYearSelected}`,
+								`Aug ${tbtYearSelected}`,
+								`Sep ${tbtYearSelected}`,
+								`Oct ${tbtYearSelected}`,
+								`Nov ${tbtYearSelected}`,
+								`Dec ${tbtYearSelected}`,
+							],
+							series: [
+								{
+									name: 'Manpower',
+									type: 'area',
+									fill: 'gradient',
+									data: tbtMpMhSmh.mp,
+								},
+								{
+									name: 'Man Hours',
+									type: 'column',
+									fill: 'solid',
+									data: tbtMpMhSmh.mh,
+								},
+								{
+									name: 'Safe Man Hours',
+									type: 'column',
+									fill: 'solid',
+									data: tbtMpMhSmh.smh,
+								}
+							],
+							colors: [
+								theme.palette.primary.main,
+								theme.palette.error.main,
+							],
+						}}
+						action={
+							<TextField
+								select
+								fullWidth
+								SelectProps={{ native: true }}
+								label="Year"
+								sx={{ minWidth: 90 }}
+								size="small"
+								value={tbtYearSelected}
+								onChange={(event) => {
+									setTbtYearSelected(event.target.value);
+								}}
+							>
+								{Object.keys(totalTbtByYear).map(yr => <option key={yr} value={yr}>{yr}</option>)}
+							</TextField>
+						}
+
+					/>
+				</Grid>
+
+				<Grid item xs={12} md={6} lg={4}>
+					<AnalyticsTBTWorkDays
+						title="Work Days"
+						chart={{
+							series: [
+								{ label: 'Days Work', value: tbtMonth?.daysWork || 0 },
+								{ label: 'Days Without Work', value: tbtMonth?.daysWoWork || 0 },
+							],
+							colors: [
+								theme.palette.primary.main,
+								theme.palette.error.main,
+							],
+						}}
+						action={
+							<TextField
+								select
+								fullWidth
+								SelectProps={{ native: true }}
+								label="Year"
+								sx={{ minWidth: 90 }}
+								size="small"
+								value={tbtWorkMonthSelected}
+								onChange={(event) => {
+									setTbtWorkMonthSelected(event.target.value);
+								}}
+							>
+								<option value="1">January</option>
+								<option value="2">February</option>
+								<option value="3">March</option>
+								<option value="4">April</option>
+								<option value="5">May</option>
+								<option value="6">June</option>
+								<option value="7">July</option>
+								<option value="8">August</option>
+								<option value="9">September</option>
+								<option value="10">October</option>
+								<option value="11">November</option>
+								<option value="12">December</option>
+							</TextField>
+						}
 					/>
 				</Grid>
 

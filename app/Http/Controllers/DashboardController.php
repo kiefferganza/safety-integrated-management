@@ -15,8 +15,6 @@ use Inertia\Inertia;
 class DashboardController extends Controller
 {
 	public function index() {
-		$user = Auth::user();
-
 		$now = Carbon::now();
 
 		$date1 = date('Y-m-d', strtotime(date($now->year . "-" . $now->month)));
@@ -72,7 +70,7 @@ class DashboardController extends Controller
 					"itd" => $tbt->first(),
 					"this_month" => $tbt->whereRaw("YEAR(date_conducted) = ? AND MONTH(date_conducted) = ?", [$now->year, $now->month])->first()
 				]
-			]
+			],
 		]);
 	}
 }

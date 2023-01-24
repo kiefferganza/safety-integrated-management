@@ -38,8 +38,6 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 
 	const values = watch();
 
-	console.log(values.img_src);
-
 	const handleOpenParticipants = () => {
 		setOpenParticipants(true);
 	};

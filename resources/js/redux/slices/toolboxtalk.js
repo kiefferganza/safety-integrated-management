@@ -237,7 +237,7 @@ function calculateMhMpByPosition (tbtByDate) {
 
 			monthsObj[currMonth[0]] = {
 				...mpMh,
-				totalManpowerAveDaysWork: Math.ceil(mpMh.totalManpower / monthArr.length),
+				totalManpowerAveDaysWork: Math.ceil(mpMh.totalManpower / monthArr.length) || 0,
 				totalManpowerAveDay: Math.ceil(mpMh.totalManpower / Object.values(currMonth[1]).length),
 				safeManhours,
 				daysWork: monthArr.length,

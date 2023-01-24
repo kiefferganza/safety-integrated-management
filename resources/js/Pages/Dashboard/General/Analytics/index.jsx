@@ -2,8 +2,12 @@ import { useEffect, useState } from 'react';
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
 import GeneralAnalyticsPage from "./GeneralAnalyticsPage";
+import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
+import { dispatch, useSelector } from '@/redux/store';
+import { getTbts } from '@/redux/slices/toolboxtalk';
 
 const index = ({ auth: { user }, data }) => {
+	const { isLoading, totalTbtByYear } = useSelector(state => state.toolboxtalk);
 	const [items, setItems] = useState({
 		totalMainContractors: 0,
 		totalSubContractors: 0,
@@ -50,13 +54,23 @@ const index = ({ auth: { user }, data }) => {
 		});
 	}, [data]);
 
+	useEffect(() => {
+		if (totalTbtByYear === null) {
+			dispatch(getTbts());
+		}
+	}, [totalTbtByYear]);
+
+	if (isLoading || totalTbtByYear === null) {
+		return <LoadingScreen />;
+	}
+
 	return (
 		<>
 			<Head>
 				<title> General: Analytics</title>
 			</Head>
 			<DashboardLayout>
-				<GeneralAnalyticsPage user={user} items={items} data={data} />
+				<GeneralAnalyticsPage user={user} items={items} data={data} totalTbtByYear={totalTbtByYear} />
 			</DashboardLayout>
 		</>
 	)
