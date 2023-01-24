@@ -404,7 +404,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 								<TableHeadCustom
 									order={order}
 									orderBy={orderBy}
-									headLabel={addTypeHeader ? [...TABLE_HEAD.slice(0, 6), TABLE_HEAD.at(6), { id: "tbt_type", label: "TBT Type", align: "left" }, TABLE_HEAD.at(7), TABLE_HEAD.at(8)] : TABLE_HEAD}
+									headLabel={addTypeHeader ? [...TABLE_HEAD.slice(0, 7), TABLE_HEAD.at(7), { id: "tbt_type", label: "TBT Type", align: "left" }, TABLE_HEAD.at(8), TABLE_HEAD.at(9)] : TABLE_HEAD}
 									rowCount={tableData.length}
 									numSelected={selected.length}
 									onSort={onSort}
