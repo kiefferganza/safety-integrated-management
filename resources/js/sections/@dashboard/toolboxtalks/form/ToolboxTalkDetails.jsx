@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import ToolboxTalkEmployeeDialog from './ToolboxTalkEmployeeDialog';
-import { format, isValid } from 'date-fns';
+import { format } from 'date-fns';
 // form
 import { useFieldArray, useFormContext } from 'react-hook-form';
 // @mui
@@ -37,6 +37,8 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 	});
 
 	const values = watch();
+
+	console.log(values.img_src);
 
 	const handleOpenParticipants = () => {
 		setOpenParticipants(true);

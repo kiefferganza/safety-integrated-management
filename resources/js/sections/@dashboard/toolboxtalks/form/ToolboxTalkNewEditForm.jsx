@@ -73,9 +73,6 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		time_conducted: tbt?.time_conducted ? formatISO(new Date(1999, 1, 1, tbt?.time_conducted.split(":")[0], tbt?.time_conducted.split(":")[1], 0), { representation: 'complete' }) : null,
 		description: tbt?.description || "",
 		participants: getParticipants(),
-		// img_src: tbt?.file ? tbt?.file?.map(f => (
-		// 	{ path: `/storage/media/toolboxtalks/${f.img_src}`, name: f.img_src.split('/').at(-1), id: f.tbt_img_id }
-		// )) : null,
 		img_src: [],
 		status: tbt?.status || "0",
 		remarks: tbt?.remarks || ""
@@ -117,13 +114,21 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 	useEffect(() => {
 		if (isEdit && tbt) {
 			reset(defaultValues);
-			const files = tbt?.file?.map(f => (
-				{ path: `/storage/media/toolboxtalks/${f.img_src}`, name: f.img_src.split('/').at(-1), id: f.tbt_img_id }
+			const files = tbt?.file?.map((f) => (
+				{
+					path: `/storage/media/toolboxtalks/${f.img_src}`,
+					name: f.img_src.split('/').at(-1),
+					preview: `/storage/media/toolboxtalks/${f.img_src}`,
+					id: f.tbt_img_id,
+					lastModified: new Date().getTime(),
+					lastModifiedDate: new Date()
+				}
 			))
+
 			setValue("img_src", files);
 		}
 		if (!isEdit) {
-			// reset(defaultValues);
+			reset(defaultValues);
 		}
 		if (Object.keys(resErrors).length !== 0) {
 			for (const key in resErrors) {
