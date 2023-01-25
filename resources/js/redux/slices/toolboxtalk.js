@@ -225,16 +225,20 @@ function calculateMhMpByPosition (tbtByDate) {
 			const mpMh = monthArr.reduce((dayObj, currDay) => {
 				dayObj.totalManpower += currDay.manpower;
 				dayObj.totalManhours += currDay.manpower * 9;
+				currDay?.tbt?.forEach(toolbox => {
+					dayObj.location.add(toolbox.location.trim().toLowerCase());
+				});
 				return dayObj;
-			}, { totalManpower: 0, totalManhours: 0 });
+			}, { totalManpower: 0, totalManhours: 0, location: new Set() });
 
-			let safeManhours = mpMh.totalManhours;
-			const prevMonth = monthsObj[currMonth[0] - 1];
+			// const prevMonth = monthsObj[currMonth[0] - 1];
+			// const safeManhours = mpMh.totalManhours + prevMonth.safeManhours;
+			// let safeManhours = mpMh.totalManhours;
 
-			if (prevMonth?.totalManhours === safeManhours) {
-				safeManhours += prevMonth.safeManhours;
-			}
-
+			// if (prevMonth?.totalManhours === safeManhours) {
+			// 	safeManhours += prevMonth.safeManhours;
+			// }
+			const safeManhours = calculateSafeManhoursWoLTI({ monthsObj, currMonth: currMonth[0], smh: mpMh.totalManhours });
 			monthsObj[currMonth[0]] = {
 				...mpMh,
 				totalManpowerAveDay: Math.ceil(mpMh.totalManpower / Object.values(currMonth[1]).length),
@@ -249,4 +253,15 @@ function calculateMhMpByPosition (tbtByDate) {
 	}, {});
 	dispatch(slice.actions.setTotalMpMhByYear(totalMpMhByYear));
 	dispatch(slice.actions.setTbtYearTotalByPosition(byPos));
+}
+
+
+function calculateSafeManhoursWoLTI ({ monthsObj, currMonth, smh }) {
+	const prevMonth = +currMonth - 1;
+	if (prevMonth in monthsObj) {
+		const eq = smh + monthsObj[prevMonth].totalManhours;
+		return calculateSafeManhoursWoLTI({ monthsObj, currMonth: prevMonth, smh: eq });
+	} else {
+		return smh;
+	}
 }

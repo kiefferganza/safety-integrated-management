@@ -17,7 +17,7 @@ ToolboxTalkAnalytic.propTypes = {
 
 export default function ToolboxTalkAnalytic ({ title, total, icon, color, percent }) {
 	return (
-		<Stack direction="row" alignItems="center" justifyContent="center" sx={{ width: 1, minWidth: 200 }}>
+		<Stack direction="row" alignItems="center" justifyContent="center" sx={{ width: 1, minWidth: 240 }}>
 			<Stack alignItems="center" justifyContent="center" sx={{ position: 'relative' }}>
 				<Iconify icon={icon} width={24} sx={{ color, position: 'absolute' }} />
 
@@ -39,7 +39,7 @@ export default function ToolboxTalkAnalytic ({ title, total, icon, color, percen
 			</Stack>
 
 			<Stack spacing={0.5} sx={{ ml: 2 }}>
-				<Typography variant="h6">{title}</Typography>
+				<Typography variant="subtitle2" sx={{ wordBreak: 'break-word', fontWeight: 700 }}>{title}</Typography>
 
 				<Typography variant="subtitle2">
 					{/* {fShortenNumber(total) || 0} */}

@@ -54,6 +54,8 @@ const TBTReportPage = ({ positions }) => {
 	const [startDate, setStartDate] = useState(null);
 	const [endDate, setEndDate] = useState(null);
 
+	// console.log({ tbtByYear, tbtYearTotalByPosition, totalTbtByYear });
+
 	const [filterType, setFilterType] = useState([
 		'All',
 		'Civil',
@@ -62,6 +64,8 @@ const TBTReportPage = ({ positions }) => {
 		'Camp',
 		'Office',
 	]);
+
+	// console.log({ tbtYearTotalByPosition });
 
 	useEffect(() => {
 		if (tbtByYear === null || tbtYearTotalByPosition === null || toolboxTalks === null) {
@@ -169,42 +173,57 @@ const TBTReportPage = ({ positions }) => {
 							sx={{ py: 2 }}
 						>
 							<ToolboxTalkAnalytic
-								title="Total"
-								total={1}
-								percent={100}
-								icon="heroicons:document-chart-bar"
+								title="Total Manpower"
+								total={tbtTotal.totalManpower}
+								percent={tbtTotal.totalManpower / 100}
+								icon="akar-icons:people-group"
 								color={theme.palette.info.main}
 							/>
 
 							<ToolboxTalkAnalytic
-								title="Location"
-								total={2}
-								percent={100}
-								icon="material-symbols:location-on"
+								title="Avg. Manpower/Month"
+								total={tbtTotal.totalManpowerAveDay}
+								percent={(tbtTotal.totalManpowerAveDay * tbtTotal.totalManpower) / 100}
+								icon="akar-icons:people-group"
 								color={theme.palette.success.main}
 							/>
 
 							<ToolboxTalkAnalytic
-								title="Average Month"
-								total={3}
-								percent={100}
-								icon="mdi:percent-circle-outline"
-								color={theme.palette.warning.main}
-							/>
-
-							<ToolboxTalkAnalytic
-								title="Man Hours"
-								total={4}
-								percent={100}
+								title="Manhours/Month"
+								total={tbtTotal.totalManhours}
+								percent={tbtTotal.totalManhours / 100}
 								icon="tabler:clock-hour-3"
 								color={theme.palette.warning.main}
 							/>
 
 							<ToolboxTalkAnalytic
-								title="Manpower"
-								total={5}
+								title="Safe Manhours W/O LTA/Month"
+								total={tbtTotal.safeManhours}
+								percent={tbtTotal.safeManhours / 100}
+								icon="tabler:clock-hour-3"
+								color={theme.palette.success.main}
+							/>
+
+							<ToolboxTalkAnalytic
+								title="Days Work/Month"
+								total={tbtTotal.daysWork}
+								percent={tbtTotal.daysWork}
+								icon="mdi:calendar-check-outline"
+								color={theme.palette.success.main}
+							/>
+
+							<ToolboxTalkAnalytic
+								title="Days W/O Work/Month"
+								total={tbtTotal.daysWoWork}
+								percent={tbtTotal.daysWoWork}
+								icon="mdi:calendar-remove-outline"
+								color={theme.palette.success.main}
+							/>
+							<ToolboxTalkAnalytic
+								title="Location/Month"
+								total={tbtTotal.location.size}
 								percent={100}
-								icon="akar-icons:people-group"
+								icon="material-symbols:location-on-outline"
 								color={theme.palette.success.main}
 							/>
 						</Stack>
@@ -251,7 +270,7 @@ const TBTReportPage = ({ positions }) => {
 								/>
 							)}
 						/>
-						<MobileDatePicker
+						{/* <MobileDatePicker
 							label="Start Date"
 							value={startDate}
 							onChange={() => { }}
@@ -288,7 +307,7 @@ const TBTReportPage = ({ positions }) => {
 									}}
 								/>
 							)}
-						/>
+						/> */}
 					</Stack>
 					<Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
 						<Box>
@@ -409,72 +428,6 @@ const TBTReportPage = ({ positions }) => {
 								</StyledGridBox>
 							</Stack>
 						</Scrollbar>
-					)}
-					{tbtTotal.totalManpowerAveDay >= 0 && (
-						<Stack alignItems="end" sx={{ my: 2 }}>
-							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Total Manpower</Typography>
-								</Box>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.totalManpower}</Typography>
-								</Box>
-							</Box>
-
-							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Hours</Typography>
-								</Box>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>9</Typography>
-								</Box>
-							</Box>
-
-							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Total Manhours</Typography>
-								</Box>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.totalManhours}</Typography>
-								</Box>
-							</Box>
-
-							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Safe Manhours</Typography>
-								</Box>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.safeManhours}</Typography>
-								</Box>
-							</Box>
-
-							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Manpower Ave./Day</Typography>
-								</Box>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.totalManpowerAveDay}</Typography>
-								</Box>
-							</Box>
-
-							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Days Work</Typography>
-								</Box>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.daysWork}</Typography>
-								</Box>
-							</Box>
-
-							<Box display="grid" gridTemplateColumns="220px 140px" border={1}>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Days w/o Work</Typography>
-								</Box>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.daysWoWork}</Typography>
-								</Box>
-							</Box>
-						</Stack>
 					)}
 				</Card>
 			</Container>
