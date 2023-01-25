@@ -59,7 +59,6 @@ class ToolboxTalkService {
 			"file" => fn ($q) => $q->select("tbt_id","img_src"),
 			"conducted"
 		])
-		->orderBy('date_created')
 		->get();
 
 		return $toolbox_talks;
@@ -79,7 +78,6 @@ class ToolboxTalkService {
 			"file" => fn ($q) => $q->select("tbt_id","img_src"),
 			"conducted"
 		])
-		->orderBy('date_created')
 		->get();
 
 		return $toolbox_talks;
