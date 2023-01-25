@@ -14,7 +14,7 @@ class ToolboxTalkController extends Controller
   public function index() {
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/All", [
 			"tbt" => ToolboxTalkService::getList(),
-			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->user_id)->get()
+			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get()
 		]);
 	}
 
@@ -27,7 +27,7 @@ class ToolboxTalkController extends Controller
 			// 					])
 			// 					->orderBy('date_conducted')
 			// 					->get(),
-			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->user_id)->get()
+			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get()
 		]);
 	}
 

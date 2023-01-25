@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function ()
 				])
 				->orderBy('date_conducted')
 				->get(),
-			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->user_id)->get()
+			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get()
 		];
 	});
 	
