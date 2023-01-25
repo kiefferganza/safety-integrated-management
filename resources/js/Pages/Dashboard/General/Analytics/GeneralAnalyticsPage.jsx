@@ -214,8 +214,8 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear }) {
 							series: [
 								{
 									name: 'Manpower',
-									type: 'area',
-									fill: 'gradient',
+									type: 'column',
+									fill: 'solid',
 									data: tbtMpMhSmh.mp,
 								},
 								{

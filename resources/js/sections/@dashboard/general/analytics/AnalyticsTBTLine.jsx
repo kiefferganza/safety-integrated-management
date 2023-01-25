@@ -10,8 +10,19 @@ const AnalyticsTBTLine = ({ title, subheader = "", chart, action, ...other }) =>
 		colors,
 		plotOptions: {
 			bar: {
-				columnWidth: '40%',
+				columnWidth: '80%'
 			},
+		},
+		dataLabels: {
+			enabled: true,
+			position: 'top',
+			formatter: function (val) {
+				return val.toLocaleString("en-US");
+			},
+			offsetX: 0,
+			style: {
+				fontSize: '8px'
+			}
 		},
 		fill: {
 			type: series.map((i) => i.fill),
