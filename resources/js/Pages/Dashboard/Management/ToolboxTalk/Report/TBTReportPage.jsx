@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 // mui
-import { Box, Card, Checkbox, Container, FormControl, IconButton, InputLabel, ListItemText, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Box, Card, Checkbox, Container, Divider, FormControl, IconButton, InputLabel, ListItemText, MenuItem, Select, Stack, TextField, Typography, useTheme } from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import { StyledGridBox, StyledTableCell, StyledTableHead } from './tbtReportStyle';
 // routes
@@ -16,6 +16,7 @@ import Scrollbar from '@/Components/scrollbar';
 import Iconify from '@/Components/iconify';
 import EmptyContent from '@/Components/empty-content';
 import { convertTbtByYear, getTbts, } from '@/redux/slices/toolboxtalk';
+import ToolboxTalkAnalytic from '@/sections/@dashboard/toolboxtalks/ToolboxTalkAnalytic';
 
 const TODAY = new Date;
 const CURRENT_MONTH = getMonth(TODAY) + 1;
@@ -46,8 +47,13 @@ const TYPES = {
 const TBTReportPage = ({ positions }) => {
 	const { toolboxTalks, tbtByYear, tbtYearTotalByPosition, totalTbtByYear, isLoading } = useSelector(state => state.toolboxtalk);
 	const { themeStretch } = useSettingsContext();
+	const theme = useTheme();
 	const [yearSelected, setYearSelected] = useState(null);
 	const [monthSelected, setMonthSelected] = useState(CURRENT_MONTH);
+
+	const [startDate, setStartDate] = useState(null);
+	const [endDate, setEndDate] = useState(null);
+
 	const [filterType, setFilterType] = useState([
 		'All',
 		'Civil',
@@ -155,6 +161,55 @@ const TBTReportPage = ({ positions }) => {
 						},
 					]}
 				/>
+				<Card sx={{ mb: 5 }}>
+					<Scrollbar>
+						<Stack
+							direction="row"
+							divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
+							sx={{ py: 2 }}
+						>
+							<ToolboxTalkAnalytic
+								title="Total"
+								total={1}
+								percent={100}
+								icon="heroicons:document-chart-bar"
+								color={theme.palette.info.main}
+							/>
+
+							<ToolboxTalkAnalytic
+								title="Location"
+								total={2}
+								percent={100}
+								icon="material-symbols:location-on"
+								color={theme.palette.success.main}
+							/>
+
+							<ToolboxTalkAnalytic
+								title="Average Month"
+								total={3}
+								percent={100}
+								icon="mdi:percent-circle-outline"
+								color={theme.palette.warning.main}
+							/>
+
+							<ToolboxTalkAnalytic
+								title="Man Hours"
+								total={4}
+								percent={100}
+								icon="tabler:clock-hour-3"
+								color={theme.palette.warning.main}
+							/>
+
+							<ToolboxTalkAnalytic
+								title="Manpower"
+								total={5}
+								percent={100}
+								icon="akar-icons:people-group"
+								color={theme.palette.success.main}
+							/>
+						</Stack>
+					</Scrollbar>
+				</Card>
 				<Card sx={{ p: 2 }}>
 					<Stack direction="row" gap={1} justifyContent="end" sx={{ mb: 2 }}>
 						<FormControl sx={{ width: 1, maxWidth: 140 }} size='small'>
@@ -181,6 +236,44 @@ const TBTReportPage = ({ positions }) => {
 							label="Select Date"
 							value={new Date(yearSelected, monthSelected - 1, 1)}
 							onChange={handleDateChange}
+							inputFormat="MMM yyyy"
+							openTo="year"
+							showToolbar={false}
+							views={['year', 'month']}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									size="small"
+									fullWidth
+									sx={{
+										maxWidth: { md: 160 },
+									}}
+								/>
+							)}
+						/>
+						<MobileDatePicker
+							label="Start Date"
+							value={startDate}
+							onChange={() => { }}
+							inputFormat="MMM yyyy"
+							openTo="year"
+							showToolbar={false}
+							views={['year', 'month']}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									size="small"
+									fullWidth
+									sx={{
+										maxWidth: { md: 160 },
+									}}
+								/>
+							)}
+						/>
+						<MobileDatePicker
+							label="End Date"
+							value={endDate}
+							onChange={() => { }}
 							inputFormat="MMM yyyy"
 							openTo="year"
 							showToolbar={false}
@@ -317,7 +410,7 @@ const TBTReportPage = ({ positions }) => {
 							</Stack>
 						</Scrollbar>
 					)}
-					{tbtTotal.totalManpowerAveDaysWork >= 0 && (
+					{tbtTotal.totalManpowerAveDay >= 0 && (
 						<Stack alignItems="end" sx={{ my: 2 }}>
 							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
 								<Box>
@@ -352,15 +445,6 @@ const TBTReportPage = ({ positions }) => {
 								</Box>
 								<Box>
 									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.safeManhours}</Typography>
-								</Box>
-							</Box>
-
-							<Box display="grid" gridTemplateColumns="220px 140px" border={1} borderBottom={0}>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} borderRight={1} sx={{ paddingLeft: "4px" }}>Manpower Ave./Days Work</Typography>
-								</Box>
-								<Box>
-									<Typography variant="subtitle1" fontWeight={700} textAlign="right" sx={{ color: "#5e6360", paddingRight: "4px" }}>{tbtTotal.totalManpowerAveDaysWork}</Typography>
 								</Box>
 							</Box>
 

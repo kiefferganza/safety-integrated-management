@@ -114,6 +114,7 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 	useEffect(() => {
 		if (isEdit && tbt) {
 			reset(defaultValues);
+			console.log("WEW");
 			const files = tbt?.file?.map((f) => (
 				{
 					path: `/storage/media/toolboxtalks/${f.img_src}`,
@@ -127,9 +128,9 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 
 			setValue("img_src", files);
 		}
-		if (!isEdit) {
-			reset(defaultValues);
-		}
+		// if (!isEdit) {
+		// 	reset(defaultValues);
+		// }
 		if (Object.keys(resErrors).length !== 0) {
 			for (const key in resErrors) {
 				setError(key, { type: "custom", message: resErrors[key] });
