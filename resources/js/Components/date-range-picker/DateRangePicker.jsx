@@ -41,6 +41,7 @@ export default function DateRangePicker ({
 	//
 	open,
 	onClose,
+	onApply,
 	//
 	isError,
 }) {
@@ -53,7 +54,7 @@ export default function DateRangePicker ({
 			fullWidth
 			maxWidth={isCalendarView ? false : 'xs'}
 			open={open}
-			onClose={onClose}
+			onClose={isError ? null : onClose}
 			PaperProps={{
 				sx: {
 					...(isCalendarView && {
@@ -120,11 +121,11 @@ export default function DateRangePicker ({
 			</DialogContent>
 
 			<DialogActions>
-				<Button variant="outlined" color="inherit" onClick={onClose}>
+				<Button disabled={isError} variant="outlined" color="inherit" onClick={onClose}>
 					Cancel
 				</Button>
 
-				<Button disabled={isError} variant="contained" onClick={onClose}>
+				<Button disabled={isError} variant="contained" onClick={onApply || onClose}>
 					Apply
 				</Button>
 			</DialogActions>
