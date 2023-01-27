@@ -640,8 +640,15 @@ function applyFilter ({
 	inputData = stabilizedThis.map((el) => el[0]);
 
 	if (filterName) {
-		inputData = inputData.filter(
-			(inspection) => inspection.form_number.toLowerCase().includes(filterName.toLowerCase()));
+		console.log(inputData);
+		// toolbox.cms.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
+		// toolbox.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+		inputData = inputData.filter((inspection) =>
+			inspection.form_number.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
+			inspection.reviewer.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
+			inspection.inspected_by.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
+			inspection.accompanied_by.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+		);
 	}
 
 	if (filterType !== 'all') {

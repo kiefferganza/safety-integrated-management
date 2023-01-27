@@ -35,7 +35,7 @@ const InspectionForm = ({ personel }) => {
 	}
 
 
-	const options = personel.map((option) => ({ id: option.employee_id, label: `${option?.firstname} ${option?.lastname}` }));
+	const options = personel.map((option) => ({ id: option.employee_id, label: `${option?.firstname} ${option?.lastname}`, user_id: option.user_id }));
 
 	return (
 		<Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
@@ -140,7 +140,7 @@ const InspectionForm = ({ personel }) => {
 								setValue('reviewer_id', '', { shouldValidate: true, shouldDirty: true });
 							}
 						}}
-						options={options}
+						options={options.filter(emp => emp.user_id)}
 						label="Action By"
 						error={errors?.reviewer_id?.message}
 					/>
@@ -154,7 +154,7 @@ const InspectionForm = ({ personel }) => {
 								setValue('verifier_id', '', { shouldValidate: true, shouldDirty: true });
 							}
 						}}
-						options={options}
+						options={options.filter(emp => emp.user_id)}
 						label="Verified By"
 						error={errors?.verifier_id?.message}
 					/>
