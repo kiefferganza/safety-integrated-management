@@ -7,7 +7,7 @@ import { dispatch, useSelector } from '@/redux/store';
 import { getTbts } from '@/redux/slices/toolboxtalk';
 
 const index = ({ auth: { user }, data }) => {
-	const { isLoading, totalTbtByYear } = useSelector(state => state.toolboxtalk);
+	const { isLoading, tbtByYear, totalTbtByYear } = useSelector(state => state.toolboxtalk);
 	const [items, setItems] = useState({
 		totalMainContractors: 0,
 		totalSubContractors: 0,
@@ -55,12 +55,12 @@ const index = ({ auth: { user }, data }) => {
 	}, [data]);
 
 	useEffect(() => {
-		if (totalTbtByYear === null) {
+		if (!totalTbtByYear || !tbtByYear) {
 			dispatch(getTbts());
 		}
 	}, [totalTbtByYear]);
 
-	if (isLoading || totalTbtByYear === null) {
+	if (isLoading || !totalTbtByYear || !tbtByYear) {
 		return <LoadingScreen />;
 	}
 
@@ -70,7 +70,7 @@ const index = ({ auth: { user }, data }) => {
 				<title> General: Analytics</title>
 			</Head>
 			<DashboardLayout>
-				<GeneralAnalyticsPage user={user} items={items} data={data} totalTbtByYear={totalTbtByYear} />
+				<GeneralAnalyticsPage user={user} items={items} data={data} totalTbtByYear={totalTbtByYear} tbtByYear={tbtByYear} />
 			</DashboardLayout>
 		</>
 	)

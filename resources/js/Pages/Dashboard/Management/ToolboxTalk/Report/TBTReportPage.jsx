@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getMonth, getYear } from 'date-fns';
 // mui
-import { Box, Card, Checkbox, Container, Divider, FormControl, IconButton, InputLabel, ListItemText, MenuItem, Select, Stack, TextField, Typography, useTheme } from '@mui/material';
+import { Box, Card, Checkbox, Container, Divider, FormControl, InputLabel, ListItemText, MenuItem, Select, Stack, TextField, Typography, useTheme } from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
@@ -21,7 +21,6 @@ import ToolboxTalkAnalytic from '@/sections/@dashboard/toolboxtalks/ToolboxTalkA
 import TBTReportTable from './TBTReportTable';
 import { useMemo } from 'react';
 
-const TODAY = new Date;
 const MONTH_NAMES = {
 	1: 'January',
 	2: 'February',
@@ -50,7 +49,6 @@ const TBTReportPage = ({ positions }) => {
 	const { toolboxTalks, tbtByYear, tbtYearTotalByPosition, totalTbtByYear, isLoading } = useSelector(state => state.toolboxtalk);
 	const { themeStretch } = useSettingsContext();
 	const theme = useTheme();
-	const [yearSelected, setYearSelected] = useState(null);
 
 	const [data, setData] = useState([]);
 	const [filteredData, setFilteredData] = useState();
@@ -151,9 +149,8 @@ const TBTReportPage = ({ positions }) => {
 		if (tbtByYear === null || tbtYearTotalByPosition === null || toolboxTalks === null) {
 			dispatch(getTbts());
 		}
-		if (yearSelected === null && tbtByYear !== null) {
+		if (tbtByYear !== null) {
 			const y = Object.keys(tbtByYear).at(0) ? new Date(Object.keys(tbtByYear).at(0), 0, 1) : 0;
-			setYearSelected(Object.keys(tbtByYear).at(0) || 0);
 			setStartDate(y);
 			setStartDateHandler(y);
 			setEndDate(y);

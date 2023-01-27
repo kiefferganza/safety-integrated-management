@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import CountUp from 'react-countup';
 // @mui
 import { alpha, useTheme } from '@mui/material/styles';
 import { Box, Card, Typography } from '@mui/material';
@@ -57,7 +58,11 @@ export default function AnalyticsWidgetSummary ({ title, total, icon, data, colo
 			<Box display="flex" alignItems="center" gap={2} justifyContent="center">
 				{data.map(({ label, total }, idx) => (
 					<Box key={idx}>
-						<Typography variant="h5">{fShortenNumber(total) || 0}</Typography>
+						{/* <Typography variant="h5">{(total || 0).toLocaleString("en-US")}</Typography> */}
+						<Typography variant="h5">
+							<CountUp start={0} end={total} duration={1} separator="," />
+						</Typography>
+						{/* <Typography variant="h5">{fShortenNumber(total) || 0}</Typography> */}
 						<Typography variant="subtitle2" sx={{ opacity: 0.64 }}>{label}</Typography>
 					</Box>
 				))}

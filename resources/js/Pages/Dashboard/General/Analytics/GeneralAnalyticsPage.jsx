@@ -1,9 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { getMonth, getYear } from 'date-fns';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Button, TextField } from '@mui/material';
+import { Grid, Container, Button, TextField, Box, Typography } from '@mui/material';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 // _mock_
 import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewProducts } from '@/_mock/arrays';
+// utils
+import { fTimestamp } from '@/utils/formatTime';
 // components
 import { useSettingsContext } from '@/Components/settings';
 // sections
@@ -23,6 +27,9 @@ import {
 import { AppWelcome } from '@/sections/@dashboard/general/app';
 import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
 import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
+import LoadingScreen from '@/Components/loading-screen';
+import Iconify from '@/Components/iconify';
+
 
 // ----------------------------------------------------------------------
 
@@ -64,12 +71,33 @@ const COVER_IMAGES = [
 	},
 ];
 
+const MONTH_NAMES = {
+	1: 'Jan',
+	2: 'Feb',
+	3: 'Mar',
+	4: 'Apr',
+	5: 'May',
+	6: 'Jun',
+	7: 'Jul',
+	8: 'Aug',
+	9: 'Sep',
+	10: 'Oct',
+	11: 'Nov',
+	12: 'Dec',
+}
 
-export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear }) {
-	const [tbtYearSelected, setTbtYearSelected] = useState(null);
-	const [tbtWorkMonthSelected, setTbtWorkMonthSelected] = useState("1");
+
+export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbtByYear }) {
 	const { totalMainContractors, totalSubContractors, tbt, trainingHours,
 		itds: { count, itdMonth, totalHoursByMonth, totalItd, totalParticipantsPerMonth, totalDays, itdsManual } } = items;
+
+	const [tbtData, setTbtData] = useState([]);
+	const [filteredTbtData, setFilteredTbtData] = useState([]);
+	const [startTbtDate, setStartTbtDate] = useState(null);
+	const [startTbtDateHandler, setTbtStartDateHandler] = useState(null);
+	const [endTbtDate, setEndTbtDate] = useState(null);
+	const [endTbtDateHandler, setEndTbtDateHandler] = useState(null);
+	const endTbtDateRef = useRef();
 
 	const theme = useTheme();
 
@@ -77,20 +105,78 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear }) {
 
 	useEffect(() => {
 		if (totalTbtByYear) {
-			setTbtYearSelected(Object.keys(totalTbtByYear).at(0));
+			const yStart = Object.keys(totalTbtByYear).at(0) ? new Date(Object.keys(totalTbtByYear).at(0), 0, 1) : 0;
+			const yEnd = Object.keys(totalTbtByYear).at(0) ? new Date(Object.keys(totalTbtByYear).at(0), 11, 1) : 0;
+			setStartTbtDate(yStart);
+			setTbtStartDateHandler(yStart);
+			setEndTbtDate(yEnd);
+			setEndTbtDateHandler(yEnd);
+			const tbt = Object.entries(totalTbtByYear).reduce((acc, curr) => {
+				const monthsData = Object.entries(curr[1]);
+				monthsData.forEach(d => d.push(curr[0]));
+				acc.push(...monthsData);
+				return acc;
+			}, []);
+			setFilteredTbtData(tbt.slice(0, 12));
+			setTbtData(tbt);
 		}
 	}, [totalTbtByYear]);
 
-	const tbtSelectedYear = tbtYearSelected ? totalTbtByYear[tbtYearSelected] : false;
+	const filterTbtBySelectedDate = (start, end) => {
+		const selStartYear = getYear(start);
+		const selStartMonth = getMonth(start) + 1;
+		const selEndYear = getYear(end);
+		const selEndMonth = getMonth(end) + 1;
 
-	const tbtMpMhSmh = tbtSelectedYear ? Object.values(tbtSelectedYear).reduce((acc, curr) => {
-		acc.mp.push(curr.totalManpower);
-		acc.mh.push(curr.totalManhours);
-		acc.smh.push(curr.safeManhours);
+		const filteredTbt = tbtData.filter((d) => {
+			const m = d[0];
+			const y = d[2];
+			const isStart = (m >= selStartMonth && y == selStartYear);
+			const isEnd = (m <= selEndMonth && y == selEndYear);
+			if (selStartYear === selEndYear) return isStart && isEnd;
+			return isStart || isEnd;
+		});
+		setFilteredTbtData(filteredTbt);
+	}
+
+
+	const handleStartTbtDateChange = (newDate) => {
+		setTbtStartDateHandler(newDate);
+	}
+
+	const onStartTbtDateAccept = (newDate) => {
+		setStartTbtDate(newDate);
+		if (fTimestamp(newDate) > fTimestamp(endTbtDateHandler)) {
+			endTbtDateRef.current.click();
+		} else {
+			filterTbtBySelectedDate(newDate, endTbtDate);
+		}
+	}
+
+	const handleTbtEndDateChange = (newDate) => {
+		setEndTbtDateHandler(newDate);
+	}
+
+	const onTbtEndDateAccept = (newDate) => {
+		setEndTbtDate(newDate);
+		filterTbtBySelectedDate(startTbtDate, newDate);
+	}
+
+	const tbtAnalytic = useMemo(() => filteredTbtData?.reduce((acc, curr) => {
+		const total = totalTbtByYear[curr[2]][curr[0]];
+		acc.totalManpower += total.totalManpower;
+		acc.totalManhours += total.totalManhours;
+		acc.safeManhours += total.safeManhours;
+		acc.daysWork += total.daysWork;
+		acc.daysWoWork += total.daysWoWork;
 		return acc;
-	}, { mp: [], mh: [], smh: [] }) : { mp: [], mh: [], smh: [] };
-
-	const tbtMonth = tbtSelectedYear ? tbtSelectedYear[tbtWorkMonthSelected] : {};
+	}, {
+		totalManpower: 0,
+		totalManhours: 0,
+		safeManhours: 0,
+		daysWork: 0,
+		daysWoWork: 0,
+	}), [filteredTbtData]);
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -118,18 +204,84 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear }) {
 					<EcommerceNewProducts list={COVER_IMAGES} />
 				</Grid>
 
+				<Grid item md={12}>
+					<Box display="flex" justifyContent="end">
+						<Box>
+							<Typography variant="subtitle2" fontWeight={700} mb={1} textAlign="right">Filter By Date</Typography>
+							<Box display="flex" gap={2}>
+								<MobileDatePicker
+									label="Start Date"
+									value={startTbtDateHandler}
+									onChange={handleStartTbtDateChange}
+									onAccept={onStartTbtDateAccept}
+									inputFormat="MMM yyyy"
+									openTo="year"
+									showToolbar
+									views={['year', 'month']}
+									minDate={new Date(Object.keys(tbtByYear).at(0), 0, 1)}
+									maxDate={new Date(Object.keys(tbtByYear).at(-1), 11, 1)}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											size="small"
+											fullWidth
+											sx={{
+												maxWidth: { md: 160 },
+											}}
+											InputProps={{
+												endAdornment: (
+													<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
+												)
+											}}
+										/>
+									)}
+								/>
+								<MobileDatePicker
+									disabled={!startTbtDate}
+									label="End Date"
+									value={endTbtDateHandler}
+									onChange={handleTbtEndDateChange}
+									onAccept={onTbtEndDateAccept}
+									minDate={startTbtDateHandler}
+									maxDate={new Date(Object.keys(tbtByYear).at(-1), 11, 1)}
+									inputFormat="MMM yyyy"
+									openTo="year"
+									showToolbar
+									views={['year', 'month']}
+									ref={endTbtDateRef}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											size="small"
+											fullWidth
+											sx={{
+												maxWidth: { md: 160 },
+											}}
+											InputProps={{
+												endAdornment: (
+													<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
+												)
+											}}
+										/>
+									)}
+								/>
+							</Box>
+						</Box>
+					</Box>
+				</Grid>
+
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANHOURS WORKED"
 						total={0}
 						data={[
 							{
-								label: "This Month",
-								total: totalHoursByMonth
+								label: "TOTAL",
+								total: tbtAnalytic.totalManhours
 							},
 							{
-								label: "ITD",
-								total: (totalItd + itdsManual)
+								label: "SAFE MANHOURS",
+								total: tbtAnalytic.safeManhours
 							}
 						]}
 						icon={'mdi:clock-time-four-outline'}
@@ -142,12 +294,12 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear }) {
 						total={0}
 						data={[
 							{
-								label: "Contractor",
-								total: totalMainContractors
+								label: "TOTAL",
+								total: tbtAnalytic.totalManpower
 							},
 							{
-								label: "Subcontractor",
-								total: totalSubContractors
+								label: "DAYS WORK",
+								total: tbtAnalytic.daysWork
 							}
 						]}
 						color="info"
@@ -197,62 +349,37 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear }) {
 					<AnalyticsTBTLine
 						title="Monthly Toolbox Talk"
 						chart={{
-							labels: [
-								`Jan ${tbtYearSelected}`,
-								`Feb ${tbtYearSelected}`,
-								`Mar ${tbtYearSelected}`,
-								`Apr ${tbtYearSelected}`,
-								`May ${tbtYearSelected}`,
-								`Jun ${tbtYearSelected}`,
-								`Jul ${tbtYearSelected}`,
-								`Aug ${tbtYearSelected}`,
-								`Sep ${tbtYearSelected}`,
-								`Oct ${tbtYearSelected}`,
-								`Nov ${tbtYearSelected}`,
-								`Dec ${tbtYearSelected}`,
-							],
-							series: [
+							labels: filteredTbtData.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
+							series: filteredTbtData.reduce((acc, curr) => {
+								acc[0].data.push(curr[1].totalManpower);
+								acc[1].data.push(curr[1].totalManhours);
+								acc[2].data.push(curr[1].safeManhours);
+								return acc;
+							}, [
 								{
 									name: 'Manpower',
 									type: 'column',
 									fill: 'solid',
-									data: tbtMpMhSmh.mp,
+									data: [],
 								},
 								{
 									name: 'Man Hours',
 									type: 'column',
 									fill: 'solid',
-									data: tbtMpMhSmh.mh,
+									data: [],
 								},
 								{
 									name: 'Safe Man Hours',
 									type: 'column',
 									fill: 'solid',
-									data: tbtMpMhSmh.smh,
+									data: [],
 								}
-							],
+							]),
 							colors: [
 								theme.palette.primary.main,
 								theme.palette.error.main,
 							],
 						}}
-						action={
-							<TextField
-								select
-								fullWidth
-								SelectProps={{ native: true }}
-								label="Year"
-								sx={{ minWidth: 90 }}
-								size="small"
-								value={tbtYearSelected}
-								onChange={(event) => {
-									setTbtYearSelected(event.target.value);
-								}}
-							>
-								{Object.keys(totalTbtByYear).map(yr => <option key={yr} value={yr}>{yr}</option>)}
-							</TextField>
-						}
-
 					/>
 				</Grid>
 
@@ -261,41 +388,14 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear }) {
 						title="Work Days"
 						chart={{
 							series: [
-								{ label: 'Days Work', value: tbtMonth?.daysWork || 0 },
-								{ label: 'Days Without Work', value: tbtMonth?.daysWoWork || 0 },
+								{ label: 'Days Work', value: tbtAnalytic?.daysWork || 0 },
+								{ label: 'Days Without Work', value: tbtAnalytic?.daysWoWork || 0 },
 							],
 							colors: [
 								theme.palette.primary.main,
 								theme.palette.error.main,
 							],
 						}}
-						action={
-							<TextField
-								select
-								fullWidth
-								SelectProps={{ native: true }}
-								label="Year"
-								sx={{ minWidth: 90 }}
-								size="small"
-								value={tbtWorkMonthSelected}
-								onChange={(event) => {
-									setTbtWorkMonthSelected(event.target.value);
-								}}
-							>
-								<option value="1">January</option>
-								<option value="2">February</option>
-								<option value="3">March</option>
-								<option value="4">April</option>
-								<option value="5">May</option>
-								<option value="6">June</option>
-								<option value="7">July</option>
-								<option value="8">August</option>
-								<option value="9">September</option>
-								<option value="10">October</option>
-								<option value="11">November</option>
-								<option value="12">December</option>
-							</TextField>
-						}
 					/>
 				</Grid>
 
