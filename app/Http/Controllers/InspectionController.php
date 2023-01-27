@@ -48,7 +48,7 @@ class InspectionController extends Controller
 		}
 
 		return Inertia::render("Dashboard/Management/Inspection/Create/index", [
-			"personel" =>  Employee::select("employee_id", "firstname", "lastname")->where([
+			"personel" =>  Employee::select("employee_id", "firstname", "lastname", "user_id")->where([
 				["is_deleted", 0],
 				["employee_id", "!=", $user->emp_id]
 			])->get(),
