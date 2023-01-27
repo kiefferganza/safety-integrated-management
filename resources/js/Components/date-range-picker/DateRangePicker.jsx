@@ -27,6 +27,8 @@ DateRangePicker.propTypes = {
 	variant: PropTypes.oneOf(['input', 'calendar']),
 	startDate: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.instanceOf(Date)]),
 	endDate: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.instanceOf(Date)]),
+	StartDateProps: PropTypes.object,
+	EndDateProps: PropTypes.object,
 };
 
 export default function DateRangePicker ({
@@ -35,6 +37,9 @@ export default function DateRangePicker ({
 	//
 	startDate,
 	endDate,
+	//
+	StartDateProps,
+	EndDateProps,
 	//
 	onChangeStartDate,
 	onChangeEndDate,
@@ -89,11 +94,11 @@ export default function DateRangePicker ({
 					{isCalendarView ? (
 						<>
 							<Paper variant="outlined" sx={{ borderRadius: 2, borderColor: 'divider', borderStyle: 'dashed' }}>
-								<CalendarPicker date={startDate} onChange={onChangeStartDate} />
+								<CalendarPicker {...StartDateProps} date={startDate} onChange={onChangeStartDate} />
 							</Paper>
 
 							<Paper variant="outlined" sx={{ borderRadius: 2, borderColor: 'divider', borderStyle: 'dashed' }}>
-								<CalendarPicker date={endDate} onChange={onChangeEndDate} />
+								<CalendarPicker {...EndDateProps} date={endDate} onChange={onChangeEndDate} />
 							</Paper>
 						</>
 					) : (
@@ -102,6 +107,7 @@ export default function DateRangePicker ({
 								label="Start date"
 								value={startDate}
 								onChange={onChangeStartDate}
+								{...StartDateProps}
 								renderInput={(params) => <TextField {...params} />}
 							/>
 
@@ -109,6 +115,7 @@ export default function DateRangePicker ({
 								label="End date"
 								value={endDate}
 								onChange={onChangeEndDate}
+								{...EndDateProps}
 								renderInput={(params) => <TextField {...params} />}
 							/>
 						</>

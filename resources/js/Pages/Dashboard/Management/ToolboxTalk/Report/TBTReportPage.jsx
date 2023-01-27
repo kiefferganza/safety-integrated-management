@@ -1,25 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { getMonth, getYear } from 'date-fns';
 // mui
 import { Box, Card, Checkbox, Container, Divider, FormControl, IconButton, InputLabel, ListItemText, MenuItem, Select, Stack, TextField, Typography, useTheme } from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers';
-import { StyledGridBox, StyledTableCell, StyledTableHead } from './tbtReportStyle';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // redux
 import { dispatch, useSelector } from '@/redux/store';
+import { convertTbtByYear, getTbts, } from '@/redux/slices/toolboxtalk';
+// utils
+import { fTimestamp } from '@/utils/formatTime';
 // Components
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs/CustomBreadcrumbs';
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import { useSettingsContext } from '@/Components/settings';
-import { getMonth, getYear } from 'date-fns';
 import Scrollbar from '@/Components/scrollbar';
 import Iconify from '@/Components/iconify';
 import EmptyContent from '@/Components/empty-content';
-import { convertTbtByYear, getTbts, } from '@/redux/slices/toolboxtalk';
 import ToolboxTalkAnalytic from '@/sections/@dashboard/toolboxtalks/ToolboxTalkAnalytic';
+import TBTReportTable from './TBTReportTable';
+import { useMemo } from 'react';
 
 const TODAY = new Date;
-const CURRENT_MONTH = getMonth(TODAY) + 1;
 const MONTH_NAMES = {
 	1: 'January',
 	2: 'February',
@@ -49,12 +51,15 @@ const TBTReportPage = ({ positions }) => {
 	const { themeStretch } = useSettingsContext();
 	const theme = useTheme();
 	const [yearSelected, setYearSelected] = useState(null);
-	const [monthSelected, setMonthSelected] = useState(CURRENT_MONTH);
 
+	const [data, setData] = useState([]);
+	const [filteredData, setFilteredData] = useState();
 	const [startDate, setStartDate] = useState(null);
+	const [startDateHandler, setStartDateHandler] = useState(null);
 	const [endDate, setEndDate] = useState(null);
+	const [endDateHandler, setEndDateHandler] = useState(null);
+	const endDateRef = useRef();
 
-	// console.log({ tbtByYear, tbtYearTotalByPosition, totalTbtByYear });
 
 	const [filterType, setFilterType] = useState([
 		'All',
@@ -65,20 +70,45 @@ const TBTReportPage = ({ positions }) => {
 		'Office',
 	]);
 
-	// console.log({ tbtYearTotalByPosition });
+	const filterTbtBySelectedDate = (start, end) => {
+		const selStartYear = getYear(start);
+		const selStartMonth = getMonth(start) + 1;
+		const selEndYear = getYear(end);
+		const selEndMonth = getMonth(end) + 1;
 
-	useEffect(() => {
-		if (tbtByYear === null || tbtYearTotalByPosition === null || toolboxTalks === null) {
-			dispatch(getTbts());
-		}
-		if (yearSelected === null && tbtByYear !== null) {
-			setYearSelected(Object.keys(tbtByYear).at(0) || 0);
-		}
-	}, [tbtByYear, tbtYearTotalByPosition, totalTbtByYear]);
 
-	const handleDateChange = (value) => {
-		setYearSelected(getYear(value));
-		setMonthSelected(getMonth(value) + 1);
+		const filteredTbt = data.filter((d) => {
+			const m = d[0];
+			const y = d[2];
+			const isStart = (m >= selStartMonth && y == selStartYear);
+			const isEnd = (m <= selEndMonth && y == selEndYear);
+			if (selStartYear === selEndYear) return isStart && isEnd;
+			return isStart || isEnd;
+		});
+		setFilteredData(filteredTbt);
+	}
+
+
+	const handleStartDateChange = (newDate) => {
+		setStartDateHandler(newDate);
+	}
+
+	const onStartDateAccept = (newDate) => {
+		setStartDate(newDate);
+		if (fTimestamp(newDate) > fTimestamp(endDateHandler)) {
+			endDateRef.current.click();
+		} else {
+			filterTbtBySelectedDate(newDate, endDate);
+		}
+	}
+
+	const handleEndDateChange = (newDate) => {
+		setEndDateHandler(newDate);
+	}
+
+	const onEndDateAccept = (newDate) => {
+		setEndDate(newDate);
+		filterTbtBySelectedDate(startDate, newDate);
 	}
 
 
@@ -117,34 +147,59 @@ const TBTReportPage = ({ positions }) => {
 		setFilterType(newVal);
 	};
 
-	if (isLoading || !tbtByYear || yearSelected === null) {
+	useEffect(() => {
+		if (tbtByYear === null || tbtYearTotalByPosition === null || toolboxTalks === null) {
+			dispatch(getTbts());
+		}
+		if (yearSelected === null && tbtByYear !== null) {
+			const y = Object.keys(tbtByYear).at(0) ? new Date(Object.keys(tbtByYear).at(0), 0, 1) : 0;
+			setYearSelected(Object.keys(tbtByYear).at(0) || 0);
+			setStartDate(y);
+			setStartDateHandler(y);
+			setEndDate(y);
+			setEndDateHandler(y);
+			const tbtData = Object.entries(tbtByYear).reduce((acc, curr) => {
+				const monthsData = Object.entries(curr[1]);
+				monthsData.forEach(d => d.push(curr[0]));
+				acc.push(...monthsData);
+				return acc;
+			}, []);
+			setData(tbtData);
+			setFilteredData([tbtData[0]]);
+		}
+	}, [tbtByYear, tbtYearTotalByPosition, totalTbtByYear]);
+
+	const analytic = useMemo(() => filteredData?.reduce((acc, curr) => {
+		const total = totalTbtByYear[curr[2]][curr[0]];
+		acc.totalManpower += total.totalManpower;
+		acc.totalManpowerAveDay += total.totalManpowerAveDay;
+		acc.totalManhours += total.totalManhours;
+		acc.safeManhours += total.safeManhours;
+		acc.daysWork += total.daysWork;
+		acc.daysWoWork += total.daysWoWork;
+		acc.location = new Set([...acc.location, ...total.location]);
+		return acc;
+	}, {
+		totalManpower: 0,
+		totalManpowerAveDay: 0,
+		totalManhours: 0,
+		safeManhours: 0,
+		daysWork: 0,
+		daysWoWork: 0,
+		location: new Set
+	}), [filteredData]);
+
+	if (isLoading || !tbtByYear || startDate === null) {
 		return <LoadingScreen />
 	}
 
-	if (Object.keys(tbtByYear).length === 0 || yearSelected === 0 || !(yearSelected in tbtByYear)) {
+	if (Object.keys(tbtByYear).length === 0 || startDate === 0) {
 		return <NoData
 			themeStretch={themeStretch}
-			yearSelected={yearSelected}
-			monthSelected={monthSelected}
-			onChange={handleDateChange}
 			filterType={filterType}
 			onTypeChange={handleFilterType}
 		/>
 	}
-
-	const handleNextMonth = () => {
-		const m = monthSelected === 12 ? 1 : monthSelected + 1;
-		setMonthSelected(m);
-	}
-
-	const handlePrevMonth = () => {
-		const m = monthSelected === 1 ? 12 : monthSelected - 1;
-		setMonthSelected(m);
-	}
-
-	const days = tbtByYear[yearSelected][monthSelected] || {};
-	const positionData = tbtYearTotalByPosition[yearSelected][monthSelected] || {};
-	const tbtTotal = totalTbtByYear[yearSelected][monthSelected] || {}
 
 	return (
 		<>
@@ -174,54 +229,54 @@ const TBTReportPage = ({ positions }) => {
 						>
 							<ToolboxTalkAnalytic
 								title="Total Manpower"
-								total={tbtTotal.totalManpower}
-								percent={tbtTotal.totalManpower / 100}
+								total={analytic.totalManpower}
+								percent={analytic.totalManpower / 100}
 								icon="akar-icons:people-group"
 								color={theme.palette.info.main}
 							/>
 
 							<ToolboxTalkAnalytic
 								title="Avg. Manpower/Month"
-								total={tbtTotal.totalManpowerAveDay}
-								percent={(tbtTotal.totalManpowerAveDay * tbtTotal.totalManpower) / 100}
+								total={analytic.totalManpowerAveDay}
+								percent={(analytic.totalManpowerAveDay * analytic.totalManpower) / 100}
 								icon="akar-icons:people-group"
 								color={theme.palette.success.main}
 							/>
 
 							<ToolboxTalkAnalytic
 								title="Manhours/Month"
-								total={tbtTotal.totalManhours}
-								percent={tbtTotal.totalManhours / 100}
+								total={analytic.totalManhours}
+								percent={analytic.totalManhours / 100}
 								icon="tabler:clock-hour-3"
 								color={theme.palette.warning.main}
 							/>
 
 							<ToolboxTalkAnalytic
 								title="Safe Manhours W/O LTA/Month"
-								total={tbtTotal.safeManhours}
-								percent={tbtTotal.safeManhours / 100}
+								total={analytic.safeManhours}
+								percent={analytic.safeManhours / 100}
 								icon="tabler:clock-hour-3"
 								color={theme.palette.success.main}
 							/>
 
 							<ToolboxTalkAnalytic
 								title="Days Work/Month"
-								total={tbtTotal.daysWork}
-								percent={tbtTotal.daysWork}
+								total={analytic.daysWork}
+								percent={analytic.daysWork}
 								icon="mdi:calendar-check-outline"
 								color={theme.palette.success.main}
 							/>
 
 							<ToolboxTalkAnalytic
 								title="Days W/O Work/Month"
-								total={tbtTotal.daysWoWork}
-								percent={tbtTotal.daysWoWork}
+								total={analytic.daysWoWork}
+								percent={analytic.daysWoWork}
 								icon="mdi:calendar-remove-outline"
 								color={theme.palette.success.main}
 							/>
 							<ToolboxTalkAnalytic
 								title="Location/Month"
-								total={tbtTotal.location.size}
+								total={analytic.location.size}
 								percent={100}
 								icon="material-symbols:location-on-outline"
 								color={theme.palette.success.main}
@@ -252,13 +307,16 @@ const TBTReportPage = ({ positions }) => {
 							</Select>
 						</FormControl>
 						<MobileDatePicker
-							label="Select Date"
-							value={new Date(yearSelected, monthSelected - 1, 1)}
-							onChange={handleDateChange}
+							label="Start Date"
+							value={startDateHandler}
+							onChange={handleStartDateChange}
+							onAccept={onStartDateAccept}
 							inputFormat="MMM yyyy"
 							openTo="year"
-							showToolbar={false}
+							showToolbar
 							views={['year', 'month']}
+							minDate={new Date(Object.keys(tbtByYear).at(0), 0, 1)}
+							maxDate={new Date(Object.keys(tbtByYear).at(-1), 11, 1)}
 							renderInput={(params) => (
 								<TextField
 									{...params}
@@ -267,36 +325,27 @@ const TBTReportPage = ({ positions }) => {
 									sx={{
 										maxWidth: { md: 160 },
 									}}
-								/>
-							)}
-						/>
-						{/* <MobileDatePicker
-							label="Start Date"
-							value={startDate}
-							onChange={() => { }}
-							inputFormat="MMM yyyy"
-							openTo="year"
-							showToolbar={false}
-							views={['year', 'month']}
-							renderInput={(params) => (
-								<TextField
-									{...params}
-									size="small"
-									fullWidth
-									sx={{
-										maxWidth: { md: 160 },
+									InputProps={{
+										endAdornment: (
+											<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
+										)
 									}}
 								/>
 							)}
 						/>
 						<MobileDatePicker
+							disabled={!startDate}
 							label="End Date"
-							value={endDate}
-							onChange={() => { }}
+							value={endDateHandler}
+							onChange={handleEndDateChange}
+							onAccept={onEndDateAccept}
+							minDate={startDateHandler}
+							maxDate={new Date(Object.keys(tbtByYear).at(-1), 11, 1)}
 							inputFormat="MMM yyyy"
 							openTo="year"
-							showToolbar={false}
+							showToolbar
 							views={['year', 'month']}
+							ref={endDateRef}
 							renderInput={(params) => (
 								<TextField
 									{...params}
@@ -305,129 +354,36 @@ const TBTReportPage = ({ positions }) => {
 									sx={{
 										maxWidth: { md: 160 },
 									}}
+									InputProps={{
+										endAdornment: (
+											<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
+										)
+									}}
 								/>
 							)}
-						/> */}
+						/>
 					</Stack>
-					<Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-						<Box>
-							<IconButton size="large" onClick={handlePrevMonth}>
-								<Iconify icon="material-symbols:chevron-left" />
-							</IconButton>
-						</Box>
-						<Box>
-							<Typography variant="h6">{MONTH_NAMES[monthSelected]} {yearSelected}</Typography>
-						</Box>
-						<Box>
-							<IconButton size="large" onClick={handleNextMonth}>
-								<Iconify icon="material-symbols:chevron-right" />
-							</IconButton>
-						</Box>
-					</Stack>
-					{Object.entries(positionData).length === 0 ? (
+					{filteredData?.length > 0 ? (
+						filteredData?.map((data, index) => {
+							const days = data[1] || {};
+							const positionData = tbtYearTotalByPosition[data[2]][data[0]] || {};
+							const tbtTotal = totalTbtByYear[data[2]][data[0]] || {};
+							return (
+								<Box key={index}>
+									<Box width={1} textAlign="center" sx={{ mt: 3, mb: 1 }}>
+										<Typography variant="h6">{MONTH_NAMES[data[0]]} {data[2]}</Typography>
+									</Box>
+									<TBTReportTable days={days} positionData={positionData} tbtTotal={tbtTotal} />
+								</Box>
+							)
+						})
+					) : (
 						<EmptyContent
 							title="No Data"
 							sx={{
 								'& span.MuiBox-root': { height: 160 },
 							}}
 						/>
-					) : (
-						<Scrollbar sx={{ py: 1 }}>
-							<Stack width={1} minWidth={(theme) => theme.breakpoints.values.lg} borderLeft={1}>
-								<StyledGridBox gridTemplateColumns={`repeat(${Object.keys(days).length + 11}, minmax(40px, 1fr))`}>
-									<StyledTableHead>#</StyledTableHead>
-									<StyledTableHead sx={{ gridColumn: "span 4" }}>
-										<Typography variant="subtitle2">Position</Typography>
-									</StyledTableHead>
-									{Object.keys(days).map((d) => (
-										<StyledTableHead key={d}>
-											<Typography variant="subtitle2">{d}</Typography>
-										</StyledTableHead>
-									))}
-									<StyledTableHead sx={{ gridColumn: "span 2" }}>
-										<Typography variant="subtitle2" textAlign="center">TOTAL <span style={{ display: "block" }}>(MP)</span></Typography>
-									</StyledTableHead>
-									<StyledTableHead sx={{ gridColumn: "span 2" }}>
-										<Typography variant="subtitle2" textAlign="center">TOTAL <span style={{ display: "block" }}>(MH)</span></Typography>
-									</StyledTableHead>
-								</StyledGridBox>
-							</Stack>
-							{Object.entries(positionData).map((pos, index) => {
-								return (
-									<Stack width={1} key={pos[0]} minWidth={(theme) => theme.breakpoints.values.lg} borderLeft={1}>
-										<Box display="grid" gridTemplateColumns={`repeat(${Object.keys(days).length + 11}, minmax(40px, 1fr))`}>
-											<StyledTableCell sx={{ justifyContent: "center" }}>
-												<Typography variant="subtitle2">{index + 1}</Typography>
-											</StyledTableCell>
-											<StyledTableCell sx={{ gridColumn: "span 4", paddingLeft: "2px" }}>
-												<Typography variant="subtitle2" sx={{ fontSize: ".85rem", textTransform: "capitalize" }}>{pos[0]}</Typography>
-											</StyledTableCell>
-											{Object.entries(days).map(([d, v]) => {
-												const val = v === null ? 0 : v?.positions[pos[0]] || 0;
-												return (
-													<StyledTableCell sx={{ justifyContent: "center", backgroundColor: val === 0 ? "#ebebeb" : "#8db4e2" }} key={d}>
-														<Typography variant="subtitle2">{val}</Typography>
-													</StyledTableCell>
-												)
-											})}
-											<StyledTableCell sx={{ gridColumn: "span 2" }}>
-												<Typography variant="subtitle2" textAlign="center" width={1}>{pos[1].mp}</Typography>
-											</StyledTableCell>
-											<StyledTableCell sx={{ gridColumn: "span 2" }}>
-												<Typography variant="subtitle2" textAlign="center" width={1}>{pos[1].mh}</Typography>
-											</StyledTableCell>
-										</Box>
-									</Stack>
-								)
-							})}
-							<Stack width={1} minWidth={(theme) => theme.breakpoints.values.lg} borderLeft={1}>
-								<StyledGridBox gridTemplateColumns={`repeat(${Object.keys(days).length + 11}, minmax(40px, 1fr))`}>
-									<StyledTableCell sx={{ gridColumn: "span 5", justifyContent: "right" }}>
-										<Typography variant="subtitle2" fontWeight={700} sx={{ paddingRight: "4px" }}>Total Manpower</Typography>
-									</StyledTableCell>
-									{Object.entries(days).map(([d, v]) => (
-										<StyledTableCell sx={{ justifyContent: "center" }} key={d}>
-											<Typography variant="subtitle2">{v?.manpower || 0}</Typography>
-										</StyledTableCell>
-									))}
-									<StyledTableCell sx={{ gridColumn: "span 2" }}>
-										<Typography variant="subtitle2" textAlign="center" fontWeight={700} width={1}>{tbtTotal?.totalManpower}</Typography>
-									</StyledTableCell>
-									<StyledTableCell sx={{ gridColumn: "span 2" }}>
-										<Typography variant="subtitle2" textAlign="center" fontWeight={700} width={1}>{tbtTotal?.totalManhours}</Typography>
-									</StyledTableCell>
-								</StyledGridBox>
-								<StyledGridBox gridTemplateColumns={`repeat(${Object.keys(days).length + 11}, minmax(40px, 1fr))`}>
-									<StyledTableCell sx={{ gridColumn: "span 5", justifyContent: "right" }}>
-										<Typography variant="subtitle2" fontWeight={700} sx={{ paddingRight: "4px" }}>Hours Work</Typography>
-									</StyledTableCell>
-									{Object.keys(days).map((d) => (
-										<StyledTableCell sx={{ justifyContent: "center" }} key={d}><Typography variant="subtitle2">9</Typography></StyledTableCell>
-									))}
-									<StyledTableCell sx={{ gridColumn: "span 2" }}>
-										<Typography variant="subtitle2" textAlign="center" width={1}>9</Typography>
-									</StyledTableCell>
-									<StyledTableCell sx={{ gridColumn: "span 2" }}>
-									</StyledTableCell>
-								</StyledGridBox>
-								<StyledGridBox gridTemplateColumns={`repeat(${Object.keys(days).length + 11}, minmax(40px, 1fr))`}>
-									<StyledTableCell sx={{ gridColumn: "span 5", justifyContent: "right" }}>
-										<Typography variant="subtitle2" fontWeight={700} sx={{ paddingRight: "4px" }}>Total Manhours</Typography>
-									</StyledTableCell>
-									{Object.entries(days).map(([d, v]) => {
-										return (
-											<StyledTableCell sx={{ justifyContent: "center" }} key={d}><Typography variant="subtitle2">{v?.manpower ? v.manpower * 9 : 0}</Typography></StyledTableCell>
-										)
-									})}
-									<StyledTableCell sx={{ gridColumn: "span 2" }}>
-										<Typography variant="subtitle2" textAlign="center" fontWeight={700} width={1}>{tbtTotal?.totalManpower}</Typography>
-									</StyledTableCell>
-									<StyledTableCell sx={{ gridColumn: "span 2" }}>
-										<Typography variant="subtitle2" textAlign="center" width={1}></Typography>
-									</StyledTableCell>
-								</StyledGridBox>
-							</Stack>
-						</Scrollbar>
 					)}
 				</Card>
 			</Container>
@@ -436,7 +392,7 @@ const TBTReportPage = ({ positions }) => {
 }
 
 
-function NoData ({ themeStretch, yearSelected, monthSelected, onChange, filterType, onTypeChange }) {
+function NoData ({ themeStretch, filterType, onTypeChange }) {
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
 			<CustomBreadcrumbs
@@ -477,25 +433,6 @@ function NoData ({ themeStretch, yearSelected, monthSelected, onChange, filterTy
 							))}
 						</Select>
 					</FormControl>
-					<MobileDatePicker
-						label="Select Date"
-						value={new Date(yearSelected || 2022, monthSelected - 1, 1)}
-						onChange={onChange}
-						inputFormat="MMM yyyy"
-						openTo="year"
-						showToolbar={false}
-						views={['year', 'month']}
-						renderInput={(params) => (
-							<TextField
-								{...params}
-								fullWidth
-								size="small"
-								sx={{
-									maxWidth: { md: 160 },
-								}}
-							/>
-						)}
-					/>
 				</Stack>
 				<EmptyContent
 					title="No Data"
