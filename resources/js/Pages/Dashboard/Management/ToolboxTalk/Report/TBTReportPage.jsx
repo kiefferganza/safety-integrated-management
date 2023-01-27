@@ -228,14 +228,6 @@ const TBTReportPage = ({ positions }) => {
 							sx={{ py: 2 }}
 						>
 							<ToolboxTalkAnalytic
-								title="Total Manpower"
-								total={analytic.totalManpower}
-								percent={analytic.totalManpower / 100}
-								icon="akar-icons:people-group"
-								color={theme.palette.info.main}
-							/>
-
-							<ToolboxTalkAnalytic
 								title="Avg. Manpower/Month"
 								total={analytic.totalManpowerAveDay}
 								percent={(analytic.totalManpowerAveDay * analytic.totalManpower) / 100}
@@ -244,7 +236,15 @@ const TBTReportPage = ({ positions }) => {
 							/>
 
 							<ToolboxTalkAnalytic
-								title="Manhours/Month"
+								title="Total Manpower"
+								total={analytic.totalManpower}
+								percent={analytic.totalManpower / 100}
+								icon="akar-icons:people-group"
+								color={theme.palette.info.main}
+							/>
+
+							<ToolboxTalkAnalytic
+								title="Total Manhours"
 								total={analytic.totalManhours}
 								percent={analytic.totalManhours / 100}
 								icon="tabler:clock-hour-3"
@@ -252,7 +252,7 @@ const TBTReportPage = ({ positions }) => {
 							/>
 
 							<ToolboxTalkAnalytic
-								title="Safe Manhours W/O LTA/Month"
+								title="Safe Manhours w/o LTA"
 								total={analytic.safeManhours}
 								percent={analytic.safeManhours / 100}
 								icon="tabler:clock-hour-3"
@@ -260,7 +260,7 @@ const TBTReportPage = ({ positions }) => {
 							/>
 
 							<ToolboxTalkAnalytic
-								title="Days Work/Month"
+								title="Days Work"
 								total={analytic.daysWork}
 								percent={analytic.daysWork}
 								icon="mdi:calendar-check-outline"
@@ -268,18 +268,18 @@ const TBTReportPage = ({ positions }) => {
 							/>
 
 							<ToolboxTalkAnalytic
-								title="Days W/O Work/Month"
+								title="Days w/o Work"
 								total={analytic.daysWoWork}
 								percent={analytic.daysWoWork}
 								icon="mdi:calendar-remove-outline"
-								color={theme.palette.success.main}
+								color={theme.palette.error.main}
 							/>
 							<ToolboxTalkAnalytic
-								title="Location/Month"
+								title="Location"
 								total={analytic.location.size}
 								percent={100}
 								icon="material-symbols:location-on-outline"
-								color={theme.palette.success.main}
+								color={theme.palette.info.main}
 							/>
 						</Stack>
 					</Scrollbar>
