@@ -12,8 +12,12 @@ import { fTimestamp } from '@/utils/formatTime';
 import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
+	AnalyticsTasks,
+	AnalyticsNewsUpdate,
+	AnalyticsOrderTimeline,
 	AnalyticsCurrentVisits,
 	AnalyticsWebsiteVisits,
+	AnalyticsTrafficBySite,
 	AnalyticsWidgetSummary,
 	AnalyticsCurrentSubject,
 	AnalyticsConversionRates,
@@ -23,6 +27,7 @@ import {
 import { AppWelcome } from '@/sections/@dashboard/general/app';
 import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
 import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
+import LoadingScreen from '@/Components/loading-screen';
 import Iconify from '@/Components/iconify';
 
 
@@ -82,7 +87,10 @@ const MONTH_NAMES = {
 }
 
 
-export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesCount, trainings }) {
+export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbtByYear }) {
+	const { totalMainContractors, totalSubContractors, tbt, trainingHours,
+		itds: { count, itdMonth, totalHoursByMonth, totalItd, totalParticipantsPerMonth, totalDays, itdsManual } } = items;
+
 	const [tbtData, setTbtData] = useState([]);
 	const [filteredTbtData, setFilteredTbtData] = useState([]);
 	const [startTbtDate, setStartTbtDate] = useState(null);
@@ -170,8 +178,6 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 		daysWoWork: 0,
 	}), [filteredTbtData]);
 
-	console.log({ tbtAnalytic });
-
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
 
@@ -212,8 +218,8 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 									openTo="year"
 									showToolbar
 									views={['year', 'month']}
-									minDate={new Date(Object.keys(totalTbtByYear).at(0), 0, 1)}
-									maxDate={new Date(Object.keys(totalTbtByYear).at(-1), 11, 1)}
+									minDate={new Date(Object.keys(tbtByYear).at(0), 0, 1)}
+									maxDate={new Date(Object.keys(tbtByYear).at(-1), 11, 1)}
 									renderInput={(params) => (
 										<TextField
 											{...params}
@@ -237,7 +243,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 									onChange={handleTbtEndDateChange}
 									onAccept={onTbtEndDateAccept}
 									minDate={startTbtDateHandler}
-									maxDate={new Date(Object.keys(totalTbtByYear).at(-1), 11, 1)}
+									maxDate={new Date(Object.keys(tbtByYear).at(-1), 11, 1)}
 									inputFormat="MMM yyyy"
 									openTo="year"
 									showToolbar
@@ -266,16 +272,36 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="EMPLOYEES"
-						total={employeesCount || 0}
-						icon={'material-symbols:supervisor-account-outline'}
+						title="MANHOURS WORKED"
+						total={0}
+						data={[
+							{
+								label: "TOTAL",
+								total: tbtAnalytic.totalManhours
+							},
+							{
+								label: "SAFE MANHOURS",
+								total: tbtAnalytic.safeManhours
+							}
+						]}
+						icon={'mdi:clock-time-four-outline'}
 					/>
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANPOWER"
-						total={tbtAnalytic?.totalManpower || 0}
+						total={0}
+						data={[
+							{
+								label: "TOTAL",
+								total: tbtAnalytic.totalManpower
+							},
+							{
+								label: "DAYS WORK",
+								total: tbtAnalytic.daysWork
+							}
+						]}
 						color="info"
 						icon={'simple-line-icons:user'}
 					/>
@@ -283,19 +309,39 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="MANHOURS"
-						total={tbtAnalytic?.totalManhours || 0}
-						icon={'mdi:clock-time-four-outline'}
+						title="HSE TRAINING HOURS"
+						total={0}
+						data={[
+							{
+								label: "This Month",
+								total: trainingHours.thisMonth
+							},
+							{
+								label: "ITD",
+								total: trainingHours.itd
+							}
+						]}
 						color="warning"
+						icon={'mdi:clock-time-four-outline'}
 					/>
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="SAFE MANHOURS"
-						total={tbtAnalytic?.safeManhours || 0}
-						color="success"
-						icon={'mdi:clock-time-four-outline'}
+						title="TOOLBOX TALK"
+						total={0}
+						data={[
+							{
+								label: "This Month",
+								total: tbt.thisMonth
+							},
+							{
+								label: "ITD",
+								total: tbt.itd
+							}
+						]}
+						color="error"
+						icon={'mdi:dropbox'}
 					/>
 				</Grid>
 
