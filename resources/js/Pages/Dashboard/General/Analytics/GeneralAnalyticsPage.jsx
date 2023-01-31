@@ -7,7 +7,6 @@ import { MobileDatePicker } from '@mui/x-date-pickers';
 // _mock_
 import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewProducts } from '@/_mock/arrays';
 // utils
-import useResponsive from '@/hooks/useResponsive';
 import { fTimestamp } from '@/utils/formatTime';
 // components
 import { useSettingsContext } from '@/Components/settings';
@@ -28,12 +27,12 @@ import Iconify from '@/Components/iconify';
 
 
 // ----------------------------------------------------------------------
-const GB = 1000000000 * 24;
-const TIME_LABELS = {
-	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
-	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-	year: ['2018', '2019', '2020', '2021', '2022'],
-};
+// const GB = 1000000000 * 24;
+// const TIME_LABELS = {
+// 	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
+// 	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+// 	year: ['2018', '2019', '2020', '2021', '2022'],
+// };
 
 const COVER_IMAGES = [
 	{
@@ -99,7 +98,6 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 	const endTbtDateRef = useRef();
 
 	const theme = useTheme();
-	const isTablet = useResponsive('down', 'lg');
 
 	const { themeStretch } = useSettingsContext();
 
@@ -324,7 +322,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANPOWER"
-						total={tbtAnalytic.totalManpower}
+						total={tbtAnalytic?.totalManpower}
 						color="info"
 						icon={'simple-line-icons:user'}
 					/>
@@ -333,7 +331,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANHOURS"
-						total={tbtAnalytic.totalManhours}
+						total={tbtAnalytic?.totalManhours}
 						icon={'mdi:clock-time-four-outline'}
 						color="warning"
 					/>
@@ -342,7 +340,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="SAFE MANHOURS"
-						total={tbtAnalytic.safeManhours}
+						total={tbtAnalytic?.safeManhours}
 						color="success"
 						icon={'mdi:clock-time-four-outline'}
 					/>
