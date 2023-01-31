@@ -3,7 +3,7 @@ import { Card, CardHeader, Box } from '@mui/material';
 // components
 import Chart, { useChart } from '@/Components/chart';
 
-const AnalyticsTBTLine = ({ title, subheader = "", chart, action, ...other }) => {
+const AnalyticsTBTLine = ({ title, subheader = "", chart, action, isTablet, ...other }) => {
 	const { labels, colors, series, options } = chart;
 
 	const chartOptions = useChart({
@@ -21,7 +21,7 @@ const AnalyticsTBTLine = ({ title, subheader = "", chart, action, ...other }) =>
 			},
 			offsetX: 0,
 			style: {
-				fontSize: '8px'
+				fontSize: isTablet ? '12px' : '8px'
 			}
 		},
 		fill: {
@@ -45,7 +45,7 @@ const AnalyticsTBTLine = ({ title, subheader = "", chart, action, ...other }) =>
 					if (typeof value !== 'undefined') {
 						return `${value.toFixed(0)}`;
 					}
-					return value;
+					return value
 				},
 			},
 		},
@@ -53,11 +53,11 @@ const AnalyticsTBTLine = ({ title, subheader = "", chart, action, ...other }) =>
 	});
 
 	return (
-		<Card sx={{ height: "100%" }} {...other}>
+		<Card {...other} sx={{ height: "100%" }}>
 			<CardHeader title={title} subheader={subheader} action={action} />
 
-			<Box sx={{ p: 3, pb: 1 }} dir="ltr">
-				<Chart type="line" series={series} options={chartOptions} height={364} />
+			<Box sx={{ p: 2, pb: 1 }} dir="ltr">
+				<Chart type="line" series={series} options={chartOptions} height={isTablet ? 364 : 220} />
 			</Box>
 		</Card>
 	);

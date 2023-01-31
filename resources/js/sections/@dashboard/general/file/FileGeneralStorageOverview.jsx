@@ -15,7 +15,7 @@ FileGeneralStorageOverview.propTypes = {
 	total: PropTypes.number,
 };
 
-export default function FileGeneralStorageOverview ({ data, total, chart, ...other }) {
+export default function FileGeneralStorageOverview ({ data, total, chart, height = 360, ...other }) {
 	const theme = useTheme();
 
 	const { colors, series, options } = chart;
@@ -75,7 +75,7 @@ export default function FileGeneralStorageOverview ({ data, total, chart, ...oth
 
 	return (
 		<Card {...other}>
-			<Chart type="radialBar" series={[series]} options={chartOptions} height={360} />
+			<Chart type="radialBar" series={[series]} options={chartOptions} height={height} />
 
 			<Stack spacing={3} sx={{ p: 3 }}>
 				{data.map((category) => (

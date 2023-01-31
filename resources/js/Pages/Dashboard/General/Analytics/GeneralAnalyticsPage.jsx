@@ -1,23 +1,24 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { getMonth, getYear } from 'date-fns';
+import { getMonth, getYear, isAfter, isBefore } from 'date-fns';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Button, TextField, Box, Typography } from '@mui/material';
+import { Grid, Container, Button, TextField, Box, Typography, Stack } from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 // _mock_
-import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewProducts } from '@/_mock/arrays';
+import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewProducts, _bookingsOverview } from '@/_mock/arrays';
 // utils
 import { fTimestamp } from '@/utils/formatTime';
+import useResponsive from '@/hooks/useResponsive';
 // components
 import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
-	AnalyticsTasks,
-	AnalyticsNewsUpdate,
-	AnalyticsOrderTimeline,
+	// AnalyticsTasks,
+	// AnalyticsNewsUpdate,
+	// AnalyticsOrderTimeline,
 	AnalyticsCurrentVisits,
 	AnalyticsWebsiteVisits,
-	AnalyticsTrafficBySite,
+	// AnalyticsTrafficBySite,
 	AnalyticsWidgetSummary,
 	AnalyticsCurrentSubject,
 	AnalyticsConversionRates,
@@ -27,11 +28,19 @@ import {
 import { AppWelcome } from '@/sections/@dashboard/general/app';
 import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
 import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
-import LoadingScreen from '@/Components/loading-screen';
 import Iconify from '@/Components/iconify';
+import AnalyticsTable from '@/sections/@dashboard/general/analytics/AnalyticsTable';
+import { FileGeneralDataActivity, FileGeneralStorageOverview } from '@/sections/@dashboard/general/file';
+import { BookingBookedRoom } from '@/sections/@dashboard/general/booking';
 
 
 // ----------------------------------------------------------------------
+const GB = 1000000000 * 24;
+const TIME_LABELS = {
+	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
+	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+	year: ['2018', '2019', '2020', '2021', '2022'],
+};
 
 const COVER_IMAGES = [
 	{
@@ -87,9 +96,7 @@ const MONTH_NAMES = {
 }
 
 
-export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbtByYear }) {
-	const { totalMainContractors, totalSubContractors, tbt, trainingHours,
-		itds: { count, itdMonth, totalHoursByMonth, totalItd, totalParticipantsPerMonth, totalDays, itdsManual } } = items;
+export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesCount, trainings }) {
 
 	const [tbtData, setTbtData] = useState([]);
 	const [filteredTbtData, setFilteredTbtData] = useState([]);
@@ -100,6 +107,7 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 	const endTbtDateRef = useRef();
 
 	const theme = useTheme();
+	const isTablet = useResponsive('down', 'lg');
 
 	const { themeStretch } = useSettingsContext();
 
@@ -169,6 +177,7 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 		acc.safeManhours += total.safeManhours;
 		acc.daysWork += total.daysWork;
 		acc.daysWoWork += total.daysWoWork;
+		acc.location = new Set([...acc.location, ...total.location]);
 		return acc;
 	}, {
 		totalManpower: 0,
@@ -176,13 +185,54 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 		safeManhours: 0,
 		daysWork: 0,
 		daysWoWork: 0,
+		location: new Set
 	}), [filteredTbtData]);
+
+	const tbtDataItd = useMemo(() => tbtData?.reduce((acc, curr) => {
+		const total = totalTbtByYear[curr[2]][curr[0]];
+		acc.totalManpower += total.totalManpower;
+		acc.totalManhours += total.totalManhours;
+		acc.safeManhours += total.safeManhours;
+		acc.daysWork += total.daysWork;
+		acc.daysWoWork += total.daysWoWork;
+		acc.location = new Set([...acc.location, ...total.location]);
+		return acc;
+	}, {
+		totalManpower: 0,
+		totalManhours: 0,
+		safeManhours: 0,
+		daysWork: 0,
+		daysWoWork: 0,
+		location: new Set
+	}), [tbtData]);
+
+	const trainingComputedData = trainings.reduce((acc, curr) => {
+		if (curr.training_files_count > 0) {
+			const trainingDate = new Date(curr.training_date);
+			const isInMonths = isAfter(trainingDate, startTbtDate) && isBefore(trainingDate, endTbtDate);
+			if (curr.type === 4) {
+				acc.completedInduction += 1;
+				if (isInMonths) {
+					acc.completedInductionMonth += 1;
+				}
+			}
+			acc.trainingHoursCompleted += curr.training_hrs;
+			if (isInMonths) {
+				acc.trainingHoursCompletedMonth += curr.training_hrs;
+			}
+		}
+		return acc;
+	}, {
+		trainingHoursCompleted: 0,
+		trainingHoursCompletedMonth: 0,
+		completedInduction: 0,
+		completedInductionMonth: 0
+	});
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
 
-			<Grid container spacing={3}>
-
+			<Grid container spacing={3} sx={{ mb: 3 }}>
 				<Grid item xs={12} md={8}>
 					<AppWelcome
 						title={`Welcome back! \n ${user?.firstname}`}
@@ -218,8 +268,8 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 									openTo="year"
 									showToolbar
 									views={['year', 'month']}
-									minDate={new Date(Object.keys(tbtByYear).at(0), 0, 1)}
-									maxDate={new Date(Object.keys(tbtByYear).at(-1), 11, 1)}
+									// minDate={new Date(Object.keys(tbtByYear).at(0), 0, 1)}
+									// maxDate={new Date(Object.keys(tbtByYear).at(-1), 11, 1)}
 									renderInput={(params) => (
 										<TextField
 											{...params}
@@ -243,7 +293,7 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 									onChange={handleTbtEndDateChange}
 									onAccept={onTbtEndDateAccept}
 									minDate={startTbtDateHandler}
-									maxDate={new Date(Object.keys(tbtByYear).at(-1), 11, 1)}
+									// maxDate={new Date(Object.keys(tbtByYear).at(-1), 11, 1)}
 									inputFormat="MMM yyyy"
 									openTo="year"
 									showToolbar
@@ -272,36 +322,16 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="MANHOURS WORKED"
-						total={0}
-						data={[
-							{
-								label: "TOTAL",
-								total: tbtAnalytic.totalManhours
-							},
-							{
-								label: "SAFE MANHOURS",
-								total: tbtAnalytic.safeManhours
-							}
-						]}
-						icon={'mdi:clock-time-four-outline'}
+						title="EMPLOYEES"
+						total={employeesCount || 0}
+						icon={'material-symbols:supervisor-account-outline'}
 					/>
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANPOWER"
-						total={0}
-						data={[
-							{
-								label: "TOTAL",
-								total: tbtAnalytic.totalManpower
-							},
-							{
-								label: "DAYS WORK",
-								total: tbtAnalytic.daysWork
-							}
-						]}
+						total={tbtAnalytic.totalManpower}
 						color="info"
 						icon={'simple-line-icons:user'}
 					/>
@@ -309,44 +339,77 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="HSE TRAINING HOURS"
-						total={0}
-						data={[
-							{
-								label: "This Month",
-								total: trainingHours.thisMonth
-							},
-							{
-								label: "ITD",
-								total: trainingHours.itd
-							}
-						]}
-						color="warning"
+						title="MANHOURS"
+						total={tbtAnalytic.totalManhours}
 						icon={'mdi:clock-time-four-outline'}
+						color="warning"
 					/>
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="TOOLBOX TALK"
-						total={0}
+						title="SAFE MANHOURS"
+						total={tbtAnalytic.safeManhours}
+						color="success"
+						icon={'mdi:clock-time-four-outline'}
+					/>
+				</Grid>
+			</Grid>
+
+
+
+			<Grid container spacing={3} sx={{ mb: 3 }} >
+				<Grid item xs={12} md={8} lg={6} order={{ md: 1, lg: 1 }}>
+					<AnalyticsTable
+						headTitles={[{ title: "HSE Data" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 						data={[
 							{
-								label: "This Month",
-								total: tbt.thisMonth
+								title: "Total Days Work",
+								month: tbtAnalytic?.daysWork,
+								itd: tbtDataItd?.daysWork
 							},
 							{
-								label: "ITD",
-								total: tbt.itd
-							}
+								title: "Total Days w/o Work",
+								month: tbtAnalytic?.daysWoWork,
+								itd: tbtDataItd?.daysWoWork
+							},
+							{
+								title: "Total Work Location",
+								month: tbtAnalytic?.location?.size,
+								itd: tbtDataItd?.location?.size
+							},
+							{
+								title: "Number of Training Hours Completed",
+								month: trainingComputedData.trainingHoursCompletedMonth,
+								itd: trainingComputedData.trainingHoursCompleted
+							},
+							{
+								title: "Number of HSE Induction Completed",
+								month: trainingComputedData.completedInductionMonth,
+								itd: trainingComputedData.completedInduction
+							},
+							{
+								title: "Number of HSE Enforcement Notices Issued",
+								month: 0,
+								itd: 0
+							},
+							{
+								title: "Number of HSE Audit (plan v actual) (%)",
+								month: 0,
+								itd: 0
+							},
+							{
+								title: "HSE Leadership Tours (plan v actual) (%)",
+								month: 0,
+								itd: 0
+							},
 						]}
-						color="error"
-						icon={'mdi:dropbox'}
 					/>
 				</Grid>
 
-				<Grid item xs={12} md={6} lg={8}>
+				<Grid item xs={12} md={12} lg={4} order={{ md: 3, lg: 2 }}>
 					<AnalyticsTBTLine
+						isTablet={isTablet}
 						title="Monthly Toolbox Talk"
 						chart={{
 							labels: filteredTbtData.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
@@ -382,8 +445,7 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 						}}
 					/>
 				</Grid>
-
-				<Grid item xs={12} md={6} lg={4}>
+				<Grid item xs={12} md={4} lg={2} order={{ md: 2, lg: 3 }}>
 					<AnalyticsTBTWorkDays
 						title="Work Days"
 						chart={{
@@ -398,9 +460,33 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 						}}
 					/>
 				</Grid>
+			</Grid>
 
-				<Grid item xs={12} md={6} lg={8}>
+
+
+			<Grid container spacing={3} sx={{ mb: 3 }} >
+				<Grid item xs={12} md={8} lg={6} order={{ md: 1, lg: 1 }}>
+					<AnalyticsTable
+						headTitles={[{ title: "Accidents and Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+						data={[
+							{ title: "Fatality", month: 0, itd: 0 },
+							{ title: "Major", month: 0, itd: 0 },
+							{ title: "Significant", month: 0, itd: 0 },
+							{ title: "Minor", month: 0, itd: 0 },
+							{ title: "Number of Near Miss Reports Received", month: 0, itd: 0 },
+							{ title: "Total Recordable Injuries (TRIs)", month: 0, itd: 0 },
+							{ title: "Lost Time Injury Frequency Rate (LTIFR)", month: 0, itd: 0 },
+							{ title: "Lost Time Injury Severity Rate (LTISR)", month: 0, itd: 0 },
+							{ title: "Total Reportable Case Frequency (TRCF)", month: 0, itd: 0 },
+							{ title: "Fatal Accident Frequency Rate (FAFR)", month: 0, itd: 0 },
+						]}
+						color="error"
+					/>
+				</Grid>
+
+				<Grid item xs={12} md={12} lg={4} order={{ md: 3, lg: 2 }}>
 					<AnalyticsWebsiteVisits
+						isTablet={isTablet}
 						title="Trending Observation"
 						subheader=""
 						chart={{
@@ -438,12 +524,14 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 								},
 							],
 						}}
+						sx={{ height: "100%" }}
 					/>
 				</Grid>
 
-				<Grid item xs={12} md={6} lg={4}>
+				<Grid item xs={12} md={4} lg={2} order={{ md: 2, lg: 3 }}>
 					<AnalyticsCurrentVisits
 						title="Open vs Close"
+						type="donut"
 						chart={{
 							series: [
 								{ label: 'Open', value: 5435 },
@@ -454,8 +542,164 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 								theme.palette.error.main,
 							],
 						}}
+						sx={{ height: "100%" }}
 					/>
 				</Grid>
+			</Grid>
+
+
+
+			<Grid container spacing={3} sx={{ mb: 3 }} >
+				<Grid item xs={12} md={6} lg={6}>
+					<Stack spacing={2}>
+						<AnalyticsTable
+							headTitles={[{ title: "Recordable Cases" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+							data={[
+								{ title: "No of Restricted Work Cases", month: 0, itd: 0 },
+								{ title: "No of Occupational Illnesses", month: 0, itd: 0 },
+								{ title: "No of Occupational Fatalities", month: 0, itd: 0 },
+								{ title: "No of Medical Treatment Cases", month: 0, itd: 0 },
+								{ title: "No of Loss Consciousness Cases", month: 0, itd: 0 },
+							]}
+							color="warning"
+							sx={{ mb: 1 }}
+						/>
+						<AnalyticsTable
+							headTitles={[{ title: "Non Recordable" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+							data={[
+								{ title: "No of First Aid Cases", month: 0, itd: 0 },
+								{ title: "No of Near Misses", month: 0, itd: 0 }
+							]}
+						/>
+					</Stack>
+				</Grid>
+
+				<Grid item xs={12} md={6} lg={6}>
+					<FileGeneralDataActivity
+						title="Data Activity"
+						height={isTablet ? 364 : 200}
+						sx={{ height: "100%" }}
+						chart={{
+							labels: TIME_LABELS,
+							colors: [
+								theme.palette.primary.main,
+								theme.palette.error.main,
+								theme.palette.warning.main,
+								theme.palette.text.disabled,
+							],
+							series: [
+								{
+									type: 'Week',
+									data: [
+										{ name: 'Images', data: [20, 34, 48, 65, 37, 48] },
+										{ name: 'Media', data: [10, 34, 13, 26, 27, 28] },
+										{ name: 'Documents', data: [10, 14, 13, 16, 17, 18] },
+										{ name: 'Other', data: [5, 12, 6, 7, 8, 9] },
+									],
+								},
+								{
+									type: 'Month',
+									data: [
+										{ name: 'Images', data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34] },
+										{ name: 'Media', data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34] },
+										{ name: 'Documents', data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34] },
+										{ name: 'Other', data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34] },
+									],
+								},
+								{
+									type: 'Year',
+									data: [
+										{ name: 'Images', data: [10, 34, 13, 56, 77] },
+										{ name: 'Media', data: [10, 34, 13, 56, 77] },
+										{ name: 'Documents', data: [10, 34, 13, 56, 77] },
+										{ name: 'Other', data: [10, 34, 13, 56, 77] },
+									],
+								},
+							],
+						}}
+					/>
+				</Grid>
+			</Grid>
+
+
+
+
+			<Grid container spacing={3} sx={{ mb: 3 }} >
+				<Grid item xs={12} md={6} lg={6} height={1}>
+					<Stack spacing={2} height={1}>
+						<AnalyticsTable
+							headTitles={[{ title: "Other Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+							data={[
+								{ title: "No of Property Damage", month: 0, itd: 0 },
+								{ title: "No of Spill & Leaks", month: 0, itd: 0 },
+								{ title: "No of Other Environ. incidents", month: 0, itd: 0 },
+								{ title: "No of Fires", month: 0, itd: 0 },
+								{ title: "No of Vehicle Accidents", month: 0, itd: 0 },
+							]}
+							color="error"
+							sx={{ mb: 1 }}
+						/>
+						<AnalyticsTable
+							headTitles={[{ title: "HSE KPI's" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+							data={[
+								{ title: "Attended HSE Leadership Training (%)", month: 0, itd: 0 },
+								{ title: "Attended HSE Supervisors Training (%)", month: 0, itd: 0 },
+								{ title: "Incident Reports Submitted on Time (%)", month: 0, itd: 0 },
+								{ title: "Incident Recommendations Closed on Time", month: 0, itd: 0 },
+								{ title: "Corrective Actions Closed on Time", month: 0, itd: 0 },
+								{ title: "Accident Frequency Rate (12 month rolling)", month: 0, itd: 0 },
+							]}
+							color="secondary"
+						/>
+					</Stack>
+				</Grid>
+
+				<Grid item xs={12} md={3} lg={3}>
+					<FileGeneralStorageOverview
+						height={isTablet ? 364 : 240}
+						total={GB}
+						chart={{
+							series: 76,
+						}}
+						data={[
+							{
+								name: 'Images',
+								usedStorage: GB / 2,
+								filesCount: 223,
+								icon: <Box component="img" src="/storage/assets/icons/files/ic_img.svg" />,
+							},
+							{
+								name: 'Media',
+								usedStorage: GB / 5,
+								filesCount: 223,
+								icon: <Box component="img" src="/storage/assets/icons/files/ic_video.svg" />,
+							},
+							{
+								name: 'Documents',
+								usedStorage: GB / 5,
+								filesCount: 223,
+								icon: <Box component="img" src="/storage/assets/icons/files/ic_document.svg" />,
+							},
+							{
+								name: 'Other',
+								usedStorage: GB / 10,
+								filesCount: 223,
+								icon: <Iconify icon="eva:file-fill" width={24} sx={{ color: 'text.disabled' }} />,
+							},
+						]}
+					/>
+				</Grid>
+
+				<Grid item xs={12} md={3} lg={3}>
+					<BookingBookedRoom title="Booked Room" data={_bookingsOverview} />
+				</Grid>
+			</Grid>
+
+
+
+
+
+			<Grid container spacing={3}>
 
 				<Grid item xs={12} md={6} lg={8}>
 					<AnalyticsConversionRates

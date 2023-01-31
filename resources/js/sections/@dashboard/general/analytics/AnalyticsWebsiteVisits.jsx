@@ -12,7 +12,7 @@ AnalyticsWebsiteVisits.propTypes = {
 	subheader: PropTypes.string,
 };
 
-export default function AnalyticsWebsiteVisits ({ title, subheader, chart, ...other }) {
+export default function AnalyticsWebsiteVisits ({ title, subheader, chart, isTablet, ...other }) {
 	const { labels, colors, series, options } = chart;
 
 	const chartOptions = useChart({
@@ -48,8 +48,8 @@ export default function AnalyticsWebsiteVisits ({ title, subheader, chart, ...ot
 		<Card {...other}>
 			<CardHeader title={title} subheader={subheader} />
 
-			<Box sx={{ p: 3, pb: 1 }} dir="ltr">
-				<Chart type="line" series={series} options={chartOptions} height={364} />
+			<Box sx={{ p: 2, pb: 1 }} dir="ltr">
+				<Chart type="line" series={series} options={chartOptions} height={isTablet ? 364 : 260} />
 			</Box>
 		</Card>
 	);
