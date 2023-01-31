@@ -12,12 +12,8 @@ import { fTimestamp } from '@/utils/formatTime';
 import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
-	AnalyticsTasks,
-	AnalyticsNewsUpdate,
-	AnalyticsOrderTimeline,
 	AnalyticsCurrentVisits,
 	AnalyticsWebsiteVisits,
-	AnalyticsTrafficBySite,
 	AnalyticsWidgetSummary,
 	AnalyticsCurrentSubject,
 	AnalyticsConversionRates,
@@ -27,7 +23,6 @@ import {
 import { AppWelcome } from '@/sections/@dashboard/general/app';
 import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
 import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
-import LoadingScreen from '@/Components/loading-screen';
 import Iconify from '@/Components/iconify';
 
 
@@ -87,10 +82,7 @@ const MONTH_NAMES = {
 }
 
 
-export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbtByYear }) {
-	const { totalMainContractors, totalSubContractors, tbt, trainingHours,
-		itds: { count, itdMonth, totalHoursByMonth, totalItd, totalParticipantsPerMonth, totalDays, itdsManual } } = items;
-
+export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear, employeesCount, trainings }) {
 	const [tbtData, setTbtData] = useState([]);
 	const [filteredTbtData, setFilteredTbtData] = useState([]);
 	const [startTbtDate, setStartTbtDate] = useState(null);
@@ -314,11 +306,11 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 						data={[
 							{
 								label: "This Month",
-								total: trainingHours.thisMonth
+								total: 0
 							},
 							{
 								label: "ITD",
-								total: trainingHours.itd
+								total: 0
 							}
 						]}
 						color="warning"
@@ -333,11 +325,11 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 						data={[
 							{
 								label: "This Month",
-								total: tbt.thisMonth
+								total: 0
 							},
 							{
 								label: "ITD",
-								total: tbt.itd
+								total: 0
 							}
 						]}
 						color="error"
