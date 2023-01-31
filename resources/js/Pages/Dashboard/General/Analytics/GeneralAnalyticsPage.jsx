@@ -7,7 +7,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers';
 // _mock_
 import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewProducts } from '@/_mock/arrays';
 // utils
-import useResponsive from '@/hooks/useResponsive';
+// import useResponsive from '@/hooks/useResponsive';
 import { fTimestamp } from '@/utils/formatTime';
 // components
 import { useSettingsContext } from '@/Components/settings';
@@ -99,7 +99,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 	const endTbtDateRef = useRef();
 
 	const theme = useTheme();
-	const isTablet = useResponsive('down', 'lg');
+	// const isTablet = useResponsive('down', 'lg');
 
 	const { themeStretch } = useSettingsContext();
 
@@ -283,7 +283,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 									value={endTbtDateHandler}
 									onChange={handleTbtEndDateChange}
 									onAccept={onTbtEndDateAccept}
-									minDate={startTbtDateHandler}
+									minDate={startTbtDateHandler || null}
 									inputFormat="MMM yyyy"
 									openTo="year"
 									showToolbar
