@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-	getMonth,
-	getYear,
-	// isAfter,
-	// isBefore
-} from 'date-fns';
+import { getMonth, getYear } from 'date-fns';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Button, TextField, Box, Typography } from '@mui/material';
@@ -32,12 +27,6 @@ import Iconify from '@/Components/iconify';
 
 
 // ----------------------------------------------------------------------
-// const GB = 1000000000 * 24;
-// const TIME_LABELS = {
-// 	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
-// 	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-// 	year: ['2018', '2019', '2020', '2021', '2022'],
-// };
 
 const COVER_IMAGES = [
 	{
@@ -172,7 +161,6 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 		acc.safeManhours += total.safeManhours;
 		acc.daysWork += total.daysWork;
 		acc.daysWoWork += total.daysWoWork;
-		acc.location = new Set([...acc.location, ...total.location]);
 		return acc;
 	}, {
 		totalManpower: 0,
@@ -180,49 +168,9 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 		safeManhours: 0,
 		daysWork: 0,
 		daysWoWork: 0,
-		location: new Set
 	}), [filteredTbtData]);
 
-	// const tbtDataItd = useMemo(() => tbtData?.reduce((acc, curr) => {
-	// 	const total = totalTbtByYear[curr[2]][curr[0]];
-	// 	acc.totalManpower += total.totalManpower;
-	// 	acc.totalManhours += total.totalManhours;
-	// 	acc.safeManhours += total.safeManhours;
-	// 	acc.daysWork += total.daysWork;
-	// 	acc.daysWoWork += total.daysWoWork;
-	// 	acc.location = new Set([...acc.location, ...total.location]);
-	// 	return acc;
-	// }, {
-	// 	totalManpower: 0,
-	// 	totalManhours: 0,
-	// 	safeManhours: 0,
-	// 	daysWork: 0,
-	// 	daysWoWork: 0,
-	// 	location: new Set
-	// }), [tbtData]);
-
-	// const trainingComputedData = useMemo(() => trainings.reduce((acc, curr) => {
-	// 	if (curr.training_files_count > 0) {
-	// 		const trainingDate = new Date(curr.training_date);
-	// 		const isInMonths = isAfter(trainingDate, startTbtDate) && isBefore(trainingDate, endTbtDate);
-	// 		if (curr.type === 4) {
-	// 			acc.completedInduction += 1;
-	// 			if (isInMonths) {
-	// 				acc.completedInductionMonth += 1;
-	// 			}
-	// 		}
-	// 		acc.trainingHoursCompleted += curr.training_hrs;
-	// 		if (isInMonths) {
-	// 			acc.trainingHoursCompletedMonth += curr.training_hrs;
-	// 		}
-	// 	}
-	// 	return acc;
-	// }, {
-	// 	trainingHoursCompleted: 0,
-	// 	trainingHoursCompletedMonth: 0,
-	// 	completedInduction: 0,
-	// 	completedInductionMonth: 0
-	// }), [trainings]);
+	console.log({ tbtAnalytic });
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -327,7 +275,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANPOWER"
-						total={tbtAnalytic?.totalManpower}
+						total={tbtAnalytic?.totalManpower || 0}
 						color="info"
 						icon={'simple-line-icons:user'}
 					/>
@@ -336,7 +284,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANHOURS"
-						total={tbtAnalytic?.totalManhours}
+						total={tbtAnalytic?.totalManhours || 0}
 						icon={'mdi:clock-time-four-outline'}
 						color="warning"
 					/>
@@ -345,7 +293,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="SAFE MANHOURS"
-						total={tbtAnalytic?.safeManhours}
+						total={tbtAnalytic?.safeManhours || 0}
 						color="success"
 						icon={'mdi:clock-time-four-outline'}
 					/>
@@ -355,8 +303,8 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 					<AnalyticsTBTLine
 						title="Monthly Toolbox Talk"
 						chart={{
-							labels: filteredTbtData?.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`) || [],
-							series: filteredTbtData?.reduce((acc, curr) => {
+							labels: filteredTbtData.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
+							series: filteredTbtData.reduce((acc, curr) => {
 								acc[0].data.push(curr[1].totalManpower);
 								acc[1].data.push(curr[1].totalManhours);
 								acc[2].data.push(curr[1].safeManhours);
@@ -380,7 +328,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 									fill: 'solid',
 									data: [],
 								}
-							] || []),
+							]),
 							colors: [
 								theme.palette.primary.main,
 								theme.palette.error.main,
