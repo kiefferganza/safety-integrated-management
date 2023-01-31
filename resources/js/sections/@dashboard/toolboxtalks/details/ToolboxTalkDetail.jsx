@@ -145,8 +145,8 @@ const ToolboxTalkDetail = ({ tbt }) => {
 							</Box>
 							<Box minHeight={24}>
 								{tbt?.file.length > 0 ? (
-									tbt?.file.map(f => (
-										<IconButton color="primary" component={MuiLink} href={`/storage/media/toolboxtalks/${f?.img_src}`} target="_blank" >
+									tbt?.file.map((f, idx) => (
+										<IconButton key={idx} color="primary" component={MuiLink} href={`/storage/media/toolboxtalks/${f?.img_src}`} target="_blank" >
 											<Iconify icon="material-symbols:attachment" />
 										</IconButton>
 									))

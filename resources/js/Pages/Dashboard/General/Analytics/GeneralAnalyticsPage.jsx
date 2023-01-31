@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { getMonth, getYear } from 'date-fns';
+import { getMonth, getYear, isAfter, isBefore } from 'date-fns';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Button, TextField, Box, Typography } from '@mui/material';
@@ -27,6 +27,12 @@ import Iconify from '@/Components/iconify';
 
 
 // ----------------------------------------------------------------------
+const GB = 1000000000 * 24;
+const TIME_LABELS = {
+	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
+	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+	year: ['2018', '2019', '2020', '2021', '2022'],
+};
 
 const COVER_IMAGES = [
 	{
@@ -161,6 +167,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 		acc.safeManhours += total.safeManhours;
 		acc.daysWork += total.daysWork;
 		acc.daysWoWork += total.daysWoWork;
+		acc.location = new Set([...acc.location, ...total.location]);
 		return acc;
 	}, {
 		totalManpower: 0,
@@ -168,7 +175,49 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 		safeManhours: 0,
 		daysWork: 0,
 		daysWoWork: 0,
+		location: new Set
 	}), [filteredTbtData]);
+
+	const tbtDataItd = useMemo(() => tbtData?.reduce((acc, curr) => {
+		const total = totalTbtByYear[curr[2]][curr[0]];
+		acc.totalManpower += total.totalManpower;
+		acc.totalManhours += total.totalManhours;
+		acc.safeManhours += total.safeManhours;
+		acc.daysWork += total.daysWork;
+		acc.daysWoWork += total.daysWoWork;
+		acc.location = new Set([...acc.location, ...total.location]);
+		return acc;
+	}, {
+		totalManpower: 0,
+		totalManhours: 0,
+		safeManhours: 0,
+		daysWork: 0,
+		daysWoWork: 0,
+		location: new Set
+	}), [tbtData]);
+
+	const trainingComputedData = useMemo(() => trainings.reduce((acc, curr) => {
+		if (curr.training_files_count > 0) {
+			const trainingDate = new Date(curr.training_date);
+			const isInMonths = isAfter(trainingDate, startTbtDate) && isBefore(trainingDate, endTbtDate);
+			if (curr.type === 4) {
+				acc.completedInduction += 1;
+				if (isInMonths) {
+					acc.completedInductionMonth += 1;
+				}
+			}
+			acc.trainingHoursCompleted += curr.training_hrs;
+			if (isInMonths) {
+				acc.trainingHoursCompletedMonth += curr.training_hrs;
+			}
+		}
+		return acc;
+	}, {
+		trainingHoursCompleted: 0,
+		trainingHoursCompletedMonth: 0,
+		completedInduction: 0,
+		completedInductionMonth: 0
+	}), [trainings]);
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -264,36 +313,16 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="MANHOURS WORKED"
-						total={0}
-						data={[
-							{
-								label: "TOTAL",
-								total: tbtAnalytic.totalManhours
-							},
-							{
-								label: "SAFE MANHOURS",
-								total: tbtAnalytic.safeManhours
-							}
-						]}
-						icon={'mdi:clock-time-four-outline'}
+						title="EMPLOYEES"
+						total={employeesCount || 0}
+						icon={'material-symbols:supervisor-account-outline'}
 					/>
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANPOWER"
-						total={0}
-						data={[
-							{
-								label: "TOTAL",
-								total: tbtAnalytic.totalManpower
-							},
-							{
-								label: "DAYS WORK",
-								total: tbtAnalytic.daysWork
-							}
-						]}
+						total={tbtAnalytic.totalManpower}
 						color="info"
 						icon={'simple-line-icons:user'}
 					/>
@@ -301,39 +330,19 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="HSE TRAINING HOURS"
-						total={0}
-						data={[
-							{
-								label: "This Month",
-								total: 0
-							},
-							{
-								label: "ITD",
-								total: 0
-							}
-						]}
-						color="warning"
+						title="MANHOURS"
+						total={tbtAnalytic.totalManhours}
 						icon={'mdi:clock-time-four-outline'}
+						color="warning"
 					/>
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="TOOLBOX TALK"
-						total={0}
-						data={[
-							{
-								label: "This Month",
-								total: 0
-							},
-							{
-								label: "ITD",
-								total: 0
-							}
-						]}
-						color="error"
-						icon={'mdi:dropbox'}
+						title="SAFE MANHOURS"
+						total={tbtAnalytic.safeManhours}
+						color="success"
+						icon={'mdi:clock-time-four-outline'}
 					/>
 				</Grid>
 
