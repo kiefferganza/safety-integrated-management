@@ -625,7 +625,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 
 
 			<Grid container spacing={3} sx={{ mb: 3 }} >
-				<Grid item xs={12} md={6} lg={6} height={1}>
+				<Grid item xs={12} md={12} lg={6} height={1}>
 					<Stack spacing={2} height={1}>
 						<AnalyticsTable
 							headTitles={[{ title: "Other Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
@@ -654,7 +654,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 					</Stack>
 				</Grid>
 
-				<Grid item xs={12} md={3} lg={3}>
+				<Grid item xs={12} md={6} lg={3}>
 					<FileGeneralStorageOverview
 						height={isTablet ? 364 : 240}
 						total={GB}
@@ -690,7 +690,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, employeesC
 					/>
 				</Grid>
 
-				<Grid item xs={12} md={3} lg={3}>
+				<Grid item xs={12} md={6} lg={3}>
 					<BookingBookedRoom title="Booked Room" data={_bookingsOverview} />
 				</Grid>
 			</Grid>

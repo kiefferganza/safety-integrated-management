@@ -3,14 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
-use App\Models\ToolboxTalk;
-use App\Models\ToolboxTalkParticipant;
 use App\Models\Training;
-use App\Models\TrainingTrainees;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
