@@ -5,6 +5,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { Box, Card, Typography } from '@mui/material';
 // utils
 import { bgGradient } from '@/utils/cssStyles';
+import { fShortenNumber } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 
@@ -18,7 +19,7 @@ AnalyticsWidgetSummary.propTypes = {
 	total: PropTypes.number,
 };
 
-export default function AnalyticsWidgetSummary ({ title, total, icon, color = 'primary', sx, ...other }) {
+export default function AnalyticsWidgetSummary ({ title, total, icon, data, color = 'primary', sx, ...other }) {
 	const theme = useTheme();
 
 	return (
@@ -55,9 +56,16 @@ export default function AnalyticsWidgetSummary ({ title, total, icon, color = 'p
 			</Typography>
 
 			<Box display="flex" alignItems="center" gap={2} justifyContent="center">
-				<Typography variant="h5">
-					<CountUp start={0} end={(total || 0)} duration={1} separator="," />
-				</Typography>
+				{data.map(({ label, total }, idx) => (
+					<Box key={idx}>
+						{/* <Typography variant="h5">{(total || 0).toLocaleString("en-US")}</Typography> */}
+						<Typography variant="h5">
+							<CountUp start={0} end={total} duration={1} separator="," />
+						</Typography>
+						{/* <Typography variant="h5">{fShortenNumber(total) || 0}</Typography> */}
+						<Typography variant="subtitle2" sx={{ opacity: 0.64 }}>{label}</Typography>
+					</Box>
+				))}
 
 				{/* <Box>
 					<Typography variant="h5">{fShortenNumber(total)}</Typography>
