@@ -87,10 +87,7 @@ const MONTH_NAMES = {
 }
 
 
-export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbtByYear }) {
-	const { totalMainContractors, totalSubContractors, tbt, trainingHours,
-		itds: { count, itdMonth, totalHoursByMonth, totalItd, totalParticipantsPerMonth, totalDays, itdsManual } } = items;
-
+export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear, employeesCount }) {
 	const [tbtData, setTbtData] = useState([]);
 	const [filteredTbtData, setFilteredTbtData] = useState([]);
 	const [startTbtDate, setStartTbtDate] = useState(null);
@@ -272,36 +269,16 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="MANHOURS WORKED"
-						total={0}
-						data={[
-							{
-								label: "TOTAL",
-								total: tbtAnalytic.totalManhours
-							},
-							{
-								label: "SAFE MANHOURS",
-								total: tbtAnalytic.safeManhours
-							}
-						]}
-						icon={'mdi:clock-time-four-outline'}
+						title="EMPLOYEES"
+						total={employeesCount || 0}
+						icon={'material-symbols:supervisor-account-outline'}
 					/>
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANPOWER"
-						total={0}
-						data={[
-							{
-								label: "TOTAL",
-								total: tbtAnalytic.totalManpower
-							},
-							{
-								label: "DAYS WORK",
-								total: tbtAnalytic.daysWork
-							}
-						]}
+						total={tbtAnalytic.totalManpower}
 						color="info"
 						icon={'simple-line-icons:user'}
 					/>
@@ -309,41 +286,23 @@ export default function GeneralAnalyticsPage ({ user, items, totalTbtByYear, tbt
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="HSE TRAINING HOURS"
-						total={0}
-						data={[
-							{
-								label: "This Month",
-								total: trainingHours.thisMonth
-							},
-							{
-								label: "ITD",
-								total: trainingHours.itd
-							}
-						]}
-						color="warning"
+						title="MANHOURS"
+						total={tbtAnalytic.totalManhours}
 						icon={'mdi:clock-time-four-outline'}
+						color="warning"
 					/>
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="TOOLBOX TALK"
-						total={0}
-						data={[
-							{
-								label: "This Month",
-								total: tbt.thisMonth
-							},
-							{
-								label: "ITD",
-								total: tbt.itd
-							}
-						]}
-						color="error"
-						icon={'mdi:dropbox'}
+						title="SAFE MANHOURS"
+						total={tbtAnalytic.safeManhours}
+						color="success"
+						icon={'mdi:clock-time-four-outline'}
 					/>
 				</Grid>
+
+
 
 				<Grid item xs={12} md={6} lg={8}>
 					<AnalyticsTBTLine

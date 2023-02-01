@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Position;
 use App\Models\ToolboxTalk;
 use App\Models\ToolboxTalkParticipant;
@@ -16,6 +17,7 @@ use Inertia\Inertia;
 class DashboardController extends Controller
 {
 	public function index() {
+		$user = Auth::user();
 		$now = Carbon::now();
 
 		$date1 = date('Y-m-d', strtotime(date($now->year . "-" . $now->month)));
@@ -80,7 +82,8 @@ class DashboardController extends Controller
 				])
 				->orderBy('date_conducted')
 				->get(),
-			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get()
+			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get(),
+			"employeesCount" => Employee::where("is_deleted", 0)->where("sub_id", $user->subscriber_id)->count()
 		]);
 	}
 }
