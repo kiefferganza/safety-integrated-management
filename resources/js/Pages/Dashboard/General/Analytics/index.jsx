@@ -4,9 +4,9 @@ import { Head } from "@inertiajs/inertia-react";
 import GeneralAnalyticsPage from "./GeneralAnalyticsPage";
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import { dispatch, useSelector } from '@/redux/store';
-import { getTbts } from '@/redux/slices/toolboxtalk';
+import { convertTbtByYear, getTbts, setToolboxTalk, startLoading } from '@/redux/slices/toolboxtalk';
 
-const index = ({ auth: { user }, data }) => {
+const index = ({ auth: { user }, data, tbt, positions }) => {
 	const { isLoading, tbtByYear, totalTbtByYear } = useSelector(state => state.toolboxtalk);
 	const [items, setItems] = useState({
 		totalMainContractors: 0,
@@ -56,7 +56,10 @@ const index = ({ auth: { user }, data }) => {
 
 	useEffect(() => {
 		if (!totalTbtByYear || !tbtByYear) {
-			dispatch(getTbts());
+			dispatch(startLoading);
+			convertTbtByYear({ tbt, positions });
+			dispatch(setToolboxTalk(tbt));
+			// dispatch(getTbts());
 		}
 	}, [totalTbtByYear]);
 

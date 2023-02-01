@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Position;
 use App\Models\ToolboxTalk;
 use App\Models\ToolboxTalkParticipant;
 use App\Models\Training;
@@ -71,6 +72,15 @@ class DashboardController extends Controller
 					"this_month" => $tbt->whereRaw("YEAR(date_conducted) = ? AND MONTH(date_conducted) = ?", [$now->year, $now->month])->first()
 				]
 			],
+			"tbt" => ToolboxTalk::where("is_deleted", 0)
+				->with([
+					"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct(),
+					"file" => fn ($q) => $q->select("tbt_id","img_src"),
+					"conducted"
+				])
+				->orderBy('date_conducted')
+				->get(),
+			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get()
 		]);
 	}
 }
