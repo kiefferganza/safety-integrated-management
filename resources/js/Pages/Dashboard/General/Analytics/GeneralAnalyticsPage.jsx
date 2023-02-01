@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { getMonth, getYear } from 'date-fns';
+import { getMonth, getYear, isAfter, isBefore } from 'date-fns';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Button, TextField, Box, Typography } from '@mui/material';
@@ -86,7 +86,7 @@ const MONTH_NAMES = {
 }
 
 
-export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear, employeesCount }) {
+export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings, employeesCount }) {
 	const [tbtData, setTbtData] = useState([]);
 	const [filteredTbtData, setFilteredTbtData] = useState([]);
 	const [startTbtDate, setStartTbtDate] = useState(null);
@@ -165,6 +165,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 		acc.safeManhours += total.safeManhours;
 		acc.daysWork += total.daysWork;
 		acc.daysWoWork += total.daysWoWork;
+		acc.location = new Set([...acc.location, ...total.location]);
 		return acc;
 	}, {
 		totalManpower: 0,
@@ -172,7 +173,49 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 		safeManhours: 0,
 		daysWork: 0,
 		daysWoWork: 0,
+		location: new Set
 	}), [filteredTbtData]);
+
+	const tbtDataItd = useMemo(() => tbtData?.reduce((acc, curr) => {
+		const total = totalTbtByYear[curr[2]][curr[0]];
+		acc.totalManpower += total.totalManpower;
+		acc.totalManhours += total.totalManhours;
+		acc.safeManhours += total.safeManhours;
+		acc.daysWork += total.daysWork;
+		acc.daysWoWork += total.daysWoWork;
+		acc.location = new Set([...acc.location, ...total.location]);
+		return acc;
+	}, {
+		totalManpower: 0,
+		totalManhours: 0,
+		safeManhours: 0,
+		daysWork: 0,
+		daysWoWork: 0,
+		location: new Set
+	}), [tbtData]);
+
+	const trainingComputedData = trainings.reduce((acc, curr) => {
+		if (curr.training_files_count > 0) {
+			const trainingDate = new Date(curr.training_date);
+			const isInMonths = isAfter(trainingDate, startTbtDate) && isBefore(trainingDate, endTbtDate);
+			if (curr.type === 4) {
+				acc.completedInduction += 1;
+				if (isInMonths) {
+					acc.completedInductionMonth += 1;
+				}
+			}
+			acc.trainingHoursCompleted += curr.training_hrs;
+			if (isInMonths) {
+				acc.trainingHoursCompletedMonth += curr.training_hrs;
+			}
+		}
+		return acc;
+	}, {
+		trainingHoursCompleted: 0,
+		trainingHoursCompletedMonth: 0,
+		completedInduction: 0,
+		completedInductionMonth: 0
+	});
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -214,8 +257,8 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 									openTo="year"
 									showToolbar
 									views={['year', 'month']}
-									minDate={new Date(Object.keys(tbtByYear).at(0), 0, 1)}
-									maxDate={new Date(Object.keys(tbtByYear).at(-1), 11, 1)}
+									minDate={new Date(Object.keys(totalTbtByYear).at(0), 0, 1)}
+									maxDate={new Date(Object.keys(totalTbtByYear).at(-1), 11, 1)}
 									renderInput={(params) => (
 										<TextField
 											{...params}
@@ -239,7 +282,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, tbtByYear,
 									onChange={handleTbtEndDateChange}
 									onAccept={onTbtEndDateAccept}
 									minDate={startTbtDateHandler}
-									maxDate={new Date(Object.keys(tbtByYear).at(-1), 11, 1)}
+									maxDate={new Date(Object.keys(totalTbtByYear).at(-1), 11, 1)}
 									inputFormat="MMM yyyy"
 									openTo="year"
 									showToolbar

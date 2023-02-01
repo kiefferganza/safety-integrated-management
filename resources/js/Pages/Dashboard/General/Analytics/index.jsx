@@ -6,7 +6,7 @@ import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import { dispatch, useSelector } from '@/redux/store';
 import { getTbts } from '@/redux/slices/toolboxtalk';
 
-const index = ({ auth: { user }, employeesCount }) => {
+const index = ({ auth: { user }, trainings, employeesCount }) => {
 	const { isLoading, tbtByYear, totalTbtByYear } = useSelector(state => state.toolboxtalk);
 
 	useEffect(() => {
@@ -25,7 +25,7 @@ const index = ({ auth: { user }, employeesCount }) => {
 				<title> General: Analytics</title>
 			</Head>
 			<DashboardLayout>
-				<GeneralAnalyticsPage user={user} totalTbtByYear={totalTbtByYear} tbtByYear={tbtByYear} employeesCount={employeesCount} />
+				<GeneralAnalyticsPage user={user} totalTbtByYear={totalTbtByYear} trainings={trainings} employeesCount={employeesCount} />
 			</DashboardLayout>
 		</>
 	)
