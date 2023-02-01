@@ -3,7 +3,7 @@ import { Card, CardHeader, Box } from '@mui/material';
 // components
 import Chart, { useChart } from '@/Components/chart';
 
-const AnalyticsTBTLine = ({ title, subheader = "", chart, action, ...other }) => {
+const AnalyticsTBTLine = ({ title, subheader = "", chart, action, height = 364, ...other }) => {
 	const { labels, colors, series, options } = chart;
 
 	const chartOptions = useChart({
@@ -57,7 +57,7 @@ const AnalyticsTBTLine = ({ title, subheader = "", chart, action, ...other }) =>
 			<CardHeader title={title} subheader={subheader} action={action} />
 
 			<Box sx={{ p: 3, pb: 1 }} dir="ltr">
-				<Chart type="line" series={series} options={chartOptions} height={364} />
+				<Chart type="line" series={series} options={chartOptions} height={height} />
 			</Box>
 		</Card>
 	);

@@ -8,6 +8,7 @@ const AnalyticsTable = ({ headTitles = [], data = [], color = 'primary', ...othe
 				color: (theme) => theme.palette[color].darker,
 				bgcolor: (theme) => theme.palette[color].lighter,
 				height: "100%",
+				pb: 1,
 				...other
 			}}
 		>
@@ -23,11 +24,11 @@ const AnalyticsTable = ({ headTitles = [], data = [], color = 'primary', ...othe
 					<TableBody>
 						{data.map((d, idx) => (
 							<TableRow key={idx} hover sx={{ width: 1 }}>
-								<TableCell sx={{ color: (theme) => theme.palette[color].darker }} component="th" scope="row">{d?.title}</TableCell>
-								<TableCell sx={{ color: (theme) => theme.palette[color].darker }} width={80} align="right">
+								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} component="th" scope="row">{d?.title}</TableCell>
+								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} width={80} align="right">
 									<CountUp start={0} end={d?.month || 0} duration={1} separator="," />
 								</TableCell>
-								<TableCell sx={{ color: (theme) => theme.palette[color].darker }} width={80} align="right">
+								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} width={80} align="right">
 									<CountUp start={0} end={d?.itd || 0} duration={1} separator="," />
 								</TableCell>
 							</TableRow>

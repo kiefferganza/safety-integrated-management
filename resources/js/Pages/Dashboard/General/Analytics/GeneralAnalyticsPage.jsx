@@ -10,19 +10,17 @@ import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewP
 import { fTimestamp } from '@/utils/formatTime';
 // components
 import { useSettingsContext } from '@/Components/settings';
+import useResponsive from '@/hooks/useResponsive';
 // sections
 import {
-	AnalyticsTasks,
-	AnalyticsNewsUpdate,
-	AnalyticsOrderTimeline,
 	AnalyticsCurrentVisits,
 	AnalyticsWebsiteVisits,
-	AnalyticsTrafficBySite,
 	AnalyticsWidgetSummary,
 	AnalyticsCurrentSubject,
 	AnalyticsConversionRates,
 	AnalyticsTBTLine,
-	AnalyticsTBTWorkDays
+	AnalyticsTBTWorkDays,
+	AnalyticsTable
 } from '@/sections/@dashboard/general/analytics';
 import { AppWelcome } from '@/sections/@dashboard/general/app';
 import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
@@ -96,6 +94,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 	const endTbtDateRef = useRef();
 
 	const theme = useTheme();
+	const isTablet = useResponsive('down', 'lg');
 
 	const { themeStretch } = useSettingsContext();
 
@@ -221,7 +220,6 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 		<Container maxWidth={themeStretch ? false : 'xl'}>
 
 			<Grid container spacing={3}>
-
 				<Grid item xs={12} md={8}>
 					<AppWelcome
 						title={`Welcome back! \n ${user?.firstname}`}
@@ -343,11 +341,60 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 						icon={'mdi:clock-time-four-outline'}
 					/>
 				</Grid>
+			</Grid>
 
+			<Grid container spacing={2} sx={{ my: 3 }} >
+				<Grid item xs={12} md={7} lg={5} order={{ md: 1, lg: 1 }}>
+					<AnalyticsTable
+						headTitles={[{ title: "HSE Data" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+						data={[
+							{
+								title: "Total Days Work",
+								month: tbtAnalytic?.daysWork,
+								itd: tbtDataItd?.daysWork
+							},
+							{
+								title: "Total Days w/o Work",
+								month: tbtAnalytic?.daysWoWork,
+								itd: tbtDataItd?.daysWoWork
+							},
+							{
+								title: "Total Work Location",
+								month: tbtAnalytic?.location?.size,
+								itd: tbtDataItd?.location?.size
+							},
+							{
+								title: "Number of Training Hours Completed",
+								month: trainingComputedData.trainingHoursCompletedMonth,
+								itd: trainingComputedData.trainingHoursCompleted
+							},
+							{
+								title: "Number of HSE Induction Completed",
+								month: trainingComputedData.completedInductionMonth,
+								itd: trainingComputedData.completedInduction
+							},
+							{
+								title: "Number of HSE Enforcement Notices Issued",
+								month: 0,
+								itd: 0
+							},
+							{
+								title: "Number of HSE Audit (plan v actual) (%)",
+								month: 0,
+								itd: 0
+							},
+							{
+								title: "HSE Leadership Tours (plan v actual) (%)",
+								month: 0,
+								itd: 0
+							},
+						]}
+					/>
+				</Grid>
 
-
-				<Grid item xs={12} md={6} lg={8}>
+				<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
 					<AnalyticsTBTLine
+						height={isTablet ? 364 : 240}
 						title="Monthly Toolbox Talk"
 						chart={{
 							labels: filteredTbtData.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
@@ -383,8 +430,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 						}}
 					/>
 				</Grid>
-
-				<Grid item xs={12} md={6} lg={4}>
+				<Grid item xs={12} md={5} lg={2} order={{ md: 2, lg: 3 }}>
 					<AnalyticsTBTWorkDays
 						title="Work Days"
 						chart={{
@@ -399,7 +445,9 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 						}}
 					/>
 				</Grid>
+			</Grid>
 
+			<Grid container spacing={2}>
 				<Grid item xs={12} md={6} lg={8}>
 					<AnalyticsWebsiteVisits
 						title="Trending Observation"

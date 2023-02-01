@@ -8,7 +8,7 @@ import Chart, { useChart } from '@/Components/chart';
 
 // ----------------------------------------------------------------------
 
-const CHART_HEIGHT = 400;
+const CHART_HEIGHT = 240;
 
 const LEGEND_HEIGHT = 72;
 
@@ -72,11 +72,11 @@ const AnalyticsTBTWorkDays = ({ title, subheader, chart, action, ...other }) => 
 	});
 
 	return (
-		<Card {...other}>
+		<Card sx={{ height: "100%" }} {...other}>
 			<CardHeader title={title} subheader={subheader} action={action} />
 
 			<StyledChart dir="ltr">
-				<Chart type="pie" series={chartSeries} options={chartOptions} height={280} />
+				<Chart type="pie" series={chartSeries} options={chartOptions} height={160} />
 			</StyledChart>
 		</Card>
 	);
