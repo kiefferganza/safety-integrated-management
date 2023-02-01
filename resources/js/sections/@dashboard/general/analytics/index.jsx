@@ -9,3 +9,4 @@ export { default as AnalyticsCurrentSubject } from './AnalyticsCurrentSubject';
 export { default as AnalyticsConversionRates } from './AnalyticsConversionRates';
 export { default as AnalyticsTBTLine } from './AnalyticsTBTLine';
 export { default as AnalyticsTBTWorkDays } from './AnalyticsTBTWorkDays';
+export { default as AnalyticsTable } from './AnalyticsTable';

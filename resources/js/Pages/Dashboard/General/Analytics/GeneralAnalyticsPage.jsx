@@ -27,7 +27,6 @@ import {
 import { AppWelcome } from '@/sections/@dashboard/general/app';
 import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
 import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
-import LoadingScreen from '@/Components/loading-screen';
 import Iconify from '@/Components/iconify';
 
 
