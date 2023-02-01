@@ -16,7 +16,7 @@ FileGeneralDataActivity.propTypes = {
 	subheader: PropTypes.string,
 };
 
-export default function FileGeneralDataActivity ({ title, subheader, chart, ...other }) {
+export default function FileGeneralDataActivity ({ title, subheader, chart, height = 364, ...other }) {
 	const { labels, colors, series, options } = chart;
 
 	const [seriesData, setSeriesData] = useState('Week');
@@ -64,7 +64,7 @@ export default function FileGeneralDataActivity ({ title, subheader, chart, ...o
 
 			{series.map((item) => (
 				<Box key={item.type} sx={{ mt: 3, mx: 3 }} dir="ltr">
-					{item.type === seriesData && <Chart type="bar" series={item.data} options={chartOptions} height={364} />}
+					{item.type === seriesData && <Chart type="bar" series={item.data} options={chartOptions} height={height} />}
 				</Box>
 			))}
 		</Card>

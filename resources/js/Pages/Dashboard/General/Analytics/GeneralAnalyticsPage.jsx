@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { getMonth, getYear, isAfter, isBefore } from 'date-fns';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Button, TextField, Box, Typography } from '@mui/material';
+import { Grid, Container, Button, TextField, Box, Typography, Stack, Divider } from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 // _mock_
-import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewProducts } from '@/_mock/arrays';
+import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewProducts, _bookingsOverview } from '@/_mock/arrays';
 // utils
 import { fTimestamp } from '@/utils/formatTime';
 // components
@@ -26,9 +26,17 @@ import { AppWelcome } from '@/sections/@dashboard/general/app';
 import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
 import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
 import Iconify from '@/Components/iconify';
+import { FileGeneralDataActivity, FileGeneralStorageOverview } from '@/sections/@dashboard/general/file';
+import { BookingBookedRoom } from '@/sections/@dashboard/general/booking';
 
 
 // ----------------------------------------------------------------------
+const GB = 1000000000 * 24;
+const TIME_LABELS = {
+	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
+	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+	year: ['2018', '2019', '2020', '2021', '2022'],
+};
 
 const COVER_IMAGES = [
 	{
@@ -343,7 +351,9 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 				</Grid>
 			</Grid>
 
-			<Grid container spacing={2} sx={{ my: 3 }} >
+			<Divider variant="middle" sx={{ my: 3 }} />
+
+			<Grid container spacing={2} >
 				<Grid item xs={12} md={7} lg={5} order={{ md: 1, lg: 1 }}>
 					<AnalyticsTable
 						headTitles={[{ title: "HSE Data" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
@@ -447,9 +457,33 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 				</Grid>
 			</Grid>
 
-			<Grid container spacing={2}>
-				<Grid item xs={12} md={6} lg={8}>
+
+			<Divider variant="middle" sx={{ my: 3 }} />
+
+
+			<Grid container spacing={3} >
+				<Grid item xs={12} md={7} lg={5} order={{ md: 1, lg: 1 }}>
+					<AnalyticsTable
+						headTitles={[{ title: "Accidents and Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+						data={[
+							{ title: "Fatality", month: 0, itd: 0 },
+							{ title: "Major", month: 0, itd: 0 },
+							{ title: "Significant", month: 0, itd: 0 },
+							{ title: "Minor", month: 0, itd: 0 },
+							{ title: "Number of Near Miss Reports Received", month: 0, itd: 0 },
+							{ title: "Total Recordable Injuries (TRIs)", month: 0, itd: 0 },
+							{ title: "Lost Time Injury Frequency Rate (LTIFR)", month: 0, itd: 0 },
+							{ title: "Lost Time Injury Severity Rate (LTISR)", month: 0, itd: 0 },
+							{ title: "Total Reportable Case Frequency (TRCF)", month: 0, itd: 0 },
+							{ title: "Fatal Accident Frequency Rate (FAFR)", month: 0, itd: 0 },
+						]}
+						color="error"
+					/>
+				</Grid>
+
+				<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
 					<AnalyticsWebsiteVisits
+						height={isTablet ? 364 : 240}
 						title="Trending Observation"
 						subheader=""
 						chart={{
@@ -487,12 +521,15 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 								},
 							],
 						}}
+						sx={{ height: "100%" }}
 					/>
 				</Grid>
 
-				<Grid item xs={12} md={6} lg={4}>
+				<Grid item xs={12} md={5} lg={2} order={{ md: 2, lg: 3 }}>
 					<AnalyticsCurrentVisits
 						title="Open vs Close"
+						height={160}
+						type="donut"
 						chart={{
 							series: [
 								{ label: 'Open', value: 5435 },
@@ -503,8 +540,166 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 								theme.palette.error.main,
 							],
 						}}
+						sx={{ height: "100%" }}
 					/>
 				</Grid>
+			</Grid>
+
+			<Divider variant="middle" sx={{ my: 3 }} />
+
+
+			<Grid container spacing={3} >
+				<Grid item xs={12} md={12} lg={5}>
+					<Stack spacing={2}>
+						<AnalyticsTable
+							headTitles={[{ title: "Recordable Cases" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+							data={[
+								{ title: "No of Restricted Work Cases", month: 0, itd: 0 },
+								{ title: "No of Occupational Illnesses", month: 0, itd: 0 },
+								{ title: "No of Occupational Fatalities", month: 0, itd: 0 },
+								{ title: "No of Medical Treatment Cases", month: 0, itd: 0 },
+								{ title: "No of Loss Consciousness Cases", month: 0, itd: 0 },
+							]}
+							color="warning"
+							sx={{ mb: 1 }}
+						/>
+						<AnalyticsTable
+							headTitles={[{ title: "Non Recordable" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+							data={[
+								{ title: "No of First Aid Cases", month: 0, itd: 0 },
+								{ title: "No of Near Misses", month: 0, itd: 0 }
+							]}
+						/>
+					</Stack>
+				</Grid>
+
+				<Grid item xs={12} md={12} lg={7}>
+					<FileGeneralDataActivity
+						height={isTablet ? 280 : 240}
+						title="Data Activity"
+						sx={{ height: "100%" }}
+						chart={{
+							labels: TIME_LABELS,
+							colors: [
+								theme.palette.primary.main,
+								theme.palette.error.main,
+								theme.palette.warning.main,
+								theme.palette.text.disabled,
+							],
+							series: [
+								{
+									type: 'Week',
+									data: [
+										{ name: 'Images', data: [20, 34, 48, 65, 37, 48] },
+										{ name: 'Media', data: [10, 34, 13, 26, 27, 28] },
+										{ name: 'Documents', data: [10, 14, 13, 16, 17, 18] },
+										{ name: 'Other', data: [5, 12, 6, 7, 8, 9] },
+									],
+								},
+								{
+									type: 'Month',
+									data: [
+										{ name: 'Images', data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34] },
+										{ name: 'Media', data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34] },
+										{ name: 'Documents', data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34] },
+										{ name: 'Other', data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34] },
+									],
+								},
+								{
+									type: 'Year',
+									data: [
+										{ name: 'Images', data: [10, 34, 13, 56, 77] },
+										{ name: 'Media', data: [10, 34, 13, 56, 77] },
+										{ name: 'Documents', data: [10, 34, 13, 56, 77] },
+										{ name: 'Other', data: [10, 34, 13, 56, 77] },
+									],
+								},
+							],
+						}}
+					/>
+				</Grid>
+			</Grid>
+
+
+			<Divider variant="middle" sx={{ my: 3 }} />
+
+
+			<Grid container spacing={3} >
+				<Grid item xs={12} md={12} lg={5} height={1}>
+					<Stack spacing={2} height={1}>
+						<AnalyticsTable
+							headTitles={[{ title: "Other Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+							data={[
+								{ title: "No of Property Damage", month: 0, itd: 0 },
+								{ title: "No of Spill & Leaks", month: 0, itd: 0 },
+								{ title: "No of Other Environ. incidents", month: 0, itd: 0 },
+								{ title: "No of Fires", month: 0, itd: 0 },
+								{ title: "No of Vehicle Accidents", month: 0, itd: 0 },
+							]}
+							color="error"
+							sx={{ mb: 1 }}
+						/>
+						<AnalyticsTable
+							headTitles={[{ title: "HSE KPI's" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+							data={[
+								{ title: "Attended HSE Leadership Training (%)", month: 0, itd: 0 },
+								{ title: "Attended HSE Supervisors Training (%)", month: 0, itd: 0 },
+								{ title: "Incident Reports Submitted on Time (%)", month: 0, itd: 0 },
+								{ title: "Incident Recommendations Closed on Time", month: 0, itd: 0 },
+								{ title: "Corrective Actions Closed on Time", month: 0, itd: 0 },
+								{ title: "Accident Frequency Rate (12 month rolling)", month: 0, itd: 0 },
+							]}
+							color="secondary"
+						/>
+					</Stack>
+				</Grid>
+
+				<Grid item xs={12} md={6} lg={3}>
+					<FileGeneralStorageOverview
+						height={isTablet ? 364 : 240}
+						total={GB}
+						chart={{
+							series: 76,
+						}}
+						data={[
+							{
+								name: 'Images',
+								usedStorage: GB / 2,
+								filesCount: 223,
+								icon: <Box component="img" src="/storage/assets/icons/files/ic_img.svg" />,
+							},
+							{
+								name: 'Media',
+								usedStorage: GB / 5,
+								filesCount: 223,
+								icon: <Box component="img" src="/storage/assets/icons/files/ic_video.svg" />,
+							},
+							{
+								name: 'Documents',
+								usedStorage: GB / 5,
+								filesCount: 223,
+								icon: <Box component="img" src="/storage/assets/icons/files/ic_document.svg" />,
+							},
+							{
+								name: 'Other',
+								usedStorage: GB / 10,
+								filesCount: 223,
+								icon: <Iconify icon="eva:file-fill" width={24} sx={{ color: 'text.disabled' }} />,
+							},
+						]}
+					/>
+				</Grid>
+
+				<Grid item xs={12} md={6} lg={4}>
+					<BookingBookedRoom title="Booked Room" data={_bookingsOverview} />
+				</Grid>
+			</Grid>
+
+
+			<Divider variant="middle" sx={{ my: 3 }} />
+
+
+			<Grid container spacing={2}>
 
 				<Grid item xs={12} md={6} lg={8}>
 					<AnalyticsConversionRates

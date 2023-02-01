@@ -9,7 +9,7 @@ import Chart, { useChart } from '@/Components/chart';
 
 // ----------------------------------------------------------------------
 
-const CHART_HEIGHT = 400;
+const CHART_HEIGHT = 240;
 
 const LEGEND_HEIGHT = 72;
 
@@ -39,7 +39,7 @@ AnalyticsCurrentVisits.propTypes = {
 	subheader: PropTypes.string,
 };
 
-export default function AnalyticsCurrentVisits ({ title, subheader, chart, ...other }) {
+export default function AnalyticsCurrentVisits ({ title, subheader, chart, type = "pie", height = 280, ...other }) {
 	const theme = useTheme();
 
 	const { colors, series, options } = chart;
@@ -85,7 +85,7 @@ export default function AnalyticsCurrentVisits ({ title, subheader, chart, ...ot
 			<CardHeader title={title} subheader={subheader} />
 
 			<StyledChart dir="ltr">
-				<Chart type="pie" series={chartSeries} options={chartOptions} height={280} />
+				<Chart type={type} series={chartSeries} options={chartOptions} height={height} />
 			</StyledChart>
 		</Card>
 	);
