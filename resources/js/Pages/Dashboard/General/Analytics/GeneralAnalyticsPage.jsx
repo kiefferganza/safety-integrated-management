@@ -26,20 +26,20 @@ import { AppWelcome } from '@/sections/@dashboard/general/app';
 import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
 import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
 import Iconify from '@/Components/iconify';
-// import {
-// 	FileGeneralDataActivity,
-// 	FileGeneralStorageOverview
-// } from '@/sections/@dashboard/general/file';
-// import { BookingBookedRoom } from '@/sections/@dashboard/general/booking';
+import {
+	FileGeneralDataActivity,
+	FileGeneralStorageOverview
+} from '@/sections/@dashboard/general/file';
+import { BookingBookedRoom } from '@/sections/@dashboard/general/booking';
 
 
 // ----------------------------------------------------------------------
-// const GB = 1000000000 * 24;
-// const TIME_LABELS = {
-// 	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
-// 	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-// 	year: ['2018', '2019', '2020', '2021', '2022'],
-// };
+const GB = 1000000000 * 24;
+const TIME_LABELS = {
+	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
+	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+	year: ['2018', '2019', '2020', '2021', '2022'],
+};
 
 const COVER_IMAGES = [
 	{
@@ -188,26 +188,35 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 
 	const tbtDataItd = useMemo(() => tbtData?.reduce((acc, curr) => {
 		const total = totalTbtByYear[curr[2]][curr[0]];
-		acc.totalManpower += total.totalManpower;
-		acc.totalManhours += total.totalManhours;
-		acc.safeManhours += total.safeManhours;
-		acc.daysWork += total.daysWork;
-		acc.daysWoWork += total.daysWoWork;
-		acc.location = new Set([...acc.location, ...total.location]);
-		return acc;
+		// console.log(curr[2], curr[0], totalTbtByYear[curr[2]]);
+		// acc.totalManpower += total.totalManpower;
+		// acc.totalManhours += total.totalManhours;
+		// acc.daysWork += total.daysWork;
+		// acc.daysWoWork += total.daysWoWork;
+		// acc.location += total.location.size;
+		const currTotal = {
+			totalManpower: acc.totalManpower + total.totalManpower,
+			totalManhours: acc.totalManhours + total.totalManhours,
+			daysWork: acc.daysWork + total.daysWork,
+			daysWoWork: acc.daysWoWork + total.daysWoWork,
+			location: acc.location + total.location.size
+		}
+		return calculateItd({ monthsObj: totalTbtByYear[curr[2]], currMonth: curr[0], currTotal });
+		// return acc;
 	}, {
 		totalManpower: 0,
 		totalManhours: 0,
-		safeManhours: 0,
 		daysWork: 0,
 		daysWoWork: 0,
-		location: new Set
+		location: 0
 	}), [tbtData]);
 
 	const trainingComputedData = trainings.reduce((acc, curr) => {
 		if (curr.training_files_count > 0) {
 			const trainingDate = new Date(curr.training_date);
-			const isInMonths = isAfter(trainingDate, startTbtDate) && isBefore(trainingDate, endTbtDate);
+			// const isInMonths = isAfter(trainingDate, startTbtDate) && isBefore(trainingDate, endTbtDate);
+			const isInMonths = startTbtDate && endTbtDate ? fTimestamp(trainingDate) >= startTbtDate.setHours(0, 0, 0, 0) && fTimestamp(trainingDate) <= endTbtDate.setHours(0, 0, 0, 0) : false;
+
 			if (curr.type === 4) {
 				acc.completedInduction += 1;
 				if (isInMonths) {
@@ -374,7 +383,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 							{
 								title: "Total Work Location",
 								month: tbtAnalytic?.location?.size,
-								itd: tbtDataItd?.location?.size
+								itd: tbtDataItd?.location
 							},
 							{
 								title: "Number of Training Hours Completed",
@@ -576,7 +585,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 					</Stack>
 				</Grid>
 
-				{/* <Grid item xs={12} md={12} lg={7}>
+				<Grid item xs={12} md={12} lg={7}>
 					<FileGeneralDataActivity
 						height={isTablet ? 280 : 240}
 						title="Data Activity"
@@ -620,7 +629,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 							],
 						}}
 					/>
-				</Grid> */}
+				</Grid>
 			</Grid>
 
 
@@ -657,7 +666,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 					</Stack>
 				</Grid>
 
-				{/* <Grid item xs={12} md={6} lg={3}>
+				<Grid item xs={12} md={6} lg={3}>
 					<FileGeneralStorageOverview
 						height={isTablet ? 364 : 240}
 						total={GB}
@@ -695,7 +704,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 
 				<Grid item xs={12} md={6} lg={4}>
 					<BookingBookedRoom title="Booked Room" data={_bookingsOverview} />
-				</Grid> */}
+				</Grid>
 			</Grid>
 
 
@@ -706,6 +715,24 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 		</Container>
 	);
 }
+
+function calculateItd ({ monthsObj, currMonth, currTotal }) {
+	const prevMonth = +currMonth - 1;
+	if (prevMonth in monthsObj) {
+		const month = monthsObj[prevMonth];
+		const total = {
+			totalManpower: currTotal.totalManpower + month.totalManpower,
+			totalManhours: currTotal.totalManhours + month.totalManhours,
+			daysWork: currTotal.daysWork + month.daysWork,
+			daysWoWork: currTotal.daysWoWork + month.daysWoWork,
+			location: currTotal.location + month.location.size,
+		};
+		return calculateItd({ monthsObj, currMonth: prevMonth, currTotal: total });
+	} else {
+		return currTotal;
+	}
+}
+
 
 {/* <Grid container spacing={2}>
 
