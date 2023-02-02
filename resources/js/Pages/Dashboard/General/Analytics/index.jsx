@@ -11,10 +11,10 @@ const index = ({ auth: { user }, trainings, employeesCount, tbt, positions }) =>
 
 	useEffect(() => {
 		if (!totalTbtByYear || !tbtByYear) {
-			dispatch(getTbts());
-			// dispatch(startLoading);
-			// dispatch(setToolboxTalk(tbt));
-			// convertTbtByYear({ tbt, positions });
+			// dispatch(getTbts());
+			dispatch(startLoading);
+			dispatch(setToolboxTalk(tbt));
+			convertTbtByYear({ tbt, positions });
 		}
 	}, [totalTbtByYear]);
 
