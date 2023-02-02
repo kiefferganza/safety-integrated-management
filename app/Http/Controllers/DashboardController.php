@@ -64,7 +64,16 @@ class DashboardController extends Controller
 			// 	->get(),
 			// "positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get(),
 			"employeesCount" => Employee::where("is_deleted", 0)->where("sub_id", $user->subscriber_id)->count(),
-			"trainings" => Training::select("type", "training_hrs", "training_date")->where("is_deleted", 0)->withCount("training_files")->get()
+			"trainings" => Training::select("type", "training_hrs", "training_date")->where("is_deleted", 0)->withCount("training_files")->get(),
+			"tbt" => ToolboxTalk::where("is_deleted", 0)
+				->with([
+					"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct(),
+					"file" => fn ($q) => $q->select("tbt_id","img_src"),
+					"conducted"
+				])
+				->orderBy('date_conducted')
+				->get(),
+			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get()
 		]);
 	}
 }
