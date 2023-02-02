@@ -26,12 +26,15 @@ import { AppWelcome } from '@/sections/@dashboard/general/app';
 import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
 import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
 import Iconify from '@/Components/iconify';
-import { FileGeneralDataActivity, FileGeneralStorageOverview } from '@/sections/@dashboard/general/file';
-import { BookingBookedRoom } from '@/sections/@dashboard/general/booking';
+import {
+	FileGeneralDataActivity,
+	// FileGeneralStorageOverview
+} from '@/sections/@dashboard/general/file';
+// import { BookingBookedRoom } from '@/sections/@dashboard/general/booking';
 
 
 // ----------------------------------------------------------------------
-const GB = 1000000000 * 24;
+// const GB = 1000000000 * 24;
 const TIME_LABELS = {
 	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
 	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -624,7 +627,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 			<Divider variant="middle" sx={{ my: 3 }} />
 
 
-			<Grid container spacing={3} >
+			{/* <Grid container spacing={3} >
 				<Grid item xs={12} md={12} lg={5} height={1}>
 					<Stack spacing={2} height={1}>
 						<AnalyticsTable
@@ -696,7 +699,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 			</Grid>
 
 
-			<Divider variant="middle" sx={{ my: 3 }} />
+			<Divider variant="middle" sx={{ my: 3 }} /> */}
 
 
 			<Grid container spacing={2}>
