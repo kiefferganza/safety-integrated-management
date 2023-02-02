@@ -14,7 +14,8 @@ import { useSnackbar } from '@/Components/snackbar';
 import MenuPopover from '@/Components/menu-popover';
 import FileThumbnail from '@/Components/file-thumbnail';
 //
-import { FileShareDialog, FileDetailsDrawer } from '../../file';
+// import { FileShareDialog, FileDetailsDrawer } from '../../file';
+import { FileShareDialog, FileDetailsDrawer } from '@/sections/@dashboard/file';
 
 // ----------------------------------------------------------------------
 
