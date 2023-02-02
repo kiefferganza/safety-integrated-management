@@ -1,5 +1,5 @@
 import { Card, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import CountUp from 'react-countup';
+// import CountUp from 'react-countup';
 
 const AnalyticsTable = ({ headTitles = [], data = [], color = 'primary', ...other }) => {
 	return (
@@ -26,10 +26,12 @@ const AnalyticsTable = ({ headTitles = [], data = [], color = 'primary', ...othe
 							<TableRow key={idx} hover sx={{ width: 1 }}>
 								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} component="th" scope="row">{d?.title}</TableCell>
 								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} width={80} align="right">
-									<CountUp start={0} end={d?.month || 0} duration={1} separator="," />
+									{/* <CountUp start={0} end={d?.month || 0} duration={1} separator="," /> */}
+									{d?.itd || 0}
 								</TableCell>
 								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} width={80} align="right">
-									<CountUp start={0} end={d?.itd || 0} duration={1} separator="," />
+									{/* <CountUp start={0} end={d?.itd || 0} duration={1} separator="," /> */}
+									{d?.itd || 0}
 								</TableCell>
 							</TableRow>
 						))}

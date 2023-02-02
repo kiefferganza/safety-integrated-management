@@ -627,7 +627,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 			<Divider variant="middle" sx={{ my: 3 }} />
 
 
-			{/* <Grid container spacing={3} >
+			<Grid container spacing={3} >
 				<Grid item xs={12} md={12} lg={5} height={1}>
 					<Stack spacing={2} height={1}>
 						<AnalyticsTable
@@ -657,7 +657,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 					</Stack>
 				</Grid>
 
-				<Grid item xs={12} md={6} lg={3}>
+				{/* <Grid item xs={12} md={6} lg={3}>
 					<FileGeneralStorageOverview
 						height={isTablet ? 364 : 240}
 						total={GB}
@@ -695,11 +695,11 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 
 				<Grid item xs={12} md={6} lg={4}>
 					<BookingBookedRoom title="Booked Room" data={_bookingsOverview} />
-				</Grid>
+				</Grid> */}
 			</Grid>
 
 
-			<Divider variant="middle" sx={{ my: 3 }} /> */}
+			<Divider variant="middle" sx={{ my: 3 }} />
 
 
 
