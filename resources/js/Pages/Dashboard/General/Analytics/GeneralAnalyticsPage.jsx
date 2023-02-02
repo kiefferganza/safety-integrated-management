@@ -26,20 +26,20 @@ import { AppWelcome } from '@/sections/@dashboard/general/app';
 import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
 import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
 import Iconify from '@/Components/iconify';
-import {
-	FileGeneralDataActivity,
-	FileGeneralStorageOverview
-} from '@/sections/@dashboard/general/file';
-import { BookingBookedRoom } from '@/sections/@dashboard/general/booking';
+// import {
+// 	FileGeneralDataActivity,
+// 	FileGeneralStorageOverview
+// } from '@/sections/@dashboard/general/file';
+// import { BookingBookedRoom } from '@/sections/@dashboard/general/booking';
 
 
 // ----------------------------------------------------------------------
-const GB = 1000000000 * 24;
-const TIME_LABELS = {
-	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
-	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-	year: ['2018', '2019', '2020', '2021', '2022'],
-};
+// const GB = 1000000000 * 24;
+// const TIME_LABELS = {
+// 	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
+// 	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+// 	year: ['2018', '2019', '2020', '2021', '2022'],
+// };
 
 const COVER_IMAGES = [
 	{
@@ -585,7 +585,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 					</Stack>
 				</Grid>
 
-				<Grid item xs={12} md={12} lg={7}>
+				{/* <Grid item xs={12} md={12} lg={7}>
 					<FileGeneralDataActivity
 						height={isTablet ? 280 : 240}
 						title="Data Activity"
@@ -629,7 +629,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 							],
 						}}
 					/>
-				</Grid>
+				</Grid> */}
 			</Grid>
 
 
@@ -666,7 +666,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 					</Stack>
 				</Grid>
 
-				<Grid item xs={12} md={6} lg={3}>
+				{/* <Grid item xs={12} md={6} lg={3}>
 					<FileGeneralStorageOverview
 						height={isTablet ? 364 : 240}
 						total={GB}
@@ -704,7 +704,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 
 				<Grid item xs={12} md={6} lg={4}>
 					<BookingBookedRoom title="Booked Room" data={_bookingsOverview} />
-				</Grid>
+				</Grid> */}
 			</Grid>
 
 
