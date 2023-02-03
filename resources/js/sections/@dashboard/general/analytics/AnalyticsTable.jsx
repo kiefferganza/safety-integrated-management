@@ -1,6 +1,7 @@
 import { Card, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
 const AnalyticsTable = ({ headTitles = [], data = [], color = 'primary', ...other }) => {
+
 	return (
 		<Card
 			sx={{
@@ -25,10 +26,10 @@ const AnalyticsTable = ({ headTitles = [], data = [], color = 'primary', ...othe
 							<TableRow key={idx} hover sx={{ width: 1 }}>
 								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} component="th" scope="row">{d?.title}</TableCell>
 								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} width={80} align="right">
-									{d?.month?.toLocaleString() || 0}
+									{typeof d.month === "number" ? d.month?.toLocaleString() : d.month}
 								</TableCell>
 								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} width={80} align="right">
-									{d?.itd?.toLocaleString() || 0}
+									{typeof d.itd === "number" ? d.itd?.toLocaleString() : d.itd}
 								</TableCell>
 							</TableRow>
 						))}
