@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Button, TextField, Box, Typography, Stack, Divider } from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 // _mock_
-import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewProducts, _bookingsOverview } from '@/_mock/arrays';
+// import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewProducts, _bookingsOverview } from '@/_mock/arrays';
 // utils
 import { fTimestamp } from '@/utils/formatTime';
 // components
@@ -732,67 +732,3 @@ function calculateItd ({ monthsObj, currMonth, currTotal }) {
 		return currTotal;
 	}
 }
-
-
-{/* <Grid container spacing={2}>
-
-<Grid item xs={12} md={6} lg={8}>
-	<AnalyticsConversionRates
-		title="Leading Indicators"
-		// subheader="(+43%) than last year"
-		chart={{
-			series: [
-				{ label: '', value: 400 },
-				{ label: '', value: 430 },
-				{ label: '', value: 448 },
-				{ label: '', value: 470 },
-				{ label: '', value: 540 },
-				{ label: '', value: 580 },
-				{ label: '', value: 690 },
-				{ label: '', value: 1100 },
-				{ label: '', value: 1200 },
-				{ label: '', value: 1380 },
-			],
-		}}
-	/>
-</Grid>
-
-<Grid item xs={12} md={6} lg={4}>
-	<AnalyticsCurrentSubject
-		title="Lagging Indicators"
-		chart={{
-			categories: ['', '', '', '', '', ''],
-			series: [
-				{ name: '', data: [80, 50, 30, 40, 100, 20] },
-				{ name: '', data: [20, 30, 40, 80, 20, 80] },
-				{ name: '', data: [44, 76, 78, 13, 43, 10] },
-			],
-		}}
-	/>
-</Grid>
-
-<Grid item xs={12} md={6} lg={8}>
-	<AnalyticsNewsUpdate title="News Update" list={[]} />
-</Grid>
-
-<Grid item xs={12} md={6} lg={4}>
-	<AnalyticsOrderTimeline title="Order Timeline" list={[]} />
-</Grid>
-
-<Grid item xs={12} md={6} lg={4}>
-	<AnalyticsTrafficBySite title="Traffic by Site" list={[]} />
-</Grid>
-
-<Grid item xs={12} md={6} lg={8}>
-	<AnalyticsTasks
-		title="Tasks"
-		list={[
-			{ id: '1', label: 'Create FireStone Logo' },
-			{ id: '2', label: 'Add SCSS and JS files if required' },
-			{ id: '3', label: 'Stakeholder Meeting' },
-			{ id: '4', label: 'Scoping & Estimations' },
-			{ id: '5', label: 'Sprint Showcase' },
-		]}
-	/>
-</Grid>
-</Grid> */}
