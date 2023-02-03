@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getMonth, getYear } from 'date-fns';
-import CountUp from 'react-countup';
+// import CountUp from 'react-countup';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Button, TextField, Box, Typography, Stack, Divider } from '@mui/material';
@@ -373,28 +373,38 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 						data={[
 							{
 								title: "Total Days Work",
-								month: <CountUp duration={1} start={0} end={tbtAnalytic?.daysWork || 0} separator="," />,
-								itd: <CountUp duration={1} start={0} end={tbtDataItd?.daysWork || 0} separator="," />
+								month: tbtAnalytic?.daysWork,
+								itd: tbtDataItd?.daysWork
+								// month: <CountUp duration={1} start={0} end={tbtAnalytic?.daysWork || 0} separator="," />,
+								// itd: <CountUp duration={1} start={0} end={tbtDataItd?.daysWork || 0} separator="," />
 							},
 							{
 								title: "Total Days w/o Work",
-								month: <CountUp duration={1} start={0} end={tbtAnalytic?.daysWoWork || 0} separator="," />,
-								itd: <CountUp duration={1} start={0} end={tbtDataItd?.daysWoWork || 0} separator="," />
+								month: tbtAnalytic?.daysWoWork,
+								itd: tbtDataItd?.daysWoWork
+								// month: <CountUp duration={1} start={0} end={tbtAnalytic?.daysWoWork || 0} separator="," />,
+								// itd: <CountUp duration={1} start={0} end={tbtDataItd?.daysWoWork || 0} separator="," />
 							},
 							{
 								title: "Total Work Location",
-								month: <CountUp duration={1} start={0} end={tbtAnalytic?.location?.size || 0} separator="," />,
-								itd: <CountUp duration={1} start={0} end={tbtDataItd?.location || 0} separator="," />
+								month: tbtAnalytic?.location?.size,
+								itd: tbtDataItd?.location
+								// month: <CountUp duration={1} start={0} end={tbtAnalytic?.location?.size || 0} separator="," />,
+								// itd: <CountUp duration={1} start={0} end={tbtDataItd?.location || 0} separator="," />
 							},
 							{
 								title: "Number of Training Hours Completed",
-								month: <CountUp duration={1} start={0} end={trainingComputedData.trainingHoursCompletedMonth || 0} separator="," />,
-								itd: <CountUp duration={1} start={0} end={trainingComputedData.trainingHoursCompleted || 0} separator="," />
+								month: trainingComputedData.trainingHoursCompletedMonth,
+								itd: trainingComputedData.trainingHoursCompleted
+								// month: <CountUp duration={1} start={0} end={trainingComputedData.trainingHoursCompletedMonth || 0} separator="," />,
+								// itd: <CountUp duration={1} start={0} end={trainingComputedData.trainingHoursCompleted || 0} separator="," />
 							},
 							{
 								title: "Number of HSE Induction Completed",
-								month: <CountUp duration={1} start={0} end={trainingComputedData.completedInductionMonth || 0} separator="," />,
-								itd: <CountUp duration={1} start={0} end={trainingComputedData.completedInduction || 0} separator="," />
+								month: trainingComputedData.completedInductionMonth,
+								itd: trainingComputedData.completedInduction
+								// month: <CountUp duration={1} start={0} end={trainingComputedData.completedInductionMonth || 0} separator="," />,
+								// itd: <CountUp duration={1} start={0} end={trainingComputedData.completedInduction || 0} separator="," />
 							},
 							{
 								title: "Number of HSE Enforcement Notices Issued",
