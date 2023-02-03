@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\FileMailable;
-use App\Mail\TestMailable;
 use App\Models\Document;
 use App\Models\DocumentApprovalSign;
 use App\Models\DocumentCommentReplies;
@@ -13,36 +11,28 @@ use App\Models\DocumentReviewerSign;
 use App\Models\FileModel;
 use App\Models\FolderModel;
 use App\Models\User;
+use App\Services\FolderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class FilePageController extends Controller
 {
-	public function index()
-	{
-		$user = Auth::user();
-
-		$folders = FolderModel::where([
-				["is_removed", 1],
-				["sub_id", $user->subscriber_id]
-			])
-			->orderBy("folder_id")
-			->get();
-
-		return Inertia::render("Files/Index", ["folders" => $folders]);
+	public function index() {
+		return Inertia::render("Dashboard/Management/FileManager/index", [
+			"folders" => (new FolderService)->getFolders()
+		]);
 	}
 	
 	public function create_folder(Request $request) {
-		$user = Auth::user();
+		$user = auth()->user();
 		FolderModel::create([
 			'is_removed' => 1,
 			'is_active' => 0,
-			'folder_name' => $request->folder_name,
+			'folder_name' => $request->folderName,
 			'sub_id' => $user->subscriber_id
 		]);
 

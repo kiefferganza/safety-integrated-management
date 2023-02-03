@@ -13,30 +13,21 @@ import TextMaxLine from '@/Components/text-max-line';
 import { useSnackbar } from '@/Components/snackbar';
 import ConfirmDialog from '@/Components/confirm-dialog';
 //
-import FileShareDialog from '../portal/FileShareDialog';
 import FileDetailsDrawer from '../portal/FileDetailsDrawer';
 import FileNewFolderDialog from '../portal/FileNewFolderDialog';
+import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
 FileFolderCard.propTypes = {
 	sx: PropTypes.object,
 	folder: PropTypes.object,
-	onDelete: PropTypes.func,
-	onSelect: PropTypes.func,
-	selected: PropTypes.bool,
 };
 
-export default function FileFolderCard ({ folder, selected, onSelect, onDelete, sx, ...other }) {
+export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
 	const { enqueueSnackbar } = useSnackbar();
 
 	const { copy } = useCopyToClipboard();
-
-	const [inviteEmail, setInviteEmail] = useState('');
-
-	const [showCheckbox, setShowCheckbox] = useState(false);
-
-	const [openShare, setOpenShare] = useState(false);
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -48,12 +39,6 @@ export default function FileFolderCard ({ folder, selected, onSelect, onDelete, 
 
 	const [openPopover, setOpenPopover] = useState(null);
 
-	const [favorited, setFavorited] = useState(folder.isFavorited);
-
-	const handleFavorite = () => {
-		setFavorited(!favorited);
-	};
-
 	const handleOpenConfirm = () => {
 		setOpenConfirm(true);
 	};
@@ -62,23 +47,8 @@ export default function FileFolderCard ({ folder, selected, onSelect, onDelete, 
 		setOpenConfirm(false);
 	};
 
-	const handleShowCheckbox = () => {
-		setShowCheckbox(true);
-	};
-
-	const handleHideCheckbox = () => {
-		setShowCheckbox(false);
-	};
-
-	const handleOpenShare = () => {
-		setOpenShare(true);
-	};
-
-	const handleCloseShare = () => {
-		setOpenShare(false);
-	};
-
-	const handleOpenDetails = () => {
+	const handleOpenDetails = (e) => {
+		e.stopPropagation();
 		setOpenDetails(true);
 	};
 
@@ -95,15 +65,12 @@ export default function FileFolderCard ({ folder, selected, onSelect, onDelete, 
 	};
 
 	const handleOpenPopover = (event) => {
+		event.stopPropagation();
 		setOpenPopover(event.currentTarget);
 	};
 
 	const handleClosePopover = () => {
 		setOpenPopover(null);
-	};
-
-	const handleChangeInvite = (event) => {
-		setInviteEmail(event.target.value);
 	};
 
 	const handleCopy = () => {
@@ -114,8 +81,6 @@ export default function FileFolderCard ({ folder, selected, onSelect, onDelete, 
 	return (
 		<>
 			<Card
-				onMouseEnter={handleShowCheckbox}
-				onMouseLeave={handleHideCheckbox}
 				sx={{
 					p: 2.5,
 					width: 1,
@@ -123,42 +88,28 @@ export default function FileFolderCard ({ folder, selected, onSelect, onDelete, 
 					boxShadow: 0,
 					bgcolor: 'background.default',
 					border: (theme) => `solid 1px ${theme.palette.divider}`,
-					...((showCheckbox || selected) && {
-						borderColor: 'transparent',
-						bgcolor: 'background.paper',
-						boxShadow: (theme) => theme.customShadows.z20,
-					}),
 					...sx,
 				}}
 				{...other}
+				onClick={handleOpenDetails}
 			>
 				<Stack direction="row" alignItems="center" sx={{ top: 8, right: 8, position: 'absolute' }}>
-					<Checkbox
-						color="warning"
-						icon={<Iconify icon="eva:star-outline" />}
-						checkedIcon={<Iconify icon="eva:star-fill" />}
-						checked={favorited}
-						onChange={handleFavorite}
-						sx={{ p: 0.75 }}
-					/>
-
 					<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
 						<Iconify icon="eva:more-vertical-fill" />
 					</IconButton>
 				</Stack>
 
-				{(showCheckbox || selected) && onSelect ? (
-					<Checkbox
-						checked={selected}
-						onClick={onSelect}
-						icon={<Iconify icon="eva:radio-button-off-fill" />}
-						checkedIcon={<Iconify icon="eva:checkmark-circle-2-fill" />}
-					/>
-				) : (
-					<Box component="img" src="/storage/assets/icons/files/ic_folder.svg" sx={{ width: 40, height: 40 }} />
-				)}
+				<Box
+					onClick={(e) => {
+						e.stopPropagation();
+						// Inertia.visit();
+					}}
+					component="img"
+					src="/storage/assets/icons/files/ic_folder.svg"
+					sx={{ width: 40, height: 40, cursor: 'pointer' }}
+				/>
 
-				<TextMaxLine variant="h6" onClick={handleOpenDetails} sx={{ mt: 1, mb: 0.5 }}>
+				<TextMaxLine asLink onClick={(e) => e.stopPropagation()} href="/dashboard" variant="h6" sx={{ mt: 1, mb: 0.5, cursor: 'pointer' }}>
 					{folder.name}
 				</TextMaxLine>
 
@@ -173,6 +124,10 @@ export default function FileFolderCard ({ folder, selected, onSelect, onDelete, 
 					<Box sx={{ width: 2, height: 2, borderRadius: '50%', bgcolor: 'currentColor' }} />
 
 					<Box> {folder.totalFiles} files </Box>
+
+					<Box sx={{ width: 2, height: 2, borderRadius: '50%', bgcolor: 'currentColor' }} />
+
+					<Box> {folder.totalDocs} docs </Box>
 				</Stack>
 			</Card>
 
@@ -185,16 +140,6 @@ export default function FileFolderCard ({ folder, selected, onSelect, onDelete, 
 				>
 					<Iconify icon="eva:link-2-fill" />
 					Copy Link
-				</MenuItem>
-
-				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						handleOpenShare();
-					}}
-				>
-					<Iconify icon="eva:share-fill" />
-					Share
 				</MenuItem>
 
 				<MenuItem
@@ -223,26 +168,12 @@ export default function FileFolderCard ({ folder, selected, onSelect, onDelete, 
 
 			<FileDetailsDrawer
 				item={folder}
-				favorited={favorited}
-				onFavorite={handleFavorite}
 				onCopyLink={handleCopy}
 				open={openDetails}
 				onClose={handleCloseDetails}
 				onDelete={() => {
 					handleCloseDetails();
 					onDelete();
-				}}
-			/>
-
-			<FileShareDialog
-				open={openShare}
-				shared={folder.shared}
-				inviteEmail={inviteEmail}
-				onChangeInvite={handleChangeInvite}
-				onCopyLink={handleCopy}
-				onClose={() => {
-					handleCloseShare();
-					setInviteEmail('');
 				}}
 			/>
 

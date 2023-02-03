@@ -38,9 +38,9 @@ export const PATH_DASHBOARD = {
 	root: ROOTS_DASHBOARD,
 	kanban: path(ROOTS_DASHBOARD, '/kanban'),
 	calendar: path(ROOTS_DASHBOARD, '/calendar'),
-	fileManager: path(ROOTS_DASHBOARD, '/files-manager'),
 	permissionDenied: path(ROOTS_DASHBOARD, '/permission-denied'),
 	blank: path(ROOTS_DASHBOARD, '/blank'),
+
 	general: {
 		employee: path(ROOTS_DASHBOARD, '/employees'),
 		inventory: path(ROOTS_DASHBOARD, '/inventory'),
@@ -143,7 +143,11 @@ export const PATH_DASHBOARD = {
 		edit: (id) => path(ROOTS_DASHBOARD, `/inspection/${id}/edit`),
 		review: (id) => path(ROOTS_DASHBOARD, `/inspection/${id}/review`),
 		verify: (id) => path(ROOTS_DASHBOARD, `/inspection/${id}/verify`),
-	}
+	},
+
+	fileManager: {
+		root: path(ROOTS_DASHBOARD, '/file-manager'),
+	},
 
 	// invoice: {
 	// 	root: path(ROOTS_DASHBOARD, '/invoice'),

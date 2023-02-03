@@ -31,7 +31,7 @@ export function fShortenNumber (number) {
 }
 
 export function fData (number) {
-	const format = number ? numeral(number).format('0.0 b') : '';
+	const format = number && number > 0 ? numeral(number).format('0.0 b') : '0 B';
 
 	return result(format, '.0');
 }

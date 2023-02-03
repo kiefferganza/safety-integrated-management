@@ -85,30 +85,6 @@ const navConfig = [
 					{ title: 'department', path: PATH_DASHBOARD.department.root },
 					// Company
 					{ title: 'company', path: PATH_DASHBOARD.company.root },
-					// {
-					// 	title: "position",
-					// 	path: PATH_DASHBOARD.position.root,
-					// 	children: [
-					// 		{ title: 'list', path: PATH_DASHBOARD.position.root },
-					// 		{ title: 'Create', path: PATH_DASHBOARD.position.new },
-					// 	],
-					// },
-					// {
-					// 	title: "department",
-					// 	path: PATH_DASHBOARD.department.root,
-					// 	children: [
-					// 		{ title: 'list', path: PATH_DASHBOARD.department.root },
-					// 		{ title: 'Create', path: PATH_DASHBOARD.department.new },
-					// 	],
-					// },
-					// {
-					// 	title: "company",
-					// 	path: PATH_DASHBOARD.company.root,
-					// 	children: [
-					// 		{ title: 'list', path: PATH_DASHBOARD.company.root },
-					// 		{ title: 'Create', path: PATH_DASHBOARD.company.new },
-					// 	],
-					// },
 				],
 			},
 
@@ -220,9 +196,8 @@ const navConfig = [
 			// },
 			{
 				title: 'File manager',
-				path: PATH_DASHBOARD.fileManager,
-				icon: ICONS.folder,
-				disabled: true
+				path: PATH_DASHBOARD.fileManager.root,
+				icon: ICONS.folder
 			},
 		],
 	},

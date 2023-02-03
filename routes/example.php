@@ -29,8 +29,6 @@ Route::middleware('auth')->group(function ()
 	Route::get('/dashboard/blog/posts', fn () => Inertia::render("Dashboard/Management/Blog/Posts/index"))->name('management.blog.posts');
 	Route::get('/dashboard/blog/post/apply-these-7-secret-techniques-to-improve-event', fn () => Inertia::render("Dashboard/Management/Blog/Post/index"))->name('management.blog.post');
 	Route::get('/dashboard/blog/new', fn () => Inertia::render("Dashboard/Management/Blog/Create/index"))->name('management.blog.new');
-	// Management - FileManager
-	Route::get('/dashboard/files-manager', fn () => Inertia::render("Dashboard/Management/FileManager/index"))->name('management.blog.filesmanager');
 
 	// APP
 	Route::get('/dashboard/mail', fn () => Inertia::render("Dashboard/App/Mail/index"))->name('app.mail');

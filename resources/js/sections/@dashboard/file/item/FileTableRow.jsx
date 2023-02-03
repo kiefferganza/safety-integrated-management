@@ -27,8 +27,8 @@ import { useSnackbar } from '@/Components/snackbar';
 import ConfirmDialog from '@/Components/confirm-dialog';
 import FileThumbnail from '@/Components/file-thumbnail';
 //
-import FileShareDialog from '../portal/FileShareDialog';
 import FileDetailsDrawer from '../portal/FileDetailsDrawer';
+import { FileNewFolderDialog } from '..';
 
 // ----------------------------------------------------------------------
 
@@ -37,29 +37,32 @@ FileTableRow.propTypes = {
 	selected: PropTypes.bool,
 	onDeleteRow: PropTypes.func,
 	onSelectRow: PropTypes.func,
+	onEditRow: PropTypes.func,
 };
 
-export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
-	const { name, size, type, dateModified, shared, isFavorited } = row;
+export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow, onEditRow }) {
+	const { id, name, size, type, dateCreated, totalDocs } = row;
 
 	const { enqueueSnackbar } = useSnackbar();
 
 	const { copy } = useCopyToClipboard();
 
-	const [inviteEmail, setInviteEmail] = useState('');
+	const [folderName, setFolderName] = useState(name);
 
-	const [openShare, setOpenShare] = useState(false);
+	const [openEditFolder, setOpenEditFolder] = useState(false);
 
 	const [openDetails, setOpenDetails] = useState(false);
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
-	const [favorited, setFavorited] = useState(isFavorited);
-
 	const [openPopover, setOpenPopover] = useState(null);
 
-	const handleFavorite = () => {
-		setFavorited(!favorited);
+	const handleOpenEditFolder = () => {
+		setOpenEditFolder(true);
+	};
+
+	const handleCloseEditFolder = () => {
+		setOpenEditFolder(false);
 	};
 
 	const handleOpenDetails = () => {
@@ -68,14 +71,6 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 
 	const handleCloseDetails = () => {
 		setOpenDetails(false);
-	};
-
-	const handleOpenShare = () => {
-		setOpenShare(true);
-	};
-
-	const handleCloseShare = () => {
-		setOpenShare(false);
 	};
 
 	const handleOpenConfirm = () => {
@@ -92,10 +87,6 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 
 	const handleClosePopover = () => {
 		setOpenPopover(null);
-	};
-
-	const handleChangeInvite = (event) => {
-		setInviteEmail(event.target.value);
 	};
 
 	const handleClick = useDoubleClick({
@@ -148,51 +139,18 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 				</TableCell>
 
 				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-					{fData(size)}
-				</TableCell>
-
-				<TableCell align="center" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-					{type}
+					{(totalDocs || 0).toLocaleString()}
 				</TableCell>
 
 				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-					{fDate(dateModified)}
+					{fData(size)}
 				</TableCell>
 
-				<TableCell align="right" onClick={handleClick}>
-					<AvatarGroup
-						max={4}
-						sx={{
-							'& .MuiAvatarGroup-avatar': {
-								width: 24,
-								height: 24,
-								'&:first-of-type': {
-									fontSize: 12,
-								},
-							},
-						}}
-					>
-						{shared && shared.map((person) => <Avatar key={person.id} alt={person.name} src={person.avatar} />)}
-					</AvatarGroup>
+				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
+					{fDate(dateCreated)}
 				</TableCell>
 
-				<TableCell
-					align="right"
-					sx={{
-						whiteSpace: 'nowrap',
-						borderTopRightRadius: 8,
-						borderBottomRightRadius: 8,
-					}}
-				>
-					<Checkbox
-						color="warning"
-						icon={<Iconify icon="eva:star-outline" />}
-						checkedIcon={<Iconify icon="eva:star-fill" />}
-						checked={favorited}
-						onChange={handleFavorite}
-						sx={{ p: 0.75 }}
-					/>
-
+				<TableCell align="right">
 					<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
 						<Iconify icon="eva:more-vertical-fill" />
 					</IconButton>
@@ -203,21 +161,30 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 				<MenuItem
 					onClick={() => {
 						handleClosePopover();
-						handleCopy();
 					}}
 				>
-					<Iconify icon="eva:link-2-fill" />
-					Copy Link
+					<Iconify icon="ic:outline-remove-red-eye" />
+					Visit
 				</MenuItem>
 
 				<MenuItem
 					onClick={() => {
 						handleClosePopover();
-						handleOpenShare();
+						handleOpenEditFolder();
 					}}
 				>
-					<Iconify icon="eva:share-fill" />
-					Share
+					<Iconify icon="material-symbols:edit-outline-rounded" />
+					Edit
+				</MenuItem>
+
+				<MenuItem
+					onClick={() => {
+						handleClosePopover();
+						handleCopy();
+					}}
+				>
+					<Iconify icon="eva:link-2-fill" />
+					Copy Link
 				</MenuItem>
 
 				<Divider sx={{ borderStyle: 'dashed' }} />
@@ -234,26 +201,25 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 				</MenuItem>
 			</MenuPopover>
 
+			<FileNewFolderDialog
+				open={openEditFolder}
+				onClose={handleCloseEditFolder}
+				title="Edit Folder"
+				onUpdate={() => {
+					handleCloseEditFolder();
+					setFolderName(folderName);
+					console.log('UPDATE FOLDER', folderName);
+				}}
+				folderName={folderName}
+				onChangeFolderName={(event) => setFolderName(event.target.value)}
+			/>
+
 			<FileDetailsDrawer
 				item={row}
-				favorited={favorited}
-				onFavorite={handleFavorite}
 				onCopyLink={handleCopy}
 				open={openDetails}
 				onClose={handleCloseDetails}
 				onDelete={onDeleteRow}
-			/>
-
-			<FileShareDialog
-				open={openShare}
-				shared={shared}
-				inviteEmail={inviteEmail}
-				onChangeInvite={handleChangeInvite}
-				onCopyLink={handleCopy}
-				onClose={() => {
-					handleCloseShare();
-					setInviteEmail('');
-				}}
 			/>
 
 			<ConfirmDialog

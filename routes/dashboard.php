@@ -4,6 +4,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\FilePageController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionReportController;
 use App\Http\Controllers\PositionController;
@@ -158,5 +159,12 @@ Route::middleware('auth')->group(function ()
 	Route::post('dashboard/toolbox-talks/{tbt}/edit', [ToolboxTalkController::class, "update"]);
 	Route::post('dashboard/toolbox-talks/delete', [ToolboxTalkController::class, "soft_delete"])->name('toolboxtalk.management.delete');
 	// Route::post('dashboard/toolbox-talks/delete', [ToolboxTalkController::class, "delete"])->name('toolboxtalk.management.delete');
+
+
+	/**
+	 * Management - Files
+	 */
+	Route::get('dashboard/file-manager', [FilePageController::class, "index"])->name('files.management.index');
+	Route::post('dashboard/file-manager/new', [FilePageController::class, "create_folder"])->name('files.management.create_folder');
 
 });

@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Inertia } from '@inertiajs/inertia';
-import { useSwal } from '@/hooks/useSwal';
+
+import { useState } from 'react';
 // @mui
 import { Stack, Button, Container } from '@mui/material';
 // routes
@@ -12,6 +11,7 @@ import { _allFiles } from '@/_mock/arrays';
 // components
 import Iconify from '@/Components/iconify';
 import ConfirmDialog from '@/Components/confirm-dialog';
+import { fileFormat } from '@/Components/file-thumbnail';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import { useSettingsContext } from '@/Components/settings';
 import { useTable, getComparator } from '@/Components/table';
@@ -20,25 +20,35 @@ import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-pic
 import {
 	FileListView,
 	FileGridView,
+	FileFilterType,
 	FileFilterName,
 	FileFilterButton,
 	FileChangeViewButton,
 	FileNewFolderDialog,
 } from '@/sections/@dashboard/file';
 import { Head } from '@inertiajs/inertia-react';
-import { capitalize } from 'lodash';
 
 // ----------------------------------------------------------------------
 
+const FILE_TYPE_OPTIONS = [
+	'folder',
+	'txt',
+	'zip',
+	'audio',
+	'image',
+	'video',
+	'word',
+	'excel',
+	'powerpoint',
+	'pdf',
+	'photoshop',
+	'illustrator',
+];
+
 // ----------------------------------------------------------------------
 
-export default function FileManagerPage ({ folders }) {
-	const { load, stop } = useSwal();
-	const table = useTable({
-		defaultRowsPerPage: 10,
-		defaultOrderBy: "id",
-		defaultOrder: "asc"
-	});
+export default function FileManagerPage2 () {
+	const table = useTable({ defaultRowsPerPage: 10 });
 
 	const {
 		startDate,
@@ -56,13 +66,13 @@ export default function FileManagerPage ({ folders }) {
 
 	const { themeStretch } = useSettingsContext();
 
-	const [newFolderName, setNewFolderName] = useState("");
-
-	const [view, setView] = useState('grid');
+	const [view, setView] = useState('list');
 
 	const [filterName, setFilterName] = useState('');
 
-	const [tableData, setTableData] = useState(folders);
+	const [tableData, setTableData] = useState(_allFiles);
+
+	const [filterType, setFilterType] = useState([]);
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -72,25 +82,23 @@ export default function FileManagerPage ({ folders }) {
 		inputData: tableData,
 		comparator: getComparator(table.order, table.orderBy),
 		filterName,
+		filterType,
 		filterStartDate: startDate,
 		filterEndDate: endDate,
 		isError: !!isError,
 	});
 
-	// const dataInPage = dataFiltered.slice(
-	// 	table.page * table.rowsPerPage,
-	// 	table.page * table.rowsPerPage + table.rowsPerPage
-	// );
+	const dataInPage = dataFiltered.slice(
+		table.page * table.rowsPerPage,
+		table.page * table.rowsPerPage + table.rowsPerPage
+	);
 
 	const isNotFound =
 		(!dataFiltered.length && !!filterName) ||
+		(!dataFiltered.length && !!filterType) ||
 		(!dataFiltered.length && !!endDate && !!startDate);
 
-	const isFiltered = !!filterName || (!!startDate && !!endDate);
-
-	useEffect(() => {
-		setTableData(folders)
-	}, [folders]);
+	const isFiltered = !!filterName || !!filterType.length || (!!startDate && !!endDate);
 
 	const handleChangeView = (event, newView) => {
 		if (newView !== null) {
@@ -113,35 +121,42 @@ export default function FileManagerPage ({ folders }) {
 		onChangeEndDate(newValue);
 	};
 
-	const handleDeleteItem = (id) => {
-		// const { page, setPage, setSelected } = table;
-		// const deleteRow = tableData.filter((row) => row.id !== id);
-		// setSelected([]);
-		// setTableData(deleteRow);
+	const handleFilterType = (type) => {
+		const checked = filterType.includes(type) ? filterType.filter((value) => value !== type) : [...filterType, type];
 
-		// if (page > 0) {
-		// 	if (dataInPage.length < 2) {
-		// 		setPage(page - 1);
-		// 	}
-		// }
+		table.setPage(0);
+		setFilterType(checked);
+	};
+
+	const handleDeleteItem = (id) => {
+		const { page, setPage, setSelected } = table;
+		const deleteRow = tableData.filter((row) => row.id !== id);
+		setSelected([]);
+		setTableData(deleteRow);
+
+		if (page > 0) {
+			if (dataInPage.length < 2) {
+				setPage(page - 1);
+			}
+		}
 	};
 
 	const handleDeleteItems = (selected) => {
-		// const { page, rowsPerPage, setPage, setSelected } = table;
-		// const deleteRows = tableData.filter((row) => !selected.includes(row.id));
-		// setSelected([]);
-		// setTableData(deleteRows);
+		const { page, rowsPerPage, setPage, setSelected } = table;
+		const deleteRows = tableData.filter((row) => !selected.includes(row.id));
+		setSelected([]);
+		setTableData(deleteRows);
 
-		// if (page > 0) {
-		// 	if (selected.length === dataInPage.length) {
-		// 		setPage(page - 1);
-		// 	} else if (selected.length === dataFiltered.length) {
-		// 		setPage(0);
-		// 	} else if (selected.length > dataInPage.length) {
-		// 		const newPage = Math.ceil((tableData.length - selected.length) / rowsPerPage) - 1;
-		// 		setPage(newPage);
-		// 	}
-		// }
+		if (page > 0) {
+			if (selected.length === dataInPage.length) {
+				setPage(page - 1);
+			} else if (selected.length === dataFiltered.length) {
+				setPage(0);
+			} else if (selected.length > dataInPage.length) {
+				const newPage = Math.ceil((tableData.length - selected.length) / rowsPerPage) - 1;
+				setPage(newPage);
+			}
+		}
 	};
 
 	const handleClearAll = () => {
@@ -149,6 +164,7 @@ export default function FileManagerPage ({ folders }) {
 			onResetPicker();
 		}
 		setFilterName('');
+		setFilterType([]);
 	};
 
 	const handleOpenConfirm = () => {
@@ -166,22 +182,6 @@ export default function FileManagerPage ({ folders }) {
 	const handleCloseUploadFile = () => {
 		setOpenUploadFile(false);
 	};
-
-	const handleCreateFolder = () => {
-		handleCloseUploadFile();
-		if (newFolderName) {
-			Inertia.post(route('files.management.create_folder'), { folderName: newFolderName }, {
-				preserveScroll: true,
-				onStart () {
-					load("Creating new folder", "Please wait...");
-				},
-				onFinish () {
-					setNewFolderName("");
-					stop();
-				}
-			});
-		}
-	}
 
 	return (
 		<>
@@ -205,7 +205,7 @@ export default function FileManagerPage ({ folders }) {
 							startIcon={<Iconify icon="eva:cloud-upload-fill" />}
 							onClick={handleOpenUploadFile}
 						>
-							New Folder
+							Upload
 						</Button>
 					}
 				/>
@@ -243,6 +243,13 @@ export default function FileManagerPage ({ folders }) {
 								/>
 							</>
 
+							<FileFilterType
+								filterType={filterType}
+								onFilterType={handleFilterType}
+								optionsType={FILE_TYPE_OPTIONS}
+								onReset={() => setFilterType([])}
+							/>
+
 							{isFiltered && (
 								<Button
 									variant="soft"
@@ -279,15 +286,7 @@ export default function FileManagerPage ({ folders }) {
 				)}
 			</Container>
 
-			<FileNewFolderDialog
-				folderName={newFolderName}
-				onChangeFolderName={(e) => {
-					setNewFolderName(capitalize(e.target.value));
-				}}
-				onCreate={handleCreateFolder}
-				open={openUploadFile}
-				onClose={handleCloseUploadFile}
-			/>
+			<FileNewFolderDialog open={openUploadFile} onClose={handleCloseUploadFile} />
 
 			<ConfirmDialog
 				open={openConfirm}
@@ -317,7 +316,7 @@ export default function FileManagerPage ({ folders }) {
 
 // ----------------------------------------------------------------------
 
-function applyFilter ({ inputData, comparator, filterName, filterStartDate, filterEndDate, isError }) {
+function applyFilter ({ inputData, comparator, filterName, filterType, filterStartDate, filterEndDate, isError }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
 
 	stabilizedThis.sort((a, b) => {
@@ -330,6 +329,10 @@ function applyFilter ({ inputData, comparator, filterName, filterStartDate, filt
 
 	if (filterName) {
 		inputData = inputData.filter((file) => file.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
+	}
+
+	if (filterType.length) {
+		inputData = inputData.filter((file) => filterType.includes(fileFormat(file.type)));
 	}
 
 	if (filterStartDate && filterEndDate && !isError) {

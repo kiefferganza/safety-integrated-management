@@ -18,10 +18,9 @@ import FileTableRow from '../item/FileTableRow';
 
 const TABLE_HEAD = [
 	{ id: 'name', label: 'Name', align: 'left' },
-	{ id: 'size', label: 'Size', align: 'left', width: 120 },
-	{ id: 'type', label: 'Type', align: 'center', width: 120 },
-	{ id: 'dateModified', label: 'Modified', align: 'left', width: 160 },
-	{ id: 'shared', label: 'Shared', align: 'right', width: 100 },
+	{ id: 'totalDocs', label: 'Documents', align: 'left' },
+	{ id: 'size', label: 'Size', align: 'left' },
+	{ id: 'dateCreated', label: 'Created', align: 'left' },
 	{ id: '' },
 ];
 

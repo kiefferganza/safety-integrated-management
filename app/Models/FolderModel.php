@@ -15,6 +15,8 @@ class FolderModel extends Model
 
 	const CREATED_AT = 'date_created';
 
+	const UPDATED_AT = 'date_updated';
+
 	/**
 	 * The attributes that are mass assignable.
 	 *
@@ -26,4 +28,13 @@ class FolderModel extends Model
 		'folder_name',
 		'sub_id'
 	];
+
+	public function documents() {
+		return $this->hasMany(Document::class, "folder_id");
+	}
+
+	public function files() {
+		return $this->hasMany(FileModel::class, "folder_id");
+	}
+
 }

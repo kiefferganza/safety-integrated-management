@@ -8,8 +8,6 @@ import Iconify from '@/Components/iconify';
 import FilePanel from '../FilePanel';
 import FileCard from '../item/FileCard';
 import FileFolderCard from '../item/FileFolderCard';
-import FileShareDialog from '../portal/FileShareDialog';
-import FileActionSelected from '../portal/FileActionSelected';
 import FileNewFolderDialog from '../portal/FileNewFolderDialog';
 
 // ----------------------------------------------------------------------
@@ -22,16 +20,12 @@ FileGridView.propTypes = {
 	onOpenConfirm: PropTypes.func,
 };
 
-export default function FileGridView ({ table, data, dataFiltered, onDeleteItem, onOpenConfirm }) {
-	const { selected, onSelectRow: onSelectItem, onSelectAllRows: onSelectAllItems } = table;
+export default function FileGridView ({ table, data, dataFiltered, onDeleteItem }) {
+	const { selected, onSelectRow: onSelectItem } = table;
 
 	const containerRef = useRef(null);
 
 	const [folderName, setFolderName] = useState('');
-
-	const [inviteEmail, setInviteEmail] = useState('');
-
-	const [openShare, setOpenShare] = useState(false);
 
 	const [collapseFiles, setCollapseFiles] = useState(false);
 
@@ -40,14 +34,6 @@ export default function FileGridView ({ table, data, dataFiltered, onDeleteItem,
 	const [openUploadFile, setOpenUploadFile] = useState(false);
 
 	const [collapseFolders, setCollapseFolders] = useState(false);
-
-	const handleOpenShare = () => {
-		setOpenShare(true);
-	};
-
-	const handleCloseShare = () => {
-		setOpenShare(false);
-	};
 
 	const handleOpenNewFolder = () => {
 		setOpenNewFolder(true);
@@ -65,9 +51,6 @@ export default function FileGridView ({ table, data, dataFiltered, onDeleteItem,
 		setOpenUploadFile(false);
 	};
 
-	const handleChangeInvite = (event) => {
-		setInviteEmail(event.target.value);
-	};
 
 	return (
 		<>
@@ -97,8 +80,6 @@ export default function FileGridView ({ table, data, dataFiltered, onDeleteItem,
 								<FileFolderCard
 									key={folder.id}
 									folder={folder}
-									selected={selected.includes(folder.id)}
-									onSelect={() => onSelectItem(folder.id)}
 									onDelete={() => onDeleteItem(folder.id)}
 									sx={{ maxWidth: 'auto' }}
 								/>
@@ -106,7 +87,7 @@ export default function FileGridView ({ table, data, dataFiltered, onDeleteItem,
 					</Box>
 				</Collapse>
 
-				<Divider sx={{ my: 5, borderStyle: 'dashed' }} />
+				{/* <Divider sx={{ my: 5, borderStyle: 'dashed' }} />
 
 				<FilePanel
 					title="Files"
@@ -140,64 +121,8 @@ export default function FileGridView ({ table, data, dataFiltered, onDeleteItem,
 								/>
 							))}
 					</Box>
-				</Collapse>
-
-				{!!selected?.length && (
-					<FileActionSelected
-						numSelected={selected.length}
-						rowCount={data.length}
-						selected={selected}
-						onSelectAllItems={(checked) =>
-							onSelectAllItems(
-								checked,
-								data.map((row) => row.id)
-							)
-						}
-						action={
-							<>
-								<Button
-									size="small"
-									color="error"
-									variant="contained"
-									startIcon={<Iconify icon="eva:trash-2-outline" />}
-									onClick={onOpenConfirm}
-									sx={{ mr: 1 }}
-								>
-									Delete
-								</Button>
-
-								<Button
-									color="inherit"
-									size="small"
-									variant="contained"
-									startIcon={<Iconify icon="eva:share-fill" />}
-									onClick={handleOpenShare}
-									sx={{
-										color: (theme) => (theme.palette.mode === 'light' ? 'grey.800' : 'common.white'),
-										bgcolor: (theme) => (theme.palette.mode === 'light' ? 'common.white' : 'grey.800'),
-										'&:hover': {
-											color: (theme) => (theme.palette.mode === 'light' ? 'grey.800' : 'common.white'),
-											bgcolor: (theme) => (theme.palette.mode === 'light' ? 'common.white' : 'grey.800'),
-										},
-									}}
-								>
-									Share
-								</Button>
-							</>
-						}
-					/>
-				)}
+				</Collapse> */}
 			</Box>
-
-			<FileShareDialog
-				open={openShare}
-				inviteEmail={inviteEmail}
-				onChangeInvite={handleChangeInvite}
-				onClose={() => {
-					handleCloseShare();
-					setInviteEmail('');
-				}}
-			/>
 
 			<FileNewFolderDialog open={openUploadFile} onClose={handleCloseUploadFile} />
 
