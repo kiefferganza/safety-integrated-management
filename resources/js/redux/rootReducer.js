@@ -2,11 +2,11 @@ import { combineReducers } from 'redux';
 import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 // slices
-import mailReducer from './slices/mail';
-import chatReducer from './slices/chat';
-import productReducer from './slices/product';
+// import mailReducer from './slices/mail';
+// import chatReducer from './slices/chat';
+// import productReducer from './slices/product';
 import calendarReducer from './slices/calendar';
-import kanbanReducer from './slices/kanban';
+// import kanbanReducer from './slices/kanban';
 import employeeReducer from './slices/employee';
 import toolboxtalkReducer from './slices/toolboxtalk';
 
@@ -19,12 +19,12 @@ const rootPersistConfig = {
 	whitelist: [],
 };
 
-const productPersistConfig = {
-	key: 'product',
-	storage,
-	keyPrefix: 'redux-',
-	whitelist: ['sortBy', 'checkout'],
-};
+// const productPersistConfig = {
+// 	key: 'product',
+// 	storage,
+// 	keyPrefix: 'redux-',
+// 	whitelist: ['sortBy', 'checkout'],
+// };
 
 const employeePersistConfig = {
 	key: 'employee',
@@ -35,11 +35,11 @@ const employeePersistConfig = {
 
 
 const rootReducer = combineReducers({
-	mail: mailReducer,
-	chat: chatReducer,
+	// mail: mailReducer,
+	// chat: chatReducer,
 	calendar: calendarReducer,
-	kanban: kanbanReducer,
-	product: persistReducer(productPersistConfig, productReducer),
+	// kanban: kanbanReducer,
+	// product: persistReducer(productPersistConfig, productReducer),
 	employee: persistReducer(employeePersistConfig, employeeReducer),
 	toolboxtalk: toolboxtalkReducer
 });
