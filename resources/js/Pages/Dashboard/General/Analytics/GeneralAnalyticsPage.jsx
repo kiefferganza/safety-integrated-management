@@ -1,46 +1,44 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getMonth, getYear } from 'date-fns';
-// import CountUp from 'react-countup';
+import CountUp from 'react-countup';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Button, TextField, Box, Typography, Stack, Divider } from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 // _mock_
-// import { _analyticPost, _analyticOrderTimeline, _analyticTraffic, _ecommerceNewProducts, _bookingsOverview } from '@/_mock/arrays';
+import { _bookingsOverview } from '@/_mock/arrays';
 // utils
 import { fTimestamp } from '@/utils/formatTime';
 // components
 import { useSettingsContext } from '@/Components/settings';
 import useResponsive from '@/hooks/useResponsive';
 // sections
-import {
+const {
 	AnalyticsCurrentVisits,
 	AnalyticsWebsiteVisits,
 	AnalyticsWidgetSummary,
-	// AnalyticsCurrentSubject,
-	// AnalyticsConversionRates,
 	AnalyticsTBTLine,
 	AnalyticsTBTWorkDays,
 	AnalyticsTable
-} from '@/sections/@dashboard/general/analytics';
-import { AppWelcome } from '@/sections/@dashboard/general/app';
-import { EcommerceNewProducts } from '@/sections/@dashboard/general/e-commerce';
-import WelcomeIllustration from '@/assets/illustrations/WelcomeIllustration';
+} = await import('@/sections/@dashboard/general/analytics');
+const { AppWelcome } = await import('@/sections/@dashboard/general/app');
+const { EcommerceNewProducts } = await import('@/sections/@dashboard/general/e-commerce');
+const { WelcomeIllustration } = await import('@/assets/illustrations/WelcomeIllustration');
 import Iconify from '@/Components/iconify';
-// import {
-// 	FileGeneralDataActivity,
-// 	FileGeneralStorageOverview
-// } from '@/sections/@dashboard/general/file';
-// import { BookingBookedRoom } from '@/sections/@dashboard/general/booking';
+const {
+	FileGeneralDataActivity,
+	FileGeneralStorageOverview
+} = await import('@/sections/@dashboard/general/file');
+const { BookingBookedRoom } = await import('@/sections/@dashboard/general/booking');
 
 
 // ----------------------------------------------------------------------
-// const GB = 1000000000 * 24;
-// const TIME_LABELS = {
-// 	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
-// 	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-// 	year: ['2018', '2019', '2020', '2021', '2022'],
-// };
+const GB = 1000000000 * 24;
+const TIME_LABELS = {
+	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
+	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+	year: ['2018', '2019', '2020', '2021', '2022'],
+};
 
 const COVER_IMAGES = [
 	{
@@ -189,12 +187,6 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 
 	const tbtDataItd = useMemo(() => tbtData?.reduce((acc, curr) => {
 		const total = totalTbtByYear[curr[2]][curr[0]];
-		// console.log(curr[2], curr[0], totalTbtByYear[curr[2]]);
-		// acc.totalManpower += total.totalManpower;
-		// acc.totalManhours += total.totalManhours;
-		// acc.daysWork += total.daysWork;
-		// acc.daysWoWork += total.daysWoWork;
-		// acc.location += total.location.size;
 		const currTotal = {
 			totalManpower: acc.totalManpower + total.totalManpower,
 			totalManhours: acc.totalManhours + total.totalManhours,
@@ -203,7 +195,6 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 			location: acc.location + total.location.size
 		}
 		return calculateItd({ monthsObj: totalTbtByYear[curr[2]], currMonth: curr[0], currTotal });
-		// return acc;
 	}, {
 		totalManpower: 0,
 		totalManhours: 0,
@@ -373,38 +364,28 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 						data={[
 							{
 								title: "Total Days Work",
-								month: tbtAnalytic?.daysWork,
-								itd: tbtDataItd?.daysWork
-								// month: <CountUp duration={1} start={0} end={tbtAnalytic?.daysWork || 0} separator="," />,
-								// itd: <CountUp duration={1} start={0} end={tbtDataItd?.daysWork || 0} separator="," />
+								month: <CountUp duration={1} start={0} end={tbtAnalytic?.daysWork || 0} separator="," />,
+								itd: <CountUp duration={1} start={0} end={tbtDataItd?.daysWork || 0} separator="," />
 							},
 							{
 								title: "Total Days w/o Work",
-								month: tbtAnalytic?.daysWoWork,
-								itd: tbtDataItd?.daysWoWork
-								// month: <CountUp duration={1} start={0} end={tbtAnalytic?.daysWoWork || 0} separator="," />,
-								// itd: <CountUp duration={1} start={0} end={tbtDataItd?.daysWoWork || 0} separator="," />
+								month: <CountUp duration={1} start={0} end={tbtAnalytic?.daysWoWork || 0} separator="," />,
+								itd: <CountUp duration={1} start={0} end={tbtDataItd?.daysWoWork || 0} separator="," />
 							},
 							{
 								title: "Total Work Location",
-								month: tbtAnalytic?.location?.size,
-								itd: tbtDataItd?.location
-								// month: <CountUp duration={1} start={0} end={tbtAnalytic?.location?.size || 0} separator="," />,
-								// itd: <CountUp duration={1} start={0} end={tbtDataItd?.location || 0} separator="," />
+								month: <CountUp duration={1} start={0} end={tbtAnalytic?.location?.size || 0} separator="," />,
+								itd: <CountUp duration={1} start={0} end={tbtDataItd?.location || 0} separator="," />
 							},
 							{
 								title: "Number of Training Hours Completed",
-								month: trainingComputedData.trainingHoursCompletedMonth,
-								itd: trainingComputedData.trainingHoursCompleted
-								// month: <CountUp duration={1} start={0} end={trainingComputedData.trainingHoursCompletedMonth || 0} separator="," />,
-								// itd: <CountUp duration={1} start={0} end={trainingComputedData.trainingHoursCompleted || 0} separator="," />
+								month: <CountUp duration={1} start={0} end={trainingComputedData.trainingHoursCompletedMonth || 0} separator="," />,
+								itd: <CountUp duration={1} start={0} end={trainingComputedData.trainingHoursCompleted || 0} separator="," />
 							},
 							{
 								title: "Number of HSE Induction Completed",
-								month: trainingComputedData.completedInductionMonth,
-								itd: trainingComputedData.completedInduction
-								// month: <CountUp duration={1} start={0} end={trainingComputedData.completedInductionMonth || 0} separator="," />,
-								// itd: <CountUp duration={1} start={0} end={trainingComputedData.completedInduction || 0} separator="," />
+								month: <CountUp duration={1} start={0} end={trainingComputedData.completedInductionMonth || 0} separator="," />,
+								itd: <CountUp duration={1} start={0} end={trainingComputedData.completedInduction || 0} separator="," />
 							},
 							{
 								title: "Number of HSE Enforcement Notices Issued",
@@ -596,7 +577,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 					</Stack>
 				</Grid>
 
-				{/* <Grid item xs={12} md={12} lg={7}>
+				<Grid item xs={12} md={12} lg={7}>
 					<FileGeneralDataActivity
 						height={isTablet ? 280 : 240}
 						title="Data Activity"
@@ -640,7 +621,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 							],
 						}}
 					/>
-				</Grid> */}
+				</Grid>
 			</Grid>
 
 
@@ -677,7 +658,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 					</Stack>
 				</Grid>
 
-				{/* <Grid item xs={12} md={6} lg={3}>
+				<Grid item xs={12} md={6} lg={3}>
 					<FileGeneralStorageOverview
 						height={isTablet ? 364 : 240}
 						total={GB}
@@ -715,7 +696,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 
 				<Grid item xs={12} md={6} lg={4}>
 					<BookingBookedRoom title="Booked Room" data={_bookingsOverview} />
-				</Grid> */}
+				</Grid>
 			</Grid>
 
 

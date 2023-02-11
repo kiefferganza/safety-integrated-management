@@ -7,7 +7,7 @@ import BackgroundIllustration from './BackgroundIllustration';
 
 // ----------------------------------------------------------------------
 
-function WelcomeIllustration ({ ...other }) {
+export function WelcomeIllustration ({ ...other }) {
 	const theme = useTheme();
 
 	const PRIMARY_LIGHT = theme.palette.primary.light;
