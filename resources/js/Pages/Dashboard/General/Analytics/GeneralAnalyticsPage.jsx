@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getMonth, getYear } from 'date-fns';
-import CountUp from 'react-countup';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Button, TextField, Box, Typography, Stack, Divider } from '@mui/material';
@@ -364,28 +363,28 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 						data={[
 							{
 								title: "Total Days Work",
-								month: <CountUp duration={1} start={0} end={tbtAnalytic?.daysWork || 0} separator="," />,
-								itd: <CountUp duration={1} start={0} end={tbtDataItd?.daysWork || 0} separator="," />
+								month: tbtAnalytic?.daysWork || 0,
+								itd: tbtDataItd?.daysWork || 0,
 							},
 							{
 								title: "Total Days w/o Work",
-								month: <CountUp duration={1} start={0} end={tbtAnalytic?.daysWoWork || 0} separator="," />,
-								itd: <CountUp duration={1} start={0} end={tbtDataItd?.daysWoWork || 0} separator="," />
+								month: tbtAnalytic?.daysWoWork || 0,
+								itd: tbtDataItd?.daysWoWork || 0,
 							},
 							{
 								title: "Total Work Location",
-								month: <CountUp duration={1} start={0} end={tbtAnalytic?.location?.size || 0} separator="," />,
-								itd: <CountUp duration={1} start={0} end={tbtDataItd?.location || 0} separator="," />
+								month: tbtAnalytic?.location?.size || 0,
+								itd: tbtDataItd?.location || 0,
 							},
 							{
 								title: "Number of Training Hours Completed",
-								month: <CountUp duration={1} start={0} end={trainingComputedData.trainingHoursCompletedMonth || 0} separator="," />,
-								itd: <CountUp duration={1} start={0} end={trainingComputedData.trainingHoursCompleted || 0} separator="," />
+								month: trainingComputedData.trainingHoursCompletedMonth || 0,
+								itd: trainingComputedData.trainingHoursCompleted || 0,
 							},
 							{
 								title: "Number of HSE Induction Completed",
-								month: <CountUp duration={1} start={0} end={trainingComputedData.completedInductionMonth || 0} separator="," />,
-								itd: <CountUp duration={1} start={0} end={trainingComputedData.completedInduction || 0} separator="," />
+								month: trainingComputedData.completedInductionMonth || 0,
+								itd: trainingComputedData.completedInduction || 0,
 							},
 							{
 								title: "Number of HSE Enforcement Notices Issued",
