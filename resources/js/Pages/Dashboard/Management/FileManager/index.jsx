@@ -9,6 +9,7 @@ const index = ({ folders }) => {
 		const folderObj = folders.map((f) => {
 			return {
 				id: f.folder_id,
+				revision_no: f.revision_no,
 				name: f.folder_name,
 				dateCreated: new Date(f.date_created),
 				size: f.fileSize,

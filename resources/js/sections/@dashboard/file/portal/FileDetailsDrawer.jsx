@@ -40,7 +40,7 @@ export default function FileDetailsDrawer ({
 	onDelete,
 	...other
 }) {
-	const { id, name, size, url, type, dateCreated } = item;
+	const { id, name, size, url, type, dateCreated, revision_no } = item;
 
 	const [toggleProperties, setToggleProperties] = useState(true);
 
@@ -91,6 +91,8 @@ export default function FileDetailsDrawer ({
 								<>
 									<Stack spacing={1.5}>
 										<Row label="Size" value={fData(size)} />
+
+										<Row label="Revisions" value={revision_no + ""} />
 
 										<Row label="Created" value={fDateTime(dateCreated)} />
 

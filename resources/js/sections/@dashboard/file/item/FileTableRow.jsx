@@ -41,7 +41,7 @@ FileTableRow.propTypes = {
 };
 
 export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow, onEditRow }) {
-	const { id, name, size, type, dateCreated, totalDocs } = row;
+	const { id, name, size, type, dateCreated, totalDocs, revision_no } = row;
 
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -144,6 +144,10 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow,
 
 				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
 					{fData(size)}
+				</TableCell>
+
+				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
+					{revision_no}
 				</TableCell>
 
 				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
