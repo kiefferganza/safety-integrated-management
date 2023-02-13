@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { Link, } from '@inertiajs/inertia-react';
+import { PATH_DASHBOARD } from '@/routes/paths';
 // @mui
 import {
 	Box,
@@ -38,7 +40,7 @@ export default function FileDetailsDrawer ({
 	onDelete,
 	...other
 }) {
-	const { name, size, url, type, dateCreated } = item;
+	const { id, name, size, url, type, dateCreated } = item;
 
 	const [toggleProperties, setToggleProperties] = useState(true);
 
@@ -63,7 +65,7 @@ export default function FileDetailsDrawer ({
 				<Scrollbar sx={{ height: 1, "& .simplebar-content": { height: 1 } }}>
 					<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 2.5, py: 2 }}>
 						<Typography variant="h6"> Info </Typography>
-						<IconButton>
+						<IconButton component={Link} href={PATH_DASHBOARD.fileManager.view(id)}>
 							<Iconify icon="mdi:chevron-double-right" width={25} />
 						</IconButton>
 					</Stack>

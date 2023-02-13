@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { Link, } from '@inertiajs/inertia-react';
+import { PATH_DASHBOARD } from '@/routes/paths';
 // @mui
 import {
 	Stack,
-	Avatar,
 	Button,
 	Divider,
 	Checkbox,
@@ -12,7 +13,6 @@ import {
 	TableCell,
 	IconButton,
 	Typography,
-	AvatarGroup,
 } from '@mui/material';
 // hooks
 import useDoubleClick from '@/hooks/useDoubleClick';
@@ -159,9 +159,8 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow,
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-					}}
+					component={Link}
+					href={PATH_DASHBOARD.fileManager.view(id)}
 				>
 					<Iconify icon="ic:outline-remove-red-eye" />
 					Visit

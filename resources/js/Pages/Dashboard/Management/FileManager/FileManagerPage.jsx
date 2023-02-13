@@ -13,16 +13,16 @@ import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import { useSettingsContext } from '@/Components/settings';
 import { useTable, getComparator } from '@/Components/table';
 import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
-import ConfirmDialog from '@/Components/confirm-dialog';
+const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialog');
 // sections
-import {
+const {
 	FileListView,
 	FileGridView,
 	FileFilterName,
 	FileFilterButton,
 	FileChangeViewButton,
 	FileNewFolderDialog,
-} from '@/sections/@dashboard/file';
+} = await import('@/sections/@dashboard/file');
 import { Head } from '@inertiajs/inertia-react';
 import { capitalize } from 'lodash';
 

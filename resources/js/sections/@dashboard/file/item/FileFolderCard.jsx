@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { Link, } from '@inertiajs/inertia-react';
+import { PATH_DASHBOARD } from '@/routes/paths';
 // @mui
-import { Box, Card, Stack, Button, Divider, MenuItem, Checkbox, IconButton } from '@mui/material';
+import { Box, Card, Stack, Button, Divider, MenuItem, IconButton } from '@mui/material';
 // hooks
 import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 // utils
@@ -102,14 +104,14 @@ export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
 				<Box
 					onClick={(e) => {
 						e.stopPropagation();
-						// Inertia.visit();
+						Inertia.visit(PATH_DASHBOARD.fileManager.view(folder.id));
 					}}
 					component="img"
 					src="/storage/assets/icons/files/ic_folder.svg"
 					sx={{ width: 40, height: 40, cursor: 'pointer' }}
 				/>
 
-				<TextMaxLine asLink onClick={(e) => e.stopPropagation()} href="/dashboard" variant="h6" sx={{ mt: 1, mb: 0.5, cursor: 'pointer' }}>
+				<TextMaxLine asLink href={PATH_DASHBOARD.fileManager.view(folder.id)} onClick={(e) => e.stopPropagation()} variant="h6" sx={{ mt: 1, mb: 0.5, cursor: 'pointer' }}>
 					{folder.name}
 				</TextMaxLine>
 
@@ -132,6 +134,13 @@ export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
 			</Card>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
+				<MenuItem
+					component={Link}
+					href={PATH_DASHBOARD.fileManager.view(folder.id)}
+				>
+					<Iconify icon="ic:outline-remove-red-eye" />
+					Visit
+				</MenuItem>
 				<MenuItem
 					onClick={() => {
 						handleClosePopover();
