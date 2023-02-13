@@ -197,6 +197,7 @@ const navConfig = [
 			{
 				title: 'File manager',
 				path: PATH_DASHBOARD.fileManager.root,
+				childList: ['file-manager'],
 				icon: ICONS.folder
 			},
 		],

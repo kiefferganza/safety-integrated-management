@@ -21,6 +21,7 @@ export default function useActiveLink (path, deep = true, hasChild = false, chil
 
 			return pathSplit[2] ? (urlSplit[1] === pathSplit[1] || urlSplit[2] === pathSplit[2]) : (urlSplit[1] === pathSplit[1]);
 		} else {
+			if (childList) return childList.includes(urlSplit[1]);
 			return url === path;
 		}
 	}
