@@ -1,7 +1,24 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import {
+// import {
+// 	Tab,
+// 	Tabs,
+// 	Card,
+// 	Table,
+// 	Stack,
+// 	Button,
+// 	Tooltip,
+// 	Divider,
+// 	TableBody,
+// 	Container,
+// 	IconButton,
+// 	TableContainer,
+// 	Typography,
+// 	Box,
+// 	Popover,
+// } from '@mui/material';
+const {
 	Tab,
 	Tabs,
 	Card,
@@ -17,16 +34,14 @@ import {
 	Typography,
 	Box,
 	Popover,
-} from '@mui/material';
+} = await import('@mui/material');
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
-import { fDate, fTimestamp } from '@/utils/formatTime';
+import { fTimestamp } from '@/utils/formatTime';
 // components
-import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';
-import ConfirmDialog from '@/Components/confirm-dialog';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import { useSettingsContext } from '@/Components/settings';
 import {
@@ -39,12 +54,14 @@ import {
 	TableSelectedAction,
 	TablePaginationCustom,
 } from '@/Components/table';
+const { Label } = await import('@/Components/label/Label');
+const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialog');
 // sections
 import { Head, Link } from '@inertiajs/inertia-react';
 import { useSwal } from '@/hooks/useSwal';
 import { Inertia } from '@inertiajs/inertia';
 import { DocumentTableRow, DocumentTableToolbar } from '@/sections/@dashboard/document/list';
-import DocumentAnalytic from '@/sections/@dashboard/document/DocumentAnalytic';
+const { DocumentAnalytic } = await import('@/sections/@dashboard/document/DocumentAnalytic');
 import { capitalCase } from 'change-case';
 import { formatCms } from '@/utils/tablesUtils';
 import { getDocumentStatus } from '@/utils/formatStatuses';
@@ -608,5 +625,4 @@ function applyFilter ({
 	return inputData;
 }
 
-
-export default DocumentListPage
+export default DocumentListPage;

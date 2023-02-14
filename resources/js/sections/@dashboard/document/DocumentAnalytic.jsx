@@ -17,7 +17,7 @@ DocumentAnalytic.propTypes = {
 	percent: PropTypes.number,
 };
 
-export default function DocumentAnalytic ({ title, total, icon, color, percent }) {
+export function DocumentAnalytic ({ title, total, icon, color, percent }) {
 	return (
 		<Stack direction="row" alignItems="center" justifyContent="center" sx={{ width: 1, minWidth: 200 }}>
 			<Stack alignItems="center" justifyContent="center" sx={{ position: 'relative' }}>
@@ -53,3 +53,5 @@ export default function DocumentAnalytic ({ title, total, icon, color, percent }
 		</Stack>
 	);
 }
+
+export default DocumentAnalytic

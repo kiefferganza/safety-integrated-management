@@ -168,16 +168,16 @@ export default function FileManagerPage ({ folders }) {
 	const handleCreateFolder = () => {
 		handleCloseUploadFile();
 		if (newFolderName) {
-			Inertia.post(route('files.management.create_folder'), { folderName: newFolderName }, {
-				preserveScroll: true,
-				onStart () {
-					load("Creating new folder", "Please wait...");
-				},
-				onFinish () {
-					setNewFolderName("");
-					stop();
-				}
-			});
+			// Inertia.post(route('files.management.create_folder'), { folderName: newFolderName }, {
+			// 	preserveScroll: true,
+			// 	onStart () {
+			// 		load("Creating new folder", "Please wait...");
+			// 	},
+			// 	onFinish () {
+			// 		setNewFolderName("");
+			// 		stop();
+			// 	}
+			// });
 		}
 	}
 

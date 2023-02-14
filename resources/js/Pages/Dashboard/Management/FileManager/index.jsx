@@ -4,7 +4,7 @@ import FileManagerPage from "./FileManagerPage";
 
 const index = ({ folders }) => {
 	const [data, setData] = useState([]);
-	console.log(folders[0])
+
 	useEffect(() => {
 		const folderObj = folders.map((f) => {
 			return {
