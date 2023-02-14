@@ -4,7 +4,7 @@ import FileManagerPage from "./FileManagerPage";
 
 const index = ({ folders }) => {
 	const [data, setData] = useState([]);
-
+	console.log(folders[0])
 	useEffect(() => {
 		const folderObj = folders.map((f) => {
 			return {
@@ -14,7 +14,7 @@ const index = ({ folders }) => {
 				dateCreated: new Date(f.date_created),
 				size: f.fileSize,
 				totalFiles: f.fileCount,
-				totalDocs: f.documents_count,
+				totalDocs: f.documents.length,
 				url: '',
 				type: 'folder'
 			}

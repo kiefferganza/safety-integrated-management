@@ -15,8 +15,10 @@ class FolderService {
 			["sub_id", $user->subscriber_id]
 		])
 		->select("folder_id", "date_created", "folder_name", "revision_no")
-		->with(["files" => fn($q) => $q->select("src", "folder_id")->where("is_deleted", 0)])
-		->withCount(["documents" => fn($q) => $q->where("is_deleted", 0)])
+		->with([
+			"files" => fn($q) => $q->select("src", "folder_id")->where("is_deleted", 0),
+			"documents" => fn($q) => $q->where("is_deleted", 0)->withWhereHas("employee")
+		])
 		->orderBy("folder_id")
 		->get()
 		->toArray();
