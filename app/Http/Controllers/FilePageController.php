@@ -41,61 +41,9 @@ class FilePageController extends Controller
 		->with("type", "success");
 	}
 
-	public function single_folder(Request $request, $folder_name)
-	{
-		$user = Auth::user();
-		$folder = FolderModel::select(["folder_id", "date_created", "revision_no"])->where([
-			["folder_name", $folder_name],
-			["is_removed", 1],
-			["sub_id", $user->subscriber_id]
-		])->first();
-		if ($folder) {
-			$folder_id = $folder->folder_id;
-		}
-		else {
-			return redirect()->route("files");
-		}
-
-		$submitted = Document::submitted($user, $folder_id)->get();
-		$review_documents = Document::reviewDocs($user, $folder_id)->get();
-		$approval_documents = Document::approvalDocs($user, $folder_id)->get();
-		$folder_docs = Document::docControls($folder_id)->get();
-
-		$number_of_documents = $submitted->count() + 1;
-		$number_of_zeroes = strlen((string) $number_of_documents);
-		$sequence_no_zeros = '';
-		for ($i = 0; $i <= $number_of_zeroes; $i++)
-		{
-			$sequence_no_zeros = $sequence_no_zeros . "0";
-		}
-		$sequence =  $sequence_no_zeros . $number_of_documents;
-
-		$personel = User::personel($user)->get();
-
-		$positions = DB::table('tbl_position')->get();
-
-		return Inertia::render("Files/SingleFolder", array(
-			"folderName" => $folder_name,
-			"folderCreatedDate" => $folder->date_created,
-			"folderId" => $folder_id,
-			"folderRev" => $folder->revision_no,
-			"sequenceNo" => $sequence,
-			"personel" => $personel,
-			"positions" => $positions,
-			"documents" => array(
-				["title" => "Submitted Documents", "type" => "submitted_docs", "data" => $submitted],
-				["title" => "For Review Documents", "type" => "review_docs","data" => $review_documents],
-				["title" => "For Approval Documents","type" => "approval_docs", "data" => $approval_documents],
-				["title" => "Documents Control","type" => "control_docs", "data" => $folder_docs]
-			)
-		));
-	}
-
-	public function edit_folder(Request $request, $folder_id) {
-		$folder = FolderModel::find($folder_id);
-		
+	public function update(Request $request, FolderModel $folder) {
 		$old_name = $folder->folder_name;
-		$folder->folder_name = $request->folder_name;
+		$folder->folder_name = $request->folderName;
 		$folder->increment("revision_no");
 		$folder->save();
 
@@ -104,7 +52,7 @@ class FilePageController extends Controller
 		->with("type", "info");
 	}
 
-	public function delete_folders(Request $request) {
+	public function destroy(Request $request) {
 		$fields = $request->validate([
 			"ids" => "required|array"
 		]);

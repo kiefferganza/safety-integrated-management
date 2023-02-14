@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { Link, } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from '@/routes/paths';
+import { Inertia } from '@inertiajs/inertia';
 // @mui
 import {
 	Stack,
@@ -29,6 +30,8 @@ import FileThumbnail from '@/Components/file-thumbnail';
 //
 import FileDetailsDrawer from '../portal/FileDetailsDrawer';
 import { FileNewFolderDialog } from '..';
+import { useSwal } from '@/hooks/useSwal';
+
 
 // ----------------------------------------------------------------------
 
@@ -37,10 +40,10 @@ FileTableRow.propTypes = {
 	selected: PropTypes.bool,
 	onDeleteRow: PropTypes.func,
 	onSelectRow: PropTypes.func,
-	onEditRow: PropTypes.func,
 };
 
-export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow, onEditRow }) {
+export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+	const { load, stop } = useSwal();
 	const { id, name, size, type, dateCreated, totalDocs, revision_no } = row;
 
 	const { enqueueSnackbar } = useSnackbar();
@@ -100,6 +103,20 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow,
 		enqueueSnackbar('Copied!');
 		copy(row.url);
 	};
+
+	const handleUpdateFolder = () => {
+		handleCloseEditFolder();
+		Inertia.post(PATH_DASHBOARD.fileManager.edit(id), { folderName }, {
+			preserveScroll: true,
+			onStart () {
+				load(`Updating ${name}.`, "Please wait...");
+			},
+			onFinish () {
+				setFolderName(folderName);
+				stop();
+			}
+		});
+	}
 
 	return (
 		<>
@@ -208,11 +225,7 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow,
 				open={openEditFolder}
 				onClose={handleCloseEditFolder}
 				title="Edit Folder"
-				onUpdate={() => {
-					handleCloseEditFolder();
-					setFolderName(folderName);
-					console.log('UPDATE FOLDER', folderName);
-				}}
+				onUpdate={handleUpdateFolder}
 				folderName={folderName}
 				onChangeFolderName={(event) => setFolderName(event.target.value)}
 			/>
@@ -231,7 +244,10 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow,
 				title="Delete"
 				content="Are you sure want to delete?"
 				action={
-					<Button variant="contained" color="error" onClick={onDeleteRow}>
+					<Button variant="contained" color="error" onClick={() => {
+						handleCloseConfirm();
+						onDeleteRow();
+					}}>
 						Delete
 					</Button>
 				}

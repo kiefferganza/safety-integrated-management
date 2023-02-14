@@ -147,7 +147,8 @@ export const PATH_DASHBOARD = {
 
 	fileManager: {
 		root: path(ROOTS_DASHBOARD, '/file-manager'),
-		view: (id) => path(ROOTS_DASHBOARD, `/file-manager/${id}`)
+		view: (id) => path(ROOTS_DASHBOARD, `/file-manager/${id}`),
+		edit: (id) => path(ROOTS_DASHBOARD, `/file-manager/${id}/edit`),
 	},
 
 	// invoice: {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Head } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
 // @mui
@@ -23,7 +24,6 @@ const {
 	FileChangeViewButton,
 	FileNewFolderDialog,
 } = await import('@/sections/@dashboard/file');
-import { Head } from '@inertiajs/inertia-react';
 import { capitalize } from 'lodash';
 
 // ----------------------------------------------------------------------
@@ -90,7 +90,7 @@ export default function FileManagerPage ({ folders }) {
 		setTableData(folders)
 	}, [folders]);
 
-	const handleChangeView = (event, newView) => {
+	const handleChangeView = (_event, newView) => {
 		if (newView !== null) {
 			setView(newView);
 		}
@@ -112,34 +112,34 @@ export default function FileManagerPage ({ folders }) {
 	};
 
 	const handleDeleteItem = (id) => {
-		// const { page, setPage, setSelected } = table;
-		// const deleteRow = tableData.filter((row) => row.id !== id);
-		// setSelected([]);
-		// setTableData(deleteRow);
-
-		// if (page > 0) {
-		// 	if (dataInPage.length < 2) {
-		// 		setPage(page - 1);
-		// 	}
-		// }
+		const folder = folders.find(f => f.id === +id);
+		if (folder) {
+			Inertia.post(route('files.management.destroy'), { ids: [id] }, {
+				onStart () {
+					load(`Deleting ${folder.name}.`, "Please wait");
+				},
+				onFinish () {
+					table.setPage(0);
+					table.setSelected([]);
+					stop();
+				},
+				preserveScroll: true
+			});
+		}
 	};
 
 	const handleDeleteItems = (selected) => {
-		// const { page, rowsPerPage, setPage, setSelected } = table;
-		// const deleteRows = tableData.filter((row) => !selected.includes(row.id));
-		// setSelected([]);
-		// setTableData(deleteRows);
-
-		// if (page > 0) {
-		// 	if (selected.length === dataInPage.length) {
-		// 		setPage(page - 1);
-		// 	} else if (selected.length === dataFiltered.length) {
-		// 		setPage(0);
-		// 	} else if (selected.length > dataInPage.length) {
-		// 		const newPage = Math.ceil((tableData.length - selected.length) / rowsPerPage) - 1;
-		// 		setPage(newPage);
-		// 	}
-		// }
+		Inertia.post(route('files.management.destroy'), { ids: selected }, {
+			onStart () {
+				load(`Deleting ${selected.length} folders.`, "Please wait");
+			},
+			onFinish () {
+				table.setPage(0);
+				table.setSelected([]);
+				stop();
+			},
+			preserveScroll: true
+		});
 	};
 
 	const handleClearAll = () => {
@@ -168,16 +168,16 @@ export default function FileManagerPage ({ folders }) {
 	const handleCreateFolder = () => {
 		handleCloseUploadFile();
 		if (newFolderName) {
-			// Inertia.post(route('files.management.create_folder'), { folderName: newFolderName }, {
-			// 	preserveScroll: true,
-			// 	onStart () {
-			// 		load("Creating new folder", "Please wait...");
-			// 	},
-			// 	onFinish () {
-			// 		setNewFolderName("");
-			// 		stop();
-			// 	}
-			// });
+			Inertia.post(route('files.management.create_folder'), { folderName: newFolderName }, {
+				preserveScroll: true,
+				onStart () {
+					load("Creating new folder", "Please wait...");
+				},
+				onFinish () {
+					setNewFolderName("");
+					stop();
+				}
+			});
 		}
 	}
 

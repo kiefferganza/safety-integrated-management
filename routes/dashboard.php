@@ -163,10 +163,13 @@ Route::middleware('auth')->group(function ()
 
 
 	/**
-	 * Management - Files
+	 * Management - Folder
 	 */
 	Route::get('dashboard/file-manager', [FilePageController::class, "index"])->name('files.management.index');
-	Route::get('dashboard/file-manager/{folder}', [DocumentController::class, "index"]);
 	Route::post('dashboard/file-manager/new', [FilePageController::class, "create_folder"])->name('files.management.create_folder');
+	Route::post('dashboard/file-manager/delete', [FilePageController::class, "destroy"])->name('files.management.destroy');
+	Route::post('dashboard/file-manager/{folder}/edit', [FilePageController::class, "update"])->name('files.management.update');
+	// Folder -> Documents
+	Route::get('dashboard/file-manager/{folder}', [DocumentController::class, "index"]);
 
 });

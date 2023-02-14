@@ -18,6 +18,7 @@ import ConfirmDialog from '@/Components/confirm-dialog';
 import FileDetailsDrawer from '../portal/FileDetailsDrawer';
 import FileNewFolderDialog from '../portal/FileNewFolderDialog';
 import { Inertia } from '@inertiajs/inertia';
+import { useSwal } from '@/hooks/useSwal';
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +28,7 @@ FileFolderCard.propTypes = {
 };
 
 export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
+	const { load, stop } = useSwal();
 	const { enqueueSnackbar } = useSnackbar();
 
 	const { copy } = useCopyToClipboard();
@@ -79,6 +81,20 @@ export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
 		enqueueSnackbar('Copied!');
 		copy(folder.url);
 	};
+
+	const handleUpdateFolder = () => {
+		handleCloseEditFolder();
+		Inertia.post(PATH_DASHBOARD.fileManager.edit(folder.id), { folderName }, {
+			preserveScroll: true,
+			onStart () {
+				load(`Updating ${folder.name}.`, "Please wait...");
+			},
+			onFinish () {
+				setFolderName(folderName);
+				stop();
+			}
+		});
+	}
 
 	return (
 		<>
@@ -190,11 +206,7 @@ export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
 				open={openEditFolder}
 				onClose={handleCloseEditFolder}
 				title="Edit Folder"
-				onUpdate={() => {
-					handleCloseEditFolder();
-					setFolderName(folderName);
-					console.log('UPDATE FOLDER', folderName);
-				}}
+				onUpdate={handleUpdateFolder}
 				folderName={folderName}
 				onChangeFolderName={(event) => setFolderName(event.target.value)}
 			/>
@@ -205,7 +217,10 @@ export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
 				title="Delete"
 				content="Are you sure want to delete?"
 				action={
-					<Button variant="contained" color="error" onClick={onDelete}>
+					<Button variant="contained" color="error" onClick={() => {
+						handleCloseConfirm();
+						onDelete();
+					}}>
 						Delete
 					</Button>
 				}

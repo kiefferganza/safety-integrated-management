@@ -1,12 +1,17 @@
 import PropTypes from 'prop-types';
 import { useState, useRef } from 'react';
 // @mui
-import { Collapse, Box, Divider, Button } from '@mui/material';
+import {
+	Collapse,
+	Box,
+	// Divider,
+	// Button
+} from '@mui/material';
 // components
-import Iconify from '@/Components/iconify';
+// import Iconify from '@/Components/iconify';
 //
 import FilePanel from '../FilePanel';
-import FileCard from '../item/FileCard';
+// import FileCard from '../item/FileCard';
 import FileFolderCard from '../item/FileFolderCard';
 import FileNewFolderDialog from '../portal/FileNewFolderDialog';
 
@@ -21,13 +26,13 @@ FileGridView.propTypes = {
 };
 
 export default function FileGridView ({ table, data, dataFiltered, onDeleteItem }) {
-	const { selected, onSelectRow: onSelectItem } = table;
+	// const { selected, onSelectRow: onSelectItem } = table;
 
 	const containerRef = useRef(null);
 
 	const [folderName, setFolderName] = useState('');
 
-	const [collapseFiles, setCollapseFiles] = useState(false);
+	// const [collapseFiles, setCollapseFiles] = useState(false);
 
 	const [openNewFolder, setOpenNewFolder] = useState(false);
 
@@ -43,9 +48,9 @@ export default function FileGridView ({ table, data, dataFiltered, onDeleteItem 
 		setOpenNewFolder(false);
 	};
 
-	const handleOpenUploadFile = () => {
-		setOpenUploadFile(true);
-	};
+	// const handleOpenUploadFile = () => {
+	// 	setOpenUploadFile(true);
+	// };
 
 	const handleCloseUploadFile = () => {
 		setOpenUploadFile(false);
