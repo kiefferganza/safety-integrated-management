@@ -1,5 +1,5 @@
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import DocumentListPage from "./DocumentListPage";
+const { DocumentListPage } = await import("./DocumentListPage");
 
 const index = ({ folder, auth: { user } }) => {
 	return (

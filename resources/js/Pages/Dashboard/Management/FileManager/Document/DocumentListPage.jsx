@@ -57,11 +57,11 @@ import {
 const { Label } = await import('@/Components/label/Label');
 const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialog');
 // sections
+const { DocumentAnalytic } = await import('@/sections/@dashboard/document/DocumentAnalytic');
 import { Head, Link } from '@inertiajs/inertia-react';
 import { useSwal } from '@/hooks/useSwal';
 import { Inertia } from '@inertiajs/inertia';
 import { DocumentTableRow, DocumentTableToolbar } from '@/sections/@dashboard/document/list';
-const { DocumentAnalytic } = await import('@/sections/@dashboard/document/DocumentAnalytic');
 import { capitalCase } from 'change-case';
 import { formatCms } from '@/utils/tablesUtils';
 import { getDocumentStatus } from '@/utils/formatStatuses';
@@ -80,7 +80,7 @@ const TABLE_HEAD = [
 ];
 
 
-const DocumentListPage = ({ folder, user }) => {
+export const DocumentListPage = ({ folder, user }) => {
 	const theme = useTheme();
 	const { themeStretch } = useSettingsContext();
 	const { load, stop } = useSwal();
@@ -625,4 +625,4 @@ function applyFilter ({
 	return inputData;
 }
 
-export default DocumentListPage;
+// export default DocumentListPage;
