@@ -3,6 +3,7 @@
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FilePageController;
 use App\Http\Controllers\InspectionController;
@@ -165,6 +166,7 @@ Route::middleware('auth')->group(function ()
 	 * Management - Files
 	 */
 	Route::get('dashboard/file-manager', [FilePageController::class, "index"])->name('files.management.index');
+	Route::get('dashboard/file-manager/{folder}', [DocumentController::class, "index"]);
 	Route::post('dashboard/file-manager/new', [FilePageController::class, "create_folder"])->name('files.management.create_folder');
 
 });
