@@ -21,7 +21,7 @@ class DocumentService {
 					"files",
 					"approval_employee",
 					"reviewer_employees",
-				)
+				)->orderByDesc("date_uploaded")
 		]);
 	}
 

@@ -171,5 +171,7 @@ Route::middleware('auth')->group(function ()
 	Route::post('dashboard/file-manager/{folder}/edit', [FilePageController::class, "update"])->name('files.management.update');
 	// Folder -> Documents
 	Route::get('dashboard/file-manager/{folder}', [DocumentController::class, "index"]);
+	Route::get('dashboard/file-manager/{folder}/new', [DocumentController::class, "create"]);
+	Route::post('dashboard/file-manager/{folder}/new', [DocumentController::class, "store"]);
 
 });

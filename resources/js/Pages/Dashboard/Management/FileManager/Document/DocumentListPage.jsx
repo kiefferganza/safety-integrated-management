@@ -271,7 +271,7 @@ export const DocumentListPage = ({ folder, user }) => {
 					]}
 					action={
 						<Button
-							href={PATH_DASHBOARD.inspection.new}
+							href={PATH_DASHBOARD.fileManager.newDocument(folder.folder_id)}
 							component={Link}
 							variant="contained"
 							startIcon={<Iconify icon="eva:plus-fill" />}
