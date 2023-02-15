@@ -97,7 +97,7 @@ export const DocumentListPage = ({ folder, user }) => {
 
 	const [filterName, setFilterName] = useState('');
 
-	const [filterType, setFilterType] = useState('all');
+	const [filterType, setFilterType] = useState('submitted');
 
 	const [filterStatus, setFilterStatus] = useState('');
 
@@ -130,6 +130,15 @@ export const DocumentListPage = ({ folder, user }) => {
 					},
 					docStatus: getDocumentStatus(curr.status)
 				};
+				const isInReview = curr.reviewer_employees.some(rev => rev.pivot.review_status !== "0");
+				if (curr.status === "0" && isInReview) {
+					docObj.docStatus = {
+						statusText: "REVIEWED",
+						statusClass: "primary",
+					};
+				} else {
+					docObj.docStatus = getDocumentStatus(curr.status);
+				}
 				if (curr.employee.employee_id === userEmpId) {
 					acc.push({ ...docObj, docType: "submitted" });
 				}
@@ -144,7 +153,6 @@ export const DocumentListPage = ({ folder, user }) => {
 			}
 			return acc;
 		}, []);
-		// console.log({ data })
 		setTableData(data || []);
 	}, [folder]);
 
@@ -152,7 +160,7 @@ export const DocumentListPage = ({ folder, user }) => {
 	const denseHeight = dense ? 56 : 76;
 
 	const isFiltered =
-		filterType !== 'all' || filterName !== '' || !!filterStartDate || !!filterEndDate || filterStatus !== '';
+		filterType !== 'submitted' || filterName !== '' || !!filterStartDate || !!filterEndDate || filterStatus !== '';
 
 	const isNotFound =
 		(!dataFiltered.length && !!filterName) ||
@@ -161,12 +169,11 @@ export const DocumentListPage = ({ folder, user }) => {
 		(!dataFiltered.length && !!filterStartDate);
 	(!dataFiltered.length && !!filterEndDate);
 
-	const getLengthByType = (type) => dataFiltered.filter((item) => item.docType === type).length;
+	const getLengthByType = (type) => tableData.filter((item) => item.docType === type).length;
 
-	const getPercentByType = (type) => (getLengthByType(type) / dataFiltered.length) * 100;
+	const getPercentByType = (type) => (getLengthByType(type) / tableData.length) * 100;
 
 	const TABS = [
-		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.filter(d => ["submitted", "review", "approve"].includes(d.docType)).length },
 		{ value: 'submitted', label: 'Submitted', color: 'default', count: getLengthByType('submitted') },
 		{ value: 'review', label: 'For Review', color: 'warning', count: getLengthByType('review') },
 		{ value: 'approve', label: 'For Approval', color: 'success', count: getLengthByType('approve') },
@@ -174,9 +181,11 @@ export const DocumentListPage = ({ folder, user }) => {
 	];
 
 	const STATUS_TABS = [
-		{ value: 'I P', label: 'In Progress', color: 'warning', count: 0 },
-		{ value: 'W F C', label: 'Waiting For Closure', color: 'error', count: 0 },
-		{ value: 'C', label: 'Closed', color: 'success', count: 0 }
+		{ value: 'PENDING', label: 'PENDING', color: 'warning', count: 0 },
+		{ value: 'REVIEWED', label: 'REVIEWED', color: 'info', count: 0 },
+		{ value: 'APPROVED w/o COMMENTS', label: 'APPROVED w/o COMMENTS', color: 'success', count: 0 },
+		{ value: 'APPROVED WITH COMMENTS', label: 'APPROVED WITH COMMENTS', color: 'info', count: 0 },
+		{ value: 'NO OBJECTION WITH COMMENTS', label: 'NO OBJECTION WITH COMMENTS', color: 'warning', count: 0 },
 	];
 
 	const handleOpenConfirm = () => {
@@ -230,7 +239,7 @@ export const DocumentListPage = ({ folder, user }) => {
 
 	const handleResetFilter = () => {
 		setFilterName('');
-		setFilterType('all');
+		setFilterType('submitted');
 		setFilterStartDate(null);
 		setFilterEndDate(null);
 		setFilterStatus('');
@@ -247,14 +256,13 @@ export const DocumentListPage = ({ folder, user }) => {
 	const open = Boolean(anchorLegendEl);
 
 	const folderName = capitalCase(folder.folder_name);
-
 	return (
 		<>
 			<Head>
 				<title>{`${folderName}: List`}</title>
 			</Head>
 
-			<Container maxWidth={themeStretch ? false : 'lg'}>
+			<Container maxWidth={themeStretch ? false : 'lg'} sx={{ pb: 16 }}>
 				<CustomBreadcrumbs
 					heading={`${folderName} Document List`}
 					links={[
@@ -290,7 +298,7 @@ export const DocumentListPage = ({ folder, user }) => {
 						>
 							<DocumentAnalytic
 								title="Total"
-								total={isFiltered ? dataFiltered.filter(d => d.docType !== "documentControl").length : folder.documents.length}
+								total={folder?.documents?.length}
 								percent={100}
 								icon="heroicons:document-chart-bar"
 								color={theme.palette.info.main}
@@ -300,7 +308,7 @@ export const DocumentListPage = ({ folder, user }) => {
 								title="Submitted"
 								total={getLengthByType('submitted')}
 								percent={getPercentByType('submitted')}
-								icon="heroicons:document-magnifying-glass"
+								icon="heroicons:document-arrow-up"
 								color={theme.palette.success.main}
 							/>
 
@@ -317,14 +325,14 @@ export const DocumentListPage = ({ folder, user }) => {
 								total={getLengthByType('approve')}
 								percent={getPercentByType('approve')}
 								icon="heroicons:document-check"
-								color={theme.palette.error.main}
+								color={theme.palette.info.main}
 							/>
 
 							<DocumentAnalytic
 								title="Control"
 								total={getLengthByType('documentControl')}
-								percent={getPercentByType('documentControl')}
-								icon="heroicons:document-arrow-up"
+								percent={100}
+								icon="heroicons:document-magnifying-glass"
 								color={theme.palette.success.main}
 							/>
 						</Stack>
@@ -336,7 +344,7 @@ export const DocumentListPage = ({ folder, user }) => {
 						<Tabs
 							value={filterType}
 							onChange={handleFilterType}
-							sx={{ width: 1, flex: .7 }}
+							sx={{ width: 1, flex: .5 }}
 						>
 							{TABS.map((tab) => (
 								<Tab
@@ -405,11 +413,11 @@ export const DocumentListPage = ({ folder, user }) => {
 						<TableSelectedAction
 							dense={dense}
 							numSelected={selected.length}
-							rowCount={dataFiltered.filter(d => d.docType !== "documentControl").length}
+							rowCount={dataFiltered.length}
 							onSelectAllRows={(checked) =>
 								onSelectAllRows(
 									checked,
-									dataFiltered.filter(d => d.docType !== "documentControl").map((row) => row.id)
+									dataFiltered.map((row) => row.id)
 								)
 							}
 							action={
@@ -450,7 +458,7 @@ export const DocumentListPage = ({ folder, user }) => {
 								/>
 
 								<TableBody>
-									{(isFiltered ? dataFiltered.filter(d => d.docType !== "documentControl") : tableData.filter(d => d.docType !== "documentControl")).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, idx) => (
+									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, idx) => (
 										<DocumentTableRow
 											key={idx}
 											row={row}
@@ -469,7 +477,7 @@ export const DocumentListPage = ({ folder, user }) => {
 					</TableContainer>
 
 					<TablePaginationCustom
-						count={(isFiltered ? dataFiltered : tableData.filter(d => d.docType !== "documentControl")).length}
+						count={dataFiltered.length}
 						page={page}
 						rowsPerPage={rowsPerPage}
 						onPageChange={onChangePage}
@@ -522,25 +530,21 @@ export const DocumentListPage = ({ folder, user }) => {
 				disableRestoreFocus
 			>
 				<Box sx={{ px: 2.5, py: 3 }}>
-					<Typography variant="subtitle2" sx={{ mb: 1, color: "text.secondary" }}>Status Legends:</Typography>
+					<Typography variant="subtitle2" sx={{ mb: 1, color: "text.secondary" }}>Submitted Document Status:</Typography>
 					<Stack direction="row" justifyContent="space-between" gap={1} sx={{ mb: 1.5 }}>
-						<Label variant="outlined" color="warning">I P = In Progress</Label>
-						<Label variant="outlined" color="error">W F C = Waiting For Closure</Label>
-						<Label variant="outlined" color="success">C = Closed</Label>
+						<Label variant="outlined" color="warning">PENDING = No Action Taken</Label>
+						<Label variant="outlined" color="warning">NO OBJECTION WITH COMMENTS = Closed with comments</Label>
 					</Stack>
 					<Stack direction="row" justifyContent="space-between" gap={1} sx={{ mb: 1.5 }}>
-						<Label variant="outlined" color="error">F R = For Revision</Label>
-						<Label variant="outlined" color="success">A.D. = Active Days</Label>
-						<Label variant="outlined" color="error">O.D. = Overdue Days</Label>
+						<Label variant="outlined" color="success">APPROVED w/o COMMENTS = Closed without comments</Label>
+						<Label variant="outlined" color="error">FAIL/NOT APPROVED = Closed</Label>
 					</Stack>
-					<Typography variant="subtitle2" sx={{ mb: 1, color: "text.secondary" }}>Table Title Legends:</Typography>
 					<Stack direction="row" justifyContent="space-between" gap={1} sx={{ mb: 1.5 }}>
-						<Label variant="outlined" color="default">O = Number of Observation</Label>
-						<Label variant="outlined" color="default">P. = Number of Positive Observation</Label>
+						<Label variant="outlined" color="info">APPROVED WITH COMMENT/S = Closed with comments</Label>
+						<Label variant="outlined" color="primary">REVIEWED = Reviewed By Reviewer</Label>
 					</Stack>
-					<Stack direction="row" gap={1} sx={{ mb: 1.5 }}>
-						<Label variant="outlined" color="default">N = Number of Negative Observation</Label>
-						<Label variant="outlined" color="default">S = Statuses</Label>
+					<Stack direction="row" justifyContent="space-between" gap={1} sx={{ mb: 1.5 }}>
+
 					</Stack>
 				</Box>
 			</Popover>
@@ -572,22 +576,22 @@ function applyFilter ({
 	if (filterName) {
 		inputData = inputData.filter((doc) =>
 			doc.formNumber.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
-			doc.reviewer.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
-			doc.inspected_by.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
-			doc.accompanied_by.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+			doc.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
+			doc?.description?.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
 		);
 	}
 
-	if (filterType !== 'all') {
+	if (filterType) {
 		inputData = inputData.filter((doc) => doc.docType === filterType);
+		console.log({ inputData })
 	}
 
 	if (filterStatus !== '') {
-		if (filterStatus === 'A.D.' || filterStatus === 'O.D.') {
-			inputData = inputData.filter((doc) => doc.dueStatus.type === filterStatus);
-		} else {
-			inputData = inputData.filter((doc) => doc.status.text === filterStatus);
-		}
+		// if (filterStatus === 'A.D.' || filterStatus === 'O.D.') {
+		// 	inputData = inputData.filter((doc) => doc.dueStatus.type === filterStatus);
+		// } else {
+		// 	inputData = inputData.filter((doc) => doc.status.text === filterStatus);
+		// }
 	}
 
 	if (filterStartDate && !filterEndDate) {

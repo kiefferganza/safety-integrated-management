@@ -48,8 +48,10 @@ const DocumentNewForm = () => {
 			for (const key in resErrors) {
 				setError(key, { type: "custom", message: resErrors[key] });
 			}
+		} else {
+			reset(defaultValues);
 		}
-	}, [resErrors]);
+	}, [resErrors, sequence_no]);
 
 	const handleDropSingleFile = useCallback((acceptedFiles) => {
 		const file = acceptedFiles[0];

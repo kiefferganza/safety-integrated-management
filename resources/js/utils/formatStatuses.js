@@ -3,6 +3,7 @@ export function getDocumentStatus (status) {
 	let statusClass = "";
 	switch (status) {
 		case 'A':
+		case 'D':
 			statusText = "APPROVED w/o COMMENTS";
 			statusClass = "success";
 			break;
@@ -14,17 +15,13 @@ export function getDocumentStatus (status) {
 			statusText = "FAIL/NOT APPROVED";
 			statusClass = "error";
 			break;
-		case 'D':
-			statusText = "APPROVED w/o COMMENTS";
-			statusClass = "secondary";
-			break;
 		case 'E':
 		case 'F':
 			statusText = "NO OBJECTION WITH COMMENTS";
 			statusClass = "warning";
 			break;
 		default:
-			statusText = "PENDING ACTION";
+			statusText = "PENDING";
 			statusClass = "warning";
 			break;
 	}

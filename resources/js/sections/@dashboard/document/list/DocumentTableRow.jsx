@@ -55,29 +55,29 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 	};
 
 	const handleTriggerCollapse = () => {
-		setOpenCollapse(!openCollapse);
+		setOpenCollapse((currState) => !currState);
 	}
 
 	return (
 		<>
 			<TableRow hover selected={selected} sx={{ width: 1 }}>
-				<TableCell padding="checkbox">
+				<TableCell onClick={handleTriggerCollapse} padding="checkbox">
 					<Checkbox checked={selected} onClick={onSelectRow} />
 				</TableCell>
 
-				<TableCell align="left" sx={{ textTransform: 'uppercase', whiteSpace: "nowrap" }}>{row.formNumber}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} align="left" sx={{ textTransform: 'uppercase', whiteSpace: "nowrap" }}>{row.formNumber}</TableCell>
 
-				<TableCell align="left" sx={{ textTransform: 'capitalize', whiteSpace: "nowrap" }}>{row.title}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} align="left" sx={{ textTransform: 'capitalize', whiteSpace: "nowrap" }}>{row.title}</TableCell>
 
-				<TableCell align="left" sx={{ textTransform: 'capitalize', whiteSpace: "nowrap" }}>{row.description || "N/A"}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} align="left" sx={{ textTransform: 'capitalize', whiteSpace: "nowrap" }}>{row.description || "N/A"}</TableCell>
 
-				<TableCell align="center" sx={{ whiteSpace: "nowrap" }}>{row.rev || 0}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} align="center" sx={{ whiteSpace: "nowrap" }}>{row.rev || 0}</TableCell>
 
-				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.employee.fullname}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} align="left" sx={{ whiteSpace: "nowrap" }}>{row.employee.fullname}</TableCell>
 
-				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{fDate(row.date_uploaded)}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} align="left" sx={{ whiteSpace: "nowrap" }}>{fDate(row.date_uploaded)}</TableCell>
 
-				<TableCell align="center">
+				<TableCell onClick={handleTriggerCollapse} align="center">
 					<Label
 						variant="soft"
 						color={row.docStatus.statusClass}

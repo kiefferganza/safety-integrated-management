@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Document;
 use App\Models\DocumentReviewer;
 use App\Models\Employee;
 use App\Models\FolderModel;
@@ -25,25 +26,10 @@ class DocumentController extends Controller
 
 	public function create(FolderModel $folder) {
 		$user = auth()->user();
-		$folder = $folder->loadCount([
-			"documents" => fn($q) =>
-				$q->where([
-					["tbl_documents.user_id", $user->emp_id],
-					["tbl_documents.is_deleted", 0]
-				])
-		]);
-		$number_of_documents = $folder->documents_count + 1;
-		$number_of_zeroes = strlen((string) $number_of_documents);
-		$sequence_no_zeros = '';
-		for ($i = 0; $i <= $number_of_zeroes; $i++)
-		{
-			$sequence_no_zeros = $sequence_no_zeros . "0";
-		}
-		$sequence =  $sequence_no_zeros . $number_of_documents;
 
 		return Inertia::render("Dashboard/Management/FileManager/Document/Create/index", [
 			"folder" => $folder,
-			"sequence_no" => $sequence,
+			"sequence_no" => (new DocumentService)->sequence_no($folder->folder_id),
 			"personel" => Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id", "user_id")
 				->where("is_deleted", 0)
 				->where("user_id", "!=", NULL)
@@ -74,11 +60,12 @@ class DocumentController extends Controller
 
 		$user = auth()->user();
 		$date_today = date('Y-m-d H:i:s');
+		$sequence_no = (new DocumentService)->sequence_no($folder->folder_id);
 
 		$document_id = $user->documents()->insertGetId([
 			'originator' => $fields['originator'],
 			'originator2' => $fields['originator'],
-			'sequence_no' => $fields['sequence_no'],
+			'sequence_no' => $sequence_no,
 			'description' => $fields['description'],
 			'title' => $fields['title'],
 			'folder_id' => $folder->folder_id,
