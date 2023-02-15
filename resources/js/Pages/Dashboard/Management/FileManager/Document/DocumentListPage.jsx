@@ -20,8 +20,10 @@ const {
 } = await import('@mui/material');
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
-// utils
-import { fTimestamp } from '@/utils/formatTime';
+// utils/hooks
+import { formatCms } from '@/utils/tablesUtils';
+import { getDocumentStatus } from '@/utils/formatStatuses';
+import { useSwal } from '@/hooks/useSwal';
 // components
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';
@@ -42,12 +44,10 @@ const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialo
 // sections
 const { DocumentAnalytic } = await import('@/sections/@dashboard/document/DocumentAnalytic');
 import { Head, Link } from '@inertiajs/inertia-react';
-import { useSwal } from '@/hooks/useSwal';
 import { Inertia } from '@inertiajs/inertia';
 import { DocumentTableRow, DocumentTableToolbar } from '@/sections/@dashboard/document/list';
 import { capitalCase } from 'change-case';
-import { formatCms } from '@/utils/tablesUtils';
-import { getDocumentStatus } from '@/utils/formatStatuses';
+
 
 // ----------------------------------------------------------------------
 
@@ -197,8 +197,8 @@ export const DocumentListPage = ({ folder, user }) => {
 	};
 
 	const handleFilterType = (_event, newValue) => {
-		setPage(0);
-		setFilterType(newValue);
+		// setPage(0);
+		// setFilterType(newValue);
 	};
 
 	const handleFilterName = (event) => {
@@ -596,7 +596,7 @@ function applyFilter ({
 
 	if (filterStartDate && !filterEndDate) {
 		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
-		inputData = inputData.filter(insp => fTimestamp(new Date(insp.date_uploaded)) >= startDateTimestamp);
+		inputData = inputData.filter(insp => new Date(insp.date_uploaded).setHours(0, 0, 0, 0) >= startDateTimestamp);
 	}
 
 	if (filterStartDate && filterEndDate) {
@@ -604,8 +604,8 @@ function applyFilter ({
 		const endDateTimestamp = filterEndDate.setHours(0, 0, 0, 0);
 		inputData = inputData.filter(
 			(insp) =>
-				fTimestamp(new Date(insp.date_uploaded)) >= startDateTimestamp &&
-				fTimestamp(new Date(insp.date_uploaded)) <= endDateTimestamp
+				new Date(insp.date_uploaded).setHours(0, 0, 0, 0) >= startDateTimestamp &&
+				new Date(insp.date_uploaded).setHours(0, 0, 0, 0) <= endDateTimestamp
 		);
 	}
 
