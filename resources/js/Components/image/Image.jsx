@@ -8,7 +8,7 @@ import getRatio from './getRatio';
 
 // ----------------------------------------------------------------------
 
-const Image = forwardRef(({ ratio, disabledEffect = false, effect = 'blur', sx, ...other }, ref) => {
+export const Image = forwardRef(({ ratio, disabledEffect = false, effect = 'blur', sx, ...other }, ref) => {
 	const content = (
 		<Box
 			component={LazyLoadImage}

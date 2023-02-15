@@ -19,6 +19,20 @@ const DocumentNewForm = () => {
 	const [cc, setCC] = useState([]);
 	const { errors: resErrors, folder, sequence_no, personel } = usePage().props;
 
+	const newDocumentSchema = Yup.object().shape({
+		project_code: Yup.string().required('Project Code is required'),
+		contract_no: Yup.string().required('Contract number is required'),
+		originator: Yup.string().required('Originator is required'),
+		discipline: Yup.string().required('Discipline is required'),
+		document_type: Yup.string().required('Project Type is required'),
+		title: Yup.string().required(),
+		src: Yup.string().required("Please attach a file for the document."),
+		reviewers: Yup.array().test('isRequired', 'Please select either reviewer or approval personel', function () {
+			return this.parent.approval_id !== ""
+		}),
+		approval_id: Yup.string().when("reviewers", (reviewers, schema) => reviewers.length > 0 ? schema.notRequired() : schema.required('Please select either reviewer or approval personel')),
+	});
+
 	const defaultValues = {
 		sequence_no: sequence_no || '',
 		contract_no: '',
@@ -36,11 +50,11 @@ const DocumentNewForm = () => {
 	};
 
 	const methods = useForm({
-		// resolver: yupResolver(newInspectionSchema),
+		resolver: yupResolver(newDocumentSchema),
 		defaultValues,
 	});
 
-	const { watch, trigger, handleSubmit, setValue, setError, reset, formState: { errors } } = methods;
+	const { watch, handleSubmit, setValue, setError, reset, formState: { errors } } = methods;
 	const values = watch();
 
 	useEffect(() => {
@@ -211,7 +225,7 @@ const DocumentNewForm = () => {
 								<Typography variant="h6" sx={{ color: 'text.disabled' }}>
 									Attached File
 								</Typography>
-								<Upload file={values.src} onDrop={handleDropSingleFile} />
+								<Upload error={!!errors?.src?.message} helperText={errors?.src?.message} file={values.src} onDrop={handleDropSingleFile} />
 								<MultiFilePreview files={values.src ? [values.src] : []} onRemove={handleRemoveFile} />
 							</Box>
 						</Stack>

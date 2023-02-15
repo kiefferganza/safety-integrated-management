@@ -1,13 +1,14 @@
 import DashboardLayout from '@/Layouts/dashboard/DashboardLayout';
-import Findings from '@/sections/@dashboard/inspection/details/Findings';
-import { Container } from '@mui/material';
 import { Head } from '@inertiajs/inertia-react';
+import { formatCms } from '@/utils/tablesUtils';
+// MUI
+const { Box, Card, Container, Stack, Typography } = await import('@mui/material');
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
-import { formatCms } from '@/utils/tablesUtils';
+import DocumentDetailHeader from '@/sections/@dashboard/document/detail/DocumentDetailHeader';
 
 const index = ({ folder, document }) => {
 	const { themeStretch } = useSettingsContext();
@@ -37,6 +38,13 @@ const index = ({ folder, document }) => {
 						},
 					]}
 				/>
+				<Card sx={{ p: 3 }}>
+					<DocumentDetailHeader
+						title="Document Review Sheet"
+						cms={cms}
+						rev={document?.rev}
+					/>
+				</Card >
 			</Container>
 		</DashboardLayout>
 	)
