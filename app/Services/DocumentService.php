@@ -36,13 +36,13 @@ class DocumentService {
 			["folder_id", $folder_id]
 		])->latest("date_uploaded")->first();
 
-		$sequence = '0001';
+		$sequence = '000001';
 
 		if($lastSubmittedDoc) {
 			$zeroes = '';
 			$prevSequence = (int)$lastSubmittedDoc->sequence_no + 1;
 			$number_of_zeroes = strlen((string) $prevSequence);
-			for($i = $number_of_zeroes; $i < 4; $i++) {
+			for($i = $number_of_zeroes; $i < 6; $i++) {
 				$zeroes .= "0";
 			}
 			$sequence = $zeroes . $prevSequence;
