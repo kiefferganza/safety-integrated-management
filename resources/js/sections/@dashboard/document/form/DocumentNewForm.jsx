@@ -21,21 +21,20 @@ const DocumentNewForm = () => {
 
 	const newDocumentSchema = Yup.object().shape({
 		project_code: Yup.string().required('Project Code is required'),
-		contract_no: Yup.string().required('Contract number is required'),
 		originator: Yup.string().required('Originator is required'),
 		discipline: Yup.string().required('Discipline is required'),
 		document_type: Yup.string().required('Project Type is required'),
 		title: Yup.string().required(),
 		src: Yup.string().required("Please attach a file for the document."),
-		reviewers: Yup.array().test('isRequired', 'Please select either reviewer or approval personel', function () {
-			return this.parent.approval_id !== ""
+		reviewers: Yup.array().test('isRequired', 'Please select either reviewer or approval personel', function (item) {
+			if (this.parent.approval_id === "" && item.length === 0) return false;
+			return true;
 		}),
 		approval_id: Yup.string().when("reviewers", (reviewers, schema) => reviewers.length > 0 ? schema.notRequired() : schema.required('Please select either reviewer or approval personel')),
 	});
 
 	const defaultValues = {
 		sequence_no: sequence_no || '',
-		contract_no: '',
 		project_code: '',
 		originator: '',
 		discipline: '',
@@ -104,7 +103,6 @@ const DocumentNewForm = () => {
 
 
 	const options = personel.map((option) => ({ id: option.employee_id, label: option.fullname, user_id: option.user_id }));
-
 	return (
 		<FormProvider methods={methods}>
 			<Card sx={{ p: 3 }}>
@@ -161,7 +159,6 @@ const DocumentNewForm = () => {
 							<PersonelAutocomplete
 								value={values.reviewers || []}
 								multiple
-								freeSolo
 								onChange={(_event, newValue) => {
 									if (newValue) {
 										setValue('reviewers', newValue, { shouldValidate: true, shouldDirty: true });
@@ -170,6 +167,7 @@ const DocumentNewForm = () => {
 									}
 								}}
 								options={options}
+								isOptionEqualToValue={(option, value) => option.id === value.id}
 								label="Reviewer Personel"
 								renderTags={(value, getTagProps) =>
 									value.map((option, index) => (

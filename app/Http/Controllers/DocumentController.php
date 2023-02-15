@@ -42,7 +42,7 @@ class DocumentController extends Controller
 
 	public function store(FolderModel $folder, Request $request) {
 		$fields = $request->validate([
-			'src' => ['required', 'mimes:ppt,pptx,doc,docx,pdf,xls,xlsx,jpeg,jpg,png', 'max:204800'],
+			'src' => ['required', 'max:204800'],
 			'originator' => ['required', 'max:255'],
 			'sequence_no' => ['nullable'],
 			'description' => ['nullable', 'max:255'],
