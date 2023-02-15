@@ -197,8 +197,8 @@ export const DocumentListPage = ({ folder, user }) => {
 	};
 
 	const handleFilterType = (_event, newValue) => {
-		// setPage(0);
-		// setFilterType(newValue);
+		setPage(0);
+		setFilterType(newValue);
 	};
 
 	const handleFilterName = (event) => {
@@ -207,10 +207,10 @@ export const DocumentListPage = ({ folder, user }) => {
 	};
 
 	const handleFilterStatus = (_event, newValue) => {
-		if (newValue) {
-			setPage(0);
-			setFilterStatus(newValue);
-		}
+		// if (newValue) {
+		// 	setPage(0);
+		// 	setFilterStatus(newValue);
+		// }
 	}
 
 	const handleDeleteRow = (id) => {
@@ -460,9 +460,10 @@ export const DocumentListPage = ({ folder, user }) => {
 								<TableBody>
 									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, idx) => (
 										<DocumentTableRow
-											key={idx}
+											key={row.id}
 											row={row}
 											selected={selected.includes(row.id)}
+											folder={folder}
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
 										/>
@@ -583,7 +584,6 @@ function applyFilter ({
 
 	if (filterType) {
 		inputData = inputData.filter((doc) => doc.docType === filterType);
-		console.log({ inputData })
 	}
 
 	if (filterStatus !== '') {

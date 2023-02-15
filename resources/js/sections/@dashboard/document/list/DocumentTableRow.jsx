@@ -28,12 +28,13 @@ const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialo
 
 DocumentTableRow.propTypes = {
 	row: PropTypes.object,
+	folder: PropTypes.object,
 	selected: PropTypes.bool,
 	onDeleteRow: PropTypes.func,
 	onSelectRow: PropTypes.func,
 };
 
-export default function DocumentTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+export default function DocumentTableRow ({ row, selected, onSelectRow, onDeleteRow, folder }) {
 	const [openCollapse, setOpenCollapse] = useState(false);
 	const [openConfirm, setOpenConfirm] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
@@ -106,14 +107,15 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-					}}
+					component={Link}
+					href={PATH_DASHBOARD.fileManager.viewDocument(folder.folder_id, row.id)}
+					preserveScroll
+					onClick={handleClosePopover}
 				>
 					<Iconify icon="eva:eye-fill" />
 					View
 				</MenuItem>
-				{row.type === "submitted" && (
+				{/* {row.type === "submitted" && (
 					<MenuItem
 						component={Link}
 						href={PATH_DASHBOARD.inspection.edit(row.inspection_id)}
@@ -123,7 +125,7 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 						<Iconify icon="eva:edit-fill" />
 						Edit
 					</MenuItem>
-				)}
+				)} */}
 
 				{row.type === "review" && (
 					<MenuItem

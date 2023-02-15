@@ -46,6 +46,7 @@ export default function DocumentTableToolbar ({
 				inputFormat="dd MMM yyyy"
 				openTo="year"
 				views={['year', 'month', 'day']}
+				disableMaskedInput
 				renderInput={(params) => (
 					<TextField
 						{...params}
@@ -64,6 +65,7 @@ export default function DocumentTableToolbar ({
 				inputFormat="dd MMM yyyy"
 				openTo="year"
 				views={['year', 'month', 'day']}
+				disableMaskedInput
 				minDate={filterStartDate || new Date}
 				renderInput={(params) => (
 					<TextField

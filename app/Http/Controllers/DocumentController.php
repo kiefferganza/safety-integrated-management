@@ -135,4 +135,36 @@ class DocumentController extends Controller
 	}
 
 
+	public function view(Request $request) {
+		$folder = FolderModel::where("is_removed", 1)->findOrFail($request->folder);
+		$user = auth()->user();
+		$document = Document::where([
+				["is_deleted", 0],
+				["folder_id", $folder->folder_id],
+				["user_id", $user->user_id]
+			])->withWhereHas(
+				"employee", fn($q) => $q->select("employee_id", "firstname", "lastname", "position", "department")->with([
+					"position",
+					"department"
+				])
+			)->with(
+				"comments",
+				"reviewer_sign",
+				"approval_sign",
+				"files",
+				"approval_employee",
+				"reviewer_employees",
+			)->findOrFail($request->document);
+
+
+		return Inertia::render("Dashboard/Management/FileManager/Document/Details/index", [
+			"folder" => $folder,
+			"document" => $document
+		]);
+	}
+
+
+
+
+
 }
