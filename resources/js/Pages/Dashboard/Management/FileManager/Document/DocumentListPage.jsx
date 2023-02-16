@@ -130,15 +130,25 @@ export const DocumentListPage = ({ folder, user }) => {
 					},
 					docStatus: getDocumentStatus(curr.status)
 				};
-				const isInReview = curr.reviewer_employees.some(rev => rev.pivot.review_status !== "0");
-				if (curr.status === "0" && isInReview) {
+				const isForApproval = curr.reviewer_sign.length >= curr.reviewer_employees.length;
+				// console.log(curr.reviewer_sign)
+				if (isForApproval) {
 					docObj.docStatus = {
-						statusText: "REVIEWED",
-						statusClass: "primary",
+						statusText: "FOR APPROVAL",
+						statusClass: "info",
 					};
 				} else {
-					docObj.docStatus = getDocumentStatus(curr.status);
+					const isInReview = curr.reviewer_employees.some(rev => rev.pivot.review_status !== "0");
+					if (curr.status === "0" && isInReview) {
+						docObj.docStatus = {
+							statusText: "REVIEWED",
+							statusClass: "primary",
+						};
+					} else {
+						docObj.docStatus = getDocumentStatus(curr.status);
+					}
 				}
+
 				if (curr.employee.employee_id === userEmpId) {
 					acc.push({ ...docObj, docType: "submitted" });
 				}
@@ -153,6 +163,7 @@ export const DocumentListPage = ({ folder, user }) => {
 			}
 			return acc;
 		}, []);
+		console.log(data)
 		setTableData(data || []);
 	}, [folder]);
 
@@ -175,8 +186,8 @@ export const DocumentListPage = ({ folder, user }) => {
 
 	const TABS = [
 		{ value: 'submitted', label: 'Submitted', color: 'default', count: getLengthByType('submitted') },
-		{ value: 'review', label: 'For Review', color: 'warning', count: getLengthByType('review') },
-		{ value: 'approve', label: 'For Approval', color: 'success', count: getLengthByType('approve') },
+		{ value: 'review', label: 'Review', color: 'warning', count: getLengthByType('review') },
+		{ value: 'approve', label: 'Verify & Approve', color: 'success', count: getLengthByType('approve') },
 		{ value: 'documentControl', label: 'Control', color: 'error', count: folder.documents.length },
 	];
 

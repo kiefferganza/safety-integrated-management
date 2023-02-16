@@ -46,7 +46,7 @@ const DocumentTableSubRow = ({ row, open }) => {
 															<a href={`/storage/media/docs/${signedFile.src}`} target="_blank">{excerpt(signedFile.src, 16)}</a>
 														</Tooltip>
 													) : (
-														<span className="text-muted">No signed files yet</span>
+														<Box component="span" sx={{ color: "text.disabled" }}>No signed files yet</Box>
 													)}
 												</TableCell>
 												<TableCell>
