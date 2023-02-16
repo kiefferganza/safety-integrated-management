@@ -1,9 +1,40 @@
+import { fDate } from '@/utils/formatTime';
 // MUI
-const { Box, Stack, Typography } = await import('@mui/material');
+const { Box, Stack, Typography, Grid, Card, Divider } = await import('@mui/material');
 // Component
+import DocEmployeeCard from './DocEmployeeCard';
+import DocumentDetailBody from './DocumentDetailBody';
 const { Image } = await import('@/Components/image/Image');
 
-const DocumentDetailHeader = ({ title, cms, rev }) => {
+const DocumentDetailHeader = ({ title, cms, document, user, latestUploadedFile }) => {
+	const {
+		title: documentTitle,
+		document_id,
+		originator,
+		sequence_no,
+		rev,
+		description,
+		user_id,
+		approval_id,
+		status,
+		date_uploaded,
+		folder_id,
+		project_code,
+		discipline,
+		document_type,
+		document_zone,
+		document_level,
+		employee,
+		comments,
+		reviewer_sign,
+		approval_sign,
+		files,
+		approval_employee,
+		reviewer_employees,
+	} = document;
+
+	// console.log(user)
+
 	return (
 		<Box>
 			<Box sx={{ mb: 2, px: 3 }}>
@@ -40,6 +71,119 @@ const DocumentDetailHeader = ({ title, cms, rev }) => {
 					</Box>
 				</Stack>
 			</Stack>
+			<Grid container spacing={3} alignItems="stretch">
+				<Grid item xs={12} md={5}>
+					<DocEmployeeCard employee={document.employee} latestUploadedFile={latestUploadedFile} />
+				</Grid>
+				<Grid item xs={12} md={7}>
+					<Card sx={{ p: 3, height: 1 }} variant="outlined">
+						<Box display="grid" gridTemplateColumns="repeat(2, 1fr)">
+							<div>
+								<Box>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Project Code</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>{project_code}</Typography>
+								</Box>
+							</div>
+							<div>
+								<Box>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Originator</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>{originator}</Typography>
+								</Box>
+							</div>
+						</Box>
+
+						<Divider flexItem sx={{ borderStyle: 'dashed', my: 1.5 }} />
+
+						<Box display="grid" gridTemplateColumns="repeat(2, 1fr)">
+							<div>
+								<Box>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Discipline</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>{discipline}</Typography>
+								</Box>
+							</div>
+							<div>
+								<Box>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Type</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>{document_type}</Typography>
+								</Box>
+							</div>
+						</Box>
+
+						<Divider flexItem sx={{ borderStyle: 'dashed', my: 1.5 }} />
+
+						<Box display="grid" gridTemplateColumns="repeat(2, 1fr)">
+							<div>
+								<Box>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Zone</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>{document_zone || "N/A"}</Typography>
+								</Box>
+							</div>
+							<div>
+								<Box>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Level</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>{document_level || "N/A"}</Typography>
+								</Box>
+							</div>
+						</Box>
+
+						<Divider flexItem sx={{ borderStyle: 'dashed', my: 1.5 }} />
+
+						<Box display="grid" gridTemplateColumns="repeat(2, 1fr)">
+							<div>
+								<Box>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Sequence No.</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>{sequence_no}</Typography>
+								</Box>
+							</div>
+							<div>
+								<Box>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Rev No.</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>{rev || 0}</Typography>
+								</Box>
+							</div>
+						</Box>
+
+						<Divider flexItem sx={{ borderStyle: 'dashed', my: 1.5 }} />
+
+						<Box display="grid" gridTemplateColumns="repeat(2, 1fr)">
+							<div>
+								<Box>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Transmittal Date</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>{fDate(date_uploaded)}</Typography>
+								</Box>
+							</div>
+							<div>
+								<Box>
+									<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Document Title</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>{documentTitle}</Typography>
+								</Box>
+							</div>
+						</Box>
+					</Card>
+				</Grid>
+			</Grid>
+			<Divider flexItem sx={{ borderStyle: 'dashed', my: 3 }} />
+			<DocumentDetailBody document={document} />
 		</Box>
 	)
 }

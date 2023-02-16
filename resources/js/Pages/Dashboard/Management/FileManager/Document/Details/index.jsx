@@ -1,19 +1,27 @@
 import DashboardLayout from '@/Layouts/dashboard/DashboardLayout';
 import { Head } from '@inertiajs/inertia-react';
 import { formatCms } from '@/utils/tablesUtils';
+import { fTimestamp } from '@/utils/formatTime';
 // MUI
-const { Box, Card, Container, Stack, Typography } = await import('@mui/material');
+const { Card, Container } = await import('@mui/material');
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import DocumentDetailHeader from '@/sections/@dashboard/document/detail/DocumentDetailHeader';
+import DocumentDetailToolbar from '@/sections/@dashboard/document/detail/DocumentDetailToolbar';
 
-const index = ({ folder, document }) => {
+
+const index = ({ folder, document, positions, auth: { user } }) => {
+	const { reviewer_sign, files } = document
 	const { themeStretch } = useSettingsContext();
 
 	const cms = formatCms(document).toUpperCase();
+
+	const latestUploadedFile = [...reviewer_sign, ...files].sort((a, b) => fTimestamp(b.upload_date) - fTimestamp(a.upload_date))[0];
+
+	console.log(document)
 
 	return (
 		<DashboardLayout>
@@ -38,11 +46,14 @@ const index = ({ folder, document }) => {
 						},
 					]}
 				/>
+				<DocumentDetailToolbar cms={cms} document={document} latestUploadedFile={latestUploadedFile} positions={positions} />
 				<Card sx={{ p: 3 }}>
 					<DocumentDetailHeader
 						title="Document Review Sheet"
 						cms={cms}
-						rev={document?.rev}
+						document={document}
+						user={user}
+						latestUploadedFile={latestUploadedFile}
 					/>
 				</Card >
 			</Container>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CompanyModel;
 use App\Models\Document;
 use App\Models\DocumentReviewer;
 use App\Models\Employee;
@@ -138,12 +139,13 @@ class DocumentController extends Controller
 	public function view(Request $request) {
 		$folder = FolderModel::where("is_removed", 1)->findOrFail($request->folder);
 		$user = auth()->user();
+		// dd($user);
 		$document = Document::where([
 				["is_deleted", 0],
 				["folder_id", $folder->folder_id],
-				["user_id", $user->user_id]
+				["user_id", $user->emp_id]
 			])->withWhereHas(
-				"employee", fn($q) => $q->select("employee_id", "firstname", "lastname", "position", "department")->with([
+				"employee", fn($q) => $q->select("employee_id", "firstname", "lastname", "position", "department", "img_src", "phone_no", "company", "email")->with([
 					"position",
 					"department"
 				])
@@ -159,7 +161,9 @@ class DocumentController extends Controller
 
 		return Inertia::render("Dashboard/Management/FileManager/Document/Details/index", [
 			"folder" => $folder,
-			"document" => $document
+			"document" => $document,
+			"companies" => CompanyModel::where("sub_id", $user->subscriber_id)->get(),
+			"positions" => Position::select("position_id", "position")->where("user_id", $user->subscriber_id)->get()
 		]);
 	}
 

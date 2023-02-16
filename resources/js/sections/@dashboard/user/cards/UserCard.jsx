@@ -34,8 +34,6 @@ UserCard.propTypes = {
 export default function UserCard ({ user }) {
 	const { user_type, email, social_accounts, employee } = user;
 
-	console.log(employee?.trainings_count);
-
 	return (
 		<Card sx={{ textAlign: 'center' }}>
 			<Box sx={{ position: 'relative' }}>

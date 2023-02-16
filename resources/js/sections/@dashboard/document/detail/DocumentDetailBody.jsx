@@ -1,8 +1,9 @@
-import React from 'react'
+import { Stack } from '@mui/material';
 
 const DocumentDetailBody = () => {
 	return (
-		<div>DocumentDetailBody</div>
+		<Stack>
+		</Stack>
 	)
 }
 

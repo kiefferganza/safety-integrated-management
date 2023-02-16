@@ -131,7 +131,6 @@ export const DocumentListPage = ({ folder, user }) => {
 					docStatus: getDocumentStatus(curr.status)
 				};
 				const isForApproval = curr.reviewer_sign.length >= curr.reviewer_employees.length;
-				// console.log(curr.reviewer_sign)
 				if (isForApproval) {
 					docObj.docStatus = {
 						statusText: "FOR APPROVAL",
@@ -163,7 +162,6 @@ export const DocumentListPage = ({ folder, user }) => {
 			}
 			return acc;
 		}, []);
-		console.log(data)
 		setTableData(data || []);
 	}, [folder]);
 
