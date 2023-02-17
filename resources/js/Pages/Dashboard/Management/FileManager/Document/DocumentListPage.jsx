@@ -180,7 +180,7 @@ export const DocumentListPage = ({ folder, user }) => {
 
 	const getLengthByType = (type) => tableData.filter((item) => item.docType === type).length;
 
-	const getPercentByType = (type) => (getLengthByType(type) / tableData.length) * 100;
+	const getPercentByType = (type) => (getLengthByType(type) / tableData.filter(td => td.docType !== "documentControl").length) * 100;
 
 	const TABS = [
 		{ value: 'submitted', label: 'Submitted', color: 'default', count: getLengthByType('submitted') },
@@ -223,27 +223,30 @@ export const DocumentListPage = ({ folder, user }) => {
 	}
 
 	const handleDeleteRow = (id) => {
-		// Inertia.post(route('inspection.management.delete'), { ids: [id] }, {
-		// 	onStart: () => {
-		// 		load("Deleting inspection", "Please wait...");
-		// 	},
-		// 	onFinish: stop,
-		// 	preserveScroll: true
-		// });
+		Inertia.post(route('filemanager.document.delete'), { ids: [id] }, {
+			onStart () {
+				load("Deleting inspection", "Please wait...");
+			},
+			onFinish () {
+				setPage(0);
+				stop();
+			},
+			preserveScroll: true
+		});
 	};
 
 	const handleDeleteRows = (selected) => {
-		// Inertia.post(route('inspection.management.delete'), { ids: selected }, {
-		// 	onStart: () => {
-		// 		load(`Deleting ${selected.length} inspections`, "Please wait...");
-		// 	},
-		// 	onFinish: () => {
-		// 		setSelected([]);
-		// 		setPage(0);
-		// 		stop();
-		// 	},
-		// 	preserveScroll: true
-		// });
+		Inertia.post(route('filemanager.document.delete'), { ids: selected }, {
+			onStart () {
+				load(`Deleting ${selected.length} documents`, "Please wait...");
+			},
+			onFinishonStart () {
+				setSelected([]);
+				setPage(0);
+				stop();
+			},
+			preserveScroll: true
+		});
 	};
 
 	const handleResetFilter = () => {
@@ -307,7 +310,7 @@ export const DocumentListPage = ({ folder, user }) => {
 						>
 							<DocumentAnalytic
 								title="Total"
-								total={folder?.documents?.length}
+								total={tableData.filter(td => td.docType !== "documentControl").length}
 								percent={100}
 								icon="heroicons:document-chart-bar"
 								color={theme.palette.info.main}

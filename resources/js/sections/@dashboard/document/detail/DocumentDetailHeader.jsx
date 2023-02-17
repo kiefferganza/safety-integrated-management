@@ -3,7 +3,6 @@ import { fDate } from '@/utils/formatTime';
 const { Box, Stack, Typography, Grid, Card, Divider } = await import('@mui/material');
 // Component
 import DocEmployeeCard from './DocEmployeeCard';
-import DocumentDetailBody from './DocumentDetailBody';
 const { Image } = await import('@/Components/image/Image');
 
 const DocumentDetailHeader = ({ title, cms, document, user, latestUploadedFile }) => {
@@ -183,7 +182,6 @@ const DocumentDetailHeader = ({ title, cms, document, user, latestUploadedFile }
 				</Grid>
 			</Grid>
 			<Divider flexItem sx={{ borderStyle: 'dashed', my: 3 }} />
-			<DocumentDetailBody document={document} />
 		</Box>
 	)
 }

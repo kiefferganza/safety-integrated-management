@@ -174,5 +174,6 @@ Route::middleware('auth')->group(function ()
 	Route::get('dashboard/file-manager/{folder}', [DocumentController::class, "index"]);
 	Route::get('dashboard/file-manager/{folder}/new', [DocumentController::class, "create"]);
 	Route::post('dashboard/file-manager/{folder}/new', [DocumentController::class, "store"]);
+	Route::post('dashboard/file-manager/document/delete', [DocumentController::class, "destroy"])->name('filemanager.document.delete');
 
 });

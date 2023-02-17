@@ -62,7 +62,7 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 	return (
 		<>
 			<TableRow hover selected={selected} sx={{ width: 1 }}>
-				<TableCell onClick={handleTriggerCollapse} padding="checkbox">
+				<TableCell padding="checkbox">
 					<Checkbox checked={selected} onClick={onSelectRow} />
 				</TableCell>
 
@@ -97,74 +97,47 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 						>
 							<Iconify icon={openCollapse ? "material-symbols:keyboard-arrow-up" : "material-symbols:keyboard-arrow-down"} />
 						</IconButton>
-						<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
-							<Iconify icon="eva:more-vertical-fill" />
-						</IconButton>
+						{row.docType !== "documentControl" ? (
+							<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
+								<Iconify icon="eva:more-vertical-fill" />
+							</IconButton>
+						) : (
+							<IconButton
+								component={Link}
+								href={PATH_DASHBOARD.fileManager.viewDocument(folder.folder_id, row.id)}
+							>
+								<Iconify icon="eva:eye-fill" />
+							</IconButton>
+						)}
 					</Stack>
 				</TableCell>
 			</TableRow>
 			<DocumentTableSubRow row={row} open={openCollapse} />
 
-			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
-				<MenuItem
-					component={Link}
-					href={PATH_DASHBOARD.fileManager.viewDocument(folder.folder_id, row.id)}
-					preserveScroll
-					onClick={handleClosePopover}
-				>
-					<Iconify icon="eva:eye-fill" />
-					View
-				</MenuItem>
-				{/* {row.type === "submitted" && (
+			{row.docType !== "documentControl" && (
+				<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 					<MenuItem
 						component={Link}
-						href={PATH_DASHBOARD.inspection.edit(row.inspection_id)}
-						preserveScroll
+						href={PATH_DASHBOARD.fileManager.viewDocument(folder.folder_id, row.id)}
 						onClick={handleClosePopover}
 					>
-						<Iconify icon="eva:edit-fill" />
-						Edit
+						<Iconify icon="eva:eye-fill" />
+						View
 					</MenuItem>
-				)} */}
+					<Divider sx={{ borderStyle: 'dashed' }} />
 
-				{row.type === "review" && (
 					<MenuItem
-						component={Link}
-						href={PATH_DASHBOARD.inspection.review(row.inspection_id)}
-						preserveScroll
-						onClick={handleClosePopover}
+						onClick={() => {
+							handleOpenConfirm();
+							handleClosePopover();
+						}}
+						sx={{ color: 'error.main' }}
 					>
-						<Iconify icon="fontisto:preview" />
-						Review
+						<Iconify icon="eva:trash-2-outline" />
+						Delete
 					</MenuItem>
-				)}
-
-				{row.type === "verify" && (
-					<MenuItem
-						component={Link}
-						href={PATH_DASHBOARD.inspection.verify(row.inspection_id)}
-						preserveScroll
-						onClick={handleClosePopover}
-					>
-						<Iconify icon="pajamas:review-checkmark" />
-						Verify
-					</MenuItem>
-				)}
-
-
-				<Divider sx={{ borderStyle: 'dashed' }} />
-
-				<MenuItem
-					onClick={() => {
-						handleOpenConfirm();
-						handleClosePopover();
-					}}
-					sx={{ color: 'error.main' }}
-				>
-					<Iconify icon="eva:trash-2-outline" />
-					Delete
-				</MenuItem>
-			</MenuPopover>
+				</MenuPopover>
+			)}
 
 			<ConfirmDialog
 				open={openConfirm}
@@ -172,7 +145,10 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 				title="Delete"
 				content="Are you sure want to delete?"
 				action={
-					<Button variant="contained" color="error" onClick={onDeleteRow}>
+					<Button variant="contained" color="error" onClick={() => {
+						onDeleteRow();
+						handleCloseConfirm();
+					}}>
 						Delete
 					</Button>
 				}

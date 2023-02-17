@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types';
 import { Page, View, Text, Image, Document } from '@react-pdf/renderer';
 // utils
+import { format } from 'date-fns';
 import { fDate } from '@/utils/formatTime';
 import { getCurrentUserImage } from '@/utils/formatName'
 import { getDocumentReviewStatus, getDocumentStatus } from '@/utils/formatStatuses';
@@ -88,8 +89,8 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 							<View style={[styles.gridContainer, { paddingVertical: 4 }]}>
 								<View style={styles.col6}>
 									{latestUploadedFile && (
-										<View style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "40px" }}>
-											<Text style={{ color: "blue" }}>{latestUploadedFile.src}</Text>
+										<View style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "52px", paddingHorizontal: 2 }}>
+											<Text style={[styles.textDefault, { color: "blue" }]}>{latestUploadedFile.src}</Text>
 										</View>
 									)}
 								</View>
@@ -428,6 +429,18 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 								</View>
 							</View>
 						</View>
+					</View>
+				</View>
+
+				<View style={[styles.gridContainer, styles.footer]}>
+					<View style={styles.col3}>
+						<Text style={{ fontSize: 9, textAlign: 'left' }}>Uncontrolled Copy if Printed</Text>
+					</View>
+					<View style={styles.col3}>
+						<Text style={{ fontSize: 9, textAlign: 'center' }}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
+					</View>
+					<View style={styles.col3}>
+						<Text style={{ fontSize: 9, textAlign: 'right' }}>{format(new Date(), 'MM/dd/yy')} Page {`1 / 1`}</Text>
 					</View>
 				</View>
 

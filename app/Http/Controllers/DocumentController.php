@@ -168,6 +168,22 @@ class DocumentController extends Controller
 	}
 
 
+	public function destroy(Request $request) {
+		$fields = $request->validate([
+			"ids" => ["required", "array"]
+		]);
+
+		Document::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
+		// DocumentReviewer::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
+		// DocumentCommentReplies::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
+		// DocumentResponseFile::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
+		// FileModel::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
+		return redirect()->back()
+		->with("message", "Document deleted successfully!")
+		->with("type", "success");
+	}
+
+
 
 
 

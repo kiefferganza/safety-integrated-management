@@ -4,9 +4,10 @@ const { PDFDownloadLink, PDFViewer } = await import('@react-pdf/renderer');
 const { Box, Stack, Dialog, Tooltip, IconButton, DialogActions, CircularProgress } = await import('@mui/material');
 // components
 import Iconify from '@/Components/iconify';
+import Label from '@/Components/label';
 const { DocumentPDF } = await import('./DocumentPDF');
 
-const DocumentDetailToolbar = ({ cms, document, latestUploadedFile, positions }) => {
+const DocumentDetailToolbar = ({ cms, document, latestUploadedFile, positions, docStatus }) => {
 	const [open, setOpen] = useState(false);
 
 	const handleOpen = () => {
@@ -65,6 +66,12 @@ const DocumentDetailToolbar = ({ cms, document, latestUploadedFile, positions })
 						</IconButton>
 					</Tooltip>
 				</Stack>
+				<Label
+					variant="soft"
+					color={docStatus?.statusClass}
+				>
+					{docStatus?.statusText}
+				</Label>
 			</Stack>
 
 			<Dialog fullScreen open={open}>
