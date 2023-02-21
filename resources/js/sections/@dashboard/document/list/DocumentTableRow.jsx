@@ -140,18 +140,22 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 						<Iconify icon="heroicons:document-magnifying-glass-20-solid" />
 						View Files
 					</MenuItem>
-					<Divider sx={{ borderStyle: 'dashed' }} />
+					{row.docType === "submitted" && (
+						<>
+							<Divider sx={{ borderStyle: 'dashed' }} />
 
-					<MenuItem
-						onClick={() => {
-							handleOpenConfirm();
-							handleClosePopover();
-						}}
-						sx={{ color: 'error.main' }}
-					>
-						<Iconify icon="eva:trash-2-outline" />
-						Delete
-					</MenuItem>
+							<MenuItem
+								onClick={() => {
+									handleOpenConfirm();
+									handleClosePopover();
+								}}
+								sx={{ color: 'error.main' }}
+							>
+								<Iconify icon="eva:trash-2-outline" />
+								Delete
+							</MenuItem>
+						</>
+					)}
 				</MenuPopover>
 			)}
 

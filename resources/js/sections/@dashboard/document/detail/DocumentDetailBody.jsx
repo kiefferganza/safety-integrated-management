@@ -14,22 +14,18 @@ const { DocumentCommentDialog } = await import('../portal/DocumentCommentDialog'
 
 const DocumentDetailBody = ({ document, docType, user, positions }) => {
 	const { load, stop } = useSwal();
+	const [customDocType, setCustomDocType] = useState(null);
 	const [openComment, setOpenComment] = useState(false);
 	const [openAction, setOpenAction] = useState(false);
 	const [selectedStatus, setSelectedStatus] = useState("");
 	const [actionResponseId, setActionResponseId] = useState(null);
 
-
 	const docStat = document.approval_sign ? getDocumentReviewStatus(document.status) : getDocumentStatus(document.status);
 	// reviewer
 	const canReviewStatus = checkCanReview({ docType, document, user });
-
-
 	// approval
 	const approvalPos = document.approval_employee ? positions.find(pos => pos.position_id === document.approval_employee.position).position : null;
 	const canApprove = checkCanApprove({ docType, document });
-
-	console.log({ document });
 
 	const handleAction = ({ status, responseId }) => {
 		setSelectedStatus(status);
@@ -57,7 +53,8 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 			}
 		});
 	}
-
+	const canComment = document.approval_sign !== null ? false : typeof docType === "string" ? docType === "review" : true;
+	const reviewerStatus = document.reviewer_employees.find(revEmp => revEmp.employee_id === user?.employee?.employee_id)?.pivot?.review_status;
 	return (
 		<>
 			<Stack>
@@ -65,7 +62,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 					<Typography variant="h6" sx={{ color: 'text.disabled' }}>
 						Reviewer's comments
 					</Typography>
-					{docType === "review" && (
+					{canComment && (
 						<Button
 							variant="text"
 							startIcon={<Iconify icon="eva:plus-fill" />}
@@ -144,9 +141,10 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 											index={index}
 											reviewer={reviewer}
 											commentStatus={commentStatus}
-											docType={docType}
+											docType={typeof docType === "string" ? docType : "review"}
 											onDelete={() => handleDeleteComment(row.response_id)}
 											onAction={handleAction}
+											user={user}
 										/>
 									)
 								})}
@@ -162,96 +160,61 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 					Note: you can only choose status code when all of your comments as a reviewer is closed.
 				</Typography>
 				<Box display="grid" gridTemplateColumns="repeat(3, 1fr)" border={1} sx={{ borderColor: "text.disabled", mt: 2 }}>
-					<Box borderRight={1} borderBottom={1}
+					<ReviewStatus
 						onClick={() => {
 							if (!canReviewStatus) return;
 							handleAction({ status: "A" });
 						}}
-						sx={{
-							p: 1,
-							borderColor: "text.disabled",
-							color: "text.disabled",
-							"&:hover": {
-								color: canReviewStatus ? "text.primary" : "text.disabled",
-								cursor: canReviewStatus ? "pointer" : "default",
-								backgroundColor: "rgba(0, 0, 0, 0.04)"
-							}
-						}}>A.  Approved</Box>
-					<Box borderRight={1} borderBottom={1}
+						borderRight={1}
+						borderBottom={1}
+						canReviewStatus={canReviewStatus}
+						isSelected={(reviewerStatus || "").toLowerCase() === "a"}
+					>A.  Approved</ReviewStatus>
+					<ReviewStatus
 						onClick={() => {
 							if (!canReviewStatus) return;
 							handleAction({ status: "B" });
 						}}
-						sx={{
-							p: 1,
-							borderColor: "text.disabled",
-							color: "text.disabled",
-							"&:hover": {
-								color: canReviewStatus ? "text.primary" : "text.disabled",
-								cursor: canReviewStatus ? "pointer" : "default",
-								backgroundColor: "rgba(0, 0, 0, 0.04)"
-							}
-						}}>B.  SONO</Box>
-					<Box borderBottom={1}
+						borderRight={1}
+						borderBottom={1}
+						canReviewStatus={canReviewStatus}
+						isSelected={(reviewerStatus || "").toLowerCase() === "b"}
+					>B.  SONO</ReviewStatus>
+					<ReviewStatus
 						onClick={() => {
 							if (!canReviewStatus) return;
 							handleAction({ status: "C" });
 						}}
-						sx={{
-							p: 1,
-							borderColor: "text.disabled",
-							color: "text.disabled",
-							"&:hover": {
-								color: canReviewStatus ? "text.primary" : "text.disabled",
-								cursor: canReviewStatus ? "pointer" : "default",
-								backgroundColor: "rgba(0, 0, 0, 0.04)"
-							}
-						}}>C.  Fail / Not approved</Box>
-					<Box borderRight={1}
+						borderBottom={1}
+						canReviewStatus={canReviewStatus}
+						isSelected={(reviewerStatus || "").toLowerCase() === "c"}
+					>C.  Fail / Not approved</ReviewStatus>
+					<ReviewStatus
 						onClick={() => {
 							if (!canReviewStatus) return;
 							handleAction({ status: "D" });
 						}}
-						sx={{
-							p: 1,
-							borderColor: "text.disabled",
-							color: "text.disabled",
-							"&:hover": {
-								color: canReviewStatus ? "text.primary" : "text.disabled",
-								cursor: canReviewStatus ? "pointer" : "default",
-								backgroundColor: "rgba(0, 0, 0, 0.04)"
-							}
-						}}>D.  Approved with comments</Box>
-					<Box borderRight={1}
+						borderRight={1}
+						canReviewStatus={canReviewStatus}
+						isSelected={(reviewerStatus || "").toLowerCase() === "d"}
+					>D.  Approved with comments</ReviewStatus>
+					<ReviewStatus
 						onClick={() => {
 							if (!canReviewStatus) return;
 							handleAction({ status: "E" });
 						}}
-						sx={{
-							p: 1,
-							borderColor: "text.disabled",
-							color: "text.disabled",
-							"&:hover": {
-								color: canReviewStatus ? "text.primary" : "text.disabled",
-								cursor: canReviewStatus ? "pointer" : "default",
-								backgroundColor: "rgba(0, 0, 0, 0.04)"
-							}
-						}}>E.  NOWC: No Objection with comments</Box>
-					<Box
+						borderRight={1}
+						canReviewStatus={canReviewStatus}
+						isSelected={(reviewerStatus || "").toLowerCase() === "e"}
+					>E.  NOWC: No Objection with comments</ReviewStatus>
+					<ReviewStatus
 						onClick={() => {
 							if (!canReviewStatus) return;
 							handleAction({ status: "F" });
 						}}
-						sx={{
-							p: 1,
-							borderColor: "text.disabled",
-							color: "text.disabled",
-							"&:hover": {
-								color: canReviewStatus ? "text.primary" : "text.disabled",
-								cursor: canReviewStatus ? "pointer" : "default",
-								backgroundColor: "rgba(0, 0, 0, 0.04)"
-							}
-						}}>F.  Responded / Reviewed / Actioned</Box>
+						canReviewStatus={canReviewStatus}
+						isSelected={(reviewerStatus || "").toLowerCase() === "f"}
+					>F.  Responded / Reviewed / Actioned</ReviewStatus>
 				</Box>
 				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 				<Grid container spacing={3}>
@@ -346,7 +309,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 
 											<TableCell align="left">{approvalPos}</TableCell>
 
-											<TableCell align="left">N/A</TableCell>
+											<TableCell align="left">{document?.remarks || "N/A"}</TableCell>
 
 											<TableCell align="left">
 												<Label color={docStat.statusClass}>{docStat.statusText}</Label>
@@ -363,10 +326,16 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 						<Grid container spacing={3}>
 							<Grid item md={6} xs={12}>
-								<Button fullWidth size="large" variant="contained" color="success" onClick={() => handleAction({ status: "A" })}>Approved</Button>
+								<Button fullWidth size="large" variant="contained" color="success" onClick={() => {
+									setCustomDocType("approve");
+									handleAction({ status: "A" });
+								}}>Approved</Button>
 							</Grid>
 							<Grid item md={6} xs={12}>
-								<Button fullWidth size="large" variant="contained" color="error" onClick={() => handleAction({ status: "C" })}>Fail/Not approved</Button>
+								<Button fullWidth size="large" variant="contained" color="error" onClick={() => {
+									setCustomDocType("approve");
+									handleAction({ status: "C" });
+								}}>Fail/Not approved</Button>
 							</Grid>
 						</Grid>
 					</>
@@ -384,22 +353,50 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 				selectedStatus={selectedStatus}
 				actionResponseId={actionResponseId}
 				documentId={document.document_id}
-				docType={docType}
+				docType={customDocType}
 			/>
 		</>
 	)
 }
 
+function ReviewStatus ({ canReviewStatus, onClick, isSelected = false, children, ...others }) {
+	const isSelectedStyle = isSelected ? {
+		color: "primary.main",
+		fontWeight: "600",
+		cursor: canReviewStatus ? "pointer" : "default",
+	} : {
+		color: "text.disabled",
+		"&:hover": {
+			color: canReviewStatus ? "text.primary" : "text.disabled",
+			cursor: canReviewStatus ? "pointer" : "default",
+			backgroundColor: "rgba(0, 0, 0, 0.04)"
+		}
+	};
+	return (
+		<Box
+			onClick={onClick}
+			sx={{
+				p: 1,
+				...isSelectedStyle,
+				borderColor: "text.disabled",
+				...others
+			}}>{children}</Box>
+	)
+}
+
 function checkCanReview ({ docType, document, user }) {
+	const type = typeof docType === "string" ? docType : "review";
 	if (document.approval_sign !== null) return false;
-	if (docType !== "review") return false;
+	if (type !== "review") return false;
 	const reviewerComments = document.comments.filter(com => com.reviewer_id === user?.employee?.employee_id);
-	if (reviewerComments.length > 0) return true;
-	return !reviewerComments.some(com => com.reply_code === null);
+	if (reviewerComments.length === 0) return true;
+	return reviewerComments.every(com => com.comment_status === 1);
 }
 
 function checkCanApprove ({ docType, document }) {
-	if (docType !== "approve") return false;
+	if (document.approval_sign !== null) return false;
+	const type = typeof docType === "string" ? docType : "approve";
+	if (type !== "approve") return false;
 	return document.reviewer_sign.length === document.reviewer_employees.length;
 }
 

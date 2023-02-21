@@ -8,7 +8,7 @@ import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-const { Stack, Dialog, Button, DialogTitle, DialogContent, DialogActions, Typography, FormHelperText, Autocomplete, Chip, TextField } = await import('@mui/material');
+import { Stack, Dialog, Button, DialogTitle, DialogContent, DialogActions, Typography, FormHelperText, Autocomplete, Chip, TextField } from '@mui/material';
 // components
 import Iconify from '@/Components/iconify';
 import { MultiFilePreview, UploadBox } from '@/Components/upload';

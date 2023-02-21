@@ -57,6 +57,19 @@ class DocumentService {
 	}
 
 
+	public function upload_file($src){
+		$file = $src->getClientOriginalName();
+		$extension = pathinfo($file, PATHINFO_EXTENSION);
+		if(Storage::exists("public/media/docs/" . $file)) {
+			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time() . "." .$extension;
+		}else {
+			$file_name = $file;
+		}
+		$src->storeAs('media/docs', $file_name, 'public');
+		return $file_name;
+	}
+
+
 	public function approval_action(Request $request, Document $document, $file_name, $user) {
 		$document->status = $request->status;
 		if($request->remarks) {

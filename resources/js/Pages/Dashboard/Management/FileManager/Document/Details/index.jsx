@@ -76,8 +76,10 @@ const index = ({ folder, document, positions, auth: { user } }) => {
 
 function getDocumentType ({ employee, reviewer_employees, approval_employee, userEmpId }) {
 	if (employee.employee_id === userEmpId) return "submitted";
-	if (approval_employee?.employee_id === userEmpId) return "approve";
 	const isReview = reviewer_employees.findIndex(revEmp => revEmp.employee_id === userEmpId);
+	const isApprove = approval_employee?.employee_id === userEmpId;
+	if (isReview !== -1 && isApprove) return ["review", "approve"];
+	if (isApprove) return "approve";
 	if (isReview !== -1) return "review";
 	return "documentControl";
 }

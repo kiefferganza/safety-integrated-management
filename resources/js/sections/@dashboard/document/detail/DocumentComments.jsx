@@ -15,7 +15,7 @@ const STATUSES = [
 	{ label: "F. Responded / Reviewed / Actioned", code: "F" },
 ];
 
-const DocumentComments = ({ row, index, docType, reviewer, commentStatus, onDelete, onAction }) => {
+const DocumentComments = ({ row, index, docType, reviewer, commentStatus, onDelete, onAction, user }) => {
 	const [openPopover, setOpenPopover] = useState(null);
 	const [openDelete, setOpenDelete] = useState(false);
 	const [openReply, setOpenReply] = useState(false);
@@ -45,6 +45,7 @@ const DocumentComments = ({ row, index, docType, reviewer, commentStatus, onDele
 		setOpenDelete(false);
 	}
 
+	const canDeleteComment = user?.employee?.employee_id === row.reviewer_id ? (docType === "review" && !row?.reply_code) : false;
 	return (
 		<>
 			<TableRow
@@ -87,7 +88,7 @@ const DocumentComments = ({ row, index, docType, reviewer, commentStatus, onDele
 						</IconButton>
 					</TableCell>
 				)}
-				{(docType === "review" && !row?.reply_code) && (
+				{canDeleteComment && (
 					<TableCell align="left">
 						<IconButton
 							color="error"

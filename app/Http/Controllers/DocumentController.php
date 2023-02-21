@@ -6,6 +6,7 @@ use App\Models\CompanyModel;
 use App\Models\Document;
 use App\Models\DocumentApprovalSign;
 use App\Models\DocumentCommentReplies;
+use App\Models\DocumentResponseFile;
 use App\Models\DocumentReviewer;
 use App\Models\DocumentReviewerSign;
 use App\Models\Employee;
@@ -66,9 +67,10 @@ class DocumentController extends Controller
 
 		$user = auth()->user();
 		$date_today = date('Y-m-d H:i:s');
-		$sequence_no = (new DocumentService)->sequence_no($folder->folder_id);
+		$documentService = new DocumentService;
+		$sequence_no = $documentService->sequence_no($folder->folder_id);
 
-		$document_id = $user->documents()->insertGetId([
+		$document_id = Document::insertGetId([
 			'originator' => $fields['originator'],
 			'originator2' => $fields['originator'],
 			'sequence_no' => $sequence_no,
@@ -90,12 +92,9 @@ class DocumentController extends Controller
 
 		// Files
 		if($request->hasFile('src')) {
-			$file = $fields['src']->getClientOriginalName();
-			$extension = pathinfo($file, PATHINFO_EXTENSION);
-			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
-			$fields['src']->storeAs('media/docs', $file_name, 'public');
+			$file_name = $documentService->upload_file($fields['src']);
 
-			$user->files()->insert([
+			FileModel::insert([
 				'user_id' => $user->emp_id,
 				'document_id' => $document_id,
 				'src' => $file_name,
@@ -178,10 +177,10 @@ class DocumentController extends Controller
 		]);
 
 		Document::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
-		// DocumentReviewer::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
-		// DocumentCommentReplies::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
-		// DocumentResponseFile::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
-		// FileModel::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
+		DocumentReviewer::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
+		DocumentCommentReplies::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
+		DocumentResponseFile::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
+		FileModel::whereIn("document_id", $fields["ids"])->update(["is_deleted" => 1]);
 		return redirect()->back()
 		->with("message", "Document deleted successfully!")
 		->with("type", "success");
@@ -192,13 +191,14 @@ class DocumentController extends Controller
 	public function add_comment(Document $document, Request $request) {
 		$body = $request->input();
 		$user = auth()->user();
+		$documentService = new DocumentService;
 
 		if($request->hasFile('src')) {
 			if(Storage::exists("public/media/docs/" . $document->files[0]->src)) {
 				Storage::delete("public/media/docs/" . $document->files[0]->src);
 			}
-			$file_name = time(). '-' . $request->file("src")->getClientOriginalName();
-			$request->file("src")->storeAs('media/docs', $file_name, 'public');
+
+			$file_name = $documentService->upload_file($request->file("src"));
 			$document->files[0]->update([
 				"src" => $file_name,
 			]);
@@ -224,6 +224,13 @@ class DocumentController extends Controller
 				"review_status" => "C"
 			]);
 		}
+
+		if($document->rev === null){
+			$document->rev = 1;
+		}else {
+			$document->increment("rev");
+		}
+		$document->save();
 
 		return redirect()->back()
 			->with("message", "Comment added successfully!")
@@ -287,18 +294,14 @@ class DocumentController extends Controller
 
 
 	public function approve_or_fail_document(Document $document, Request $request) {
+		// $user = auth()->user();
+		// dd(DocumentReviewerSign::where(["document_id" => $document->document_id, "user_id" => $user->emp_id])->first());
+
 		$documentService = new DocumentService;
 		$user = auth()->user();
 		$file_name = "";
 		if($request->hasFile('src')) {
-			$file = $request->file('src')->getClientOriginalName();
-			$extension = pathinfo($file, PATHINFO_EXTENSION);
-			if(Storage::exists("public/media/docs/" . $file)) {
-				$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time() . "." .$extension;
-			}else {
-				$file_name = $file;
-			}
-			$request->file('src')->storeAs('media/docs', $file_name, 'public');
+			$file_name = $documentService->upload_file($request->file("src"));
 		}
 		
 		if($request->docType === "approve") {

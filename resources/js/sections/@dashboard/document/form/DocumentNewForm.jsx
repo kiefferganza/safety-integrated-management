@@ -17,6 +17,7 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 const DocumentNewForm = () => {
 	const { load, stop } = useSwal();
 	const [cc, setCC] = useState([]);
+	const [file, setFile] = useState([]);
 	const { errors: resErrors, folder, sequence_no, personel } = usePage().props;
 
 	const newDocumentSchema = Yup.object().shape({
@@ -63,6 +64,7 @@ const DocumentNewForm = () => {
 			}
 		} else {
 			reset(defaultValues);
+			setFile([]);
 		}
 	}, [resErrors, sequence_no]);
 
@@ -70,27 +72,33 @@ const DocumentNewForm = () => {
 		const file = acceptedFiles[0];
 
 		if (file) {
-			setValue("src", Object.assign(file, {
+			setValue("src", URL.createObjectURL(file), { shouldValidate: true });
+			setFile([Object.assign(file, {
 				preview: URL.createObjectURL(file),
-			}));
+			})]);
 		}
 	}, []);
 
 	const handleRemoveFile = () => {
-		setValue("src", null);
+		setValue("src", "", { shouldValidate: true });
+		setFile([]);
 	}
 
 	const onSubmit = (data) => {
-		Inertia.post(PATH_DASHBOARD.fileManager.newDocument(folder.folder_id), data, {
-			preserveScroll: true,
-			onStart () {
-				load("Creating new document.", "please wait...");
-			},
-			onFinish () {
-				reset();
-				stop();
-			}
-		});
+		if (file.length === 1) {
+			data.src = file[0];
+			Inertia.post(PATH_DASHBOARD.fileManager.newDocument(folder.folder_id), data, {
+				preserveScroll: true,
+				onStart () {
+					load("Creating new document.", "please wait...");
+				},
+				onFinish () {
+					reset();
+					setFile([]);
+					stop();
+				}
+			});
+		}
 	}
 
 	const getAutocompleteValue = (id) => {
@@ -223,8 +231,8 @@ const DocumentNewForm = () => {
 								<Typography variant="h6" sx={{ color: 'text.disabled' }}>
 									Attached File
 								</Typography>
-								<Upload error={!!errors?.src?.message} helperText={errors?.src?.message} file={values.src} onDrop={handleDropSingleFile} />
-								<MultiFilePreview files={values.src ? [values.src] : []} onRemove={handleRemoveFile} />
+								<Upload error={!!errors?.src?.message} helperText={errors?.src?.message} file={file[0] || null} onDrop={handleDropSingleFile} />
+								<MultiFilePreview files={file} onRemove={handleRemoveFile} />
 							</Box>
 						</Stack>
 					</Stack>

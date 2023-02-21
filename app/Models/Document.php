@@ -100,7 +100,7 @@ class Document extends Model
 	}
 
 	public function approval_sign() {
-		return $this->hasOne(DocumentApprovalSign::class, "user_id", "approval_id");
+		return $this->hasOne(DocumentApprovalSign::class, "document_id");
 	}
 
 	public function reviewer_sign() {
