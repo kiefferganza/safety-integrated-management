@@ -294,38 +294,33 @@ class DocumentController extends Controller
 
 
 	public function approve_or_fail_document(Document $document, Request $request) {
-		// $user = auth()->user();
-		// dd(DocumentReviewerSign::where(["document_id" => $document->document_id, "user_id" => $user->emp_id])->first());
-
-		$documentService = new DocumentService;
-		$user = auth()->user();
-		$file_name = "";
 		if($request->hasFile('src')) {
+			$documentService = new DocumentService;
+			$user = auth()->user();
+			$file_name = "";
 			$file_name = $documentService->upload_file($request->file("src"));
-		}
-		
-		if($request->docType === "approve") {
-			$documentService->approval_action($request, $document, $file_name, $user);
-		}else {
-			$documentService->reviewer_action($request, $document, $file_name, $user);
-		}
 
-		// Add file to response file and upload to storage
-		if($file_name !== "") {
-			$docFile = $document->files[0];
-			if(Storage::exists("public/media/docs/" . $docFile->src)) {
-				Storage::delete("public/media/docs/" . $docFile->src);
+			if($request->docType === "approve") {
+				$documentService->approval_action($request, $document, $file_name, $user);
+			}else {
+				$documentService->reviewer_action($request, $document, $file_name, $user);
 			}
+	
+			// Add file to response file and upload to storage
+			$docFile = $document->files[0];
 			$docFile->update([
 				"src" => $file_name,
 			]);
-		}
-		if($document->rev === null){
-			$document->rev = 1;
+			if($document->rev === null){
+				$document->rev = 1;
+			}else {
+				$document->increment("rev");
+			}
+			$document->save();
 		}else {
-			$document->increment("rev");
+			abort(500);
 		}
-		$document->save();
+		
 
 		return redirect()->back()
 			->with("message", "Action completed")
