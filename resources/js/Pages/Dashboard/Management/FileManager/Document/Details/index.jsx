@@ -2,8 +2,7 @@ import DashboardLayout from '@/Layouts/dashboard/DashboardLayout';
 import { Head } from '@inertiajs/inertia-react';
 // utils
 import { formatCms } from '@/utils/tablesUtils';
-import { fTimestamp } from '@/utils/formatTime';
-import { getDocumentStatus } from '@/utils/formatStatuses';
+import { getDocumentStatus, getDocumentReviewStatus } from '@/utils/formatStatuses';
 // MUI
 const { Card, Container } = await import('@mui/material');
 // routes
@@ -23,6 +22,7 @@ const index = ({ folder, document, positions, auth: { user } }) => {
 		employee,
 		files,
 		approval_employee,
+		approval_sign,
 		reviewer_employees,
 		reviewer_sign
 	} = document;
@@ -33,7 +33,7 @@ const index = ({ folder, document, positions, auth: { user } }) => {
 	const latestUploadedFile = files[0];
 
 	const docType = getDocumentType({ employee, reviewer_employees, approval_employee, userEmpId: user.emp_id });
-	const docStatus = getStatus({ status, reviewer_sign, reviewer_employees });
+	const docStatus = getStatus({ status, reviewer_sign, reviewer_employees, approval_sign });
 
 	return (
 		<DashboardLayout>
@@ -82,7 +82,10 @@ function getDocumentType ({ employee, reviewer_employees, approval_employee, use
 	return "documentControl";
 }
 
-function getStatus ({ status, reviewer_sign, reviewer_employees }) {
+function getStatus ({ status, reviewer_sign, reviewer_employees, approval_sign }) {
+	if (approval_sign) {
+		return getDocumentReviewStatus(status);
+	}
 	const isForApproval = reviewer_sign.length >= reviewer_employees.length;
 	if (isForApproval) {
 		return {

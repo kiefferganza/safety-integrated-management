@@ -20,7 +20,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 	const [actionResponseId, setActionResponseId] = useState(null);
 
 
-	const docStat = getDocumentStatus(document.status);
+	const docStat = document.approval_sign ? getDocumentReviewStatus(document.status) : getDocumentStatus(document.status);
 	// reviewer
 	const canReviewStatus = checkCanReview({ docType, document, user });
 

@@ -22,16 +22,11 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 	const theme = useTheme();
 	const {
 		title: documentTitle,
-		document_id,
 		originator,
 		sequence_no,
 		rev,
-		description,
-		user_id,
-		approval_id,
 		status,
 		date_uploaded,
-		folder_id,
 		project_code,
 		discipline,
 		document_type,
@@ -39,15 +34,13 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 		document_level,
 		employee,
 		comments,
-		reviewer_sign,
 		approval_sign,
-		files,
 		approval_employee,
 		reviewer_employees,
 	} = document;
 
 	const approvalPos = approval_employee ? positions.find(pos => pos.position_id === approval_employee?.position) : null;
-	const docStatus = getDocumentStatus(status);
+	const docStatus = document.approval_sign ? getDocumentReviewStatus(status) : getDocumentStatus(status);
 
 	return (
 		<Document title={cms !== "N/A" ? cms : documentTitle}>
@@ -420,7 +413,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 											<Text style={styles.textDefault}>{approvalPos?.position}</Text>
 										</View>
 										<View style={{ width: "45%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={styles.textDefault}>N/A</Text>
+											<Text style={styles.textDefault}>{document?.remarks || "N/A"}</Text>
 										</View>
 										<View style={{ width: "25%", alignItems: "center", justifyContent: "center" }}>
 											<View style={[styles.badge, { paddingVertical: 1, paddingHorizontal: 2, backgroundColor: theme.palette[docStatus.statusClass].main, marginVertical: 2 }]}>

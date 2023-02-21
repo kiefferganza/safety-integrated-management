@@ -5,7 +5,7 @@ import { Box, Collapse, Table, TableBody, TableCell, TableHead, TableRow, Toolti
 import Label from "@/Components/label";
 
 
-const DocumentTableSubRow = ({ row, open }) => {
+export const DocumentTableSubRow = ({ row, open }) => {
 	const { positions } = usePage().props;
 
 	const approvalStatus = getDocumentReviewStatus(row.status);
@@ -119,5 +119,3 @@ const DocumentTableSubRow = ({ row, open }) => {
 		</TableRow>
 	)
 }
-
-export default DocumentTableSubRow

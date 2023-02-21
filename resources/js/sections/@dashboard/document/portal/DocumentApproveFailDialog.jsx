@@ -129,7 +129,7 @@ const DocumentApproveFailDialog = ({
 				<DialogActions>
 					<Stack direction="row" justifyContent="flex-end" flexGrow={1}>
 						<Button variant="soft" onClick={handleSubmit(postComment)}>
-							Post
+							Update
 						</Button>
 					</Stack>
 				</DialogActions>

@@ -12,8 +12,7 @@ import {
 	TableRow,
 	MenuItem,
 	TableCell,
-	IconButton,
-	Tooltip,
+	IconButton
 } from '@mui/material';
 // utils
 import { fDate } from '@/utils/formatTime';
@@ -21,7 +20,8 @@ import { fDate } from '@/utils/formatTime';
 import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
-import DocumentTableSubRow from './DocumentTableSubRow';
+const { DocumentTableSubRow } = await import('./DocumentTableSubRow');
+const { DocumentFileList } = await import('../portal/DocumentFileList');
 const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialog');
 
 // ----------------------------------------------------------------------
@@ -37,6 +37,7 @@ DocumentTableRow.propTypes = {
 export default function DocumentTableRow ({ row, selected, onSelectRow, onDeleteRow, folder }) {
 	const [openCollapse, setOpenCollapse] = useState(false);
 	const [openConfirm, setOpenConfirm] = useState(false);
+	const [openFileList, setOpenFileList] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
 
 	const handleOpenConfirm = () => {
@@ -46,6 +47,15 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 	const handleCloseConfirm = () => {
 		setOpenConfirm(false);
 	};
+
+	const handleOpenFileList = () => {
+		handleClosePopover();
+		setOpenFileList(true);
+	}
+
+	const handleCloseFileList = () => {
+		setOpenFileList(false);
+	}
 
 	const handleOpenPopover = (event) => {
 		setOpenPopover(event.currentTarget);
@@ -124,6 +134,12 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 						<Iconify icon="eva:eye-fill" />
 						View
 					</MenuItem>
+					<MenuItem
+						onClick={handleOpenFileList}
+					>
+						<Iconify icon="heroicons:document-magnifying-glass-20-solid" />
+						View Files
+					</MenuItem>
 					<Divider sx={{ borderStyle: 'dashed' }} />
 
 					<MenuItem
@@ -153,6 +169,14 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 					</Button>
 				}
 			/>
+
+			<DocumentFileList
+				open={openFileList}
+				onClose={handleCloseFileList}
+				document={row}
+				title={`${row.formNumber.toUpperCase()} File List`}
+			/>
+
 		</>
 	);
 }
