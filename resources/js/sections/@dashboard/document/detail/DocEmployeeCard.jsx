@@ -9,7 +9,7 @@ import { excerpt } from '@/utils/exercpt';
 // components
 import SvgColor from '@/Components/svg-color';
 import { fileFormat, fileThumb } from '@/Components/file-thumbnail';
-import { Link, usePage } from '@inertiajs/inertia-react';
+import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -76,12 +76,12 @@ export default function DocEmployeeCard ({ employee, latestUploadedFile }) {
 				<Box display="flex" alignItems="center" justifyContent="center" sx={{ my: 1 }}>
 
 					<MUILink
-						component={Link}
+						component="a"
 						href={`/storage/media/docs/${latestUploadedFile.src}`}
 						sx={{
 							color: "text.primary"
 						}}
-						target="_blank"
+						target="_file"
 						rel="noopener noreferrer"
 					>
 						<Stack

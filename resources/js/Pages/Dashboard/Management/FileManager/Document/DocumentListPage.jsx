@@ -132,10 +132,8 @@ export const DocumentListPage = ({ folder, user }) => {
 				};
 				const isForApproval = curr.reviewer_sign.length >= curr.reviewer_employees.length;
 				if (isForApproval) {
-					docObj.docStatus = {
-						statusText: "FOR APPROVAL",
-						statusClass: "info",
-					};
+					const stat = curr.status === "0" ? curr?.reviewer_employees[0]?.pivot.review_status : curr.status
+					docObj.docStatus = curr.approval_employee ? { statusText: "FOR APPROVAL", statusClass: "info" } : getDocumentStatus(stat);
 				} else {
 					const isInReview = curr.reviewer_employees.some(rev => rev.pivot.review_status !== "0");
 					if (curr.status === "0" && isInReview) {

@@ -175,5 +175,9 @@ Route::middleware('auth')->group(function ()
 	Route::get('dashboard/file-manager/{folder}/new', [DocumentController::class, "create"]);
 	Route::post('dashboard/file-manager/{folder}/new', [DocumentController::class, "store"]);
 	Route::post('dashboard/file-manager/document/delete', [DocumentController::class, "destroy"])->name('filemanager.document.delete');
+	Route::post('dashboard/file-manager/document/{document}/action', [DocumentController::class, "approve_or_fail_document"]);
+	Route::post('dashboard/file-manager/document/{document}/add-comment', [DocumentController::class, "add_comment"]);
+	Route::post('dashboard/file-manager/document/{comment}/reply-comment', [DocumentController::class, "reply_comment"]);
+	Route::post('dashboard/file-manager/document/{comment}/delete-comment', [DocumentController::class, "delete_comment"]);
 
 });

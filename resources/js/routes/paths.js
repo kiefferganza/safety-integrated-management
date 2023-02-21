@@ -151,6 +151,10 @@ export const PATH_DASHBOARD = {
 		edit: (id) => path(ROOTS_DASHBOARD, `/file-manager/${id}/edit`),
 		newDocument: (folderId) => path(ROOTS_DASHBOARD, `/file-manager/${folderId}/new`),
 		viewDocument: (folderId, documentId) => path(ROOTS_DASHBOARD, `/file-manager/view?folder=${folderId}&document=${documentId}`),
+		actionDocument: (documentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${documentId}/action`),
+		addComment: (documentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${documentId}/add-comment`),
+		replyComment: (commentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${commentId}/reply-comment`),
+		deleteComment: (commentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${commentId}/delete-comment`),
 	},
 
 	// invoice: {

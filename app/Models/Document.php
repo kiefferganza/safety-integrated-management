@@ -22,28 +22,7 @@ class Document extends Model
 	 *
 	 * @var array<int, string>
 	 */
-	protected $fillable = [
-		'originator',
-		'src',
-		'sequence_no',
-		'rev',
-		'phone_no',
-		'description',
-		'title',
-		'user_id',
-		'approval_id',
-		'status',
-		'date_uploaded',
-		'folder_id',
-		'project_code',
-		'discipline',
-		'document_type',
-		'document_zone',
-		'document_level',
-		'remarks',
-		'originator2',
-		'is_deleted',
-	];
+	protected $guarded = [];
 
 	public function scopeSubmitted($query, $user, $folder_id) {
 		return $query->where([

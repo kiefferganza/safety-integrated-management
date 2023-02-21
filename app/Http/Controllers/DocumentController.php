@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\CompanyModel;
 use App\Models\Document;
+use App\Models\DocumentApprovalSign;
+use App\Models\DocumentCommentReplies;
 use App\Models\DocumentReviewer;
+use App\Models\DocumentReviewerSign;
 use App\Models\Employee;
+use App\Models\FileModel;
 use App\Models\FolderModel;
 use App\Models\Position;
 use App\Services\DocumentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class DocumentController extends Controller
@@ -142,8 +147,7 @@ class DocumentController extends Controller
 		// dd($user);
 		$document = Document::where([
 				["is_deleted", 0],
-				["folder_id", $folder->folder_id],
-				["user_id", $user->emp_id]
+				["folder_id", $folder->folder_id]
 			])->withWhereHas(
 				"employee", fn($q) => $q->select("employee_id", "firstname", "lastname", "position", "department", "img_src", "phone_no", "company", "email")->with([
 					"position",
@@ -185,6 +189,145 @@ class DocumentController extends Controller
 
 
 
+	public function add_comment(Document $document, Request $request) {
+		$body = $request->input();
+		$user = auth()->user();
+
+		if($request->hasFile('src')) {
+			if(Storage::exists("public/media/docs/" . $document->files[0]->src)) {
+				Storage::delete("public/media/docs/" . $document->files[0]->src);
+			}
+			$file_name = time(). '-' . $request->file("src")->getClientOriginalName();
+			$request->file("src")->storeAs('media/docs', $file_name, 'public');
+			$document->files[0]->update([
+				"src" => $file_name,
+			]);
+		}
+
+		DocumentCommentReplies::create([
+			"document_id" => $document->document_id,
+			"reviewer_id" => $user->emp_id,
+			"comment" => $body["comment"],
+			"pages" => $body["pages"],
+			"comment_code" => $body["comment_code"],
+			"is_deleted" => 0,
+			"comment_date" => date("Y-m-d"),
+			"response_status" => 1,
+			"comment_status" =>  $body["comment_code"] === "2" ? 1 : 0,
+		]);
+
+		if($body["comment_code"] === "1") {
+			DocumentReviewer::where([
+				"reviewer_id" => $user->emp_id,
+				"document_id" => $document->document_id
+			])->update([
+				"review_status" => "C"
+			]);
+		}
+
+		return redirect()->back()
+			->with("message", "Comment added successfully!")
+			->with("type", "success");
+	}
+
+
+	public function delete_comment(DocumentCommentReplies $comment, Request $request) {
+		$user = auth()->user();
+		if($comment->reply_code === null) {
+			if($request->commentLength == 1) {
+				$rev = DocumentReviewer::where("document_id", $comment->document_id)->where("reviewer_id", $user->emp_id)->first();
+				if($rev) {
+					$rev->review_status = "0";
+					$rev->save();
+				}
+			}
+	
+			$comment->delete();
+		}
+		return redirect()->back()
+			->with('message', 'Comment deleted successfully.')
+			->with('type', 'success');
+	}
+
+
+	public function reply_comment(DocumentCommentReplies $comment, Request $request) {
+		$req_body = $request->validate([
+			"reply" => "required|string",
+			"reply_code" => "required|string|max:2",
+			"src" => "required|mimes:ppt,pptx,doc,docx,pdf,xls,xlsx,jpeg,jpg,png|max:204800"
+		]);
+
+		$date_today = date('Y-m-d');
+
+		$doc = Document::find($comment->document_id);
+		$doc->increment("rev");
+
+		$comment->reply = $req_body["reply"];
+		$comment->reply_code = $req_body["reply_code"];
+		$comment->reply_date = $date_today;
+		$comment->response_status = 2;
+		$comment->save();
+		
+		// Add file to response file and upload to storage
+		if($request->hasFile('src')) {
+			$file_name = time(). '-' . $req_body['src']->getClientOriginalName();
+			$req_body['src']->storeAs('media/docs', $file_name, 'public');
+			if(Storage::exists("public/media/docs/" . $doc->files[0]->src)) {
+				Storage::delete("public/media/docs/" . $doc->files[0]->src);
+			}
+			$doc->files[0]->update([
+				"src" => $file_name,
+			]);
+		}
+
+		return redirect()->back()
+			->with('message', 'Replied to comment successfully.')
+			->with("type", "success");
+	}
+
+
+	public function approve_or_fail_document(Document $document, Request $request) {
+		$documentService = new DocumentService;
+		$user = auth()->user();
+		$file_name = "";
+		if($request->hasFile('src')) {
+			$file = $request->file('src')->getClientOriginalName();
+			$extension = pathinfo($file, PATHINFO_EXTENSION);
+			if(Storage::exists("public/media/docs/" . $file)) {
+				$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time() . "." .$extension;
+			}else {
+				$file_name = $file;
+			}
+			$request->file('src')->storeAs('media/docs', $file_name, 'public');
+		}
+		
+		if($request->docType === "approve") {
+			$documentService->approval_action($request, $document, $file_name, $user);
+		}else {
+			$documentService->reviewer_action($request, $document, $file_name, $user);
+		}
+
+		// Add file to response file and upload to storage
+		if($file_name !== "") {
+			$docFile = $document->files[0];
+			if(Storage::exists("public/media/docs/" . $docFile->src)) {
+				Storage::delete("public/media/docs/" . $docFile->src);
+			}
+			$docFile->update([
+				"src" => $file_name,
+			]);
+		}
+		if($document->rev === null){
+			$document->rev = 1;
+		}else {
+			$document->increment("rev");
+		}
+		$document->save();
+
+		return redirect()->back()
+			->with("message", "Action completed")
+			->with("type",  "success");
+	}
 
 
 }

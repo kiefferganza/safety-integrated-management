@@ -46,7 +46,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 		reviewer_employees,
 	} = document;
 
-	const approvalPos = positions.find(pos => pos.position_id === approval_employee.position);
+	const approvalPos = approval_employee ? positions.find(pos => pos.position_id === approval_employee?.position) : null;
 	const docStatus = getDocumentStatus(status);
 
 	return (
@@ -287,7 +287,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 									</View>
 								</View>
 								<View style={[styles.col6, { borderLeft: "1px solid #000" }]}>
-									<View style={styles.gridContainer}>
+									<View style={[styles.gridContainer, { borderBottom: "1px solid #000" }]}>
 										<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
 											<Text style={styles.textDefault}>{comment.reply_code}</Text>
 										</View>
@@ -411,22 +411,24 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 										<Text style={styles.textDefault}>Status</Text>
 									</View>
 								</View>
-								<View style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
-									<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-										<Text style={[styles.textDefault, { textTransform: "uppercase" }]}>{`${approval_employee?.firstname?.charAt(0)}. ${approval_employee?.lastname?.charAt(0)}.`}</Text>
-									</View>
-									<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-										<Text style={styles.textDefault}>{approvalPos?.position}</Text>
-									</View>
-									<View style={{ width: "45%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-										<Text style={styles.textDefault}>N/A</Text>
-									</View>
-									<View style={{ width: "25%", alignItems: "center", justifyContent: "center" }}>
-										<View style={[styles.badge, { paddingVertical: 1, paddingHorizontal: 2, backgroundColor: theme.palette[docStatus.statusClass].main, marginVertical: 2 }]}>
-											<Text style={[styles.textDefault, { fontSize: 6, color: "#fff", textAlign: "center" }]}>{docStatus.statusText}</Text>
+								{approval_employee && (
+									<View style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
+										<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
+											<Text style={[styles.textDefault, { textTransform: "uppercase" }]}>{`${approval_employee?.firstname?.charAt(0)}. ${approval_employee?.lastname?.charAt(0)}.`}</Text>
+										</View>
+										<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
+											<Text style={styles.textDefault}>{approvalPos?.position}</Text>
+										</View>
+										<View style={{ width: "45%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
+											<Text style={styles.textDefault}>N/A</Text>
+										</View>
+										<View style={{ width: "25%", alignItems: "center", justifyContent: "center" }}>
+											<View style={[styles.badge, { paddingVertical: 1, paddingHorizontal: 2, backgroundColor: theme.palette[docStatus.statusClass].main, marginVertical: 2 }]}>
+												<Text style={[styles.textDefault, { fontSize: 6, color: "#fff", textAlign: "center" }]}>{docStatus.statusText}</Text>
+											</View>
 										</View>
 									</View>
-								</View>
+								)}
 							</View>
 						</View>
 					</View>

@@ -30,7 +30,7 @@ const index = ({ folder, document, positions, auth: { user } }) => {
 
 	const cms = formatCms(document).toUpperCase();
 
-	const latestUploadedFile = [...reviewer_sign, ...files].sort((a, b) => fTimestamp(b.upload_date) - fTimestamp(a.upload_date))[0];
+	const latestUploadedFile = files[0];
 
 	const docType = getDocumentType({ employee, reviewer_employees, approval_employee, userEmpId: user.emp_id });
 	const docStatus = getStatus({ status, reviewer_sign, reviewer_employees });
@@ -67,7 +67,7 @@ const index = ({ folder, document, positions, auth: { user } }) => {
 						user={user}
 						latestUploadedFile={latestUploadedFile}
 					/>
-					<DocumentDetailBody document={document} />
+					<DocumentDetailBody document={document} docType={docType} user={user} positions={positions} />
 				</Card >
 			</Container>
 		</DashboardLayout>
