@@ -8,6 +8,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FilePageController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionReportController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ToolboxTalkController;
 use App\Http\Controllers\TrainingController;
@@ -160,6 +161,14 @@ Route::middleware('auth')->group(function ()
 	Route::post('dashboard/toolbox-talks/{tbt}/edit', [ToolboxTalkController::class, "update"]);
 	Route::post('dashboard/toolbox-talks/delete', [ToolboxTalkController::class, "soft_delete"])->name('toolboxtalk.management.delete');
 	// Route::post('dashboard/toolbox-talks/delete', [ToolboxTalkController::class, "delete"])->name('toolboxtalk.management.delete');
+
+
+	/**
+	 * Management - PPE
+	 */
+	Route::get('dashboard/ppe/add-slug', [InventoryController::class, "add_slug"]);
+	Route::get('dashboard/ppe/list', [InventoryController::class, "index"])->name('ppe.management.index');
+
 
 
 	/**

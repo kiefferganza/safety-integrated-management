@@ -6,11 +6,9 @@ import { usePage } from "@inertiajs/inertia-react";
 
 export default function useActiveLink (path, deep = true, hasChild = false, childList) {
 	const { url } = usePage();
-
-
 	const urlSplit = url.split("/").filter(u => u.trim()).map(u => u.split("?")[0]);
 	const pathSplit = path?.split("/").filter(u => u.trim()).map(u => u.split("?")[0]);
-
+	console.log(path)
 	const normalActive = (url === path);
 
 	const getDeepActive = () => {
@@ -28,6 +26,6 @@ export default function useActiveLink (path, deep = true, hasChild = false, chil
 
 	return {
 		active: deep ? getDeepActive() : normalActive,
-		isExternalLink: path.includes('http'),
+		isExternalLink: path?.includes('http'),
 	};
 }

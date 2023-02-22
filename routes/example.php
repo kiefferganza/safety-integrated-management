@@ -14,12 +14,12 @@ Route::middleware('auth')->group(function ()
 
 	// Management Secition
 	// Management - PPE
-	Route::get('/dashboard/ppe/shop', fn () => Inertia::render("Dashboard/Management/Ecommerce/Shop/index"))->name('management.ecommerce.shop');
-	Route::get('/dashboard/ppe/product/nike-air-force-1-ndestrukt', fn () => Inertia::render("Dashboard/Management/Ecommerce/Product/index"))->name('management.ecommerce.product');
-	Route::get('/dashboard/ppe/list', fn () => Inertia::render("Dashboard/Management/Ecommerce/List/index"))->name('management.ecommerce.list');
-	Route::get('/dashboard/ppe/product/new', fn () => Inertia::render("Dashboard/Management/Ecommerce/Create/index"))->name('management.ecommerce.new');
-	Route::get('/dashboard/ppe/product/nike-blazer-low-77-vintage/edit', fn () => Inertia::render("Dashboard/Management/Ecommerce/Edit/index"))->name('management.ecommerce.edit');
-	Route::get('/dashboard/ppe/checkout', fn () => Inertia::render("Dashboard/Management/Ecommerce/Checkout/index"))->name('management.ecommerce.checkout');
+	// Route::get('/dashboard/ppe/shop', fn () => Inertia::render("Dashboard/Management/Ecommerce/Shop/index"))->name('management.ecommerce.shop');
+	// Route::get('/dashboard/ppe/product/nike-air-force-1-ndestrukt', fn () => Inertia::render("Dashboard/Management/Ecommerce/Product/index"))->name('management.ecommerce.product');
+	// Route::get('/dashboard/ppe/list', fn () => Inertia::render("Dashboard/Management/Ecommerce/List/index"))->name('management.ecommerce.list');
+	// Route::get('/dashboard/ppe/product/new', fn () => Inertia::render("Dashboard/Management/Ecommerce/Create/index"))->name('management.ecommerce.new');
+	// Route::get('/dashboard/ppe/product/nike-blazer-low-77-vintage/edit', fn () => Inertia::render("Dashboard/Management/Ecommerce/Edit/index"))->name('management.ecommerce.edit');
+	// Route::get('/dashboard/ppe/checkout', fn () => Inertia::render("Dashboard/Management/Ecommerce/Checkout/index"))->name('management.ecommerce.checkout');
 	// Management - Invoice
 	Route::get('/dashboard/invoice/list', fn () => Inertia::render("Dashboard/Management/Invoice/List/index"))->name('management.invoice.list');
 	Route::get('/dashboard/invoice/e99f09a7-dd88-49d5-b1c8-1daf80c2d7b5', fn () => Inertia::render("Dashboard/Management/Invoice/Details/index"))->name('management.invoice.details');

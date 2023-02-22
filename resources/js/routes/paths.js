@@ -89,15 +89,10 @@ export const PATH_DASHBOARD = {
 		edit: (id) => path(ROOTS_DASHBOARD, `/company/${id}/edit`),
 	},
 	ppe: {
-		root: path(ROOTS_DASHBOARD, '/ppe'),
-		shop: path(ROOTS_DASHBOARD, '/ppe/shop'),
-		list: path(ROOTS_DASHBOARD, '/ppe/list'),
-		checkout: path(ROOTS_DASHBOARD, '/ppe/checkout'),
+		root: path(ROOTS_DASHBOARD, '/ppe/list'),
 		new: path(ROOTS_DASHBOARD, '/ppe/product/new'),
 		view: (name) => path(ROOTS_DASHBOARD, `/ppe/product/${name}`),
 		edit: (name) => path(ROOTS_DASHBOARD, `/ppe/product/${name}/edit`),
-		demoEdit: path(ROOTS_DASHBOARD, '/ppe/product/nike-blazer-low-77-vintage/edit'),
-		demoView: path(ROOTS_DASHBOARD, '/ppe/product/nike-air-force-1-ndestrukt'),
 	},
 
 	training: {

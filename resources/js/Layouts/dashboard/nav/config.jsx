@@ -149,12 +149,10 @@ const navConfig = [
 				path: PATH_DASHBOARD.ppe.root,
 				icon: ICONS.cart,
 				children: [
-					{ title: 'shop', path: PATH_DASHBOARD.ppe.shop, disabled: true },
-					{ title: 'product', path: PATH_DASHBOARD.ppe.demoView, disabled: true },
-					{ title: 'list', path: PATH_DASHBOARD.ppe.list, disabled: true },
-					{ title: 'create', path: PATH_DASHBOARD.ppe.new, disabled: true },
-					{ title: 'edit', path: PATH_DASHBOARD.ppe.demoEdit, disabled: true },
-					{ title: 'checkout', path: PATH_DASHBOARD.ppe.checkout, disabled: true },
+					{ title: 'product', path: PATH_DASHBOARD.ppe.demoView },
+					{ title: 'list', path: PATH_DASHBOARD.ppe.root },
+					{ title: 'create', path: PATH_DASHBOARD.ppe.new },
+					{ title: 'edit', path: PATH_DASHBOARD.ppe.demoEdit },
 				],
 			},
 

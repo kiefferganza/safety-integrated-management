@@ -1,17 +1,20 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { sentenceCase } from 'change-case';
+import { currencies } from '@/_mock/arrays/_currencies';
 // @mui
-import { Stack, Button, TableRow, Checkbox, MenuItem, TableCell, IconButton, Link } from '@mui/material';
+import { Stack, Button, TableRow, Checkbox, MenuItem, TableCell, IconButton, Link as MuiLink } from '@mui/material';
 // utils
 import { fDate } from '@/utils/formatTime';
-import { fCurrency } from '@/utils/formatNumber';
+import { fCurrencyNumber } from '@/utils/formatNumber';
 // components
 import Label from '@/Components/label';
 import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
+import { Link } from '@inertiajs/inertia-react';
+import { PATH_DASHBOARD } from '@/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -24,8 +27,8 @@ ProductTableRow.propTypes = {
 	onDeleteRow: PropTypes.func,
 };
 
-export default function ProductTableRow ({ row, selected, onSelectRow, onDeleteRow, onEditRow, onViewRow }) {
-	const { name, cover, createdAt, inventoryType, price } = row;
+export default function ProductTableRow ({ row, selected, onSelectRow, onDeleteRow, onEditRow }) {
+	const { item, img_src, date_created, date_updated, status, item_price, item_currency, current_stock_qty, min_qty, try: unit, slug, inventory_id } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -47,6 +50,11 @@ export default function ProductTableRow ({ row, selected, onSelectRow, onDeleteR
 		setOpenPopover(null);
 	};
 
+	let currencySymbol = "IQD";
+	if (item_currency in currencies) {
+		currencySymbol = currencies[item_currency]?.symbol_native || currencies[item_currency]?.symbol || "IQD";
+	}
+
 	return (
 		<>
 			<TableRow hover selected={selected}>
@@ -59,32 +67,38 @@ export default function ProductTableRow ({ row, selected, onSelectRow, onDeleteR
 						<Image
 							disabledEffect
 							visibleByDefault
-							alt={name}
-							src={cover}
+							alt={item}
+							src={`/storage/media/photos/inventory/${img_src}`}
 							sx={{ borderRadius: 1.5, width: 48, height: 48 }}
 						/>
 
-						<Link noWrap color="inherit" variant="subtitle2" onClick={onViewRow} sx={{ cursor: 'pointer' }}>
-							{name}
-						</Link>
+						<MuiLink component={Link} href={PATH_DASHBOARD.ppe.view(slug)} noWrap color="inherit" variant="subtitle2" sx={{ cursor: 'pointer' }}>
+							{item}
+						</MuiLink>
 					</Stack>
 				</TableCell>
 
-				<TableCell>{fDate(createdAt)}</TableCell>
+				<TableCell align="left">{min_qty}/{current_stock_qty}</TableCell>
+
+				<TableCell align="left">{unit}</TableCell>
+
+				<TableCell align="right">{currencySymbol} {fCurrencyNumber(item_price)}</TableCell>
+
+				<TableCell>{fDate(date_created)}</TableCell>
+
+				<TableCell>{fDate(date_updated)}</TableCell>
 
 				<TableCell align="center">
 					<Label
 						variant="soft"
 						color={
-							(inventoryType === 'out_of_stock' && 'error') || (inventoryType === 'low_stock' && 'warning') || 'success'
+							(status === 'out_of_stock' && 'error') || (status === 'low_stock' && 'warning') || 'success'
 						}
 						sx={{ textTransform: 'capitalize' }}
 					>
-						{inventoryType ? sentenceCase(inventoryType) : ''}
+						{status ? sentenceCase(status) : ''}
 					</Label>
 				</TableCell>
-
-				<TableCell align="right">{fCurrency(price)}</TableCell>
 
 				<TableCell align="right">
 					<IconButton color={openPopover ? 'primary' : 'default'} onClick={handleOpenPopover}>
