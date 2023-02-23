@@ -14,14 +14,10 @@ class InventoryController extends Controller
 	public function add_slug() {
 		$inventory = Inventory::select("inventory_id")->pluck("inventory_id")->all();
 		foreach ($inventory as $inventory_id) {
-			$inv = Inventory::select("item", "slug")->find($inventory_id);
+			$inv = Inventory::find($inventory_id);
 			$inv->slug = Str::slug($inv->item);
 			$inv->save();
 		}
-		// $inventory->map(function ($inv) {
-		// 	$inv->slug = Str::slug($inv->item);
-		// 	$inv->save(['timestamps' => false]);
-		// });
 		return Inventory::select("slug", "item", "inventory_id")->get();
 	}
 
