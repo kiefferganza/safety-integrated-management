@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Inventory;
+use App\Models\InventoryBound;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -10,6 +11,13 @@ use Inertia\Inertia;
 
 class InventoryController extends Controller
 {
+	public function delete_removed() {
+		Inventory::where("is_removed", 1)->delete();
+		$inventory_ids = Inventory::select('inventory_id')->pluck('inventory_id')->all();
+		InventoryBound::whereNotIn('inventory_id', $inventory_ids)->orWhereNull('inventory_id')->delete();
+		return Inventory::all("inventory_id");
+	}
+	
 	public function add_slug() {
 		$inventory = Inventory::all("slug", "item");
 		$inventory->map(function ($inv) {
