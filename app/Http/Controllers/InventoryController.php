@@ -18,7 +18,10 @@ class InventoryController extends Controller
 				$inv->save(['timestamps' => false]);
 			}
 		});
+		return $inventory;
+	}
 
+	public function rename_duplicate_slug() {
 		$duplicateInventory = Inventory::select('item', 'slug', DB::raw('COUNT(*) as `count`'))
 		->groupBy('slug')
 		->havingRaw('COUNT(*) > 1')
@@ -29,7 +32,7 @@ class InventoryController extends Controller
 				$q->save(['timestamps' => false]);
 			});
 		});
-		return $inventory;
+		return $duplicateInventory;
 	}
 
 	
