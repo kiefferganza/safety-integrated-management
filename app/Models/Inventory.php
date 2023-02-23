@@ -14,8 +14,9 @@ class Inventory extends Model
 
 	protected $primaryKey = 'inventory_id';
 
-	const CREATED_AT = 'date_created';
-	const UPDATED_AT = 'date_updated';
+	// const CREATED_AT = 'date_created';
+	// const UPDATED_AT = 'date_updated';
+	public $timestamps = false;
 
 	protected $guarded = [];
 
