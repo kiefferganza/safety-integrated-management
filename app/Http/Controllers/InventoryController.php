@@ -10,18 +10,7 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class InventoryController extends Controller
-{
-	public function add_slug() {
-		$inventory = Inventory::select("inventory_id")->pluck("inventory_id")->all();
-		foreach ($inventory as $inventory_id) {
-			$inv = Inventory::find($inventory_id);
-			$inv->slug = Str::slug($inv->item);
-			$inv->save();
-		}
-		return Inventory::select("slug", "item", "inventory_id")->get();
-	}
-
-	
+{	
 	/**
 	 * Display a listing of the resource.
 	 *
