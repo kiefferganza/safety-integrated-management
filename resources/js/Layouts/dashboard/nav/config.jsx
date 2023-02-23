@@ -147,10 +147,8 @@ const navConfig = [
 				path: PATH_DASHBOARD.ppe.root,
 				icon: ICONS.cart,
 				children: [
-					{ title: 'product', path: PATH_DASHBOARD.ppe.demoView },
-					{ title: 'list', path: PATH_DASHBOARD.ppe.root },
 					{ title: 'create', path: PATH_DASHBOARD.ppe.new },
-					{ title: 'edit', path: PATH_DASHBOARD.ppe.demoEdit },
+					{ title: 'list', path: PATH_DASHBOARD.ppe.root }
 				],
 			},
 

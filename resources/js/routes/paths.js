@@ -90,7 +90,7 @@ export const PATH_DASHBOARD = {
 	},
 	ppe: {
 		root: path(ROOTS_DASHBOARD, '/ppe/list'),
-		new: path(ROOTS_DASHBOARD, '/ppe/product/new'),
+		new: path(ROOTS_DASHBOARD, '/ppe/new'),
 		view: (name) => path(ROOTS_DASHBOARD, `/ppe/product/${name}`),
 		edit: (name) => path(ROOTS_DASHBOARD, `/ppe/product/${name}/edit`),
 	},

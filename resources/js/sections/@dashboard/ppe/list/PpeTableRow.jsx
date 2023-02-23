@@ -28,7 +28,7 @@ PpeTableRow.propTypes = {
 };
 
 export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow, onEditRow }) {
-	const { item, img_src, date_created, date_updated, status, item_price, item_currency, current_stock_qty, min_qty, try: unit, slug, inventory_id } = row;
+	const { item, img_src, date_created, date_updated, status, item_price, item_currency, current_stock_qty, min_qty, try: unit, slug } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 

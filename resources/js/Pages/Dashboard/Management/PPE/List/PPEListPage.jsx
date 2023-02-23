@@ -1,9 +1,11 @@
 
 import { useState, useEffect } from 'react';
 // @mui
-import { Card, Table, Button, Tooltip, TableBody, Container, IconButton, TableContainer, Stack, Divider, useTheme } from '@mui/material';
+import { Card, Table, Button, Tooltip, TableBody, Container, IconButton, TableContainer, Stack, Divider, useTheme, Tabs, Tab } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
+// utils
+import { fTimestamp } from '@/utils/formatTime';
 // components
 import { useSettingsContext } from '@/Components/settings';
 import {
@@ -20,10 +22,10 @@ import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import ConfirmDialog from '@/Components/confirm-dialog';
+import Label from '@/Components/label';
 // sections
 import { PpeTableRow, PpeTableToolbar } from '@/sections/@dashboard/ppe/list';
 import { Head, Link } from '@inertiajs/inertia-react';
-import { fTimestamp } from '@/utils/formatTime';
 const { PpeAnalytic } = await import('@/sections/@dashboard/ppe/PpeAnalytic');
 
 // ----------------------------------------------------------------------
@@ -48,7 +50,6 @@ const STATUS_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function PPEListPage ({ inventory }) {
-	console.log({ inventory })
 	const {
 		dense,
 		page,
@@ -80,6 +81,8 @@ export default function PPEListPage ({ inventory }) {
 
 	const [filterStatus, setFilterStatus] = useState([]);
 
+	const [filterByStatus, setFilterByStatus] = useState("all");
+
 	const [filterStartDate, setFilterStartDate] = useState(null);
 
 	const [filterEndDate, setFilterEndDate] = useState(null);
@@ -98,6 +101,7 @@ export default function PPEListPage ({ inventory }) {
 	const dataFiltered = applyFilter({
 		inputData: tableData,
 		comparator: getComparator(order, orderBy),
+		filterByStatus,
 		filterName,
 		filterStatus,
 		filterStartDate,
@@ -108,13 +112,22 @@ export default function PPEListPage ({ inventory }) {
 
 	const denseHeight = dense ? 60 : 80;
 
-	const isFiltered = filterStartDate !== null || filterEndDate !== null || filterName !== '' || !!filterStatus.length;
+	const isFiltered = filterByStatus !== "all" || filterStartDate !== null || filterEndDate !== null || filterName !== '' || !!filterStatus.length;
 
 	const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
 
-	const getLengthByStatus = (status) => dataFiltered.filter((item) => item.status === status).length;
+	const getLengthByStatus = (status) => tableData.filter((item) => item.status === status).length;
 
-	const getPercentByStatus = (status) => (getLengthByStatus(status) / dataFiltered.length) * 100;
+	const getPercentByStatus = (status) => (getLengthByStatus(status) / tableData.length) * 100;
+
+	const TABS = [
+		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
+		{ value: 'in_stock', label: 'In Stock', color: 'info', count: getLengthByStatus('in_stock') },
+		{ value: 'low_stock', label: 'Low Stock', color: 'warning', count: getLengthByStatus('low_stock') },
+		{ value: 'out_of_stock', label: 'Out Of Stock', color: 'error', count: getLengthByStatus('out_of_stock') },
+		{ value: 'full', label: 'Full', color: 'success', count: getLengthByStatus('full') },
+	];
+
 
 	const handleOpenConfirm = () => {
 		setOpenConfirm(true);
@@ -123,6 +136,11 @@ export default function PPEListPage ({ inventory }) {
 	const handleCloseConfirm = () => {
 		setOpenConfirm(false);
 	};
+
+	const handleFilterByStatus = (_e, newValue) => {
+		setPage(0);
+		setFilterByStatus(newValue);
+	}
 
 	const handleFilterName = (event) => {
 		setPage(0);
@@ -168,6 +186,7 @@ export default function PPEListPage ({ inventory }) {
 	};
 
 	const handleResetFilter = () => {
+		setFilterByStatus("all");
 		setFilterName('');
 		setFilterStatus([]);
 		setFilterStartDate(null);
@@ -187,14 +206,15 @@ export default function PPEListPage ({ inventory }) {
 						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{
 							name: 'PPE',
-							// href: PATH_DASHBOARD.eCommerce.root,
+							href: PATH_DASHBOARD.ppe.root,
 						},
 						{ name: 'List' },
 					]}
 					action={
 						<Button
-							// to={PATH_DASHBOARD.eCommerce.new}
-							component={Link} preserveScroll
+							href={PATH_DASHBOARD.ppe.new}
+							component={Link}
+							preserveScroll
 							variant="contained"
 							startIcon={<Iconify icon="eva:plus-fill" />}
 						>
@@ -254,6 +274,30 @@ export default function PPEListPage ({ inventory }) {
 				</Card>
 
 				<Card>
+					<Tabs
+						value={filterByStatus}
+						onChange={handleFilterByStatus}
+						sx={{
+							px: 2,
+							bgcolor: 'background.neutral',
+						}}
+					>
+						{TABS.map((tab) => (
+							<Tab
+								key={tab.value}
+								value={tab.value}
+								label={tab.label}
+								icon={
+									<Label color={tab.color} sx={{ mr: 1 }}>
+										{tab.count}
+									</Label>
+								}
+							/>
+						))}
+					</Tabs>
+
+					<Divider />
+
 					<PpeTableToolbar
 						filterName={filterName}
 						filterStatus={filterStatus}
@@ -375,13 +419,13 @@ export default function PPEListPage ({ inventory }) {
 function getStatus (qty, minQty) {
 	if (qty <= 0) return "out_of_stock";
 	if (qty >= minQty) return "full";
-	if (Math.ceil((minQty / 2.5)) >= qty) return "low_stock"
+	if (minQty >= qty) return "low_stock"
 	return "in_stock"
 }
 
 // ----------------------------------------------------------------------
 
-function applyFilter ({ inputData, comparator, filterName, filterStatus, filterStartDate, filterEndDate }) {
+function applyFilter ({ inputData, comparator, filterByStatus, filterName, filterStatus, filterStartDate, filterEndDate }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
 
 	stabilizedThis.sort((a, b) => {
@@ -391,6 +435,10 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 	});
 
 	inputData = stabilizedThis.map((el) => el[0]);
+
+	if (filterByStatus !== 'all') {
+		inputData = inputData.filter((product) => product.status === filterByStatus);
+	}
 
 	if (filterName) {
 		inputData = inputData.filter((product) => product.item.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);

@@ -166,10 +166,9 @@ Route::middleware('auth')->group(function ()
 	/**
 	 * Management - PPE
 	 */
-	Route::get('dashboard/ppe/delete-removed', [InventoryController::class, "delete_removed"]);
-	Route::get('dashboard/ppe/add-slug', [InventoryController::class, "add_slug"]);
-	Route::get('dashboard/ppe/rename-slug', [InventoryController::class, "rename_duplicate_slug"]);
 	Route::get('dashboard/ppe/list', [InventoryController::class, "index"])->name('ppe.management.index');
+	Route::get('dashboard/ppe/new', [InventoryController::class, "create"])->name('ppe.management.create');
+	Route::post('dashboard/ppe/new', [InventoryController::class, "store"])->name('ppe.management.store');
 
 
 
