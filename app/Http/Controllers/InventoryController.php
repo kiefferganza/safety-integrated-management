@@ -11,7 +11,7 @@ use Inertia\Inertia;
 class InventoryController extends Controller
 {
 	public function add_slug() {
-		$inventory = Inventory::all("slug");
+		$inventory = Inventory::all("slug", "item");
 		$inventory->map(function ($inv) {
 			$inv->slug = Str::slug($inv->item);
 			$inv->save(['timestamps' => false]);
