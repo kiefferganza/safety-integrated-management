@@ -11,34 +11,18 @@ use Inertia\Inertia;
 
 class InventoryController extends Controller
 {
-	public function delete_removed() {
-		Inventory::where("is_removed", 1)->delete();
-		$inventory_ids = Inventory::select('inventory_id')->pluck('inventory_id')->all();
-		InventoryBound::whereNotIn('inventory_id', $inventory_ids)->orWhereNull('inventory_id')->delete();
-		return Inventory::all("inventory_id");
-	}
-	
 	public function add_slug() {
-		$inventory = Inventory::all("slug", "item");
-		$inventory->map(function ($inv) {
+		$inventory = Inventory::select("inventory_id")->pluck("inventory_id")->all();
+		foreach ($inventory as $inventory_id) {
+			$inv = Inventory::select("item", "slug")->find($inventory_id);
 			$inv->slug = Str::slug($inv->item);
-			$inv->save(['timestamps' => false]);
-		});
+			$inv->save();
+		}
+		// $inventory->map(function ($inv) {
+		// 	$inv->slug = Str::slug($inv->item);
+		// 	$inv->save(['timestamps' => false]);
+		// });
 		return $inventory;
-	}
-
-	public function rename_duplicate_slug() {
-		$duplicateInventory = Inventory::select('item', 'slug', DB::raw('COUNT(*) as `count`'))
-		->groupBy('slug')
-		->havingRaw('COUNT(*) > 1')
-		->get();
-		$duplicateInventory->map(function ($dupInv) {
-			Inventory::select("slug", "inventory_id")->where("slug", $dupInv->slug)->get()->map(function($q, $idx) {
-				$q->slug = $q->slug. "-" .((string)$idx + 1);
-				$q->save(['timestamps' => false]);
-			});
-		});
-		return $duplicateInventory;
 	}
 
 	
