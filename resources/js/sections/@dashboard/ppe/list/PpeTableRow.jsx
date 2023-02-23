@@ -18,7 +18,7 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 
 // ----------------------------------------------------------------------
 
-ProductTableRow.propTypes = {
+PpeTableRow.propTypes = {
 	row: PropTypes.object,
 	selected: PropTypes.bool,
 	onEditRow: PropTypes.func,
@@ -27,7 +27,7 @@ ProductTableRow.propTypes = {
 	onDeleteRow: PropTypes.func,
 };
 
-export default function ProductTableRow ({ row, selected, onSelectRow, onDeleteRow, onEditRow }) {
+export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow, onEditRow }) {
 	const { item, img_src, date_created, date_updated, status, item_price, item_currency, current_stock_qty, min_qty, try: unit, slug, inventory_id } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
@@ -72,13 +72,13 @@ export default function ProductTableRow ({ row, selected, onSelectRow, onDeleteR
 							sx={{ borderRadius: 1.5, width: 48, height: 48 }}
 						/>
 
-						<MuiLink component={Link} href={PATH_DASHBOARD.ppe.view(slug)} noWrap color="inherit" variant="subtitle2" sx={{ cursor: 'pointer' }}>
+						<MuiLink component={Link} href={PATH_DASHBOARD.ppe.view(slug)} noWrap color="inherit" variant="subtitle2" sx={{ cursor: 'pointer', textTransform: 'capitalize' }}>
 							{item}
 						</MuiLink>
 					</Stack>
 				</TableCell>
 
-				<TableCell align="left">{min_qty}/{current_stock_qty}</TableCell>
+				<TableCell align="left">{current_stock_qty}/{min_qty}</TableCell>
 
 				<TableCell align="left">{unit}</TableCell>
 

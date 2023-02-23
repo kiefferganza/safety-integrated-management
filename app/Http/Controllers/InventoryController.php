@@ -13,10 +13,8 @@ class InventoryController extends Controller
 	public function add_slug() {
 		$inventory = Inventory::all("slug");
 		$inventory->map(function ($inv) {
-			if(!$inv->slug) {
-				$inv->slug = Str::slug($inv->item);
-				$inv->save(['timestamps' => false]);
-			}
+			$inv->slug = Str::slug($inv->item);
+			$inv->save(['timestamps' => false]);
 		});
 		return $inventory;
 	}

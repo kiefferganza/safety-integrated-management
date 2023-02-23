@@ -8,7 +8,6 @@ export default function useActiveLink (path, deep = true, hasChild = false, chil
 	const { url } = usePage();
 	const urlSplit = url.split("/").filter(u => u.trim()).map(u => u.split("?")[0]);
 	const pathSplit = path?.split("/").filter(u => u.trim()).map(u => u.split("?")[0]);
-	console.log(path)
 	const normalActive = (url === path);
 
 	const getDeepActive = () => {

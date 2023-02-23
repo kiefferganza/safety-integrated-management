@@ -1,11 +1,7 @@
 
-import { paramCase } from 'change-case';
 import { useState, useEffect } from 'react';
 // @mui
-import { Card, Table, Button, Tooltip, TableBody, Container, IconButton, TableContainer } from '@mui/material';
-// redux
-import { useDispatch, useSelector } from '@/redux/store';
-import { getProducts } from '@/redux/slices/product';
+import { Card, Table, Button, Tooltip, TableBody, Container, IconButton, TableContainer, Stack, Divider, useTheme } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
@@ -25,8 +21,10 @@ import Scrollbar from '@/Components/scrollbar';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import ConfirmDialog from '@/Components/confirm-dialog';
 // sections
-import { ProductTableRow, ProductTableToolbar } from '@/sections/@dashboard/e-commerce/list';
+import { PpeTableRow, PpeTableToolbar } from '@/sections/@dashboard/ppe/list';
 import { Head, Link } from '@inertiajs/inertia-react';
+import { fTimestamp } from '@/utils/formatTime';
+const { PpeAnalytic } = await import('@/sections/@dashboard/ppe/PpeAnalytic');
 
 // ----------------------------------------------------------------------
 
@@ -73,6 +71,7 @@ export default function PPEListPage ({ inventory }) {
 		defaultOrder: 'desc'
 	});
 
+	const theme = useTheme();
 	const { themeStretch } = useSettingsContext();
 
 	const [tableData, setTableData] = useState([]);
@@ -80,6 +79,10 @@ export default function PPEListPage ({ inventory }) {
 	const [filterName, setFilterName] = useState('');
 
 	const [filterStatus, setFilterStatus] = useState([]);
+
+	const [filterStartDate, setFilterStartDate] = useState(null);
+
+	const [filterEndDate, setFilterEndDate] = useState(null);
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -97,15 +100,21 @@ export default function PPEListPage ({ inventory }) {
 		comparator: getComparator(order, orderBy),
 		filterName,
 		filterStatus,
+		filterStartDate,
+		filterEndDate
 	});
 
 	const dataInPage = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
 	const denseHeight = dense ? 60 : 80;
 
-	const isFiltered = filterName !== '' || !!filterStatus.length;
+	const isFiltered = filterStartDate !== null || filterEndDate !== null || filterName !== '' || !!filterStatus.length;
 
 	const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
+
+	const getLengthByStatus = (status) => dataFiltered.filter((item) => item.status === status).length;
+
+	const getPercentByStatus = (status) => (getLengthByStatus(status) / dataFiltered.length) * 100;
 
 	const handleOpenConfirm = () => {
 		setOpenConfirm(true);
@@ -161,6 +170,8 @@ export default function PPEListPage ({ inventory }) {
 	const handleResetFilter = () => {
 		setFilterName('');
 		setFilterStatus([]);
+		setFilterStartDate(null);
+		setFilterEndDate(null);
 	};
 
 	return (
@@ -192,12 +203,73 @@ export default function PPEListPage ({ inventory }) {
 					}
 				/>
 
+				<Card sx={{ mb: 5 }}>
+					<Scrollbar>
+						<Stack
+							direction="row"
+							divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
+							sx={{ py: 2 }}
+						>
+							<PpeAnalytic
+								title="Total"
+								total={tableData.length}
+								percent={100}
+								icon="ri:luggage-cart-line"
+								color={theme.palette.info.main}
+							/>
+
+							<PpeAnalytic
+								title="In Stock"
+								total={getLengthByStatus("in_stock")}
+								percent={getPercentByStatus("in_stock")}
+								icon="bi:cart-check"
+								color={theme.palette.success.main}
+							/>
+
+							<PpeAnalytic
+								title="Low Stock"
+								total={getLengthByStatus("low_stock")}
+								percent={getPercentByStatus("low_stock")}
+								icon="bi:cart-dash"
+								color={theme.palette.warning.main}
+							/>
+
+							<PpeAnalytic
+								title="Out Of Stock"
+								total={getLengthByStatus("out_of_stock")}
+								percent={getPercentByStatus("out_of_stock")}
+								icon="carbon:shopping-cart-clear"
+								color={theme.palette.error.main}
+							/>
+
+							<PpeAnalytic
+								title="Full"
+								total={getLengthByStatus("full")}
+								percent={getPercentByStatus("full")}
+								icon="bi:cart-fill"
+								color={theme.palette.success.main}
+							/>
+						</Stack>
+					</Scrollbar>
+				</Card>
+
 				<Card>
-					<ProductTableToolbar
+					<PpeTableToolbar
 						filterName={filterName}
 						filterStatus={filterStatus}
 						onFilterName={handleFilterName}
 						onFilterStatus={handleFilterStatus}
+						filterStartDate={filterStartDate}
+						filterEndDate={filterEndDate}
+						onFilterStartDate={(newValue) => {
+							if (filterEndDate) {
+								setFilterEndDate(null);
+							}
+							setFilterStartDate(newValue);
+						}}
+						onFilterEndDate={(newValue) => {
+							setFilterEndDate(newValue);
+						}}
 						statusOptions={STATUS_OPTIONS}
 						isFiltered={isFiltered}
 						onResetFilter={handleResetFilter}
@@ -243,7 +315,7 @@ export default function PPEListPage ({ inventory }) {
 								<TableBody>
 									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 										.map((row) =>
-											<ProductTableRow
+											<PpeTableRow
 												key={row.inventory_id}
 												row={row}
 												selected={selected.includes(row.inventory_id)}
@@ -302,14 +374,14 @@ export default function PPEListPage ({ inventory }) {
 
 function getStatus (qty, minQty) {
 	if (qty <= 0) return "out_of_stock";
-	if (qty === minQty) return "full";
+	if (qty >= minQty) return "full";
 	if (Math.ceil((minQty / 2.5)) >= qty) return "low_stock"
 	return "in_stock"
 }
 
 // ----------------------------------------------------------------------
 
-function applyFilter ({ inputData, comparator, filterName, filterStatus }) {
+function applyFilter ({ inputData, comparator, filterName, filterStatus, filterStartDate, filterEndDate }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
 
 	stabilizedThis.sort((a, b) => {
@@ -326,6 +398,21 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus }) {
 
 	if (filterStatus.length) {
 		inputData = inputData.filter((product) => filterStatus.includes(product.status));
+	}
+
+	if (filterStartDate && !filterEndDate) {
+		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
+		inputData = inputData.filter(product => fTimestamp(new Date(product.date_created)) >= startDateTimestamp);
+	}
+
+	if (filterStartDate && filterEndDate) {
+		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
+		const endDateTimestamp = filterEndDate.setHours(0, 0, 0, 0);
+		inputData = inputData.filter(
+			(product) =>
+				fTimestamp(product.date_created) >= startDateTimestamp &&
+				fTimestamp(product.date_created) <= endDateTimestamp
+		);
 	}
 
 	return inputData;

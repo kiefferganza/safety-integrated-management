@@ -13,12 +13,13 @@ import {
 	OutlinedInput,
 	InputAdornment,
 } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
 // components
 import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 
-ProductTableToolbar.propTypes = {
+PpeTableToolbar.propTypes = {
 	isFiltered: PropTypes.bool,
 	filterName: PropTypes.string,
 	onFilterName: PropTypes.func,
@@ -26,9 +27,15 @@ ProductTableToolbar.propTypes = {
 	filterStatus: PropTypes.array,
 	onFilterStatus: PropTypes.func,
 	statusOptions: PropTypes.array,
+	filterStartDate: PropTypes.instanceOf(Date),
+	filterEndDate: PropTypes.instanceOf(Date),
+	onFilterStartDate: PropTypes.func,
+	onFilterEndDate: PropTypes.func,
 };
 
-export default function ProductTableToolbar ({
+const INPUT_WIDTH = 160;
+
+export default function PpeTableToolbar ({
 	isFiltered,
 	filterName,
 	filterStatus,
@@ -36,6 +43,10 @@ export default function ProductTableToolbar ({
 	statusOptions,
 	onResetFilter,
 	onFilterStatus,
+	filterStartDate,
+	onFilterStartDate,
+	filterEndDate,
+	onFilterEndDate
 }) {
 	return (
 		<Stack
@@ -81,6 +92,45 @@ export default function ProductTableToolbar ({
 					))}
 				</Select>
 			</FormControl>
+
+			<DatePicker
+				label="Start date"
+				value={filterStartDate}
+				onChange={onFilterStartDate}
+				inputFormat="dd MMM yyyy"
+				openTo="year"
+				views={['year', 'month', 'day']}
+				disableMaskedInput
+				renderInput={(params) => (
+					<TextField
+						{...params}
+						fullWidth
+						sx={{
+							maxWidth: { md: INPUT_WIDTH },
+						}}
+					/>
+				)}
+			/>
+
+			<DatePicker
+				label="End date"
+				value={filterEndDate}
+				onChange={onFilterEndDate}
+				inputFormat="dd MMM yyyy"
+				openTo="year"
+				views={['year', 'month', 'day']}
+				disableMaskedInput
+				minDate={filterStartDate || new Date}
+				renderInput={(params) => (
+					<TextField
+						{...params}
+						fullWidth
+						sx={{
+							maxWidth: { md: INPUT_WIDTH },
+						}}
+					/>
+				)}
+			/>
 
 			<TextField
 				fullWidth
