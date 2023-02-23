@@ -22,7 +22,7 @@ class InventoryController extends Controller
 		// 	$inv->slug = Str::slug($inv->item);
 		// 	$inv->save(['timestamps' => false]);
 		// });
-		return $inventory;
+		return Inventory::select("slug", "item", "inventory_id")->get();
 	}
 
 	
