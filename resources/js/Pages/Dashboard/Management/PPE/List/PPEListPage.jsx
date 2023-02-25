@@ -362,7 +362,6 @@ export default function PPEListPage ({ inventory }) {
 												selected={selected.includes(row.inventory_id)}
 												onSelectRow={() => onSelectRow(row.inventory_id)}
 												onDeleteRow={() => handleDeleteRow(row.inventory_id)}
-												onEditRow={() => handleEditRow(row.item)}
 											/>
 										)}
 

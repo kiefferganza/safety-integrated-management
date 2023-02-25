@@ -93,6 +93,7 @@ export const PATH_DASHBOARD = {
 		new: path(ROOTS_DASHBOARD, '/ppe/new'),
 		view: (name) => path(ROOTS_DASHBOARD, `/ppe/product/${name}`),
 		edit: (name) => path(ROOTS_DASHBOARD, `/ppe/product/${name}/edit`),
+		update: (name) => path(ROOTS_DASHBOARD, `/ppe/product/${name}/update`),
 		addRemoveStock: (id) => path(ROOTS_DASHBOARD, `/ppe/product/add-remove-stock/${id}`),
 	},
 

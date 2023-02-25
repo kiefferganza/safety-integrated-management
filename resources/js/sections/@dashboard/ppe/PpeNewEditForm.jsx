@@ -20,6 +20,7 @@ import FormProvider, {
 	RHFRadioGroup,
 	RHFAutocomplete,
 } from '@/Components/hook-form';
+import { PATH_DASHBOARD } from '@/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -31,13 +32,6 @@ const TYPE_OPTIONS = [
 	{ label: 'Grams', value: 'Grams' },
 ];
 
-const NewProductSchema = Yup.object().shape({
-	item: Yup.string().required('Name is required'),
-	description: Yup.string().required('Description is required'),
-	current_stock_qty: Yup.number().moreThan(-1, "Must be a positive number."),
-	min_qty: Yup.number().moreThan(-1, "Must be a positive number."),
-	item_price: Yup.number().moreThan(0, 'Price should not be 0'),
-});
 
 // ----------------------------------------------------------------------
 
@@ -49,13 +43,26 @@ PpeNewEditForm.propTypes = {
 export default function PpeNewEditForm ({ isEdit, currentProduct }) {
 	const { load, stop } = useSwal();
 	const { errors: resErrors } = usePage().props;
+
+	const NewProductSchema = Yup.object().shape({
+		item: Yup.string().required('Name is required'),
+		description: Yup.string().required('Description is required'),
+		current_stock_qty: Yup.number().test("min", "Must be a positive number.", (val) => {
+			if (isEdit) return true;
+			return val >= 0;
+		}),
+		min_qty: Yup.number().moreThan(-1, "Must be a positive number."),
+		item_price: Yup.number().moreThan(0, 'Price should not be 0'),
+	});
+
+
 	const defaultValues = useMemo(
 		() => ({
 			item: currentProduct?.item || '',
 			description: currentProduct?.description || '',
-			img_src: currentProduct?.img_src || '',
-			current_stock_qty: 0,
-			min_qty: 0,
+			img_src: currentProduct?.img_src ? `/storage/media/photos/inventory/${currentProduct?.img_src}` : '',
+			current_stock_qty: currentProduct?.current_stock_qty || 0,
+			min_qty: currentProduct?.min_qty || 0,
 			item_currency: currentProduct?.price || 'USD',
 			item_price: currentProduct?.item_price || 0,
 			type: currentProduct?.type || TYPE_OPTIONS[2].value,
@@ -76,7 +83,7 @@ export default function PpeNewEditForm ({ isEdit, currentProduct }) {
 		getValues,
 		handleSubmit,
 		setError,
-		formState: { isSubmitting },
+		formState: { isSubmitting, isDirty },
 	} = methods;
 
 	const values = watch();
@@ -98,10 +105,10 @@ export default function PpeNewEditForm ({ isEdit, currentProduct }) {
 	}, [isEdit, currentProduct, resErrors]);
 
 	const onSubmit = async (data) => {
-		Inertia.post(route("ppe.management.store"), data, {
+		Inertia.post(!isEdit ? route("ppe.management.store") : PATH_DASHBOARD.ppe.update(currentProduct?.inventory_id), data, {
 			preserveScroll: true,
 			onStart () {
-				load("Creating product.", "please wait...");
+				load(!isEdit ? "Creating product." : "Updating product", "please wait...");
 			},
 			onFinish () {
 				stop();
@@ -115,7 +122,7 @@ export default function PpeNewEditForm ({ isEdit, currentProduct }) {
 				preview: URL.createObjectURL(acceptedFiles[0]),
 			})
 
-			setValue('img_src', newFile);
+			setValue('img_src', newFile, { shouldDirty: true });
 		},
 		[setValue, values.img_src]
 	);
@@ -161,11 +168,12 @@ export default function PpeNewEditForm ({ isEdit, currentProduct }) {
 									label="Quantity"
 									placeholder="0"
 									value={getValues('current_stock_qty') === 0 ? '' : getValues('current_stock_qty')}
-									onChange={(event) => setValue('current_stock_qty', Number(event.target.value))}
+									onChange={(event) => setValue('current_stock_qty', Number(event.target.value), { shouldValidate: true, shouldDirty: true })}
 									InputLabelProps={{ shrink: true }}
 									InputProps={{
 										type: 'number',
 									}}
+									disabled={isEdit}
 								/>
 
 								<RHFTextField
@@ -173,7 +181,7 @@ export default function PpeNewEditForm ({ isEdit, currentProduct }) {
 									label="Minimum Quantity"
 									placeholder="0"
 									value={getValues('min_qty') === 0 ? '' : getValues('min_qty')}
-									onChange={(event) => setValue('min_qty', Number(event.target.value))}
+									onChange={(event) => setValue('min_qty', Number(event.target.value), { shouldValidate: true, shouldDirty: true })}
 									InputLabelProps={{ shrink: true }}
 									InputProps={{
 										type: 'number',
@@ -232,7 +240,7 @@ export default function PpeNewEditForm ({ isEdit, currentProduct }) {
 							</Stack>
 						</Card>
 
-						<LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
+						<LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting} disabled={isEdit ? !isDirty : false}>
 							{!isEdit ? 'Create Product' : 'Save Changes'}
 						</LoadingButton>
 					</Stack>

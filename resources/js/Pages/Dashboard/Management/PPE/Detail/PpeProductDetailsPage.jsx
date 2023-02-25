@@ -1,6 +1,6 @@
 import { useState } from 'react';
 // @mui
-import { Box, Tab, Tabs, Card, Grid, Divider, Container, Stack, TextField, InputAdornment } from '@mui/material';
+import { Box, Tab, Tabs, Card, Grid, Divider, Container, Stack, TextField, InputAdornment, Button, Link } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 import { Head } from '@inertiajs/inertia-react';
@@ -51,6 +51,14 @@ export default function PpeProductDetailsPage ({ inventory }) {
 						},
 						{ name: inventory?.item?.toUpperCase() },
 					]}
+					action={
+						<Button
+							variant="outlined"
+							component={Link}
+							href={PATH_DASHBOARD.ppe.edit(inventory.slug)}
+							startIcon={<Iconify icon="eva:edit-fill" />}
+						>Edit</Button>
+					}
 				/>
 
 				{inventory && (

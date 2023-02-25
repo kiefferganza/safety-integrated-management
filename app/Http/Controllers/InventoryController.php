@@ -74,7 +74,7 @@ class InventoryController extends Controller
 		
 		if($request->hasFile("img_src")) {
 			$file = $request->file("img_src")->getClientOriginalName();
-			if(Storage::exists("public/media/photos/inventory" . $file)) {
+			if(Storage::exists("public/media/photos/inventory/" . $file)) {
 				$extension = pathinfo($file, PATHINFO_EXTENSION);
 				$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time() . "." .$extension;
 			}else {
@@ -120,7 +120,9 @@ class InventoryController extends Controller
 	 */
 	public function edit(Inventory $inventory)
 	{
-			//
+		return Inertia::render("Dashboard/Management/PPE/Edit/index", [
+			"inventory" => $inventory
+		]);
 	}
 
 	/**
@@ -132,7 +134,47 @@ class InventoryController extends Controller
 	 */
 	public function update(Request $request, Inventory $inventory)
 	{
-			//
+		$request->validate([
+			"type" => "string|required",
+			"min_qty" => "integer|required",
+			"item_price" => "integer|required",
+			"description" => "string",
+			"item" => [
+				"required",
+				"string",
+				Rule::unique('tbl_inventory')->where("is_removed", 0)->ignore($inventory)
+			],
+		]);
+
+		$oldItemName = $inventory->item;
+
+		if($request->hasFile("img_src")) {
+			if($inventory->img_src !== null){
+				if(Storage::exists("public/media/photos/inventory/". $inventory->img_src)) {
+					Storage::delete("public/media/photos/inventory/" . $inventory->img_src);
+				}
+			}
+			$file = $request->file("img_src")->getClientOriginalName();
+			$extension = pathinfo($file, PATHINFO_EXTENSION);
+			if(Storage::exists("public/media/photos/inventory" . $file)) {
+				$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time() . "." .$extension;
+			}else {
+				$file_name = $file;
+			}
+			$request->file("img_src")->storeAs('media/photos/inventory', $file_name, 'public');
+			$inventory->img_src = $file_name;
+		}
+
+		$inventory->try = $request->type;
+		$inventory->min_qty = $request->min_qty;
+		$inventory->item_price = $request->item_price;
+		$inventory->description = $request->description;
+		$inventory->item = $request->item;
+		$inventory->save();
+
+		return redirect()->back()
+		->with("message", $oldItemName . " updated successfully!")
+		->with("type", "success");
 	}
 
 	/**
@@ -191,7 +233,7 @@ class InventoryController extends Controller
 
 
 		return redirect()->back()
-		->with("message", $request->type === "add" ? "Re-stocked successfully!" : "Unstock successfully!")
+		->with("message", $request->type === "add" ? "Re-stocked successfully!" : "Unstocked successfully!")
 		->with("type", "success");
 
 	}

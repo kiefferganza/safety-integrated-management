@@ -22,13 +22,12 @@ const { AddRemoveStockDialog } = await import('../portal/AddRemoveStockDialog');
 PpeTableRow.propTypes = {
 	row: PropTypes.object,
 	selected: PropTypes.bool,
-	onEditRow: PropTypes.func,
 	onViewRow: PropTypes.func,
 	onSelectRow: PropTypes.func,
 	onDeleteRow: PropTypes.func,
 };
 
-export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow, onEditRow }) {
+export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
 	const { item, img_src, date_created, date_updated, status, item_price, item_currency, current_stock_qty, min_qty, try: unit, slug } = row;
 
 	const [openStock, setOpenStock] = useState(false);
@@ -149,10 +148,9 @@ export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow, 
 					View
 				</MenuItem>
 				<MenuItem
-					onClick={() => {
-						onEditRow();
-						handleClosePopover();
-					}}
+					href={PATH_DASHBOARD.ppe.edit(slug)}
+					component={Link}
+					onClick={handleClosePopover}
 				>
 					<Iconify icon="eva:edit-fill" />
 					Edit
