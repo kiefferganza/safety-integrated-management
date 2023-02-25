@@ -1,3 +1,4 @@
+import { currencies } from '@/_mock/arrays/_currencies';
 import numeral from 'numeral';
 
 // ----------------------------------------------------------------------
@@ -16,6 +17,15 @@ export function fCurrencyNumber (number) {
 	const format = number ? numeral(number).format('0,0.00') : '';
 
 	return result(format, '.00');
+}
+
+export function fCurrencyNumberAndSymbol (number, currency) {
+	const format = number ? numeral(number).format('0,0.00') : '';
+	let currencySymbol = "$";
+	if (currency in currencies) {
+		currencySymbol = currencies[currency]?.symbol_native || "$";
+	}
+	return `${currencySymbol} ${result(format, '.00')}`;
 }
 
 export function fPercent (number) {

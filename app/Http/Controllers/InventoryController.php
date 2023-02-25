@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use App\Models\Inventory;
+use App\Models\InventoryBound;
+use App\Services\EmployeeService;
 
 class InventoryController extends Controller
 {	
@@ -18,7 +21,11 @@ class InventoryController extends Controller
 	public function index()
 	{
 		return Inertia::render("Dashboard/Management/PPE/List/index", [
-			"inventory" => Inventory::where("is_removed", 0)->get()
+			"inventory" => Inventory::where("is_removed", 0)->get(),
+			"employee" => Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
+				->where("is_deleted", 0)
+				->where("sub_id", auth()->user()->subscriber_id)
+				->get()
 		]);
 	}
 
@@ -92,7 +99,17 @@ class InventoryController extends Controller
 	 */
 	public function show(Inventory $inventory)
 	{
-			//
+		return Inertia::render("Dashboard/Management/PPE/Detail/index", [
+			"inventory" => $inventory->load([
+				"bound" => fn($q) => $q->with([
+					"creator" => fn($qn) => $qn->select("employee_id", "firstname", "lastname")
+				])
+			]),
+			"employee" => Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
+				->where("is_deleted", 0)
+				->where("sub_id", auth()->user()->subscriber_id)
+				->get()
+		]);
 	}
 
 	/**
@@ -128,4 +145,51 @@ class InventoryController extends Controller
 	{
 			//
 	}
+
+
+	public function add_remove_stock(Inventory $inventory, Request $request) {
+		$request->validate([
+			"qty" => 'required|integer',
+			"type" => 'required|string'
+		]);
+
+		$inventoryBound = new InventoryBound;
+		$inventoryBound->inventory_id = $inventory->inventory_id;
+		$inventoryBound->previous_qty = $inventory->current_stock_qty;
+		$inventoryBound->qty = $request->qty;
+
+		if($request->type === "add") {
+			$user = auth()->user();
+			$newQty = $inventory->current_stock_qty + $request->qty;
+
+			
+			$inventoryBound->type = "inbound";
+			$inventoryBound->requested_by_employee = (string)$user->user_id;
+			$inventoryBound->requested_by_location = NULL;
+
+			$inventory->current_stock_qty = $newQty;
+		}else if($request->type === "remove" && ($request->employee_id !== null || $request->location !== null)) {
+			$newQty = $inventory->current_stock_qty - $request->qty;
+
+			$inventoryBound->type = "outbound";
+			$inventoryBound->requested_by_employee = $request->employee_id ? (string)$request->employee_id : null;
+			$inventoryBound->requested_by_location = $request->location;
+
+			$inventory->current_stock_qty = $newQty;
+		}else {
+			abort(500);
+		}
+
+		$inventoryBound->save();
+		$inventory->save();
+
+
+		return redirect()->back()
+		->with("message", $request->type === "add" ? "Re-stocked successfully!" : "Unstock successfully!")
+		->with("type", "success");
+
+	}
+
+
+
 }

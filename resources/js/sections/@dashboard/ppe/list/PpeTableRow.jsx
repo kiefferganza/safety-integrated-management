@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { sentenceCase } from 'change-case';
 import { currencies } from '@/_mock/arrays/_currencies';
 // @mui
-import { Stack, Button, TableRow, Checkbox, MenuItem, TableCell, IconButton, Link as MuiLink } from '@mui/material';
+import { Stack, Button, TableRow, Checkbox, MenuItem, TableCell, IconButton, Link as MuiLink, Divider } from '@mui/material';
 // utils
 import { fDate } from '@/utils/formatTime';
 import { fCurrencyNumber } from '@/utils/formatNumber';
@@ -15,6 +15,7 @@ import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
 import { Link } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from '@/routes/paths';
+import { AddRemoveStockDialog } from '../portal/AddRemoveStockDialog';
 
 // ----------------------------------------------------------------------
 
@@ -30,9 +31,31 @@ PpeTableRow.propTypes = {
 export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow, onEditRow }) {
 	const { item, img_src, date_created, date_updated, status, item_price, item_currency, current_stock_qty, min_qty, try: unit, slug } = row;
 
+	const [openStock, setOpenStock] = useState(false);
+
+	const [stockType, setStockType] = useState("");
+
 	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [openPopover, setOpenPopover] = useState(null);
+
+	const handleAddStock = () => {
+		handleClosePopover();
+		setStockType("add");
+		setOpenStock(true);
+	}
+
+	const handleRemoveStock = () => {
+		handleClosePopover();
+		setStockType("remove");
+		setOpenStock(true);
+	}
+
+	const handleCloseStock = () => {
+		setStockType("");
+		setOpenStock(false);
+	}
+
 
 	const handleOpenConfirm = () => {
 		setOpenConfirm(true);
@@ -68,7 +91,7 @@ export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow, 
 							disabledEffect
 							visibleByDefault
 							alt={item}
-							src={`/storage/media/photos/inventory/${img_src}`}
+							src={img_src ? `/storage/media/photos/inventory/${img_src}` : '/storage/assets/placeholder.svg'}
 							sx={{ borderRadius: 1.5, width: 48, height: 48 }}
 						/>
 
@@ -108,6 +131,33 @@ export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow, 
 			</TableRow>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 140 }}>
+				<MenuItem onClick={handleAddStock} sx={{ color: 'success.main' }}>
+					<Iconify icon="eva:plus-fill" />
+					Add
+				</MenuItem>
+				<MenuItem onClick={handleRemoveStock} sx={{ color: 'warning.main' }}>
+					<Iconify icon="eva:minus-fill" />
+					Remove
+				</MenuItem>
+				<Divider />
+				<MenuItem
+					href={PATH_DASHBOARD.ppe.view(slug)}
+					component={Link}
+					onClick={handleClosePopover}
+				>
+					<Iconify icon="eva:eye-fill" />
+					View
+				</MenuItem>
+				<MenuItem
+					onClick={() => {
+						onEditRow();
+						handleClosePopover();
+					}}
+				>
+					<Iconify icon="eva:edit-fill" />
+					Edit
+				</MenuItem>
+				<Divider />
 				<MenuItem
 					onClick={() => {
 						handleOpenConfirm();
@@ -117,16 +167,6 @@ export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow, 
 				>
 					<Iconify icon="eva:trash-2-outline" />
 					Delete
-				</MenuItem>
-
-				<MenuItem
-					onClick={() => {
-						onEditRow();
-						handleClosePopover();
-					}}
-				>
-					<Iconify icon="eva:edit-fill" />
-					Edit
 				</MenuItem>
 			</MenuPopover>
 
@@ -140,6 +180,12 @@ export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow, 
 						Delete
 					</Button>
 				}
+			/>
+			<AddRemoveStockDialog
+				open={openStock}
+				onClose={handleCloseStock}
+				type={stockType}
+				inventory={row}
 			/>
 		</>
 	);

@@ -30,13 +30,16 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            Route::middleware('web')
-                ->prefix('api')
-                ->group(base_path('routes/api.php'));
+					Route::middleware('web')
+							->prefix('api')
+							->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
+					Route::middleware('web')
+							->group(base_path('routes/web.php'));
         });
+				Route::bind('inventory', function ($value) {
+					return \App\Models\Inventory::where('inventory_id', $value)->where("is_removed", 0)->orWhere('slug', $value)->firstOrFail();
+			});
     }
 
     /**

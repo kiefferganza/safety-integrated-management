@@ -60,3 +60,11 @@ export function getDocumentReviewStatus (status) {
 	}
 	return { statusText, statusClass };
 }
+
+
+export function getInventoryStatus (qty, minQty) {
+	if (qty <= 0) return "out_of_stock";
+	if (qty >= minQty) return "full";
+	if (minQty >= qty) return "low_stock"
+	return "in_stock"
+}
