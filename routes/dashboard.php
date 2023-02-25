@@ -171,6 +171,7 @@ Route::middleware('auth')->group(function ()
 	Route::post('dashboard/ppe/product/add-remove-stock/{inventory}', [InventoryController::class, "add_remove_stock"]);
 	Route::get('dashboard/ppe/new', [InventoryController::class, "create"])->name('ppe.management.create');
 	Route::post('dashboard/ppe/new', [InventoryController::class, "store"])->name('ppe.management.store');
+	Route::post('dashboard/ppe/delete', [InventoryController::class, "destroy"])->name('ppe.management.destroy');
 
 
 

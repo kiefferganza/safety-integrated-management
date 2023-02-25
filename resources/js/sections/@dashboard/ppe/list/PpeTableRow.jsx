@@ -15,7 +15,7 @@ import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
 import { Link } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from '@/routes/paths';
-import { AddRemoveStockDialog } from '../portal/AddRemoveStockDialog';
+const { AddRemoveStockDialog } = await import('../portal/AddRemoveStockDialog');
 
 // ----------------------------------------------------------------------
 

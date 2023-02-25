@@ -9,7 +9,7 @@ import { fDate } from '@/utils/formatTime';
 // components
 import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
-import { AddRemoveStockDialog } from '../portal/AddRemoveStockDialog';
+const { AddRemoveStockDialog } = await import('../portal/AddRemoveStockDialog');
 
 // ----------------------------------------------------------------------
 

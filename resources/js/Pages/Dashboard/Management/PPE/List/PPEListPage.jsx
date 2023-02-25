@@ -1,9 +1,11 @@
 
 import { useState, useEffect } from 'react';
+import { useSwal } from '@/hooks/useSwal';
 // @mui
 import { Card, Table, Button, Tooltip, TableBody, Container, IconButton, TableContainer, Stack, Divider, useTheme, Tabs, Tab } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
+import { Inertia } from '@inertiajs/inertia';
 // utils
 import { fTimestamp } from '@/utils/formatTime';
 // components
@@ -50,6 +52,7 @@ const STATUS_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function PPEListPage ({ inventory }) {
+	const { load, stop } = useSwal();
 	const {
 		dense,
 		page,
@@ -108,8 +111,6 @@ export default function PPEListPage ({ inventory }) {
 		filterEndDate
 	});
 
-	const dataInPage = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
 	const denseHeight = dense ? 60 : 80;
 
 	const isFiltered = filterByStatus !== "all" || filterStartDate !== null || filterEndDate !== null || filterName !== '' || !!filterStatus.length;
@@ -153,36 +154,32 @@ export default function PPEListPage ({ inventory }) {
 	};
 
 	const handleDeleteRow = (id) => {
-		const deleteRow = tableData.filter((row) => row.id !== id);
-		setSelected([]);
-		setTableData(deleteRow);
-
-		if (page > 0) {
-			if (dataInPage.length < 2) {
-				setPage(page - 1);
+		Inertia.post(route('ppe.management.destroy'), { ids: [id] }, {
+			preserveScroll: true,
+			preserveState: true,
+			onStart () {
+				load("Deleting item", "please wait...")
+			},
+			onFinish () {
+				setPage(0);
+				stop();
 			}
-		}
+		});
 	};
 
 	const handleDeleteRows = (selected) => {
-		const deleteRows = tableData.filter((row) => !selected.includes(row.id));
-		setSelected([]);
-		setTableData(deleteRows);
-
-		if (page > 0) {
-			if (selected.length === dataInPage.length) {
-				setPage(page - 1);
-			} else if (selected.length === dataFiltered.length) {
+		Inertia.post(route('ppe.management.destroy'), { ids: selected }, {
+			preserveScroll: true,
+			preserveState: true,
+			onStart () {
+				load("Deleting item", "please wait...")
+			},
+			onFinish () {
 				setPage(0);
-			} else if (selected.length > dataInPage.length) {
-				const newPage = Math.ceil((tableData.length - selected.length) / rowsPerPage) - 1;
-				setPage(newPage);
+				setSelected([]);
+				stop();
 			}
-		}
-	};
-
-	const handleEditRow = (id) => {
-		// navigate(PATH_DASHBOARD.eCommerce.edit(paramCase(id)));
+		});
 	};
 
 	const handleResetFilter = () => {

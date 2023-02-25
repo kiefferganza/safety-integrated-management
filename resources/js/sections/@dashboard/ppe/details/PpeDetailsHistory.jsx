@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 // mui
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useTheme } from "@mui/material"
+import { Table, TableBody, TableCell, TableContainer, TableRow, useTheme } from "@mui/material"
 // utils
-import { fDate, fDateTime, fTimestamp } from "@/utils/formatTime";
+import { fDateTime } from "@/utils/formatTime";
 // Components
 import {
 	useTable,
@@ -45,7 +45,6 @@ export const PpeDetailsHistory = ({ bound, filterName, setFilterName }) => {
 		defaultDense: true,
 		defaultRowsPerPage: 25
 	});
-	const theme = useTheme();
 	const [tableData, setTableData] = useState([]);
 
 	const [filterType, setFilterType] = useState("all");
@@ -73,8 +72,6 @@ export const PpeDetailsHistory = ({ bound, filterName, setFilterName }) => {
 		filterStartDate,
 		filterEndDate
 	});
-
-	const dataInPage = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
 	const denseHeight = dense ? 64 : 80;
 

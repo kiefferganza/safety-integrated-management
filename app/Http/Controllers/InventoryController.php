@@ -138,12 +138,18 @@ class InventoryController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 *
-	 * @param  \App\Models\Inventory  $inventory
+	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroy(Inventory $inventory)
+	public function destroy(Request $request)
 	{
-			//
+		$request->validate(["ids" => 'array|min:1']);
+
+		Inventory::whereIn("inventory_id", $request->ids)->update(["is_removed" => 1]);
+
+		return redirect()->back()
+		->with("message", count($request->ids) . " items deleted successfully!")
+		->with("type", "success");
 	}
 
 
