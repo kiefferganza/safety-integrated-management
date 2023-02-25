@@ -7,10 +7,10 @@ import { Inertia } from "@inertiajs/inertia";
 import { PATH_DASHBOARD } from "@/routes/paths";
 import { useSwal } from "@/hooks/useSwal";
 // mui
-import { Autocomplete, Button, Dialog, DialogContent, DialogTitle, Divider, Grid, Stack, TextField, Typography } from "@mui/material";
+const { Autocomplete, Button, Dialog, DialogContent, DialogTitle, Divider, Grid, Stack, TextField, Typography } = await import("@mui/material");
 // Components
 import { RHFRadioGroup, RHFTextField } from "@/Components/hook-form";
-const Image = await import("@/Components/image/Image");
+const { Image } = await import("@/Components/image/Image");
 import FormProvider from "@/Components/hook-form/FormProvider";
 
 export const AddRemoveStockDialog = ({ open, onClose, type = "add", inventory, ...other }) => {

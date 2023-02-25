@@ -209,6 +209,5 @@ function applyFilter ({ inputData, comparator, filterName, filterType, filterSta
 				new Date(product.date).setHours(0, 0, 0, 0) <= endDateTimestamp
 		);
 	}
-	console.log(inputData)
 	return inputData;
 }
