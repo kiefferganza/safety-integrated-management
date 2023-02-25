@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useSwal } from '@/hooks/useSwal';
 // @mui
-import { Card, Table, Button, Tooltip, TableBody, Container, IconButton, TableContainer, Stack, Divider, useTheme, Tabs, Tab } from '@mui/material';
+const { Card, Table, Button, Tooltip, TableBody, Container, IconButton, TableContainer, Stack, Divider, useTheme, Tabs, Tab } = await import('@mui/material');
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 import { Inertia } from '@inertiajs/inertia';

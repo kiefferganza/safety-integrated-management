@@ -40,7 +40,7 @@ PpeNewEditForm.propTypes = {
 	currentProduct: PropTypes.object,
 };
 
-export default function PpeNewEditForm ({ isEdit, currentProduct }) {
+export function PpeNewEditForm ({ isEdit, currentProduct }) {
 	const { load, stop } = useSwal();
 	const { errors: resErrors } = usePage().props;
 

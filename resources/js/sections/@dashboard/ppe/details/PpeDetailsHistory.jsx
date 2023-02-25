@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 // mui
-import { Table, TableBody, TableCell, TableContainer, TableRow, useTheme } from "@mui/material"
+const { Table, TableBody, TableCell, TableContainer, TableRow } = await import("@mui/material");
 // utils
 import { fDateTime } from "@/utils/formatTime";
 // Components
@@ -15,7 +15,7 @@ import {
 } from '@/Components/table';
 import Scrollbar from "@/Components/scrollbar"
 import Label from "@/Components/label";
-import PpeDetailTableToolbar from "./PpeDetailTableToolbar";
+const { PpeDetailTableToolbar } = await import("./PpeDetailTableToolbar");
 
 const TABLE_HEAD = [
 	{ id: 'inventory_bound_id', label: '#', align: 'left' },

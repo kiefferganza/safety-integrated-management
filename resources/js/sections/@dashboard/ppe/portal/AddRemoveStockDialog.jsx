@@ -3,15 +3,15 @@ import { usePage } from "@inertiajs/inertia-react";
 import { useForm } from "react-hook-form";
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Inertia } from "@inertiajs/inertia";
+import { PATH_DASHBOARD } from "@/routes/paths";
+import { useSwal } from "@/hooks/useSwal";
 // mui
 import { Autocomplete, Button, Dialog, DialogContent, DialogTitle, Divider, Grid, Stack, TextField, Typography } from "@mui/material";
 // Components
 import { RHFRadioGroup, RHFTextField } from "@/Components/hook-form";
-import Image from "@/Components/image";
+const Image = await import("@/Components/image/Image");
 import FormProvider from "@/Components/hook-form/FormProvider";
-import { Inertia } from "@inertiajs/inertia";
-import { PATH_DASHBOARD } from "@/routes/paths";
-import { useSwal } from "@/hooks/useSwal";
 
 export const AddRemoveStockDialog = ({ open, onClose, type = "add", inventory, ...other }) => {
 	const { load, stop } = useSwal();

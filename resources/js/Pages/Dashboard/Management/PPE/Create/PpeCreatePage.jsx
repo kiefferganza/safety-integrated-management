@@ -7,7 +7,7 @@ import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
 import { Head } from '@inertiajs/inertia-react';
-import PpeNewEditForm from '@/sections/@dashboard/ppe/PpeNewEditForm';
+const { PpeNewEditForm } = await import('@/sections/@dashboard/ppe/PpeNewEditForm');
 
 // ----------------------------------------------------------------------
 

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { sentenceCase } from 'change-case';
 // @mui
-import {
+const {
 	Stack,
 	Button,
 	Select,
@@ -12,7 +12,7 @@ import {
 	FormControl,
 	OutlinedInput,
 	InputAdornment,
-} from '@mui/material';
+} = await import('@mui/material');
 import { DatePicker } from '@mui/x-date-pickers';
 // components
 import Iconify from '@/Components/iconify';

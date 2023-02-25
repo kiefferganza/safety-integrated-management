@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { sentenceCase } from 'change-case';
 // @mui
-import { Stack, Divider, Typography, Button } from '@mui/material';
+const { Stack, Divider, Typography, Button } = await import('@mui/material');
 // utils
 import { fCurrencyNumberAndSymbol } from '@/utils/formatNumber';
 import { fDate } from '@/utils/formatTime';

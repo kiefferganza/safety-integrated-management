@@ -7,7 +7,7 @@ import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
 import { Head } from '@inertiajs/inertia-react';
-import PpeNewEditForm from '@/sections/@dashboard/ppe/PpeNewEditForm';
+const { PpeNewEditForm } = await import('@/sections/@dashboard/ppe/PpeNewEditForm');
 
 // ----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ export default function PpeEditPage ({ inventory }) {
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Edit product"
+					heading="Edit Product"
 					links={[
 						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{

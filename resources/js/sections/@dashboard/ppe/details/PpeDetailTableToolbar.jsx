@@ -36,7 +36,7 @@ const STATUS_OPTION = [
 	{ value: "outbound", label: "Outbound" },
 ];
 
-export default function PpeDetailTableToolbar ({
+export function PpeDetailTableToolbar ({
 	isFiltered,
 	onResetFilter,
 	filterType,

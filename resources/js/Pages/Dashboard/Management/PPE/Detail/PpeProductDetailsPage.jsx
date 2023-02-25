@@ -1,9 +1,9 @@
 import { useState } from 'react';
 // @mui
-import { Box, Tab, Tabs, Card, Grid, Divider, Container, Stack, TextField, InputAdornment, Button, Link } from '@mui/material';
+const { Box, Tab, Tabs, Card, Grid, Divider, Container, Stack, TextField, InputAdornment, Button } = await import('@mui/material');
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
-import { Head } from '@inertiajs/inertia-react';
+import { Head, Link } from '@inertiajs/inertia-react';
 // components
 import Markdown from '@/Components/markdown';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';

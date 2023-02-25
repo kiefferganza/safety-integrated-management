@@ -1,20 +1,21 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { sentenceCase } from 'change-case';
-import { currencies } from '@/_mock/arrays/_currencies';
+const { currencies } = await import('@/_mock/arrays/_currencies');
+import { PATH_DASHBOARD } from '@/routes/paths';
+import { Link } from '@inertiajs/inertia-react';
 // @mui
-import { Stack, Button, TableRow, Checkbox, MenuItem, TableCell, IconButton, Link as MuiLink, Divider } from '@mui/material';
+const { Stack, Button, TableRow, Checkbox, MenuItem, TableCell, IconButton, Divider } = await import('@mui/material');
+import { Link as MuiLink, } from '@mui/material';
 // utils
 import { fDate } from '@/utils/formatTime';
 import { fCurrencyNumber } from '@/utils/formatNumber';
 // components
 import Label from '@/Components/label';
-import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
-import { Link } from '@inertiajs/inertia-react';
-import { PATH_DASHBOARD } from '@/routes/paths';
+const { Image } = await import('@/Components/image/Image');
 const { AddRemoveStockDialog } = await import('../portal/AddRemoveStockDialog');
 
 // ----------------------------------------------------------------------
