@@ -100,23 +100,29 @@ class DocumentService {
 			$comment->save();
 		}else {
 			DocumentCommentReplies::where("document_id", $document->document_id)->where("reviewer_id", $user->emp_id)->update(["comment_status" => 1, "response_status" => 3]);
-			$doc_rev_sign = DocumentReviewerSign::where(["document_id" => $document->document_id, "user_id" => $user->emp_id])->first();
-			
-			if($doc_rev_sign && $file_name !== "") {
-				if(Storage::exists("public/media/docs/" . $doc_rev_sign->src)) {
-					Storage::delete("public/media/docs/" . $doc_rev_sign->src);
-				}
-				$doc_rev_sign->src = $file_name;
-				$doc_rev_sign->save(); 
-			}else {
-				DocumentReviewerSign::create([
-					"document_id" => $document->document_id,
-					"user_id" => $user->emp_id,
-					"upload_date" => date('Y-m-d H:i:s'),
-					"src" => $file_name,
-					"is_deleted" => 0
-				]);
+		}
+		$allCloseCount = DocumentCommentReplies::where("document_id", $document->document_id)->where("reviewer_id", $user->emp_id)->where("comment_status", 0)->count();
+		if($allCloseCount === 0) {
+			$this->updateReviewStatus($document, $file_name, $user);
+		}
+	}
+
+	public function updateReviewStatus(Document $document, $file_name, $user) {
+		$doc_rev_sign = DocumentReviewerSign::where(["document_id" => $document->document_id, "user_id" => $user->emp_id])->first();	
+		if($doc_rev_sign && $file_name !== "") {
+			if(Storage::exists("public/media/docs/" . $doc_rev_sign->src)) {
+				Storage::delete("public/media/docs/" . $doc_rev_sign->src);
 			}
+			$doc_rev_sign->src = $file_name;
+			$doc_rev_sign->save(); 
+		}else {
+			DocumentReviewerSign::create([
+				"document_id" => $document->document_id,
+				"user_id" => $user->emp_id,
+				"upload_date" => date('Y-m-d H:i:s'),
+				"src" => $file_name,
+				"is_deleted" => 0
+			]);
 		}
 	}
 

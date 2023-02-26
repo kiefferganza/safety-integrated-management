@@ -223,12 +223,12 @@ class DocumentController extends Controller
 			]);
 		}
 
-		if($document->rev === null){
-			$document->rev = 1;
-		}else {
-			$document->increment("rev");
-		}
-		$document->save();
+		// if($document->rev === null){
+		// 	$document->rev = 1;
+		// }else {
+		// 	$document->increment("rev");
+		// }
+		// $document->save();
 
 		return redirect()->back()
 			->with("message", "Comment added successfully!")
@@ -292,6 +292,7 @@ class DocumentController extends Controller
 
 
 	public function approve_or_fail_document(Document $document, Request $request) {
+		$user = auth()->user();
 		if($request->hasFile('src')) {
 			$documentService = new DocumentService;
 			$user = auth()->user();
@@ -309,7 +310,7 @@ class DocumentController extends Controller
 			// $docFile->update([
 			// 	"src" => $file_name,
 			// ]);
-			// $document->save();
+			$document->save();
 		}else {
 			abort(500);
 		}

@@ -20,6 +20,8 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 	const [selectedStatus, setSelectedStatus] = useState("");
 	const [actionResponseId, setActionResponseId] = useState(null);
 
+	// console.log({ docType })
+
 	const docStat = document.approval_sign ? getDocumentReviewStatus(document.status) : getDocumentStatus(document.status);
 	// reviewer
 	const canReviewStatus = checkCanReview({ docType, document, user });
@@ -386,6 +388,8 @@ function ReviewStatus ({ canReviewStatus, onClick, isSelected = false, children,
 
 function checkCanReview ({ docType, document, user }) {
 	const type = typeof docType === "string" ? docType : "review";
+	const currReviewSign = document?.reviewer_sign?.find(revS => revS?.user_id === user?.emp_id);
+	if (type === "review" && currReviewSign) return false;
 	if (document.approval_sign !== null) return false;
 	if (type !== "review") return false;
 	const reviewerComments = document.comments.filter(com => com.reviewer_id === user?.employee?.employee_id);
