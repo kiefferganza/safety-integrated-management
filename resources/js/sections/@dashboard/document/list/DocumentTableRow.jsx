@@ -3,8 +3,7 @@ import { useState } from 'react';
 import { Link, } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from '@/routes/paths';
 // @mui
-import {
-	// Link,
+const {
 	Stack,
 	Button,
 	Divider,
@@ -13,7 +12,7 @@ import {
 	MenuItem,
 	TableCell,
 	IconButton
-} from '@mui/material';
+} = await import('@mui/material');
 // utils
 import { fDate } from '@/utils/formatTime';
 // components
@@ -107,57 +106,45 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 						>
 							<Iconify icon={openCollapse ? "material-symbols:keyboard-arrow-up" : "material-symbols:keyboard-arrow-down"} />
 						</IconButton>
-						{row.docType !== "documentControl" ? (
-							<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
-								<Iconify icon="eva:more-vertical-fill" />
-							</IconButton>
-						) : (
-							<IconButton
-								component={Link}
-								href={PATH_DASHBOARD.fileManager.viewDocument(folder.folder_id, row.id)}
-							>
-								<Iconify icon="eva:eye-fill" />
-							</IconButton>
-						)}
+						<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
+							<Iconify icon="eva:more-vertical-fill" />
+						</IconButton>
 					</Stack>
 				</TableCell>
 			</TableRow>
 			<DocumentTableSubRow row={row} open={openCollapse} />
+			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
+				<MenuItem
+					component={Link}
+					href={PATH_DASHBOARD.fileManager.viewDocument(folder.folder_id, row.id)}
+					onClick={handleClosePopover}
+				>
+					<Iconify icon="eva:eye-fill" />
+					View
+				</MenuItem>
+				<MenuItem
+					onClick={handleOpenFileList}
+				>
+					<Iconify icon="heroicons:document-magnifying-glass-20-solid" />
+					View Files
+				</MenuItem>
+				{row.docType === "submitted" && (
+					<>
+						<Divider sx={{ borderStyle: 'dashed' }} />
 
-			{row.docType !== "documentControl" && (
-				<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
-					<MenuItem
-						component={Link}
-						href={PATH_DASHBOARD.fileManager.viewDocument(folder.folder_id, row.id)}
-						onClick={handleClosePopover}
-					>
-						<Iconify icon="eva:eye-fill" />
-						View
-					</MenuItem>
-					<MenuItem
-						onClick={handleOpenFileList}
-					>
-						<Iconify icon="heroicons:document-magnifying-glass-20-solid" />
-						View Files
-					</MenuItem>
-					{row.docType === "submitted" && (
-						<>
-							<Divider sx={{ borderStyle: 'dashed' }} />
-
-							<MenuItem
-								onClick={() => {
-									handleOpenConfirm();
-									handleClosePopover();
-								}}
-								sx={{ color: 'error.main' }}
-							>
-								<Iconify icon="eva:trash-2-outline" />
-								Delete
-							</MenuItem>
-						</>
-					)}
-				</MenuPopover>
-			)}
+						<MenuItem
+							onClick={() => {
+								handleOpenConfirm();
+								handleClosePopover();
+							}}
+							sx={{ color: 'error.main' }}
+						>
+							<Iconify icon="eva:trash-2-outline" />
+							Delete
+						</MenuItem>
+					</>
+				)}
+			</MenuPopover>
 
 			<ConfirmDialog
 				open={openConfirm}

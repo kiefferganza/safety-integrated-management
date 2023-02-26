@@ -130,9 +130,8 @@ export const DocumentListPage = ({ folder, user }) => {
 					},
 					docStatus: getDocumentStatus(curr.status)
 				};
-				console.log(curr);
+
 				if (curr.status === "0") {
-					// if(curr.approval_employee && )
 					const isForApproval = curr.reviewer_sign.length >= curr.reviewer_employees.length;
 					if (isForApproval) {
 						const stat = curr.status === "0" ? curr?.reviewer_employees[0]?.pivot.review_status : curr.status
