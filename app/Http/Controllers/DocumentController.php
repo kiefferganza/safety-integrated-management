@@ -305,16 +305,11 @@ class DocumentController extends Controller
 			}
 	
 			// Add file to response file and upload to storage
-			$docFile = $document->files[0];
-			$docFile->update([
-				"src" => $file_name,
-			]);
-			if($document->rev === null){
-				$document->rev = 1;
-			}else {
-				$document->increment("rev");
-			}
-			$document->save();
+			// $docFile = $document->files[0];
+			// $docFile->update([
+			// 	"src" => $file_name,
+			// ]);
+			// $document->save();
 		}else {
 			abort(500);
 		}
