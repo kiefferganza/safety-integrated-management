@@ -91,7 +91,7 @@ class DocumentService {
 			$documentReviwer->review_status = $request->status;
 			$documentReviwer->save();
 		}
-		if($request->response_id) {
+		if(isset($request->response_id)) {
 			$comment = DocumentCommentReplies::find($request->response_id);
 			if($comment->response_status === 2) {
 				$comment->comment_status = 1;
@@ -107,7 +107,7 @@ class DocumentService {
 					Storage::delete("public/media/docs/" . $doc_rev_sign->src);
 				}
 				$doc_rev_sign->src = $file_name;
-				$doc_rev_sign->save();
+				$doc_rev_sign->save(); 
 			}else {
 				DocumentReviewerSign::create([
 					"document_id" => $document->document_id,

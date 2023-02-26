@@ -3,7 +3,7 @@ const { Box, Button, IconButton, TableCell, TableRow, Tooltip, MenuItem } = awai
 import Label from '@/Components/label/Label';
 import Iconify from '@/Components/iconify/Iconify';
 import ConfirmDialog from '@/Components/confirm-dialog/ConfirmDialog';
-import { DocumentReplyDialog } from '../portal/DocumentReplyDialog';
+const { DocumentReplyDialog } = await import('../portal/DocumentReplyDialog');
 import MenuPopover from '@/Components/menu-popover';
 
 const STATUSES = [

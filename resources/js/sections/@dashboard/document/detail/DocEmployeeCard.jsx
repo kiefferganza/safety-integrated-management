@@ -23,7 +23,7 @@ const StyledOverlay = styled('div')(({ theme }) => ({
 	backgroundColor: alpha(theme.palette.grey[900], 0.64),
 }));
 
-export default function DocEmployeeCard ({ employee, latestUploadedFile }) {
+export function DocEmployeeCard ({ employee, latestUploadedFile }) {
 	const { companies } = usePage().props;
 	const company = companies.find(c => c.company_id === +employee.company);
 

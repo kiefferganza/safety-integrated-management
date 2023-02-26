@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Button, Divider, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+const { Box, Button, Divider, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } = await import('@mui/material');
 import { getDocumentReviewStatus, getDocumentStatus } from '@/utils/formatStatuses';
 // Components
 import Iconify from '@/Components/iconify';
@@ -9,7 +9,7 @@ import DocumentComments from './DocumentComments';
 import { Inertia } from '@inertiajs/inertia';
 import { PATH_DASHBOARD } from '@/routes/paths';
 import { useSwal } from '@/hooks/useSwal';
-import DocumentApproveFailDialog from '../portal/DocumentApproveFailDialog';
+const { DocumentApproveFailDialog } = await import('../portal/DocumentApproveFailDialog');
 const { DocumentCommentDialog } = await import('../portal/DocumentCommentDialog');
 
 const DocumentDetailBody = ({ document, docType, user, positions }) => {

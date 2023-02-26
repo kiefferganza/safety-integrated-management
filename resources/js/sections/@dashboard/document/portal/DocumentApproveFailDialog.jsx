@@ -30,7 +30,7 @@ const approveFailSchema = Yup.object().shape({
 	file: Yup.string().required("Please attach a file for the document.")
 });
 
-const DocumentApproveFailDialog = ({
+export const DocumentApproveFailDialog = ({
 	title = 'Action',
 	open,
 	onClose,
@@ -146,5 +146,3 @@ DocumentApproveFailDialog.propTypes = {
 	docType: PropTypes.string,
 	documentId: PropTypes.number,
 };
-
-export default DocumentApproveFailDialog

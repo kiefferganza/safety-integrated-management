@@ -2,37 +2,22 @@ import { fDate } from '@/utils/formatTime';
 // MUI
 const { Box, Stack, Typography, Grid, Card, Divider } = await import('@mui/material');
 // Component
-import DocEmployeeCard from './DocEmployeeCard';
+const { DocEmployeeCard } = await import('./DocEmployeeCard');
 const { Image } = await import('@/Components/image/Image');
 
-const DocumentDetailHeader = ({ title, cms, document, user, latestUploadedFile }) => {
+const DocumentDetailHeader = ({ title, cms, document, latestUploadedFile }) => {
 	const {
 		title: documentTitle,
-		document_id,
 		originator,
 		sequence_no,
 		rev,
-		description,
-		user_id,
-		approval_id,
-		status,
 		date_uploaded,
-		folder_id,
 		project_code,
 		discipline,
 		document_type,
 		document_zone,
 		document_level,
-		employee,
-		comments,
-		reviewer_sign,
-		approval_sign,
-		files,
-		approval_employee,
-		reviewer_employees,
 	} = document;
-
-	// console.log(user)
 
 	return (
 		<Box>

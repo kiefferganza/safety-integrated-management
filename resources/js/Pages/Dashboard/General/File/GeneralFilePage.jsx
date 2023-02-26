@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Box, Stack, Typography } from '@mui/material';
+const { Grid, Container, Box, Stack, Typography } = await import('@mui/material');
 // routes\
 import { PATH_DASHBOARD } from '@/routes/paths';
 // hooks
