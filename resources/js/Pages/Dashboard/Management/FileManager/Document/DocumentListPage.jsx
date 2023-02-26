@@ -147,20 +147,22 @@ export const DocumentListPage = ({ folder, user }) => {
 							docObj.docStatus = getDocumentStatus(curr.status);
 						}
 					}
+
+					if (curr.employee.employee_id === userEmpId) {
+						acc.push({ ...docObj, docType: "submitted" });
+					}
+					const isReview = curr.reviewer_employees.findIndex(rev => rev.employee_id === userEmpId);
+					if (isReview !== -1) {
+						acc.push({ ...docObj, docType: "review" });
+					}
+					if (curr?.approval_employee?.employee_id === userEmpId) {
+						acc.push({ ...docObj, docType: "approve" });
+					}
+
 				} else {
 					docObj.docStatus = getDocumentReviewStatus(curr.status);
 				}
 
-				if (curr.employee.employee_id === userEmpId && curr.status === "0") {
-					acc.push({ ...docObj, docType: "submitted" });
-				}
-				const isReview = curr.reviewer_employees.findIndex(rev => rev.employee_id === userEmpId);
-				if (isReview !== -1) {
-					acc.push({ ...docObj, docType: "review" });
-				}
-				if (curr?.approval_employee?.employee_id === userEmpId) {
-					acc.push({ ...docObj, docType: "approve" });
-				}
 				acc.push({ ...docObj, docType: "documentControl" })
 			}
 			return acc;
