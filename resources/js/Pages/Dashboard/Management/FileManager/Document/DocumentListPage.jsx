@@ -127,23 +127,27 @@ export const DocumentListPage = ({ folder, user }) => {
 						...curr.employee,
 						position: curr.employee.position,
 						department: curr.employee.department
-					},
-					docStatus: getDocumentStatus(curr.status)
-				};
-				const isForApproval = curr.reviewer_sign.length >= curr.reviewer_employees.length;
-				if (isForApproval) {
-					const stat = curr.status === "0" ? curr?.reviewer_employees[0]?.pivot.review_status : curr.status
-					docObj.docStatus = curr.approval_employee && curr.status !== "0" ? { statusText: "FOR APPROVAL", statusClass: "info" } : getDocumentStatus(stat);
-				} else {
-					const isInReview = curr.reviewer_employees.some(rev => rev.pivot.review_status !== "0");
-					if (curr.status === "0" && isInReview) {
-						docObj.docStatus = {
-							statusText: "FOR REVIEW",
-							statusClass: "primary",
-						};
-					} else {
-						docObj.docStatus = getDocumentStatus(curr.status);
 					}
+				};
+
+				if (curr.status === "0") {
+					const isForApproval = curr.reviewer_sign.length >= curr.reviewer_employees.length;
+					if (isForApproval) {
+						const stat = curr.status === "0" ? curr?.reviewer_employees[0]?.pivot.review_status : curr.status
+						docObj.docStatus = curr.approval_employee ? { statusText: "FOR APPROVAL", statusClass: "info" } : getDocumentStatus(stat);
+					} else {
+						const isInReview = curr.reviewer_employees.some(rev => rev.pivot.review_status !== "0");
+						if (curr.status === "0" && isInReview) {
+							docObj.docStatus = {
+								statusText: "FOR REVIEW",
+								statusClass: "primary",
+							};
+						} else {
+							docObj.docStatus = getDocumentStatus(curr.status);
+						}
+					}
+				} else {
+					docObj.docStatus = getDocumentStatus(curr.status);
 				}
 
 				if (curr.employee.employee_id === userEmpId && curr.status === "0") {
