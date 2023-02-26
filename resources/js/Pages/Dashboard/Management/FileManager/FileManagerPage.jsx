@@ -56,7 +56,7 @@ export default function FileManagerPage ({ folders }) {
 
 	const [newFolderName, setNewFolderName] = useState("");
 
-	const [view, setView] = useState('grid');
+	const [view, setView] = useState('list');
 
 	const [filterName, setFilterName] = useState('');
 

@@ -17,7 +17,7 @@ import { useSettingsContext } from '@/Components/settings';
 import {
 	FileGeneralWidget,
 	FileGeneralUpgrade,
-	FileGeneralRecentCard,
+	// FileGeneralRecentCard,
 	FileGeneralDataActivity,
 	FileGeneralStorageOverview,
 } from '@/sections/@dashboard/general/file';
@@ -214,7 +214,7 @@ export default function GeneralFilePage () {
 								</Stack>
 							</Scrollbar>
 
-							<FilePanel
+							{/* <FilePanel
 								title="Recent Files"
 								link={PATH_DASHBOARD.fileManager}
 								onOpen={handleOpenUploadFile}
@@ -225,7 +225,7 @@ export default function GeneralFilePage () {
 								{_files.slice(0, 5).map((file) => (
 									<FileGeneralRecentCard key={file.id} file={file} onDelete={() => console.log('DELETE', file.id)} />
 								))}
-							</Stack>
+							</Stack> */}
 						</div>
 					</Grid>
 
