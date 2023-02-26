@@ -22,7 +22,7 @@ const {
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils/hooks
 import { formatCms } from '@/utils/tablesUtils';
-import { getDocumentStatus } from '@/utils/formatStatuses';
+import { getDocumentReviewStatus, getDocumentStatus } from '@/utils/formatStatuses';
 import { useSwal } from '@/hooks/useSwal';
 // components
 import Iconify from '@/Components/iconify';
@@ -127,10 +127,12 @@ export const DocumentListPage = ({ folder, user }) => {
 						...curr.employee,
 						position: curr.employee.position,
 						department: curr.employee.department
-					}
+					},
+					docStatus: getDocumentStatus(curr.status)
 				};
-
+				console.log(curr);
 				if (curr.status === "0") {
+					// if(curr.approval_employee && )
 					const isForApproval = curr.reviewer_sign.length >= curr.reviewer_employees.length;
 					if (isForApproval) {
 						const stat = curr.status === "0" ? curr?.reviewer_employees[0]?.pivot.review_status : curr.status
@@ -147,7 +149,7 @@ export const DocumentListPage = ({ folder, user }) => {
 						}
 					}
 				} else {
-					docObj.docStatus = getDocumentStatus(curr.status);
+					docObj.docStatus = getDocumentReviewStatus(curr.status);
 				}
 
 				if (curr.employee.employee_id === userEmpId && curr.status === "0") {
