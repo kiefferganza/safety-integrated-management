@@ -97,7 +97,7 @@ export const DocumentListPage = ({ folder, user }) => {
 
 	const [filterName, setFilterName] = useState('');
 
-	const [filterType, setFilterType] = useState('submitted');
+	const [filterType, setFilterType] = useState('documentControl');
 
 	const [filterStatus, setFilterStatus] = useState('');
 
@@ -249,7 +249,7 @@ export const DocumentListPage = ({ folder, user }) => {
 
 	const handleResetFilter = () => {
 		setFilterName('');
-		setFilterType('submitted');
+		setFilterType('documentControl');
 		setFilterStartDate(null);
 		setFilterEndDate(null);
 		setFilterStatus('');

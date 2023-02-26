@@ -233,7 +233,6 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 			<Grid container spacing={3}>
 				<Grid item xs={12} md={8}>
 					<AppWelcome
-						// description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
 						title={`Health and Safety Management Software`}
 						description="The Fiafi Group Safety Management Software makes it simple to administer the Health and Safety program of an organization. Capture, monitor, and report safety program data, analyze trends, and gain insights from user- friendly interfaces, all while meeting workplace compliance requirements and reducing administrative work."
 						img={
