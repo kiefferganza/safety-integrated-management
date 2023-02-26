@@ -133,12 +133,12 @@ export const DocumentListPage = ({ folder, user }) => {
 				const isForApproval = curr.reviewer_sign.length >= curr.reviewer_employees.length;
 				if (isForApproval) {
 					const stat = curr.status === "0" ? curr?.reviewer_employees[0]?.pivot.review_status : curr.status
-					docObj.docStatus = curr.approval_employee ? { statusText: "FOR APPROVAL", statusClass: "info" } : getDocumentStatus(stat);
+					docObj.docStatus = curr.approval_employee && curr.status !== "0" ? { statusText: "FOR APPROVAL", statusClass: "info" } : getDocumentStatus(stat);
 				} else {
 					const isInReview = curr.reviewer_employees.some(rev => rev.pivot.review_status !== "0");
 					if (curr.status === "0" && isInReview) {
 						docObj.docStatus = {
-							statusText: "REVIEWED",
+							statusText: "FOR REVIEW",
 							statusClass: "primary",
 						};
 					} else {
@@ -146,7 +146,7 @@ export const DocumentListPage = ({ folder, user }) => {
 					}
 				}
 
-				if (curr.employee.employee_id === userEmpId) {
+				if (curr.employee.employee_id === userEmpId && curr.status === "0") {
 					acc.push({ ...docObj, docType: "submitted" });
 				}
 				const isReview = curr.reviewer_employees.findIndex(rev => rev.employee_id === userEmpId);
@@ -166,8 +166,7 @@ export const DocumentListPage = ({ folder, user }) => {
 
 	const denseHeight = dense ? 56 : 76;
 
-	const isFiltered =
-		filterType !== 'submitted' || filterName !== '' || !!filterStartDate || !!filterEndDate || filterStatus !== '';
+	const isFiltered = filterName !== '' || !!filterStartDate || !!filterEndDate || filterStatus !== '';
 
 	const isNotFound =
 		(!dataFiltered.length && !!filterName) ||
@@ -249,7 +248,6 @@ export const DocumentListPage = ({ folder, user }) => {
 
 	const handleResetFilter = () => {
 		setFilterName('');
-		setFilterType('documentControl');
 		setFilterStartDate(null);
 		setFilterEndDate(null);
 		setFilterStatus('');
