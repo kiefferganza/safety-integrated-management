@@ -115,7 +115,7 @@ export const PATH_DASHBOARD = {
 		civil: path(ROOTS_DASHBOARD, '/toolbox-talks/civil'),
 		electrical: path(ROOTS_DASHBOARD, '/toolbox-talks/electrical'),
 		mechanical: path(ROOTS_DASHBOARD, '/toolbox-talks/mechanical'),
-		camp: path(ROOTS_DASHBOARD, '/toolbox-talks/camp'),
+		camp: path(ROOTS_DASHBOARD, '/toolbox-talks/workshop'),
 		office: path(ROOTS_DASHBOARD, '/toolbox-talks/office'),
 		report: path(ROOTS_DASHBOARD, '/toolbox-talks/report'),
 	},

@@ -135,7 +135,7 @@ const navConfig = [
 					{ title: 'civil', path: PATH_DASHBOARD.toolboxTalks.civil },
 					{ title: 'electrical', path: PATH_DASHBOARD.toolboxTalks.electrical },
 					{ title: 'mechanical', path: PATH_DASHBOARD.toolboxTalks.mechanical },
-					{ title: 'camp', path: PATH_DASHBOARD.toolboxTalks.camp },
+					{ title: 'workshop', path: PATH_DASHBOARD.toolboxTalks.camp },
 					{ title: 'office', path: PATH_DASHBOARD.toolboxTalks.office },
 					{ title: 'report', path: PATH_DASHBOARD.toolboxTalks.report },
 				]
