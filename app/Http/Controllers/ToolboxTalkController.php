@@ -146,4 +146,9 @@ class ToolboxTalkController extends Controller
 	}
 
 
+	public function statistic() {
+		return Inertia::render("Dashboard/Management/ToolboxTalk/Statistic/index");
+	}
+
+
 }

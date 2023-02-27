@@ -118,6 +118,7 @@ export const PATH_DASHBOARD = {
 		camp: path(ROOTS_DASHBOARD, '/toolbox-talks/workshop'),
 		office: path(ROOTS_DASHBOARD, '/toolbox-talks/office'),
 		report: path(ROOTS_DASHBOARD, '/toolbox-talks/report'),
+		statistic: path(ROOTS_DASHBOARD, '/toolbox-talks/statistic'),
 	},
 
 	// Incident

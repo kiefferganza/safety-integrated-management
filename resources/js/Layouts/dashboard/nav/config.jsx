@@ -138,6 +138,7 @@ const navConfig = [
 					{ title: 'workshop', path: PATH_DASHBOARD.toolboxTalks.camp },
 					{ title: 'office', path: PATH_DASHBOARD.toolboxTalks.office },
 					{ title: 'report', path: PATH_DASHBOARD.toolboxTalks.report },
+					{ title: 'statistic', path: PATH_DASHBOARD.toolboxTalks.statistic },
 				]
 			},
 

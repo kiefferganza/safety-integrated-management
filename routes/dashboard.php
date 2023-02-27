@@ -169,6 +169,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::get('/{tbt}/edit', [ToolboxTalkController::class, "edit"]);
 		Route::post('/{tbt}/edit', [ToolboxTalkController::class, "update"]);
 		Route::post('/delete', [ToolboxTalkController::class, "soft_delete"])->name('toolboxtalk.management.delete');
+		// Statistic
+		Route::get('/statistic', [ToolboxTalkController::class, "statistic"])->name('toolboxtalk.management.statistic');
 	});
 
 	/**

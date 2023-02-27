@@ -17,7 +17,7 @@ export default function useActiveLink (path, deep = true, hasChild = false, chil
 			if (url === path) return true;
 
 			if (pathSplit.length === 3) {
-				return urlSplit[1] === pathSplit[1] && urlSplit[2] === pathSplit[2];
+				return (urlSplit[1] === pathSplit[1] && urlSplit[2] === pathSplit[2]) || urlSplit[1] === pathSplit[1];
 			}
 
 			return pathSplit[2] ? (urlSplit[1] === pathSplit[1] || urlSplit[2] === pathSplit[2]) : (urlSplit[1] === pathSplit[1]);
