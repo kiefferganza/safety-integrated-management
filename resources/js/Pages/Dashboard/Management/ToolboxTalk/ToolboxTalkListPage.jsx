@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import {
+const {
 	Tab,
 	Tabs,
 	Card,
@@ -14,11 +14,11 @@ import {
 	Container,
 	IconButton,
 	TableContainer
-} from '@mui/material';
+} = await import('@mui/material');
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
-import { fDate, fTimestamp } from '@/utils/formatTime';
+import { fTimestamp } from '@/utils/formatTime';
 // components
 import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
@@ -40,7 +40,7 @@ import {
 import { Link } from '@inertiajs/inertia-react';
 import { useSwal } from '@/hooks/useSwal';
 import { Inertia } from '@inertiajs/inertia';
-import { ToolboxTalkTableRow, ToolboxTalkTableToolbar } from '@/sections/@dashboard/toolboxtalks/list';
+const { ToolboxTalkTableRow, ToolboxTalkTableToolbar } = await import('@/sections/@dashboard/toolboxtalks/list');
 import ToolboxTalkAnalytic from '@/sections/@dashboard/toolboxtalks/ToolboxTalkAnalytic';
 import { formatCms } from '@/utils/tablesUtils';
 import { endOfMonth } from 'date-fns';

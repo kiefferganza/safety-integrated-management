@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Stack, InputAdornment, TextField, Button, FormControl, InputLabel, Select, OutlinedInput, MenuItem, Checkbox, ListItemText } from '@mui/material';
+const { Stack, InputAdornment, TextField, Button, FormControl, InputLabel, Select, OutlinedInput, MenuItem, Checkbox, ListItemText } = await import('@mui/material');
 import { DatePicker } from '@mui/x-date-pickers';
 // components
 import Iconify from '@/Components/iconify';
@@ -41,7 +41,7 @@ ToolboxTalkTableToolbar.propTypes = {
 	selectType: PropTypes.bool
 };
 
-export default function ToolboxTalkTableToolbar ({
+export function ToolboxTalkTableToolbar ({
 	isFiltered,
 	filterName,
 	onFilterName,

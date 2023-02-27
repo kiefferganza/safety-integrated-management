@@ -8,13 +8,12 @@ import { _userCards } from '@/_mock/arrays';
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
-import { UserCard } from '@/sections/@dashboard/user/cards';
+const { UserCard } = await import('@/sections/@dashboard/user/cards/UserCard');
 
 // ----------------------------------------------------------------------
 
 export default function UserCardsPage ({ users }) {
 	const { themeStretch } = useSettingsContext();
-	console.log(users);
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'lg'}>
@@ -36,7 +35,7 @@ export default function UserCardsPage ({ users }) {
 					md: 'repeat(3, 1fr)',
 				}}
 			>
-				{users.map((user, idx) => (
+				{users.map((user) => (
 					<UserCard key={user.user_id} user={user} />
 				))}
 			</Box>

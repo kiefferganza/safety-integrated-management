@@ -31,7 +31,7 @@ UserCard.propTypes = {
 	user: PropTypes.object,
 };
 
-export default function UserCard ({ user }) {
+export function UserCard ({ user }) {
 	const { user_type, email, social_accounts, employee } = user;
 
 	return (
@@ -53,7 +53,7 @@ export default function UserCard ({ user }) {
 				/>
 
 				<Avatar
-					alt={getCurrentUserName(user)}
+					alt={employee?.fullname}
 					src={getCurrentUserImage(user)}
 					sx={{
 						width: 64,
@@ -73,7 +73,7 @@ export default function UserCard ({ user }) {
 			</Box>
 
 			<Typography variant="subtitle1" sx={{ mt: 6, mb: 0.5 }}>
-				{getCurrentUserName(user)}
+				{employee?.fullname}
 			</Typography>
 
 			<Typography variant="body2" sx={{ color: 'text.secondary' }}>

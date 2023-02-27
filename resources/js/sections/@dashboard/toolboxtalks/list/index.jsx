@@ -1,2 +1,2 @@
-export { default as ToolboxTalkTableRow } from './ToolboxTalkTableRow';
-export { default as ToolboxTalkTableToolbar } from './ToolboxTalkTableToolbar';
+export { ToolboxTalkTableRow } from './ToolboxTalkTableRow';
+export { ToolboxTalkTableToolbar } from './ToolboxTalkTableToolbar';

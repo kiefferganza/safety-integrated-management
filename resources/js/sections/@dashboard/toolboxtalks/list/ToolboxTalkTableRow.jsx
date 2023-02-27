@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from '@/routes/paths';
 // @mui
-import {
+const {
 	// Link,
 	Button,
 	Divider,
@@ -12,7 +12,7 @@ import {
 	MenuItem,
 	TableCell,
 	IconButton,
-} from '@mui/material';
+} = await import('@mui/material');
 // utils
 import { fDate } from '@/utils/formatTime';
 // components
@@ -39,7 +39,7 @@ const TYPES = {
 	"5": 'Office',
 };
 
-export default function ToolboxTalkTableRow ({ row, selected, onSelectRow, onDeleteRow, addTypeHeader = false }) {
+export function ToolboxTalkTableRow ({ row, selected, onSelectRow, onDeleteRow, addTypeHeader = false }) {
 	const [openConfirm, setOpenConfirm] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
 

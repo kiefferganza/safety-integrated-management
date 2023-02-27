@@ -210,7 +210,8 @@ class UsersController extends Controller
 	public function cards()
 	{
 
-			$users = User::select("user_id", "user_type", "status", "date_created", "emp_id")
+			$users = User::select("user_id", "user_type", "status", "firstname", "lastname", "date_created", "emp_id")
+			->where("deleted", 0)
 			->with([
 				"employee" => fn($query) => $query->withCount("trainings"),
 				"social_accounts"
