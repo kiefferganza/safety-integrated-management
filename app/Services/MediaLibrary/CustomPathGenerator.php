@@ -16,7 +16,8 @@ class CustomPathGenerator implements BasePathGenerator
      */
     public function getPath(Media $media): string
     {
-        return md5($media->id . config('app.key')) . '/';
+			return substr(strrchr($media->model_type, '\\'), 1).'/'. md5($media->id . config('app.key')) .'/';
+        // return md5($media->id . config('app.key')) . '/';
     }
 
     /**
