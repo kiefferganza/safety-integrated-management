@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getMonth, getYear } from 'date-fns';
 // @mui
-import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Button, TextField, Box, Typography, Stack, Divider } from '@mui/material';
+const { Grid, Container, Button, TextField, Box, Typography, Stack, Divider, useTheme } = await import('@mui/material');
 import { MobileDatePicker } from '@mui/x-date-pickers';
 // _mock_
 import { _bookingsOverview } from '@/_mock/arrays';

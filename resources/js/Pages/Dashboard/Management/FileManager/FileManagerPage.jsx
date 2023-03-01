@@ -3,7 +3,7 @@ import { Head } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
 // @mui
-import { Stack, Button, Container } from '@mui/material';
+const { Stack, Button, Container } = await import('@mui/material');
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
@@ -24,7 +24,7 @@ const {
 	FileChangeViewButton,
 	FileNewFolderDialog,
 } = await import('@/sections/@dashboard/file');
-import { capitalize } from 'lodash';
+const { capitalize } = await import('lodash');
 
 // ----------------------------------------------------------------------
 

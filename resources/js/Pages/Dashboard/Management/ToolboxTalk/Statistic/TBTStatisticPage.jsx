@@ -4,13 +4,16 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 import { dispatch, useSelector } from '@/redux/store';
 import { getTbts, } from '@/redux/slices/toolboxtalk';
 // mui
-const { Card, Container, Typography } = await import('@mui/material');
+const { Card, Container, Typography, Divider, useTheme, Stack, Button } = await import('@mui/material');
 // Components
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs/CustomBreadcrumbs';
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import { useSettingsContext } from '@/Components/settings';
 import Scrollbar from '@/Components/scrollbar';
 import { StyledGridBox, StyledTableCell, StyledTableHead, StyledTableHeader } from './tbtStatisticStyle';
+import ToolboxTalkAnalytic from '@/sections/@dashboard/toolboxtalks/ToolboxTalkAnalytic';
+import Iconify from '@/Components/iconify';
+const { TBTNewEditStatisTicDialog } = await import('@/sections/@dashboard/toolboxtalks/portal/TBTNewEditStatisTicDialog');
 
 const TABLE_HEAD = [
 	"Year",
@@ -35,19 +38,21 @@ const TABLE_HEAD = [
 const EMPTY_TABLE_ROW = [null, null, null, null, null, null, null, null, null, null, null, null];
 
 
-const TBTStatisticPage = () => {
+const TBTStatisticPage = ({ statistics = [] }) => {
 	const { totalTbtByYear, isLoading } = useSelector(state => state.toolboxtalk);
 
 	const { themeStretch } = useSettingsContext();
+	const theme = useTheme();
 
 	const [data, setData] = useState([]);
+	const [openStat, setOpenStat] = useState(false);
 
 	useEffect(() => {
 		if (totalTbtByYear === null) {
 			dispatch(getTbts());
 		} else {
 			const years = generateArrayOfYears();
-			const megredData = years.map(y => {
+			const totalTbtByYearData = years.map(y => {
 				if (y[0] in totalTbtByYear) {
 					return [
 						y[0],
@@ -56,9 +61,33 @@ const TBTStatisticPage = () => {
 				}
 				return y;
 			});
-			setData(megredData);
+			const mergedData = totalTbtByYearData.map(([year, data]) => {
+				const findStat = statistics.find(stat => +stat.year === year);
+				if (findStat) {
+					if (data === null) {
+						return [year, findStat.months.sort((a, b) => a.month_code - b.month_code).map(m => ({
+							...m,
+							totalManhours: m.manhours,
+							totalManpower: m.manpower
+						}))];
+					}
+				} else {
+					return [year, data];
+				}
+			});
+			setData(mergedData);
 		}
-	}, [totalTbtByYear]);
+	}, [totalTbtByYear, statistics]);
+
+
+	const handleOpenStat = () => {
+		setOpenStat(true);
+	}
+
+	const handleCloseStat = () => {
+		setOpenStat(false);
+	}
+
 
 	if (isLoading || totalTbtByYear === null) {
 		return <LoadingScreen />
@@ -82,79 +111,128 @@ const TBTStatisticPage = () => {
 		totalManhours: 0
 	});
 
+	const disabledYears = data.filter(([_a, b]) => b !== null).map(a => a[0]);
+
 	return (
-		<Container maxWidth={themeStretch ? false : 'xl'}>
-			<CustomBreadcrumbs
-				heading="Toolbox Talk Report"
-				links={[
-					{
-						name: 'Dashboard',
-						href: PATH_DASHBOARD.root,
-					},
-					{
-						name: 'Toolbox Talk',
-						href: PATH_DASHBOARD.toolboxTalks.root,
-					},
-					{
-						name: 'Report',
-					},
-				]}
-			/>
-			<Card sx={{ p: 2 }}>
-				<Scrollbar sx={{ py: 1 }}>
-					<StyledGridBox>
-						<StyledTableHeader gridColumn="1/-1">
-							<Typography variant="h6">HSE Statistic Record (Manhours)</Typography>
-						</StyledTableHeader>
-						{TABLE_HEAD.map((row, idx) => (
-							<StyledTableHead key={idx}>
-								<Typography variant="subtitle2">{row}</Typography>
-							</StyledTableHead>
-						))}
-						{data.map((row, idx) => {
-							const innerRowData = row[1] !== null ? row[1] : EMPTY_TABLE_ROW;
-							const totals = row[1] !== null ? row[1].reduce((curr, acc) => ({
-								totalManpower: acc.totalManpower + curr.totalManpower,
-								totalManhours: acc.totalManhours + curr.totalManhours
-							}), {
-								totalManpower: 0,
-								totalManhours: 0
-							}) : null;
-							return (
-								<Fragment key={idx}>
-									<StyledTableCell key={idx}>
-										<Typography variant="subtitle2">{row[0]}</Typography>
-									</StyledTableCell>
-									{innerRowData.map((innerRow, innerIdx) => (
-										<StyledTableCell key={innerIdx}>
-											<Typography variant="subtitle2">{(innerRow?.totalManhours || 0)?.toLocaleString()}</Typography>
+		<>
+			<Container maxWidth={themeStretch ? false : 'xl'}>
+				<CustomBreadcrumbs
+					heading="Toolbox Talk Report"
+					links={[
+						{
+							name: 'Dashboard',
+							href: PATH_DASHBOARD.root,
+						},
+						{
+							name: 'Toolbox Talk',
+							href: PATH_DASHBOARD.toolboxTalks.root,
+						},
+						{
+							name: 'Report',
+						},
+					]}
+					action={
+						<Button
+							variant="contained"
+							startIcon={<Iconify icon="eva:plus-fill" />}
+							onClick={handleOpenStat}
+						>Insert Record</Button>
+					}
+				/>
+				<Card sx={{ mb: 5 }}>
+					<Scrollbar>
+						<Stack
+							direction="row"
+							divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
+							sx={{ py: 2 }}
+						>
+							<ToolboxTalkAnalytic
+								title="Avg. Manpower/Month"
+								total={Math.ceil(total?.totalManpower / 12)}
+								percent={100}
+								icon="akar-icons:people-group"
+								color={theme.palette.success.main}
+							/>
+
+							<ToolboxTalkAnalytic
+								title="Total Manpower"
+								total={total.totalManpower}
+								percent={100}
+								icon="akar-icons:people-group"
+								color={theme.palette.info.main}
+							/>
+
+							<ToolboxTalkAnalytic
+								title="Total Manhours"
+								total={total.totalManhours}
+								percent={100}
+								icon="tabler:clock-hour-3"
+								color={theme.palette.warning.main}
+							/>
+						</Stack>
+					</Scrollbar>
+				</Card>
+				<Card sx={{ p: 2 }}>
+					<Scrollbar sx={{ py: 1 }}>
+						<StyledGridBox>
+							<StyledTableHeader gridColumn="1/-1">
+								<Typography variant="h6">HSE Statistic Record (Manhours)</Typography>
+							</StyledTableHeader>
+							{TABLE_HEAD.map((row, idx) => (
+								<StyledTableHead key={idx}>
+									<Typography variant="subtitle2">{row}</Typography>
+								</StyledTableHead>
+							))}
+							{data.map((row, idx) => {
+								const innerRowData = row[1] !== null ? row[1] : EMPTY_TABLE_ROW;
+								const totals = row[1] !== null ? row[1].reduce((curr, acc) => ({
+									totalManpower: acc.totalManpower + curr.totalManpower,
+									totalManhours: acc.totalManhours + curr.totalManhours
+								}), {
+									totalManpower: 0,
+									totalManhours: 0
+								}) : null;
+								return (
+									<Fragment key={idx}>
+										<StyledTableCell key={idx}>
+											<Typography variant="subtitle2">{row[0]}</Typography>
 										</StyledTableCell>
-									))}
-									<StyledTableCell>
-										<Typography variant="subtitle2">No</Typography>
-									</StyledTableCell>
-									<StyledTableCell>
-										<Typography variant="subtitle2">{row[1] ? Math.ceil(totals?.totalManpower / 12) : 0}</Typography>
-									</StyledTableCell>
-									<StyledTableCell>
-										<Typography variant="subtitle2">{row[1] ? totals?.totalManpower?.toLocaleString() : 0}</Typography>
-									</StyledTableCell>
-									<StyledTableCell>
-										<Typography variant="subtitle2">{row[1] ? totals?.totalManhours?.toLocaleString() : 0}</Typography>
-									</StyledTableCell>
-								</Fragment>
-							)
-						})}
-						<StyledTableCell gridColumn="16">
-							<Typography variant="subtitle2">{(total?.totalManpower || 0).toLocaleString()}</Typography>
-						</StyledTableCell>
-						<StyledTableCell gridColumn="17">
-							<Typography variant="subtitle2">{(total?.totalManhours || 0).toLocaleString()}</Typography>
-						</StyledTableCell>
-					</StyledGridBox>
-				</Scrollbar>
-			</Card>
-		</Container>
+										{innerRowData.map((innerRow, innerIdx) => (
+											<StyledTableCell key={innerIdx}>
+												<Typography variant="subtitle2" sx={{ wordBreak: "break-all" }}>{(innerRow?.totalManhours || 0)?.toLocaleString()}</Typography>
+											</StyledTableCell>
+										))}
+										<StyledTableCell>
+											<Typography variant="subtitle2">No</Typography>
+										</StyledTableCell>
+										<StyledTableCell>
+											<Typography variant="subtitle2">{row[1] ? Math.ceil(totals?.totalManpower / 12) : 0}</Typography>
+										</StyledTableCell>
+										<StyledTableCell>
+											<Typography variant="subtitle2">{row[1] ? totals?.totalManpower?.toLocaleString() : 0}</Typography>
+										</StyledTableCell>
+										<StyledTableCell sx={{ borderRightWidth: 1 }}>
+											<Typography variant="subtitle2">{row[1] ? totals?.totalManhours?.toLocaleString() : 0}</Typography>
+										</StyledTableCell>
+									</Fragment>
+								)
+							})}
+							<StyledTableCell gridColumn="16">
+								<Typography variant="subtitle2">{(total?.totalManpower || 0).toLocaleString()}</Typography>
+							</StyledTableCell>
+							<StyledTableCell gridColumn="17" sx={{ borderRightWidth: 1 }}>
+								<Typography variant="subtitle2">{(total?.totalManhours || 0).toLocaleString()}</Typography>
+							</StyledTableCell>
+						</StyledGridBox>
+					</Scrollbar>
+				</Card>
+			</Container>
+			<TBTNewEditStatisTicDialog
+				open={openStat}
+				onClose={handleCloseStat}
+				yearsDisabled={disabledYears}
+			/>
+		</>
 	)
 }
 

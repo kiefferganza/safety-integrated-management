@@ -2,14 +2,14 @@ import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
 import TBTStatisticPage from "./TBTStatisticPage";
 
-const index = () => {
+const index = ({ statistics }) => {
 	return (
 		<>
 			<Head>
 				<title>Statistic - Toolbox Talks</title>
 			</Head>
 			<DashboardLayout>
-				<TBTStatisticPage />
+				<TBTStatisticPage statistics={statistics} />
 			</DashboardLayout>
 		</>
 	)

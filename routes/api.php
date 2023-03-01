@@ -4,13 +4,8 @@ use App\Http\Controllers\UsersController;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\ToolboxTalk;
-use App\Models\User;
-use ExpoSDK\Expo;
-use ExpoSDK\ExpoMessage;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,24 +89,3 @@ Route::middleware('auth')->group(function ()
 // 	}
 // 	dd($users);
 // });
-
-
-Route::post("/send/notification", function(Request $request) {
-	$request->validate([
-		"to" => "required|string|starts_with:ExponentPushToken[",
-		"title" => "required|string",
-		"body" => "required|string",
-		"data" => "array"
-	]);
-	$message = new ExpoMessage();
-
-	$message = (new ExpoMessage([
-    'title' => 'You have new notification',
-	]))
-	->setTo($request->to)
-	->setTitle($request->title)
-	->setBody($request->body);
-
-	(new Expo())->send($message)->push();
-	return ["ok" => 1];
-});

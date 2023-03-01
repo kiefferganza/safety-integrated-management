@@ -37,10 +37,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 // redux
 import { store, persistor } from './redux/store';
 // components
-import { SettingsProvider } from './Components/settings';
 import { StyledChart } from './Components/chart';
 import SnackbarProvider from './Components/snackbar';
-import { ThemeSettings } from './Components/settings';
+import { SettingsProvider, ThemeSettings } from './Components/settings';
 import { MotionLazyContainer } from './Components/animate';
 
 // theme
@@ -50,10 +49,10 @@ import ThemeLocalization from './locales';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
-InertiaProgress.init({
-	showSpinner: true,
-	includeCSS: true,
-});
+// InertiaProgress.init({
+// 	showSpinner: true,
+// 	includeCSS: true,
+// });
 
 createInertiaApp({
 	title: (title) => `${title} - ${appName}`,
@@ -85,5 +84,3 @@ createInertiaApp({
 		);
 	},
 });
-
-InertiaProgress.init({ color: '#4B5563' });

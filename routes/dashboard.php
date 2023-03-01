@@ -171,6 +171,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/delete', [ToolboxTalkController::class, "soft_delete"])->name('toolboxtalk.management.delete');
 		// Statistic
 		Route::get('/statistic', [ToolboxTalkController::class, "statistic"])->name('toolboxtalk.management.statistic');
+		Route::post('/statistic/new', [ToolboxTalkController::class, "store_statistic"])->name('toolboxtalk.management.store_statistic');
 	});
 
 	/**
