@@ -148,8 +148,14 @@ class ToolboxTalkController extends Controller
 
 
 	public function statistic() {
+		$statistics = TbtStatistic::with("months:id,tbt_statistic_id,manhours,manpower,month_code")->get();
+		$statistics->transform(function($item) {
+			$item->src = $item->getMedia()[0]->getFullUrl();
+			return $item;
+		});
+
 		return Inertia::render("Dashboard/Management/ToolboxTalk/Statistic/index", [
-			"statistics" => TbtStatistic::with("months:id,tbt_statistic_id,manhours,manpower,month_code")->get()
+			"statistics" => $statistics
 		]);
 	}
 
@@ -162,22 +168,13 @@ class ToolboxTalkController extends Controller
 		]);
 		$user = auth()->user();
 
-		// if(Storage::exists("public/media/toolboxtalks/statistics" .$request->file_src)) {
-		// 	Storage::delete("public/media/toolboxtalks/statistics" .$request->file_src);
-		// }
-
-		// $newfile = $request->file_src->getClientOriginalName();
-		// $extension = pathinfo($newfile, PATHINFO_EXTENSION);
-		// $file_name = date("Ymds"). $idx . '-' .$newfile. "." . $extension; 
-		// $file = $request->file("file_src");
-		// $file->storeAs('media/toolboxtalks/statistics', $file->getClientOriginalName(), 'public');
-
 		$statistic = TbtStatistic::create([
 			"year" => (string)$request->year,
 			"user_id" => $user->user_id,
 			"employee_id" => $user->emp_id,
 			// "file_src" => $file->getClientOriginalName()
 		]);
+		$statistic->addMediaFromRequest("file_src")->toMediaCollection();
 		$statistic->months()->createMany($request->months);
 
 		return redirect()->back()

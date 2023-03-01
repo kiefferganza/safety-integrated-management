@@ -4,7 +4,7 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 import { dispatch, useSelector } from '@/redux/store';
 import { getTbts, } from '@/redux/slices/toolboxtalk';
 // mui
-const { Card, Container, Typography, Divider, useTheme, Stack, Button } = await import('@mui/material');
+const { Card, Container, Typography, Divider, useTheme, Stack, Button, Link } = await import('@mui/material');
 // Components
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs/CustomBreadcrumbs';
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
@@ -69,7 +69,7 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 							...m,
 							totalManhours: m.manhours,
 							totalManpower: m.manpower
-						}))];
+						})), findStat.src];
 					}
 				} else {
 					return [year, data];
@@ -183,6 +183,7 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 									<Typography variant="subtitle2">{row}</Typography>
 								</StyledTableHead>
 							))}
+							{/* <StyledTableHead></StyledTableHead> */}
 							{data.map((row, idx) => {
 								const innerRowData = row[1] !== null ? row[1] : EMPTY_TABLE_ROW;
 								const totals = row[1] !== null ? row[1].reduce((curr, acc) => ({
@@ -203,7 +204,11 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 											</StyledTableCell>
 										))}
 										<StyledTableCell>
-											<Typography variant="subtitle2">No</Typography>
+											{row[2] ? (
+												<Link target="_blank" rel="noopener noreferrer nofollow" href={row[2]}>Yes</Link>
+											) : (
+												<Typography variant="subtitle2">No</Typography>
+											)}
 										</StyledTableCell>
 										<StyledTableCell>
 											<Typography variant="subtitle2">{row[1] ? Math.ceil(totals?.totalManpower / 12) : 0}</Typography>
@@ -214,6 +219,9 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 										<StyledTableCell sx={{ borderRightWidth: 1 }}>
 											<Typography variant="subtitle2">{row[1] ? totals?.totalManhours?.toLocaleString() : 0}</Typography>
 										</StyledTableCell>
+										{/* <StyledTableCell sx={{ borderRightWidth: 1 }}>
+											edit
+										</StyledTableCell> */}
 									</Fragment>
 								)
 							})}

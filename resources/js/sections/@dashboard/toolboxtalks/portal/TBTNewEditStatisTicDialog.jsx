@@ -10,6 +10,7 @@ const { Button, Dialog, DialogContent, DialogTitle, Divider, Grid, Stack, TextFi
 const { MobileDatePicker } = await import('@mui/x-date-pickers');
 // Components
 const { RHFTextField, RHFUpload } = await import("@/Components/hook-form");
+const { MultiFilePreview } = await import("@/Components/upload");
 import FormProvider from "@/Components/hook-form/FormProvider";
 import Iconify from "@/Components/iconify";
 
@@ -97,7 +98,7 @@ export const TBTNewEditStatisTicDialog = ({ open, onClose, statistic, yearsDisab
 	});
 	const { setValue, getValues, watch, handleSubmit, reset, formState: { errors } } = methods;
 
-	const yearVal = watch("year");
+	const values = watch();
 
 	const onSubmit = (data) => {
 		const selYear = data.year;
@@ -151,10 +152,14 @@ export const TBTNewEditStatisTicDialog = ({ open, onClose, statistic, yearsDisab
 				preview: URL.createObjectURL(acceptedFiles[0]),
 			})
 
-			setValue('file_src', newFile, { shouldDirty: true });
+			setValue('file_src', newFile, { shouldValidate: true });
 		},
 		[setValue]
 	);
+
+	const onRemove = () => {
+		setValue("file_src", null, { shouldValidate: true });
+	}
 
 
 	const handleClose = () => {
@@ -214,7 +219,7 @@ export const TBTNewEditStatisTicDialog = ({ open, onClose, statistic, yearsDisab
 								openTo="year"
 								minDate={new Date(2013, 1, 1)}
 								maxDate={new Date()}
-								value={yearVal ? new Date(yearVal, 1, 1) : null}
+								value={values?.year ? new Date(values?.year, 1, 1) : null}
 								onChange={(newVal) => {
 									setValue("year", newVal.getFullYear(), { shouldValidate: true })
 								}}
@@ -249,11 +254,12 @@ export const TBTNewEditStatisTicDialog = ({ open, onClose, statistic, yearsDisab
 					</Grid>
 					<Stack sx={{ my: 2 }}>
 						<RHFUpload
-							thumbnail
 							name="file_src"
 							maxSize={3145728}
 							onDrop={handleDrop}
+							accept={null}
 						/>
+						<MultiFilePreview files={values?.file_src ? [values.file_src] : []} onRemove={onRemove} />
 					</Stack>
 					<Stack direction="row" justifyContent="end">
 						<Button type="submit" variant="contained" sx={{ my: 2 }}>
