@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, memo } from "react";
 // form
 import { useForm } from "react-hook-form";
 import * as Yup from 'yup';
@@ -13,6 +13,7 @@ const { RHFTextField, RHFUpload } = await import("@/Components/hook-form");
 const { MultiFilePreview } = await import("@/Components/upload");
 import FormProvider from "@/Components/hook-form/FormProvider";
 import Iconify from "@/Components/iconify";
+import { PATH_DASHBOARD } from "@/routes/paths";
 
 const MONTHS_HALF = [
 	{ month_code: 1, label: "January" },
@@ -31,37 +32,42 @@ const MONTHS_SECOND_HALF = [
 	{ month_code: 12, label: "December" },
 ];
 
-const statisticSchema = Yup.object().shape({
-	year: Yup.number().nullable().required("Please select a year to insert the record."),
-	file_src: Yup.mixed().required("Please attach a file."),
-	manpower_1_January: Yup.number(),
-	manhours_1_January: Yup.number(),
-	manpower_2_February: Yup.number(),
-	manhours_2_February: Yup.number(),
-	manpower_3_March: Yup.number(),
-	manhours_3_March: Yup.number(),
-	manpower_4_April: Yup.number(),
-	manhours_4_April: Yup.number(),
-	manpower_5_May: Yup.number(),
-	manhours_5_May: Yup.number(),
-	manpower_6_June: Yup.number(),
-	manhours_6_June: Yup.number(),
-	manpower_7_July: Yup.number(),
-	manhours_7_July: Yup.number(),
-	manpower_8_August: Yup.number(),
-	manhours_8_August: Yup.number(),
-	manpower_9_September: Yup.number(),
-	manhours_9_September: Yup.number(),
-	manpower_10_October: Yup.number(),
-	manhours_10_October: Yup.number(),
-	manpower_11_November: Yup.number(),
-	manhours_11_November: Yup.number(),
-	manpower_12_December: Yup.number(),
-	manhours_12_December: Yup.number(),
-});
-
-export const TBTNewEditStatisTicDialog = ({ open, onClose, statistic, yearsDisabled, ...other }) => {
+const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisabled, ...other }) => {
 	const { load, stop } = useSwal();
+
+	const statisticSchema = Yup.object().shape({
+		year: Yup.number().nullable().required("Please select a year to insert the record.").test({
+			name: "invalid_year",
+			test (val) {
+				return yearsDisabled.includes(val) ? this.createError({ message: "This year is invalid." }) : true;
+			}
+		}),
+		file_src: Yup.mixed().required("Please attach a file."),
+		manpower_1_January: Yup.number(),
+		manhours_1_January: Yup.number(),
+		manpower_2_February: Yup.number(),
+		manhours_2_February: Yup.number(),
+		manpower_3_March: Yup.number(),
+		manhours_3_March: Yup.number(),
+		manpower_4_April: Yup.number(),
+		manhours_4_April: Yup.number(),
+		manpower_5_May: Yup.number(),
+		manhours_5_May: Yup.number(),
+		manpower_6_June: Yup.number(),
+		manhours_6_June: Yup.number(),
+		manpower_7_July: Yup.number(),
+		manhours_7_July: Yup.number(),
+		manpower_8_August: Yup.number(),
+		manhours_8_August: Yup.number(),
+		manpower_9_September: Yup.number(),
+		manhours_9_September: Yup.number(),
+		manpower_10_October: Yup.number(),
+		manhours_10_October: Yup.number(),
+		manpower_11_November: Yup.number(),
+		manhours_11_November: Yup.number(),
+		manpower_12_December: Yup.number(),
+		manhours_12_December: Yup.number(),
+	});
 
 	const defaultValues = {
 		year: null,
@@ -98,10 +104,26 @@ export const TBTNewEditStatisTicDialog = ({ open, onClose, statistic, yearsDisab
 	});
 	const { setValue, getValues, watch, handleSubmit, reset, formState: { errors } } = methods;
 
+	useEffect(() => {
+		if (statistic) {
+			const editValues = {
+				year: +statistic.year,
+				file_src: statistic?.src || null
+			}
+			for (const month of statistic.months) {
+				editValues[`manpower_${month.month_code}_${month.month}`] = month.manpower;
+				editValues[`manhours_${month.month_code}_${month.month}`] = month.manhours;
+			}
+			reset(editValues);
+		} else {
+			reset(defaultValues);
+		}
+	}, [statistic]);
+
 	const values = watch();
 
 	const onSubmit = (data) => {
-		const selYear = data.year;
+		const selYear = statistic ? +statistic.year : data.year;
 		const file_src = data.file_src;
 		delete data.year;
 		delete data.file_src;
@@ -131,10 +153,12 @@ export const TBTNewEditStatisTicDialog = ({ open, onClose, statistic, yearsDisab
 
 		const newData = {
 			year: selYear,
-			file_src,
 			months: monthsData
 		}
-		Inertia.post(route('toolboxtalk.management.store_statistic'), newData, {
+		if (typeof file_src !== "string") {
+			newData.file_src = file_src;
+		}
+		Inertia.post(statistic?.id ? PATH_DASHBOARD.toolboxTalks.editStatistic(statistic.id) : route('toolboxtalk.management.store_statistic'), newData, {
 			preserveScroll: true,
 			onStart () {
 				handleClose();
@@ -164,7 +188,7 @@ export const TBTNewEditStatisTicDialog = ({ open, onClose, statistic, yearsDisab
 
 	const handleClose = () => {
 		onClose();
-		reset();
+		reset(defaultValues);
 	}
 
 	const renderField = (mon) => (
@@ -205,7 +229,9 @@ export const TBTNewEditStatisTicDialog = ({ open, onClose, statistic, yearsDisab
 	return (
 		<Dialog fullWidth maxWidth="md" open={open} onClose={handleClose} {...other}>
 			<Stack direction="row" justifyContent="space-between" alignItems="center">
-				<DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>Insert Record</DialogTitle>
+				<DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>
+					{statistic ? `Update Record For ${statistic.year}` : "Insert Record"}
+				</DialogTitle>
 			</Stack>
 			<DialogContent dividers sx={{ pt: 1, pb: 0, border: 'none' }}>
 				<FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -219,6 +245,7 @@ export const TBTNewEditStatisTicDialog = ({ open, onClose, statistic, yearsDisab
 								openTo="year"
 								minDate={new Date(2013, 1, 1)}
 								maxDate={new Date()}
+								disabled={!!statistic}
 								value={values?.year ? new Date(values?.year, 1, 1) : null}
 								onChange={(newVal) => {
 									setValue("year", newVal.getFullYear(), { shouldValidate: true })
@@ -263,11 +290,13 @@ export const TBTNewEditStatisTicDialog = ({ open, onClose, statistic, yearsDisab
 					</Stack>
 					<Stack direction="row" justifyContent="end">
 						<Button type="submit" variant="contained" sx={{ my: 2 }}>
-							Insert
+							{statistic ? "Update" : "Insert"}
 						</Button>
 					</Stack>
 				</FormProvider>
 			</DialogContent>
 		</Dialog>
 	)
-}
+});
+
+export { TBTNewEditStatisTicDialog }

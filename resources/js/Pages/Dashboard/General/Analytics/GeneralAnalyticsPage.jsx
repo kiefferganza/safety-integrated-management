@@ -115,12 +115,12 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 				if (statInTbtTotal) {
 					curr.months.forEach(month => {
 						months[month.month_code] = {
-							...tmpTotalTbtByYear[curr.year],
+							...tmpTotalTbtByYear[curr.year][month.month_code],
 							totalManpower: tmpTotalTbtByYear[curr.year][month.month_code].totalManpower + month.manpower,
 							totalManhours: tmpTotalTbtByYear[curr.year][month.month_code].totalManhours + month.manhours,
+							safeManhours: tmpTotalTbtByYear[curr.year][month.month_code].safeManhours + month.manhours,
 						}
 					});
-					acc[curr.year] = months;
 					delete tmpTotalTbtByYear[curr.year];
 				} else {
 					curr.months.forEach(month => {
@@ -140,7 +140,6 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 					[curr.year]: months
 				};
 			}, totalTbtByYear);
-
 			let years = new Set;
 
 			const tbt = Object.entries(tbtAndStatistics).reduce((acc, curr) => {
@@ -241,6 +240,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 			})
 			return calculateItd({ monthsObj, currMonth, currTotal });
 		}
+		return acc;
 	}, {
 		totalManpower: 0,
 		totalManhours: 0,
@@ -252,7 +252,6 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 	const trainingComputedData = trainings.reduce((acc, curr) => {
 		if (curr.training_files_count > 0) {
 			const trainingDate = new Date(curr.training_date);
-			// const isInMonths = isAfter(trainingDate, startTbtDate) && isBefore(trainingDate, endTbtDate);
 			const isInMonths = startTbtDate && endTbtDate ? fTimestamp(trainingDate) >= startTbtDate.setHours(0, 0, 0, 0) && fTimestamp(trainingDate) <= endTbtDate.setHours(0, 0, 0, 0) : false;
 
 			if (curr.type === 4) {
@@ -276,7 +275,6 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 
 	const years = new Set(tbtData.map(d => d[2]));
 	const monthsDiff = monthDiff(startTbtDateHandler, endTbtDateHandler);
-
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
 

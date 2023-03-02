@@ -3,8 +3,8 @@ import { styled } from '@mui/material/styles';
 
 export const StyledGridBox = styled(Box)(({ theme }) => ({
 	display: "grid",
-	// gridTemplateColumns: "48px 68px 68px 68px 68px 68px 68px 68px 68px 68px 68px 68px 68px 80px 120px 140px 140px 48px",
-	gridTemplateColumns: "48px 68px 68px 68px 68px 68px 68px 68px 68px 68px 68px 68px 68px 80px 120px 140px 140px",
+	gridTemplateColumns: "48px 68px 68px 68px 68px 68px 68px 68px 68px 68px 68px 68px 68px 80px 120px 140px 140px 62px",
+	// gridTemplateColumns: "48px 68px 68px 68px 68px 68px 68px 68px 68px 68px 68px 68px 68px 80px 120px 140px 140px",
 	gridAutoRows: 36,
 	borderColor: theme.palette.grey.A700,
 	borderStyle: "solid",

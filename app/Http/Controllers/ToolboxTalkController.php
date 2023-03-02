@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Position;
 use App\Models\TbtStatistic;
+use App\Models\TbtStatisticMonth;
 use App\Models\ToolboxTalk;
 use App\Services\EmployeeService;
 use App\Services\ToolboxTalkService;
@@ -148,7 +149,7 @@ class ToolboxTalkController extends Controller
 
 
 	public function statistic() {
-		$statistics = TbtStatistic::with("months:id,tbt_statistic_id,manhours,manpower,month_code")->get();
+		$statistics = TbtStatistic::with("months:id,tbt_statistic_id,manhours,manpower,month_code,month")->get();
 		$statistics->transform(function($item) {
 			$item->src = $item->getMedia()[0]->getFullUrl();
 			return $item;
@@ -160,7 +161,7 @@ class ToolboxTalkController extends Controller
 	}
 
 
-	public function store_statistic(Request $request) {
+	public function storeStatistic(Request $request) {
 		$request->validate([
 			"year" => "integer|required",
 			"file_src" => "file|required",
@@ -181,5 +182,43 @@ class ToolboxTalkController extends Controller
 		->with("message", "Statistic record added successfully!")
 		->with("type", "success");
 	}
+
+
+	public function updateStatistic(TbtStatistic $statistic, Request $request) {
+		$request->validate([
+			"year" => "integer|required",
+			"file_src" => "required",
+			"months" => "array|required|min:12",
+		]);
+		
+		foreach ($request->months as $month) {
+			TbtStatisticMonth::where([
+				["tbt_statistic_id", $statistic->id],
+				["month_code", $month["month_code"]],
+				["month", $month["month"]],
+			])->update(["manpower" => $month["manpower"], "manhours" => $month["manhours"]]);
+		}
+
+		if($request->hasFile('file_src')) {
+			$statistic->media()->delete();
+			$statistic->addMediaFromRequest("file_src")->toMediaCollection();
+		}
+		$statistic->touch();
+
+		return redirect()->back()
+		->with("message", "Record updated successfully!")
+		->with("type", "success");
+	}
+
+
+	public function destroyStatistic(TbtStatistic $statistic) {
+		$statistic->months()->delete();
+		$statistic->delete();
+
+		return redirect()->back()
+		->with("message", "Record deleted successfully!")
+		->with("type", "success");
+	}
+	
 
 }

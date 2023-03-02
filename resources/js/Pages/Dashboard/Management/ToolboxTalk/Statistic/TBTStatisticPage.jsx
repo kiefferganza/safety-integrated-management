@@ -4,7 +4,7 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 import { dispatch, useSelector } from '@/redux/store';
 import { getTbts, } from '@/redux/slices/toolboxtalk';
 // mui
-const { Card, Container, Typography, Divider, useTheme, Stack, Button, Link } = await import('@mui/material');
+const { Card, Container, Typography, Divider, useTheme, Stack, Button, Link, IconButton } = await import('@mui/material');
 // Components
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs/CustomBreadcrumbs';
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
@@ -13,6 +13,9 @@ import Scrollbar from '@/Components/scrollbar';
 import { StyledGridBox, StyledTableCell, StyledTableHead, StyledTableHeader } from './tbtStatisticStyle';
 import ToolboxTalkAnalytic from '@/sections/@dashboard/toolboxtalks/ToolboxTalkAnalytic';
 import Iconify from '@/Components/iconify';
+import { Inertia } from '@inertiajs/inertia';
+import { useSwal } from '@/hooks/useSwal';
+const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialog');
 const { TBTNewEditStatisTicDialog } = await import('@/sections/@dashboard/toolboxtalks/portal/TBTNewEditStatisTicDialog');
 
 const TABLE_HEAD = [
@@ -39,13 +42,17 @@ const EMPTY_TABLE_ROW = [null, null, null, null, null, null, null, null, null, n
 
 
 const TBTStatisticPage = ({ statistics = [] }) => {
+	const { load, stop } = useSwal();
 	const { totalTbtByYear, isLoading } = useSelector(state => state.toolboxtalk);
 
 	const { themeStretch } = useSettingsContext();
 	const theme = useTheme();
 
 	const [data, setData] = useState([]);
+	const [selectedStat, setSelectedStat] = useState(null);
+	const [selectedId, setSelectedId] = useState(null);
 	const [openStat, setOpenStat] = useState(false);
+	const [openConfirm, setOpenConfirm] = useState(false);
 
 	useEffect(() => {
 		if (totalTbtByYear === null) {
@@ -61,6 +68,7 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 				}
 				return y;
 			});
+
 			const mergedData = totalTbtByYearData.map(([year, data]) => {
 				const findStat = statistics.find(stat => +stat.year === year);
 				if (findStat) {
@@ -69,7 +77,14 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 							...m,
 							totalManhours: m.manhours,
 							totalManpower: m.manpower
-						})), findStat.src];
+						})), findStat.src, findStat.id];
+					} else {
+						const months = findStat.months.map(month => ({
+							...totalTbtByYear[year][month.month_code],
+							totalManpower: totalTbtByYear[year][month.month_code].totalManpower + month.manpower,
+							totalManhours: totalTbtByYear[year][month.month_code].totalManhours + month.manhours
+						}));
+						return [year, months, findStat.src, findStat.id]
 					}
 				} else {
 					return [year, data];
@@ -80,12 +95,51 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 	}, [totalTbtByYear, statistics]);
 
 
-	const handleOpenStat = () => {
+	const handleOpenStat = (id) => {
+		if (id) {
+			const stat = statistics.find(stat => stat.id === id);
+			if (stat) {
+				setSelectedStat(stat);
+			}
+		}
 		setOpenStat(true);
 	}
 
 	const handleCloseStat = () => {
-		setOpenStat(false);
+		if (!selectedStat) {
+			setOpenStat(false);
+		} else {
+			setSelectedStat(null);
+			setOpenStat(false);
+		}
+	}
+
+
+	const handleDelete = () => {
+		if (selectedId !== null) {
+			Inertia.delete(PATH_DASHBOARD.toolboxTalks.deleteStatistic(selectedId), {
+				preserveState: true,
+				preserveScroll: true,
+				onStart () {
+					handleCloseConfirm();
+					load("Deleting record", "please wait...");
+				},
+				onFinish () {
+					stop();
+				}
+			})
+		}
+	}
+	const handleOpenConfirm = (id) => {
+		if (id) {
+			setSelectedId(id);
+			setOpenConfirm(true);
+		}
+	}
+
+	const handleCloseConfirm = () => {
+		setOpenConfirm(false);
+		setSelectedId(null);
 	}
 
 
@@ -111,8 +165,7 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 		totalManhours: 0
 	});
 
-	const disabledYears = data.filter(([_a, b]) => b !== null).map(a => a[0]);
-
+	const disabledYears = statistics.map(a => +a.year);
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -183,7 +236,7 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 									<Typography variant="subtitle2">{row}</Typography>
 								</StyledTableHead>
 							))}
-							{/* <StyledTableHead></StyledTableHead> */}
+							<StyledTableHead></StyledTableHead>
 							{data.map((row, idx) => {
 								const innerRowData = row[1] !== null ? row[1] : EMPTY_TABLE_ROW;
 								const totals = row[1] !== null ? row[1].reduce((curr, acc) => ({
@@ -193,6 +246,7 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 									totalManpower: 0,
 									totalManhours: 0
 								}) : null;
+
 								return (
 									<Fragment key={idx}>
 										<StyledTableCell key={idx}>
@@ -219,9 +273,16 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 										<StyledTableCell sx={{ borderRightWidth: 1 }}>
 											<Typography variant="subtitle2">{row[1] ? totals?.totalManhours?.toLocaleString() : 0}</Typography>
 										</StyledTableCell>
-										{/* <StyledTableCell sx={{ borderRightWidth: 1 }}>
-											edit
-										</StyledTableCell> */}
+										<StyledTableCell sx={{ borderRightWidth: 1 }}>
+											<Stack direction="row" spacing={.5}>
+												<IconButton size="small" onClick={() => row[3] !== undefined && handleOpenStat(row[3])} color="info" disabled={row[3] === undefined}>
+													<Iconify sx={{ width: 18, height: 18 }} icon="eva:edit-fill" />
+												</IconButton>
+												<IconButton size="small" onClick={() => row[3] !== undefined && handleOpenConfirm(row[3])} color="error" disabled={row[3] === undefined}>
+													<Iconify sx={{ width: 18, height: 18 }} icon="eva:trash-2-outline" />
+												</IconButton>
+											</Stack>
+										</StyledTableCell>
 									</Fragment>
 								)
 							})}
@@ -239,6 +300,18 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 				open={openStat}
 				onClose={handleCloseStat}
 				yearsDisabled={disabledYears}
+				statistic={selectedStat}
+			/>
+			<ConfirmDialog
+				open={openConfirm}
+				onClose={handleCloseConfirm}
+				title="Delete"
+				content="Are you sure want to delete?"
+				action={
+					<Button variant="contained" color="error" onClick={handleDelete}>
+						Delete
+					</Button>
+				}
 			/>
 		</>
 	)
