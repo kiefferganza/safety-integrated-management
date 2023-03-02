@@ -34,12 +34,11 @@ const MONTHS_SECOND_HALF = [
 
 const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisabled, ...other }) => {
 	const { load, stop } = useSwal();
-
 	const statisticSchema = Yup.object().shape({
 		year: Yup.number().nullable().required("Please select a year to insert the record.").test({
 			name: "invalid_year",
 			test (val) {
-				return yearsDisabled.includes(val) ? this.createError({ message: "This year is invalid." }) : true;
+				return (yearsDisabled.includes(val) && statistic === null) ? this.createError({ message: "This year is invalid." }) : true;
 			}
 		}),
 		file_src: Yup.mixed().required("Please attach a file."),
