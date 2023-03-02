@@ -1,8 +1,7 @@
 import { useState, useCallback } from 'react';
 // @mui
-import { useTheme } from '@mui/material/styles';
-const { Grid, Container, Box, Stack, Typography } = await import('@mui/material');
-// routes\
+const { Grid, Container, Box, Stack, Typography, useTheme } = await import('@mui/material');
+// routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // hooks
 import useResponsive from '@/hooks/useResponsive';
@@ -11,17 +10,17 @@ import { _folders, _files } from '@/_mock/arrays';
 // components
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';
-import { UploadBox } from '@/Components/upload';
 import { useSettingsContext } from '@/Components/settings';
+const { UploadBox } = await import('@/Components/upload');
 // sections
-import {
+const {
 	FileGeneralWidget,
 	FileGeneralUpgrade,
 	// FileGeneralRecentCard,
 	FileGeneralDataActivity,
 	FileGeneralStorageOverview,
-} from '@/sections/@dashboard/general/file';
-import { FilePanel, FileFolderCard, FileNewFolderDialog } from '@/sections/@dashboard/file';
+} = await import('@/sections/@dashboard/general/file');
+const { FilePanel, FileFolderCard, FileNewFolderDialog } = await import('@/sections/@dashboard/file');
 
 // ----------------------------------------------------------------------
 
@@ -58,13 +57,13 @@ export default function GeneralFilePage () {
 		setOpenNewFolder(false);
 	};
 
-	const handleOpenUploadFile = () => {
-		setOpenUploadFile(true);
-	};
+	// const handleOpenUploadFile = () => {
+	// 	setOpenUploadFile(true);
+	// };
 
-	const handleCloseUploadFile = () => {
-		setOpenUploadFile(false);
-	};
+	// const handleCloseUploadFile = () => {
+	// 	setOpenUploadFile(false);
+	// };
 
 	const handleChangeFolderName = (event) => {
 		setFolderName(event.target.value);
@@ -254,7 +253,7 @@ export default function GeneralFilePage () {
 				</Grid>
 			</Container>
 
-			<FileNewFolderDialog open={openUploadFile} onClose={handleCloseUploadFile} />
+			{/* <FileNewFolderDialog open={openUploadFile} onClose={handleCloseUploadFile} /> */}
 
 			<FileNewFolderDialog
 				open={openNewFolder}

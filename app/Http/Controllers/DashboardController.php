@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\Position;
+use App\Models\TbtStatistic;
 use App\Models\ToolboxTalk;
 use App\Models\ToolboxTalkParticipant;
 use App\Models\Training;
@@ -17,12 +18,10 @@ use Inertia\Inertia;
 class DashboardController extends Controller
 {
 	public function index() {
-		$user = Auth::user();
-
 			
 		return Inertia::render("Dashboard/General/Analytics/index", [
-			"employeesCount" => Employee::where("is_deleted", 0)->where("sub_id", $user->subscriber_id)->count(),
 			"trainings" => Training::select("type", "training_hrs", "training_date")->where("is_deleted", 0)->withCount("training_files")->get(),
+			"tbtStatistics" => TbtStatistic::select("id","year")->with("months:id,tbt_statistic_id,manhours,manpower,month_code")->get()
 		]);
 	}
 }

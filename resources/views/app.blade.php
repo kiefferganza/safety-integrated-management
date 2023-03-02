@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title inertia>{{ config('app.name', 'Safety-Integrated-Management') }}</title>
+        <title inertia>{{ config('app.name', 'Safety Integrated Management') }}</title>
 
 				<meta name="robots" content="noindex, nofollow">
 				<meta property="og:title" content="Safety Integrated Management System">

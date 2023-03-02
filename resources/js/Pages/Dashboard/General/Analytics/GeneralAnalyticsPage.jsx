@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { getMonth, getYear } from 'date-fns';
 // @mui
 const { Grid, Container, Button, TextField, Box, Typography, Stack, Divider, useTheme } = await import('@mui/material');
-import { MobileDatePicker } from '@mui/x-date-pickers';
+const { MobileDatePicker } = await import('@mui/x-date-pickers');
 // _mock_
 import { _bookingsOverview } from '@/_mock/arrays';
 // utils
@@ -92,7 +92,7 @@ const MONTH_NAMES = {
 }
 
 
-export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings, employeesCount }) {
+export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings, tbtStatistics }) {
 	const [tbtData, setTbtData] = useState([]);
 	const [filteredTbtData, setFilteredTbtData] = useState([]);
 	const [startTbtDate, setStartTbtDate] = useState(null);
@@ -108,22 +108,59 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 
 	useEffect(() => {
 		if (totalTbtByYear) {
-			const yStart = Object.keys(totalTbtByYear).at(0) ? new Date(Object.keys(totalTbtByYear).at(0), 0, 1) : 0;
-			const yEnd = Object.keys(totalTbtByYear).at(0) ? new Date(Object.keys(totalTbtByYear).at(0), 11, 1) : 0;
-			setStartTbtDate(yStart);
-			setTbtStartDateHandler(yStart);
-			setEndTbtDate(yEnd);
-			setEndTbtDateHandler(yEnd);
-			const tbt = Object.entries(totalTbtByYear).reduce((acc, curr) => {
+			const tmpTotalTbtByYear = { ...totalTbtByYear };
+			const tbtAndStatistics = tbtStatistics.reduce((acc, curr) => {
+				const statInTbtTotal = curr.year in tmpTotalTbtByYear;
+				let months = {};
+				if (statInTbtTotal) {
+					curr.months.forEach(month => {
+						months[month.month_code] = {
+							...tmpTotalTbtByYear[curr.year],
+							totalManpower: tmpTotalTbtByYear[curr.year][month.month_code].totalManpower + month.manpower,
+							totalManhours: tmpTotalTbtByYear[curr.year][month.month_code].totalManhours + month.manhours,
+						}
+					});
+					acc[curr.year] = months;
+					delete tmpTotalTbtByYear[curr.year];
+				} else {
+					curr.months.forEach(month => {
+						months[month.month_code] = {
+							totalManpower: month.manpower,
+							totalManhours: month.manhours,
+							location: new Set,
+							totalManpowerAveDay: 0,
+							safeManhours: month.manhours,
+							daysWork: 0,
+							daysWoWork: 0
+						}
+					});
+				}
+				return {
+					...acc,
+					[curr.year]: months
+				};
+			}, totalTbtByYear);
+
+			let years = new Set;
+
+			const tbt = Object.entries(tbtAndStatistics).reduce((acc, curr) => {
+				years.add(curr[0]);
 				const monthsData = Object.entries(curr[1]);
 				monthsData.forEach(d => d.push(curr[0]));
 				acc.push(...monthsData);
 				return acc;
 			}, []);
+
+			const yStart = Array.from(years).at(0) ? new Date(Array.from(years).at(0), 0, 1) : 0;
+			const yEnd = Array.from(years).at(0) ? new Date(Array.from(years).at(0), 11, 1) : 0;
+			setStartTbtDate(yStart);
+			setTbtStartDateHandler(yStart);
+			setEndTbtDate(yEnd);
+			setEndTbtDateHandler(yEnd);
 			setFilteredTbtData(tbt.slice(0, 12));
 			setTbtData(tbt);
 		}
-	}, [totalTbtByYear]);
+	}, [totalTbtByYear, tbtStatistics]);
 
 	const filterTbtBySelectedDate = (start, end) => {
 		const selStartYear = getYear(start);
@@ -166,13 +203,15 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 	}
 
 	const tbtAnalytic = useMemo(() => filteredTbtData?.reduce((acc, curr) => {
-		const total = totalTbtByYear[curr[2]][curr[0]];
-		acc.totalManpower += total.totalManpower;
-		acc.totalManhours += total.totalManhours;
-		acc.safeManhours += total.safeManhours;
-		acc.daysWork += total.daysWork;
-		acc.daysWoWork += total.daysWoWork;
-		acc.location = new Set([...acc.location, ...total.location]);
+		const total = tbtData.find(t => (t[0] === curr[0] && t[2] === curr[2]));
+		if (total) {
+			acc.totalManpower += total[1].totalManpower;
+			acc.totalManhours += total[1].totalManhours;
+			acc.safeManhours += total[1].safeManhours;
+			acc.daysWork += total[1].daysWork;
+			acc.daysWoWork += total[1].daysWoWork;
+			acc.location = new Set([...acc.location, ...total[1].location]);
+		}
 		return acc;
 	}, {
 		totalManpower: 0,
@@ -183,22 +222,31 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 		location: new Set
 	}), [filteredTbtData]);
 
-	const tbtDataItd = useMemo(() => tbtData?.reduce((acc, curr) => {
-		const total = totalTbtByYear[curr[2]][curr[0]];
+	const tbtDataItd = useMemo(() => tbtData?.reduce((acc, curr, _idx, arr) => {
+		const currMonth = curr[0];
 		const currTotal = {
-			totalManpower: acc.totalManpower + total.totalManpower,
-			totalManhours: acc.totalManhours + total.totalManhours,
-			daysWork: acc.daysWork + total.daysWork,
-			daysWoWork: acc.daysWoWork + total.daysWoWork,
-			location: acc.location + total.location.size
+			totalManpower: acc.totalManpower + curr[1].totalManpower,
+			totalManhours: acc.totalManhours + curr[1].totalManhours,
+			daysWork: acc.daysWork + curr[1].daysWork,
+			daysWoWork: acc.daysWoWork + curr[1].daysWoWork,
+			location: new Set([...acc.location, ...curr[1].location])
 		}
-		return calculateItd({ monthsObj: totalTbtByYear[curr[2]], currMonth: curr[0], currTotal });
+		if (curr[2] in totalTbtByYear) {
+			return calculateItd({ monthsObj: totalTbtByYear[curr[2]], currMonth, currTotal });
+		} else {
+			const currYear = arr.filter(a => a[2] === curr[2]);
+			let monthsObj = {};
+			currYear.forEach(d => {
+				monthsObj[d[0]] = d[1];
+			})
+			return calculateItd({ monthsObj, currMonth, currTotal });
+		}
 	}, {
 		totalManpower: 0,
 		totalManhours: 0,
 		daysWork: 0,
 		daysWoWork: 0,
-		location: 0
+		location: new Set
 	}), [tbtData]);
 
 	const trainingComputedData = trainings.reduce((acc, curr) => {
@@ -225,6 +273,9 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 		completedInduction: 0,
 		completedInductionMonth: 0
 	});
+
+	const years = new Set(tbtData.map(d => d[2]));
+	const monthsDiff = monthDiff(startTbtDateHandler, endTbtDateHandler);
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -272,8 +323,8 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 									openTo="year"
 									showToolbar
 									views={['year', 'month']}
-									minDate={new Date(Object.keys(totalTbtByYear).at(0), 0, 1)}
-									maxDate={new Date(Object.keys(totalTbtByYear).at(-1), 11, 1)}
+									minDate={new Date(Array.from(years).at(0), 0, 1)}
+									maxDate={new Date(Array.from(years).at(-1), 11, 1)}
 									renderInput={(params) => (
 										<TextField
 											{...params}
@@ -297,7 +348,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 									onChange={handleTbtEndDateChange}
 									onAccept={onTbtEndDateAccept}
 									minDate={startTbtDateHandler}
-									maxDate={new Date(Object.keys(totalTbtByYear).at(-1), 11, 1)}
+									maxDate={new Date(Array.from(years).at(-1), 11, 1)}
 									inputFormat="MMM yyyy"
 									openTo="year"
 									showToolbar
@@ -326,18 +377,18 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="EMPLOYEES"
-						total={employeesCount || 0}
-						icon={'material-symbols:supervisor-account-outline'}
+						title="MANPOWER"
+						total={tbtAnalytic.totalManpower}
+						icon={'simple-line-icons:user'}
 					/>
 				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="MANPOWER"
-						total={tbtAnalytic.totalManpower}
+						title="AVG. MANPOWER"
+						total={Math.ceil(tbtAnalytic.totalManpower / (monthsDiff || 0))}
 						color="info"
-						icon={'simple-line-icons:user'}
+						icon={'material-symbols:supervisor-account-outline'}
 					/>
 				</Grid>
 
@@ -380,7 +431,7 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 							{
 								title: "Total Work Location",
 								month: tbtAnalytic?.location?.size || 0,
-								itd: tbtDataItd?.location || 0,
+								itd: tbtDataItd?.location?.size || 0,
 							},
 							{
 								title: "Number of Training Hours Completed",
@@ -722,10 +773,17 @@ function calculateItd ({ monthsObj, currMonth, currTotal }) {
 			totalManhours: currTotal.totalManhours + month.totalManhours,
 			daysWork: currTotal.daysWork + month.daysWork,
 			daysWoWork: currTotal.daysWoWork + month.daysWoWork,
-			location: currTotal.location + month.location.size,
+			location: new Set([...currTotal.location, ...month.location])
 		};
 		return calculateItd({ monthsObj, currMonth: prevMonth, currTotal: total });
 	} else {
 		return currTotal;
+	}
+}
+
+function monthDiff (dateFrom, dateTo) {
+	if (dateFrom && dateTo) {
+		return dateTo.getMonth() - dateFrom.getMonth() +
+			(12 * (dateTo.getFullYear() - dateFrom.getFullYear())) + 1
 	}
 }
