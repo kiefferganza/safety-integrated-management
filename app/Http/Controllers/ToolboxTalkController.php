@@ -187,7 +187,6 @@ class ToolboxTalkController extends Controller
 	public function updateStatistic(TbtStatistic $statistic, Request $request) {
 		$request->validate([
 			"year" => "integer|required",
-			"file_src" => "required",
 			"months" => "array|required|min:12",
 		]);
 		

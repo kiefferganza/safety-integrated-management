@@ -161,7 +161,7 @@ const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisable
 			preserveScroll: true,
 			onStart () {
 				handleClose();
-				load("Inserting record", "please wait...");
+				load(statistic ? `Updating ${statistic.year} record.` : "Inserting record", "please wait...");
 			},
 			onFinish () {
 				stop();
