@@ -1,7 +1,9 @@
+import { lazy, Suspense } from 'react';
+import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { getCurrentUserName } from "@/utils/formatName";
 import { Head } from "@inertiajs/inertia-react";
-import EmployeeProfilePage from "./EmployeeProfilePage";
+const EmployeeProfilePage = lazy(() => import("./EmployeeProfilePage"));
 
 const index = ({ employee }) => {
 
@@ -10,9 +12,11 @@ const index = ({ employee }) => {
 			<Head>
 				<title>{`${getCurrentUserName(employee)} Profile`}</title>
 			</Head>
-			<DashboardLayout>
-				<EmployeeProfilePage employee={employee} />
-			</DashboardLayout>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<EmployeeProfilePage employee={employee} />
+				</DashboardLayout>
+			</Suspense>
 		</>
 	)
 }

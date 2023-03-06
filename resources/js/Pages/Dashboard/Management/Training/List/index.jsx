@@ -1,12 +1,16 @@
+import { Suspense, lazy } from 'react';
+import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import DashboardLayout from '@/Layouts/dashboard/DashboardLayout';
-import TrainingList from './TrainingList';
+const TrainingList = lazy(() => import('./TrainingList'));
 
 const index = ({ trainings, module, url, type }) => {
 
 	return (
-		<DashboardLayout>
-			<TrainingList trainings={trainings} module={module} url={url} type={type} />
-		</DashboardLayout>
+		<Suspense fallback={<LoadingScreen />}>
+			<DashboardLayout>
+				<TrainingList trainings={trainings} module={module} url={url} type={type} />
+			</DashboardLayout>
+		</Suspense>
 	)
 }
 

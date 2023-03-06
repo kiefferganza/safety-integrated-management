@@ -6,7 +6,6 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
-import { Head } from '@inertiajs/inertia-react';
 const { PpeNewEditForm } = await import('@/sections/@dashboard/ppe/PpeNewEditForm');
 
 // ----------------------------------------------------------------------
@@ -15,25 +14,19 @@ export default function PpeCreatePage () {
 	const { themeStretch } = useSettingsContext();
 
 	return (
-		<>
-			<Head>
-				<title>Create a new product</title>
-			</Head>
-
-			<Container maxWidth={themeStretch ? false : 'lg'}>
-				<CustomBreadcrumbs
-					heading="Create a new product"
-					links={[
-						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
-						{
-							name: 'PPE',
-							href: PATH_DASHBOARD.ppe.root,
-						},
-						{ name: 'New product' },
-					]}
-				/>
-				<PpeNewEditForm />
-			</Container>
-		</>
+		<Container maxWidth={themeStretch ? false : 'lg'}>
+			<CustomBreadcrumbs
+				heading="Create a new product"
+				links={[
+					{ name: 'Dashboard', href: PATH_DASHBOARD.root },
+					{
+						name: 'PPE',
+						href: PATH_DASHBOARD.ppe.root,
+					},
+					{ name: 'New product' },
+				]}
+			/>
+			<PpeNewEditForm />
+		</Container>
 	);
 }

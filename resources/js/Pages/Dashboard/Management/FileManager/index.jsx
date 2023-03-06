@@ -1,6 +1,7 @@
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import { useEffect, useState } from "react";
-import FileManagerPage from "./FileManagerPage";
+import { useEffect, useState, Suspense, lazy } from "react";
+import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
+const FileManagerPage = lazy(() => import("./FileManagerPage"));
 
 const index = ({ folders }) => {
 	const [data, setData] = useState([]);
@@ -23,9 +24,11 @@ const index = ({ folders }) => {
 	}, [folders]);
 
 	return (
-		<DashboardLayout>
-			<FileManagerPage folders={data} />
-		</DashboardLayout>
+		<Suspense fallback={<LoadingScreen />}>
+			<DashboardLayout>
+				<FileManagerPage folders={data} />
+			</DashboardLayout>
+		</Suspense>
 	)
 }
 

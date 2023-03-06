@@ -1,3 +1,4 @@
+import { Suspense, lazy } from 'react';
 import DashboardLayout from '@/Layouts/dashboard/DashboardLayout';
 import { Head } from '@inertiajs/inertia-react';
 // utils
@@ -11,9 +12,10 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
-import DocumentDetailHeader from '@/sections/@dashboard/document/detail/DocumentDetailHeader';
-import DocumentDetailToolbar from '@/sections/@dashboard/document/detail/DocumentDetailToolbar';
-import DocumentDetailBody from '@/sections/@dashboard/document/detail/DocumentDetailBody';
+const DocumentDetailHeader = lazy(() => import('@/sections/@dashboard/document/detail/DocumentDetailHeader'));
+const DocumentDetailToolbar = lazy(() => import('@/sections/@dashboard/document/detail/DocumentDetailToolbar'));
+const DocumentDetailBody = lazy(() => import('@/sections/@dashboard/document/detail/DocumentDetailBody'));
+import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 
 
 const index = ({ folder, document, positions, auth: { user } }) => {
@@ -36,41 +38,45 @@ const index = ({ folder, document, positions, auth: { user } }) => {
 	const docStatus = getStatus({ status, reviewer_sign, reviewer_employees, approval_sign });
 
 	return (
-		<DashboardLayout>
+		<>
 			<Head>
 				<title>{`${folder.folder_name} - ${cms}: Detail`}</title>
 			</Head>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
 
-			<Container maxWidth={themeStretch ? false : 'lg'}>
-				<CustomBreadcrumbs
-					heading={cms}
-					links={[
-						{
-							name: 'File Manager',
-							href: PATH_DASHBOARD.fileManager.root,
-						},
-						{
-							name: folder.folder_name,
-							href: PATH_DASHBOARD.fileManager.view(folder.folder_id),
-						},
-						{
-							name: cms,
-						},
-					]}
-				/>
-				<DocumentDetailToolbar cms={cms} document={document} latestUploadedFile={latestUploadedFile} positions={positions} docStatus={docStatus} />
-				<Card sx={{ p: 3 }}>
-					<DocumentDetailHeader
-						title="Document Review Sheet"
-						cms={cms}
-						document={document}
-						user={user}
-						latestUploadedFile={latestUploadedFile}
-					/>
-					<DocumentDetailBody document={document} docType={docType} user={user} positions={positions} />
-				</Card >
-			</Container>
-		</DashboardLayout>
+					<Container maxWidth={themeStretch ? false : 'lg'}>
+						<CustomBreadcrumbs
+							heading={cms}
+							links={[
+								{
+									name: 'File Manager',
+									href: PATH_DASHBOARD.fileManager.root,
+								},
+								{
+									name: folder.folder_name,
+									href: PATH_DASHBOARD.fileManager.view(folder.folder_id),
+								},
+								{
+									name: cms,
+								},
+							]}
+						/>
+						<DocumentDetailToolbar cms={cms} document={document} latestUploadedFile={latestUploadedFile} positions={positions} docStatus={docStatus} />
+						<Card sx={{ p: 3 }}>
+							<DocumentDetailHeader
+								title="Document Review Sheet"
+								cms={cms}
+								document={document}
+								user={user}
+								latestUploadedFile={latestUploadedFile}
+							/>
+							<DocumentDetailBody document={document} docType={docType} user={user} positions={positions} />
+						</Card >
+					</Container>
+				</DashboardLayout>
+			</Suspense>
+		</>
 	)
 }
 

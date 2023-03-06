@@ -1,6 +1,8 @@
+import { Suspense, lazy } from "react";
+import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import ToolboxTalkListPage from "../ToolboxTalkListPage";
 import { Head } from '@inertiajs/inertia-react';
+const ToolboxTalkListPage = lazy(() => import("../ToolboxTalkListPage"));
 
 const CivilList = ({ tbt }) => {
 	return (
@@ -8,9 +10,11 @@ const CivilList = ({ tbt }) => {
 			<Head>
 				<title>Toolbox Talks: Civil</title>
 			</Head>
-			<DashboardLayout>
-				<ToolboxTalkListPage tbt={tbt || []} type="1" />
-			</DashboardLayout>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<ToolboxTalkListPage tbt={tbt || []} type="1" />
+				</DashboardLayout>
+			</Suspense>
 		</>
 	)
 }

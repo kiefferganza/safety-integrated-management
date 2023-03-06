@@ -19,7 +19,7 @@ class DashboardController extends Controller
 {
 	public function index() {
 			
-		return Inertia::render("Dashboard/General/Analytics/index", [
+		return Inertia::render("Dashboard/General/HSEDashboard/index", [
 			"trainings" => Training::select("type", "training_hrs", "training_date")->where("is_deleted", 0)->withCount("training_files")->get(),
 			"tbtStatistics" => TbtStatistic::select("id","year")->with("months:id,tbt_statistic_id,manhours,manpower,month_code")->get()
 		]);

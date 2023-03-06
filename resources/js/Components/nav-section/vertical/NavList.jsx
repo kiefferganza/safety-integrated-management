@@ -16,16 +16,16 @@ NavList.propTypes = {
 	hasChild: PropTypes.bool,
 };
 
+function delay (time) {
+	return new Promise(resolve => setTimeout(resolve, time));
+}
+
 export default function NavList ({ data, depth, hasChild }) {
 	const { can } = usePage().props;
 	const navItemRef = useRef();
-	const { active, isExternalLink } = useActiveLink(data.path, true, hasChild, data?.childList);
+	const { active, isExternalLink } = useActiveLink(data.path, true, hasChild, data?.childList, data.title);
 
 	const [open, setOpen] = useState(active);
-
-	function delay (time) {
-		return new Promise(resolve => setTimeout(resolve, time));
-	}
 
 	useEffect(() => {
 		if (active && navItemRef.current && navItemRef) {

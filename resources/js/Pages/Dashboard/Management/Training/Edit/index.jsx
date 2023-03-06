@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState, lazy } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import TrainingEditCreatePage from "../TrainingEditCreatePage";
+const TrainingEditCreatePage = lazy(() => import("../TrainingEditCreatePage"));
+import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 
 const index = ({ training, details }) => {
 	const [trainingData, setTrainingData] = useState({});
@@ -28,12 +29,12 @@ const index = ({ training, details }) => {
 		}
 	}, [training]);
 
-	// console.log({ module });
-
 	return (
-		<DashboardLayout>
-			<TrainingEditCreatePage details={details} isEdit currentTraining={trainingData} />
-		</DashboardLayout>
+		<Suspense fallback={<LoadingScreen />}>
+			<DashboardLayout>
+				<TrainingEditCreatePage details={details} isEdit currentTraining={trainingData} />
+			</DashboardLayout>
+		</Suspense>
 	)
 }
 

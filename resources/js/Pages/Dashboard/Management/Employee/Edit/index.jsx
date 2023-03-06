@@ -1,17 +1,21 @@
+import { lazy, Suspense } from 'react';
+import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import EmployeeCreateEditPage from "../EmployeeCreateEditPage";
+const EmployeeCreateEditPage = lazy(() => import("../EmployeeCreateEditPage"));
 
 const index = ({ currentEmployee, companies, departments, positions }) => {
 	return (
-		<DashboardLayout>
-			<EmployeeCreateEditPage
-				currentEmployee={currentEmployee}
-				companies={companies}
-				departments={departments}
-				positions={positions}
-				isEdit={true}
-			/>
-		</DashboardLayout>
+		<Suspense fallback={<LoadingScreen />}>
+			<DashboardLayout>
+				<EmployeeCreateEditPage
+					currentEmployee={currentEmployee}
+					companies={companies}
+					departments={departments}
+					positions={positions}
+					isEdit={true}
+				/>
+			</DashboardLayout>
+		</Suspense>
 	)
 }
 

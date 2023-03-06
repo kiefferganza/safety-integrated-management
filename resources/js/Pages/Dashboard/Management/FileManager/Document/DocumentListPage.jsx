@@ -43,7 +43,7 @@ const { Label } = await import('@/Components/label/Label');
 const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialog');
 // sections
 const { DocumentAnalytic } = await import('@/sections/@dashboard/document/DocumentAnalytic');
-import { Head, Link } from '@inertiajs/inertia-react';
+import { Link } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
 import { DocumentTableRow, DocumentTableToolbar } from '@/sections/@dashboard/document/list';
 import { capitalCase } from 'change-case';
@@ -63,7 +63,7 @@ const TABLE_HEAD = [
 ];
 
 
-export const DocumentListPage = ({ folder, user }) => {
+const DocumentListPage = ({ folder, user }) => {
 	const theme = useTheme();
 	const { themeStretch } = useSettingsContext();
 	const { load, stop } = useSwal();
@@ -273,10 +273,6 @@ export const DocumentListPage = ({ folder, user }) => {
 	const folderName = capitalCase(folder.folder_name);
 	return (
 		<>
-			<Head>
-				<title>{`${folderName}: List`}</title>
-			</Head>
-
 			<Container maxWidth={themeStretch ? false : 'lg'} sx={{ pb: 16 }}>
 				<CustomBreadcrumbs
 					heading={`${folderName} Document List`}
@@ -627,4 +623,4 @@ function applyFilter ({
 	return inputData;
 }
 
-// export default DocumentListPage;
+export default DocumentListPage;

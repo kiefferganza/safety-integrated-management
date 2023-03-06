@@ -1,11 +1,24 @@
+import { lazy, Suspense } from "react";
+import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-const { DocumentListPage } = await import("./DocumentListPage");
+import { capitalCase } from "change-case";
+import { Head } from "@inertiajs/inertia-react";
+const DocumentListPage = lazy(() => import("./DocumentListPage"));
 
 const index = ({ folder, auth: { user } }) => {
+
+	const folderName = capitalCase(folder.folder_name);
 	return (
-		<DashboardLayout>
-			<DocumentListPage folder={folder} user={user} />
-		</DashboardLayout>
+		<>
+			<Head>
+				<title>{`${folderName}: List`}</title>
+			</Head>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<DocumentListPage folder={folder} user={user} />
+				</DashboardLayout>
+			</Suspense>
+		</>
 	)
 }
 

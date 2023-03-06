@@ -192,10 +192,6 @@ export default function PPEListPage ({ inventory }) {
 
 	return (
 		<>
-			<Head>
-				<title> PPE: Product List</title>
-			</Head>
-
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
 					heading="Product List"

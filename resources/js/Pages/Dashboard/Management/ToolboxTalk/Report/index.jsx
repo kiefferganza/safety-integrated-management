@@ -1,6 +1,8 @@
+import { Suspense, lazy } from "react";
+import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from '@inertiajs/inertia-react';
-import TBTReportPage from "./TBTReportPage";
+const TBTReportPage = lazy(() => import("./TBTReportPage"));
 
 const index = ({ positions }) => {
 	return (
@@ -8,9 +10,11 @@ const index = ({ positions }) => {
 			<Head>
 				<title>Toolbox Talks: Report</title>
 			</Head>
-			<DashboardLayout>
-				<TBTReportPage positions={positions} />
-			</DashboardLayout>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<TBTReportPage positions={positions} />
+				</DashboardLayout>
+			</Suspense>
 		</>
 	)
 }

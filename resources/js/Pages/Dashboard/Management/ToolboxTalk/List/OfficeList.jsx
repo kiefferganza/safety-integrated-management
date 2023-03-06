@@ -1,16 +1,21 @@
+import { Suspense, lazy } from "react";
+import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import ToolboxTalkListPage from "../ToolboxTalkListPage";
 import { Head } from '@inertiajs/inertia-react';
+const ToolboxTalkListPage = lazy(() => import("../ToolboxTalkListPage"));
 
 const OfficeList = ({ tbt }) => {
+
 	return (
 		<>
 			<Head>
 				<title>Toolbox Talks: Office</title>
 			</Head>
-			<DashboardLayout>
-				<ToolboxTalkListPage tbt={tbt || []} moduleName="Office" type="5" />
-			</DashboardLayout>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<ToolboxTalkListPage tbt={tbt || []} moduleName="Office" type="5" />
+				</DashboardLayout>
+			</Suspense>
 		</>
 	)
 }

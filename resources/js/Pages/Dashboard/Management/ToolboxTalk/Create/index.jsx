@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from '@inertiajs/inertia-react';
 // @mui
@@ -8,7 +9,8 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import { useSettingsContext } from '@/Components/settings';
 // sections
-import ToolboxTalkNewEditForm from "@/sections/@dashboard/toolboxtalks/form/ToolboxTalkNewEditForm";
+const ToolboxTalkNewEditForm = lazy(() => import("@/sections/@dashboard/toolboxtalks/form/ToolboxTalkNewEditForm"));
+import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 
 const index = () => {
 	const { themeStretch } = useSettingsContext();
@@ -18,27 +20,29 @@ const index = () => {
 			<Head>
 				<title>New Toolbox Talk</title>
 			</Head>
-			<DashboardLayout>
-				<Container maxWidth={themeStretch ? false : 'lg'}>
-					<CustomBreadcrumbs
-						heading={"Create new toolbox talk"}
-						links={[
-							{
-								name: 'Dashboard',
-								href: PATH_DASHBOARD.root,
-							},
-							{
-								name: 'Toolbox Talks',
-								href: PATH_DASHBOARD.toolboxTalks.civil,
-							},
-							{
-								name: "New Toolbox Talk"
-							},
-						]}
-					/>
-					<ToolboxTalkNewEditForm />
-				</Container>
-			</DashboardLayout>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<Container maxWidth={themeStretch ? false : 'lg'}>
+						<CustomBreadcrumbs
+							heading={"Create new toolbox talk"}
+							links={[
+								{
+									name: 'Dashboard',
+									href: PATH_DASHBOARD.root,
+								},
+								{
+									name: 'Toolbox Talks',
+									href: PATH_DASHBOARD.toolboxTalks.civil,
+								},
+								{
+									name: "New Toolbox Talk"
+								},
+							]}
+						/>
+						<ToolboxTalkNewEditForm />
+					</Container>
+				</DashboardLayout>
+			</Suspense>
 		</>
 	)
 }

@@ -1,6 +1,8 @@
+import { Suspense, lazy } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
-import CompanyListPage from "./CompanyListPage";
+const CompanyListPage = lazy(() => import("./CompanyListPage"));
+import LoadingScreen from "@/Components/loading-screen";
 
 const index = ({ companies }) => {
 
@@ -9,9 +11,11 @@ const index = ({ companies }) => {
 			<Head>
 				<title>Companies</title>
 			</Head>
-			<DashboardLayout>
-				<CompanyListPage companies={companies} />
-			</DashboardLayout>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<CompanyListPage companies={companies} />
+				</DashboardLayout>
+			</Suspense>
 		</>
 	)
 }

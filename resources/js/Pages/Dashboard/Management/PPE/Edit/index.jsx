@@ -1,11 +1,21 @@
+import { Suspense, lazy } from "react";
+import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import PpeEditPage from "./PpeEditPage";
+import { Head } from "@inertiajs/inertia-react";
+const PpeEditPage = lazy(() => import("./PpeEditPage"));
 
 const index = ({ inventory }) => {
 	return (
-		<DashboardLayout>
-			<PpeEditPage inventory={inventory} />
-		</DashboardLayout>
+		<>
+			<Head>
+				<title>Edit Product</title>
+			</Head>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<PpeEditPage inventory={inventory} />
+				</DashboardLayout>
+			</Suspense>
+		</>
 	)
 }
 

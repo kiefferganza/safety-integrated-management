@@ -1,6 +1,8 @@
+import { lazy, Suspense } from "react";
+import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
-import UserAccountPage from "./UserAccountPage";
+const UserAccountPage = lazy(() => import("./UserAccountPage"));
 
 const index = ({ auth }) => {
 
@@ -9,9 +11,11 @@ const index = ({ auth }) => {
 			<Head>
 				<title>Setting</title>
 			</Head>
-			<DashboardLayout>
-				<UserAccountPage user={auth?.user || {}} />
-			</DashboardLayout>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<UserAccountPage user={auth?.user || {}} />
+				</DashboardLayout>
+			</Suspense>
 		</>
 	)
 }

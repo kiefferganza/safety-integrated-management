@@ -1,11 +1,15 @@
+import { lazy, Suspense } from "react";
+import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import TrainingEditCreatePage from "../TrainingEditCreatePage";
+const TrainingEditCreatePage = lazy(() => import("../TrainingEditCreatePage"));
 
 const index = ({ type }) => {
 	return (
-		<DashboardLayout>
-			<TrainingEditCreatePage type={type} />
-		</DashboardLayout>
+		<Suspense fallback={<LoadingScreen />}>
+			<DashboardLayout>
+				<TrainingEditCreatePage type={type} />
+			</DashboardLayout>
+		</Suspense>
 	)
 }
 

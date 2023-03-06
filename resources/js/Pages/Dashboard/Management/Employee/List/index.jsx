@@ -1,8 +1,10 @@
+import { lazy, Suspense } from 'react';
+import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import { useEffect } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import EmployeeListPage from "./EmployeeListPage";
 import { useDispatch } from "react-redux";
 import { setEmployees } from "@/redux/slices/employee";
+const EmployeeListPage = lazy(() => import("./EmployeeListPage"));
 
 const index = ({ employees, unassignedUsers }) => {
 	const dispatch = useDispatch();
@@ -12,9 +14,11 @@ const index = ({ employees, unassignedUsers }) => {
 	}, [dispatch]);
 
 	return (
-		<DashboardLayout>
-			<EmployeeListPage employees={employees} unassignedUsers={unassignedUsers} canWrite={true} />
-		</DashboardLayout>
+		<Suspense fallback={<LoadingScreen />}>
+			<DashboardLayout>
+				<EmployeeListPage employees={employees} unassignedUsers={unassignedUsers} canWrite={true} />
+			</DashboardLayout>
+		</Suspense>
 	)
 }
 

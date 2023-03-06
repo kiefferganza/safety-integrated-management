@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
-import { Container } from "@mui/material";
+import { Suspense, useEffect, useState, lazy } from "react";
+import Container from "@mui/material/Container";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 // components
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
-import TrainingDetails from '@/sections/@dashboard/training/details';
+const TrainingDetails = lazy(() => import('@/sections/@dashboard/training/details'));
 import { Head } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from "@/routes/paths";
 
 import { getTrainingStatus } from "@/utils/formatDates";
 import { capitalCase } from "change-case";
+import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 
 const index = ({ training, module, url }) => {
 	const { themeStretch } = useSettingsContext();
@@ -48,23 +49,25 @@ const index = ({ training, module, url }) => {
 			<Head>
 				<title>{capitalCase(module)}</title>
 			</Head>
-			<DashboardLayout>
-				<Container maxWidth={themeStretch ? false : 'lg'}>
-					<CustomBreadcrumbs
-						heading="Course Details"
-						links={[
-							{ name: 'Dashboard', href: PATH_DASHBOARD.root },
-							{
-								name: `${module} List`,
-								href: PATH_DASHBOARD.training[url],
-							},
-							{ name: capitalCase(module) },
-						]}
-					/>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<Container maxWidth={themeStretch ? false : 'lg'}>
+						<CustomBreadcrumbs
+							heading="Course Details"
+							links={[
+								{ name: 'Dashboard', href: PATH_DASHBOARD.root },
+								{
+									name: `${module} List`,
+									href: PATH_DASHBOARD.training[url],
+								},
+								{ name: capitalCase(module) },
+							]}
+						/>
 
-					<TrainingDetails training={trainingData} module={module} />
-				</Container>
-			</DashboardLayout>
+						<TrainingDetails training={trainingData} module={module} />
+					</Container>
+				</DashboardLayout>
+			</Suspense>
 		</>
 	)
 }

@@ -92,7 +92,7 @@ const MONTH_NAMES = {
 }
 
 
-export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings, tbtStatistics }) {
+export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, trainings, tbtStatistics }) {
 	const [tbtData, setTbtData] = useState([]);
 	const [filteredTbtData, setFilteredTbtData] = useState([]);
 	const [startTbtDate, setStartTbtDate] = useState(null);
@@ -240,7 +240,6 @@ export default function GeneralAnalyticsPage ({ user, totalTbtByYear, trainings,
 			})
 			return calculateItd({ monthsObj, currMonth, currTotal });
 		}
-		return acc;
 	}, {
 		totalManpower: 0,
 		totalManhours: 0,

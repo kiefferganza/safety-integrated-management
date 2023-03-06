@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
-import GeneralAnalyticsPage from "./GeneralAnalyticsPage";
+const GeneralHSEDasboardPage = lazy(() => import("./GeneralHSEDasboardPage"));
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import { dispatch, useSelector } from '@/redux/store';
 import { getTbts } from '@/redux/slices/toolboxtalk';
@@ -24,9 +24,11 @@ const index = ({ auth: { user }, trainings, tbtStatistics }) => {
 			<Head>
 				<title> General: Analytics</title>
 			</Head>
-			<DashboardLayout>
-				<GeneralAnalyticsPage user={user} totalTbtByYear={totalTbtByYear} trainings={trainings} tbtStatistics={tbtStatistics} />
-			</DashboardLayout>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<GeneralHSEDasboardPage user={user} totalTbtByYear={totalTbtByYear} trainings={trainings} tbtStatistics={tbtStatistics} />
+				</DashboardLayout>
+			</Suspense>
 		</>
 	)
 }

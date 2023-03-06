@@ -1,6 +1,8 @@
+import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
-import UserEditPage from "./UserEditPage";
+import { lazy, Suspense } from "react";
+const UserEditPage = lazy(() => import("./UserEditPage"));
 
 const index = ({ user }) => {
 	return (
@@ -8,9 +10,11 @@ const index = ({ user }) => {
 			<Head>
 				<title>User: Edit</title>
 			</Head>
-			<DashboardLayout>
-				<UserEditPage user={user} />
-			</DashboardLayout>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<UserEditPage user={user} />
+				</DashboardLayout>
+			</Suspense>
 		</>
 	)
 }

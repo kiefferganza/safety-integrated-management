@@ -1,11 +1,21 @@
+import { Suspense, lazy } from "react";
+import { Head } from '@inertiajs/inertia-react';
+import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import PpeCreatePage from "./PpeCreatePage";
+const PpeCreatePage = lazy(() => import("./PpeCreatePage"));
 
 const index = () => {
 	return (
-		<DashboardLayout>
-			<PpeCreatePage />
-		</DashboardLayout>
+		<>
+			<Head>
+				<title>Create a new product</title>
+			</Head>
+			<Suspense fallback={<LoadingScreen />}>
+				<DashboardLayout>
+					<PpeCreatePage />
+				</DashboardLayout>
+			</Suspense>
+		</>
 	)
 }
 
