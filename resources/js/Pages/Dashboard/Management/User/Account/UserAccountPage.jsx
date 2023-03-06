@@ -12,7 +12,6 @@ import { useSettingsContext } from '@/Components/settings';
 // sections
 import {
 	AccountGeneral,
-	AccountBilling,
 	AccountSocialLinks,
 	AccountNotifications,
 	AccountChangePassword,
