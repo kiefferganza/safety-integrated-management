@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use App\Models\Inventory;
 use App\Models\InventoryBound;
-use App\Services\EmployeeService;
+use Illuminate\Support\Facades\DB;
 
 class InventoryController extends Controller
 {	
@@ -192,6 +192,39 @@ class InventoryController extends Controller
 		return redirect()->back()
 		->with("message", count($request->ids) . " items deleted successfully!")
 		->with("type", "success");
+	}
+
+
+	public function report() {
+		$inventories = Inventory::select(
+			"inventory_id",
+			"item",
+			"min_qty",
+			"slug",
+			"date_created",
+			"date_updated",
+			"current_stock_qty",
+			"try",
+			"item_price",
+			"item_currency",
+			"img_src"
+		)->where("is_removed", 0)->get();
+		$inventories->transform(function($inventory) {
+			$bounds = InventoryBound::select(DB::raw("MAX(qty) as maxQty, MIN(qty) as minQty, SUM(qty) as totalQty, type"))->where("inventory_id", $inventory->inventory_id)->groupBy("type")->get();
+			foreach ($bounds as $bound) {
+				$propertyBound = $bound->type . "TotalQty";
+				$propertyMax = $bound->type . "MaxQty";
+				$propertyMin = $bound->type . "MinQty";
+				$inventory->$propertyBound = (int)$bound->totalQty;
+				$inventory->$propertyMax = $bound->maxQty;
+				$inventory->$propertyMin = $bound->minQty;
+			}
+			return $inventory;
+		});
+
+		return Inertia::render("Dashboard/Management/PPE/Report/index", [
+			"inventories" => $inventories
+		]);
 	}
 
 

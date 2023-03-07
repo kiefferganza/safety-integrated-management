@@ -145,7 +145,7 @@ export default function PpeDetailsSummary ({ inventory, ...other }) {
 						startIcon={<Iconify icon="eva:minus-fill" />}
 						onClick={handleRemoveStock}
 					>
-						Remove Stock
+						Pull out Stock
 					</Button>
 				</Stack>
 			</Stack>

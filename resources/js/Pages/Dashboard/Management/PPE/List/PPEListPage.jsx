@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from 'react';
+import { Link } from '@inertiajs/inertia-react';
 import { useSwal } from '@/hooks/useSwal';
 // @mui
 const { Card, Table, Button, Tooltip, TableBody, Container, IconButton, TableContainer, Stack, Divider, useTheme, Tabs, Tab } = await import('@mui/material');
@@ -27,7 +27,6 @@ import ConfirmDialog from '@/Components/confirm-dialog';
 import Label from '@/Components/label';
 // sections
 import { PpeTableRow, PpeTableToolbar } from '@/sections/@dashboard/ppe/list';
-import { Head, Link } from '@inertiajs/inertia-react';
 const { PpeAnalytic } = await import('@/sections/@dashboard/ppe/PpeAnalytic');
 
 // ----------------------------------------------------------------------

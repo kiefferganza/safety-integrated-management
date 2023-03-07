@@ -15,7 +15,7 @@ import {
 } from '@/Components/table';
 import Scrollbar from "@/Components/scrollbar"
 import Label from "@/Components/label";
-const { PpeDetailTableToolbar } = await import("./PpeDetailTableToolbar");
+const { PpeDetailTableToolbar } = await import("@/sections/@dashboard/ppe/details/PpeDetailTableToolbar");
 
 const TABLE_HEAD = [
 	{ id: 'inventory_bound_id', label: '#', align: 'left' },
@@ -140,7 +140,7 @@ export const PpeDetailsHistory = ({ bound, filterName, setFilterName }) => {
 												(row.type === 'inbound' && 'success') || (row.type === 'outbound' && 'warning') || 'success'
 											}
 										>
-											{row.type === "inbound" ? "Added" : " Pulled Out"}
+											{row.type === "inbound" ? "Restocked" : " Pulled Out"}
 										</Label>
 									</TableCell>
 									<TableCell>{row?.requestedBy}</TableCell>
