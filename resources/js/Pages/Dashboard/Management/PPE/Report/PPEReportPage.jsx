@@ -103,9 +103,9 @@ const PPEReportPage = ({ inventories }) => {
 
 	const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
 
-	const getLengthByStatus = (status) => tableData.filter((item) => item.status === status).length;
+	const getLengthByStatus = (status) => dataFiltered.filter((item) => item.status === status).length;
 
-	const getPercentByStatus = (status) => (getLengthByStatus(status) / tableData.length) * 100;
+	const getPercentByStatus = (status) => (getLengthByStatus(status) / dataFiltered.length) * 100;
 
 	const handleResetFilter = () => {
 		setFilterName('');
