@@ -35,7 +35,8 @@ export default function UserAccountPage ({ user }) {
 			value: 'billing',
 			label: 'Billing',
 			icon: <Iconify icon="ic:round-receipt" />,
-			component: <AccountBilling cards={_userPayment} addressBook={_userAddressBook} invoices={_userInvoices} />,
+			// component: <AccountBilling cards={_userPayment} addressBook={_userAddressBook} invoices={_userInvoices} />,
+			component: null,
 			disabled: true
 		},
 		{

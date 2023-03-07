@@ -101,6 +101,7 @@ const InspectionForm = ({ personel }) => {
 						<DesktopDatePicker
 							label="Inspected Date"
 							inputFormat="d-MMM-yyyy"
+							disableMaskedInput
 							value={inspDate}
 							onChange={handleChangeDate}
 							renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.inspected_date?.message} helperText={errors?.inspected_date?.message} />}
@@ -110,6 +111,7 @@ const InspectionForm = ({ personel }) => {
 							label="Inspected Date"
 							inputFormat="d-MMM-yyyy"
 							value={inspDate}
+							disableMaskedInput
 							onChange={handleChangeDate}
 							renderInput={(params) => <TextField {...params} fullWidth error={!!errors?.inspected_date?.message} helperText={errors?.inspected_date?.message} />}
 						/>
@@ -118,6 +120,7 @@ const InspectionForm = ({ personel }) => {
 					<TimePicker
 						label="Inspected Time"
 						value={time}
+						disableMaskedInput
 						onChange={handleChangeTime}
 						renderInput={(params) => <TextField {...params} readOnly fullWidth error={!!errors?.inspected_time?.message} helperText={errors?.inspected_time?.message} />}
 					/>
