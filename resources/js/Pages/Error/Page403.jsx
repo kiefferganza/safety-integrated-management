@@ -3,7 +3,7 @@ import { Link, Head } from '@inertiajs/inertia-react';
 // @mui
 import { Button, Typography } from '@mui/material';
 // components
-import { MotionContainer, varBounce } from '@/components/animate';
+import { MotionContainer, varBounce } from '@/Components/animate';
 // assets
 import { ForbiddenIllustration } from '@/assets/illustrations';
 import CompactLayout from '@/Layouts/compact/CompactLayout';
