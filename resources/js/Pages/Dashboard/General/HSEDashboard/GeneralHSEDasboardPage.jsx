@@ -272,8 +272,20 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 		completedInductionMonth: 0
 	});
 
+	const getTbtMonthChartData = () => {
+		if (endTbtDateHandler) {
+			const y = endTbtDateHandler.getFullYear();
+			const m = endTbtDateHandler.getMonth() + 1;
+			const dataIdx = tbtData.findIndex(tbt => tbt[2] == y && tbt[0] == m);
+			const startIdx = dataIdx <= 11 ? 0 : dataIdx - 11;
+			return tbtData.slice(startIdx, dataIdx + 1);
+		}
+		return [];
+	}
+	const tbtMonthChartData = getTbtMonthChartData();
 	const years = new Set(tbtData.map(d => d[2]));
 	const monthsDiff = monthDiff(startTbtDateHandler, endTbtDateHandler);
+
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
 
@@ -462,10 +474,11 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
 					<AnalyticsTBTLine
 						height={isTablet ? 364 : 240}
-						title="Monthly Toolbox Talk"
+						title="Hours Worked / Month"
+						subheader="(12 month rolling)"
 						chart={{
-							labels: filteredTbtData.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
-							series: filteredTbtData.reduce((acc, curr) => {
+							labels: tbtMonthChartData.slice(0, 12).map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
+							series: tbtMonthChartData.reduce((acc, curr) => {
 								acc[0].data.push(curr[1].totalManpower);
 								acc[1].data.push(curr[1].totalManhours);
 								acc[2].data.push(curr[1].safeManhours);
