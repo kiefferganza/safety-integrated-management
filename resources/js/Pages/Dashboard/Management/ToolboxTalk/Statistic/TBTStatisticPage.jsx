@@ -89,7 +89,7 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 				} else {
 					return [year, data];
 				}
-			});
+			}).filter(d => d[1] !== null);
 			setData(mergedData);
 		}
 	}, [totalTbtByYear, statistics]);
@@ -319,7 +319,7 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 
 function generateArrayOfYears () {
 	let max = new Date().getFullYear()
-	let min = 2013;
+	let min = 1999;
 	let years = [];
 
 	for (let i = max; i >= min; i--) {

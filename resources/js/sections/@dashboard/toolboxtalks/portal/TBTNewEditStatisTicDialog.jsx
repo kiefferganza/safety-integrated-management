@@ -242,7 +242,6 @@ const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisable
 								showToolbar
 								views={['year']}
 								openTo="year"
-								minDate={new Date(2013, 1, 1)}
 								maxDate={new Date()}
 								disabled={!!statistic}
 								value={values?.year ? new Date(values?.year, 1, 1) : null}
