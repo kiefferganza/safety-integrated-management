@@ -30,7 +30,7 @@ const TABLE_HEAD = [
 	{ id: 'item', label: 'Product', align: 'left' },
 	{ id: 'inboundTotalQty', label: 'Quantity Received', align: 'center' },
 	{ id: 'outboundTotalQty', label: 'Quantity Issued', align: 'center' },
-	{ id: 'qty', label: 'Remaining Quantity', align: 'center' },
+	{ id: 'current_stock_qty', label: 'Remaining Quantity', align: 'center' },
 	{ id: 'min_qty', label: 'Reorder Level', align: 'center' },
 	{ id: 'item_price', label: 'Price', align: 'left' },
 	{ id: 'outboundMinQty', label: 'Min Order', align: 'left' },
