@@ -31,7 +31,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Employee
 	 */
-	Route::name('management.employee.')->prefix('employee')->group(function() {
+	Route::prefix('employee')->as('management.employee.')->group(function() {
 		Route::get('/list', [EmployeeController::class, "index"])->name('list');
 		// CRUD
 		Route::get('/new', [EmployeeController::class, "create"])->name('create');
@@ -45,7 +45,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Employee/Position 
 	 */
-	Route::name('management.position.')->prefix('position')->group(function() {
+	Route::prefix('position')->as('management.position.')->group(function() {
 		Route::get('/list', [PositionController::class, 'index'])->name('list');
 		// CRUD
 		Route::post('/new', [PositionController::class, 'store'])->name('new');
@@ -56,7 +56,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Employee/Department
 	 */
-	Route::name('management.department.')->prefix("department")->group(function() {
+	Route::prefix("department")->as('management.department.')->group(function() {
 		Route::get('/list', [DepartmentController::class, 'index'])->name('list');
 		// Crud
 		Route::post('/new', [DepartmentController::class, 'store'])->name('new');
@@ -67,7 +67,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Employee/Company
 	 */
-	Route::name('management.company.')->prefix('company')->group(function() {
+	Route::prefix('company')->as('management.company.')->group(function() {
 		Route::get('/list', [CompanyController::class, 'index'])->name('list');
 		// CRUD
 		Route::post('/new', [CompanyController::class, 'store'])->name('new');
@@ -79,7 +79,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - User
 	 */
-	Route::name('management.user.')->prefix('user')->group(function() {
+	Route::prefix('user')->as('management.user.')->group(function() {
 		// Route::post('/user/{user_id}/follow', [UsersController::class, 'followUser']);
 		Route::put('/update-socials', [UsersController::class, 'update_socials'])->name('update_socials');
 		Route::get('/profile', [UsersController::class, 'profile'])->name('profile');
@@ -108,7 +108,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Training
 	 */
-	Route::name('training.management.')->prefix('training')->group(function() {
+	Route::prefix('training')->as('training.management.')->group(function() {
 		// Lists
 		Route::get('/client', [TrainingController::class, 'index'])->name('client');
 		Route::get('/in-house', [TrainingController::class, 'in_house'])->name('in_house');
@@ -133,7 +133,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Inspection
 	 */
-	Route::name('inspection.management.')->prefix('inspection')->group(function() {
+	Route::prefix('inspection')->as('inspection.management.')->group(function() {
 		// Lists
 		Route::get('/site/list', [InspectionController::class, "index"])->name('list');
 		Route::get('/new', [InspectionController::class, "create"])->name('new');
@@ -152,7 +152,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - ToolboxTalks
 	 */
-	Route::name('toolboxtalk.management.')->prefix('toolbox-talks')->group(function() {
+	Route::prefix('toolbox-talks')->as('toolboxtalk.management.')->group(function() {
 		Route::get('/all', [ToolboxTalkController::class, "index"])->name('all');
 		Route::get('/civil', [ToolboxTalkController::class, "civil_list"])->name('civil');
 		Route::get('/electrical', [ToolboxTalkController::class, "electrical_list"])->name('electrical');
@@ -177,12 +177,13 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - PPE
 	 */
-	Route::name('ppe.management.')->prefix('ppe')->group(function() {
+	Route::prefix('ppe')->as('ppe.management.')->group(function() {
 		Route::get('/list', [InventoryController::class, "index"])->name('index');
 		Route::get('/new', [InventoryController::class, "create"])->name('create');
 		Route::post('/new', [InventoryController::class, "store"])->name('store');
 		Route::post('/delete', [InventoryController::class, "destroy"])->name('destroy');
 		Route::get('/report', [InventoryController::class, "report"])->name('report');
+		Route::get('/update-report', [InventoryController::class, "updateReport"]);
 
 		Route::post('/product/add-remove-stock/{inventory}', [InventoryController::class, "add_remove_stock"]);
 		Route::get('/product/{inventory}', [InventoryController::class, "show"])->name('show');

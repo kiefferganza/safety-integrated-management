@@ -86,6 +86,7 @@ export const PpeDetailsHistory = ({ bound, filterName, setFilterName }) => {
 		setFilterEndDate(null);
 		setPage(0);
 	};
+
 	return (
 		<>
 			<PpeDetailTableToolbar
