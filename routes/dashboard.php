@@ -188,7 +188,6 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/product/add-remove-stock/{inventory}', [InventoryController::class, "add_remove_stock"]);
 		Route::get('/product/{inventory}', [InventoryController::class, "show"])->name('show');
 		Route::get('/product/{inventory}/edit', [InventoryController::class, "edit"]);
-		Route::post('/product/{inventory}/update', [InventoryController::class, "update"]);
 	});
 
 	/**
