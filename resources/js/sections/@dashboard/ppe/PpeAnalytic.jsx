@@ -12,10 +12,11 @@ PpeAnalytic.propTypes = {
 	title: PropTypes.string,
 	color: PropTypes.string,
 	total: PropTypes.number,
+	rawTotal: PropTypes.string,
 	percent: PropTypes.number
 };
 
-export function PpeAnalytic ({ title, total, icon, color, percent }) {
+export function PpeAnalytic ({ title, total, rawTotal, icon, color, percent }) {
 	return (
 		<Stack direction="row" alignItems="center" justifyContent="center" sx={{ width: 1, minWidth: 240 }}>
 			<Stack alignItems="center" justifyContent="center" sx={{ position: 'relative' }}>
@@ -41,9 +42,16 @@ export function PpeAnalytic ({ title, total, icon, color, percent }) {
 			<Stack spacing={0.5} sx={{ ml: 2 }}>
 				<Typography variant="subtitle2" sx={{ wordBreak: 'break-word', fontWeight: 700 }}>{title}</Typography>
 
-				<Typography variant="subtitle2">
-					{total ? total.toLocaleString("en-US") : 0} items
-				</Typography>
+				{total && (
+					<Typography variant="subtitle2">
+						{total ? total.toLocaleString("en-US") : 0} items
+					</Typography>
+				)}
+				{rawTotal && (
+					<Typography variant="subtitle2">
+						{rawTotal}
+					</Typography>
+				)}
 			</Stack>
 		</Stack>
 	);

@@ -278,9 +278,21 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 			const m = endTbtDateHandler.getMonth() + 1;
 			const dataIdx = tbtData.findIndex(tbt => tbt[2] == y && tbt[0] == m);
 			const startIdx = dataIdx <= 11 ? 0 : dataIdx - 11;
-			return tbtData.slice(startIdx, dataIdx + 1);
+			const tbt = tbtData.slice(startIdx, dataIdx + 1);
+			const tbtWorks = tbt.reduce((acc, curr) => ({
+				daysWork: acc.daysWork + (curr[1]?.daysWork || 0),
+				daysWoWork: acc.daysWoWork + (curr[1]?.daysWoWork || 0)
+			}), { daysWork: 0, daysWoWork: 0 })
+			return {
+				tbt,
+				...tbtWorks
+			}
 		}
-		return [];
+		return {
+			tbt: [],
+			daysWork: 0,
+			daysWoWork: 0,
+		};
 	}
 	const tbtMonthChartData = getTbtMonthChartData();
 	const years = new Set(tbtData.map(d => d[2]));
@@ -477,8 +489,8 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 						title="Hours Worked / Month"
 						subheader="(12 month rolling)"
 						chart={{
-							labels: tbtMonthChartData.slice(0, 12).map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
-							series: tbtMonthChartData.reduce((acc, curr) => {
+							labels: tbtMonthChartData.tbt.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
+							series: tbtMonthChartData.tbt.reduce((acc, curr) => {
 								acc[0].data.push(curr[1].totalManpower);
 								acc[1].data.push(curr[1].totalManhours);
 								acc[2].data.push(curr[1].safeManhours);

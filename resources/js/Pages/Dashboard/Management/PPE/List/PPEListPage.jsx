@@ -122,10 +122,9 @@ export default function PPEListPage ({ inventory }) {
 
 	const TABS = [
 		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
-		{ value: 'in_stock', label: 'In Stock', color: 'info', count: getLengthByStatus('in_stock') },
+		{ value: 'in_stock', label: 'In Stock', color: 'success', count: getLengthByStatus('in_stock') },
 		{ value: 'low_stock', label: 'Low Stock', color: 'warning', count: getLengthByStatus('low_stock') },
-		{ value: 'out_of_stock', label: 'Out Of Stock', color: 'error', count: getLengthByStatus('out_of_stock') },
-		{ value: 'full', label: 'Full', color: 'success', count: getLengthByStatus('full') },
+		{ value: 'out_of_stock', label: 'Out Of Stock', color: 'error', count: getLengthByStatus('out_of_stock') }
 	];
 
 
@@ -252,14 +251,6 @@ export default function PPEListPage ({ inventory }) {
 								percent={getPercentByStatus("out_of_stock")}
 								icon="carbon:shopping-cart-clear"
 								color={theme.palette.error.main}
-							/>
-
-							<PpeAnalytic
-								title="Full"
-								total={getLengthByStatus("full")}
-								percent={getPercentByStatus("full")}
-								icon="bi:cart-fill"
-								color={theme.palette.success.main}
 							/>
 						</Stack>
 					</Scrollbar>
@@ -409,7 +400,7 @@ export default function PPEListPage ({ inventory }) {
 
 function getStatus (qty, minQty) {
 	if (qty <= 0) return "out_of_stock";
-	if (qty >= minQty) return "full";
+	if (qty >= minQty) return "in_stock";
 	if (minQty >= qty) return "low_stock"
 	return "in_stock"
 }

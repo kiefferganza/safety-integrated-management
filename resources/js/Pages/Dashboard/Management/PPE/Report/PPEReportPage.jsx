@@ -117,10 +117,12 @@ const PPEReportPage = ({ inventories }) => {
 
 	const totals = dataFiltered.reduce((acc, curr) => ({
 		totalOrder: acc.totalOrder + (curr?.outboundTotalQty || 0),
-		totalReceived: acc.totalReceived + (curr?.inboundTotalQty || 0)
+		totalReceived: acc.totalReceived + (curr?.inboundTotalQty || 0),
+		subtotal: acc.subtotal + curr.item_price
 	}), {
 		totalOrder: 0,
-		totalReceived: 0
+		totalReceived: 0,
+		subtotal: 0
 	});
 
 	return (
@@ -169,11 +171,19 @@ const PPEReportPage = ({ inventories }) => {
 						/>
 
 						<PpeAnalytic
+							title="Subtotal"
+							rawTotal={`${(totals?.subtotal || 0)?.toLocaleString()}`}
+							percent={100}
+							icon="material-symbols:attach-money"
+							color={theme.palette.success.main}
+						/>
+
+						<PpeAnalytic
 							title="In Stock"
 							total={getLengthByStatus("in_stock")}
 							percent={getPercentByStatus("in_stock")}
 							icon="bi:cart-check"
-							color={theme.palette.success.main}
+							color={theme.palette.info.main}
 						/>
 
 						<PpeAnalytic
@@ -190,14 +200,6 @@ const PPEReportPage = ({ inventories }) => {
 							percent={getPercentByStatus("out_of_stock")}
 							icon="carbon:shopping-cart-clear"
 							color={theme.palette.error.main}
-						/>
-
-						<PpeAnalytic
-							title="Full"
-							total={getLengthByStatus("full")}
-							percent={getPercentByStatus("full")}
-							icon="bi:cart-fill"
-							color={theme.palette.success.main}
 						/>
 					</Stack>
 				</Scrollbar>
@@ -313,7 +315,7 @@ const PPEReportPage = ({ inventories }) => {
 
 function getStatus (qty, minQty) {
 	if (qty <= 0) return "out_of_stock";
-	if (qty >= minQty) return "full";
+	if (qty >= minQty) return "in_stock";
 	if (minQty >= qty) return "low_stock"
 	return "in_stock"
 }
