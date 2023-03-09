@@ -205,6 +205,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 		const total = tbtData.find(t => (t[0] === curr[0] && t[2] === curr[2]));
 		if (total) {
 			acc.totalManpower += total[1].totalManpower;
+			acc.avgManpower += Math.ceil((total[1].totalManpower / 31));
 			acc.totalManhours += total[1].totalManhours;
 			acc.safeManhours += total[1].safeManhours;
 			acc.daysWork += total[1].daysWork;
@@ -214,6 +215,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 		return acc;
 	}, {
 		totalManpower: 0,
+		avgManpower: 0,
 		totalManhours: 0,
 		safeManhours: 0,
 		daysWork: 0,
@@ -278,13 +280,13 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 			const m = endTbtDateHandler.getMonth() + 1;
 			const dataIdx = tbtData.findIndex(tbt => tbt[2] == y && tbt[0] == m);
 			const startIdx = dataIdx <= 11 ? 0 : dataIdx - 11;
-			const tbt = tbtData.slice(startIdx, dataIdx + 1);
-			const tbtWorks = tbt.reduce((acc, curr) => ({
+			const tbtRolling = tbtData.slice(startIdx, dataIdx + 1);
+			const tbtWorks = tbtRolling.reduce((acc, curr) => ({
 				daysWork: acc.daysWork + (curr[1]?.daysWork || 0),
 				daysWoWork: acc.daysWoWork + (curr[1]?.daysWoWork || 0)
 			}), { daysWork: 0, daysWoWork: 0 })
 			return {
-				tbt,
+				tbt: tbtRolling,
 				...tbtWorks
 			}
 		}
@@ -296,7 +298,6 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 	}
 	const tbtMonthChartData = getTbtMonthChartData();
 	const years = new Set(tbtData.map(d => d[2]));
-	const monthsDiff = monthDiff(startTbtDateHandler, endTbtDateHandler);
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -406,8 +407,8 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="AVG. MANPOWER"
-						total={Math.ceil(tbtAnalytic.totalManpower / (monthsDiff || 0))}
+						title="X̅ MANPOWER/MONTH"
+						total={tbtAnalytic.avgManpower}
 						color="info"
 						icon={'material-symbols:supervisor-account-outline'}
 					/>
@@ -527,8 +528,8 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 						title="Work Days"
 						chart={{
 							series: [
-								{ label: 'Days Work', value: tbtAnalytic?.daysWork || 0 },
-								{ label: 'Days Without Work', value: tbtAnalytic?.daysWoWork || 0 },
+								{ label: 'Days Work', value: tbtMonthChartData?.daysWork || 0 },
+								{ label: 'Days Without Work', value: tbtMonthChartData?.daysWoWork || 0 },
 							],
 							colors: [
 								theme.palette.primary.main,
