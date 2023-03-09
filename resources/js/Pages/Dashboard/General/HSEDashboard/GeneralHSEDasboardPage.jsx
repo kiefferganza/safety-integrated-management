@@ -205,7 +205,6 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 		const total = tbtData.find(t => (t[0] === curr[0] && t[2] === curr[2]));
 		if (total) {
 			acc.totalManpower += total[1].totalManpower;
-			acc.avgManpower += Math.ceil((total[1].totalManpower / 31));
 			acc.totalManhours += total[1].totalManhours;
 			acc.safeManhours += total[1].safeManhours;
 			acc.daysWork += total[1].daysWork;
@@ -215,7 +214,6 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 		return acc;
 	}, {
 		totalManpower: 0,
-		avgManpower: 0,
 		totalManhours: 0,
 		safeManhours: 0,
 		daysWork: 0,
@@ -298,6 +296,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 	}
 	const tbtMonthChartData = getTbtMonthChartData();
 	const years = new Set(tbtData.map(d => d[2]));
+	const monthsDiff = monthDiff(startTbtDateHandler, endTbtDateHandler);
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -407,8 +406,8 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="X̅ MANPOWER/MONTH"
-						total={tbtAnalytic.avgManpower}
+						title="MANPOWER/MONTH X̅"
+						total={Math.ceil(tbtAnalytic.totalManpower / (monthsDiff || 0))}
 						color="info"
 						icon={'material-symbols:supervisor-account-outline'}
 					/>
