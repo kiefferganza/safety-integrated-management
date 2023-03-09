@@ -36,7 +36,10 @@ class InventoryController extends Controller
 	 */
 	public function create()
 	{
-		return Inertia::render("Dashboard/Management/PPE/Create/index");
+		$sequence = Inventory::where('is_removed', 0)->count() + 1;
+		return Inertia::render("Dashboard/Management/PPE/Create/index", [
+			"sequence_no" => str_pad($sequence, 6, '0', STR_PAD_LEFT)
+		]);
 	}
 
 	/**
@@ -48,6 +51,12 @@ class InventoryController extends Controller
 	public function store(Request $request)
 	{
 		$request->validate([
+			"originator" => "string|required",
+			"project_code" => "string|required",
+			"discipline" => "string|required",
+			"document_type" => "string|required",
+			"document_zone" => "string",
+			"document_level" => "string",
 			"type" => "string|required",
 			"min_qty" => "integer|required",
 			"current_stock_qty" => "integer|required",
@@ -61,6 +70,14 @@ class InventoryController extends Controller
 		]);
 		$user = auth()->user();
 		$inventory = new Inventory;
+
+		$inventory->originator = $request->originator;
+		$inventory->project_code = $request->project_code;
+		$inventory->discipline = $request->discipline;
+		$inventory->document_type = $request->document_type;
+		$inventory->document_zone = $request->document_zone;
+		$inventory->document_level = $request->document_level;
+		$inventory->remarks = $request->remarks;
 
 		$inventory->item = $request->item;
 		$inventory->description = $request->description;
@@ -135,6 +152,12 @@ class InventoryController extends Controller
 	public function update(Request $request, Inventory $inventory)
 	{
 		$request->validate([
+			"originator" => "string|required",
+			"project_code" => "string|required",
+			"discipline" => "string|required",
+			"document_type" => "string|required",
+			"document_zone" => "string",
+			"document_level" => "string",
 			"type" => "string|required",
 			"min_qty" => "integer|required",
 			"item_price" => "integer|required",
@@ -165,11 +188,20 @@ class InventoryController extends Controller
 			$inventory->img_src = $file_name;
 		}
 
+		$inventory->originator = $request->originator;
+		$inventory->project_code = $request->project_code;
+		$inventory->discipline = $request->discipline;
+		$inventory->document_type = $request->document_type;
+		$inventory->document_zone = $request->document_zone;
+		$inventory->document_level = $request->document_level;
+		$inventory->remarks = $request->remarks;
+
 		$inventory->try = $request->type;
 		$inventory->min_qty = $request->min_qty;
 		$inventory->item_price = $request->item_price;
 		$inventory->description = $request->description;
 		$inventory->item = $request->item;
+		$inventory->increment("revision_no");
 		$inventory->save();
 
 		return redirect()->back()
@@ -270,6 +302,22 @@ class InventoryController extends Controller
 		->with("type", "success");
 
 	}
+
+
+
+
+	public function updatePpe() {
+		$inventories = Inventory::where("is_removed", 0)->get();
+		foreach ($inventories as $idx => $inventory) {
+			$sequence = $idx + 1;
+			Inventory::where("inventory_id", $inventory->inventory_id)->update([
+				"sequence_no" => str_pad($sequence, 6, '0', STR_PAD_LEFT)
+			]);
+		}
+		dd(Inventory::where("is_removed", 0)->get());
+	}
+
+
 
 
 
