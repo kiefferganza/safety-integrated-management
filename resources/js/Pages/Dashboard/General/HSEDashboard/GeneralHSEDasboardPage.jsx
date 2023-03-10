@@ -297,7 +297,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 	const tbtMonthChartData = getTbtMonthChartData();
 	const years = new Set(tbtData.map(d => d[2]));
 	const monthsDiff = monthDiff(startTbtDateHandler, endTbtDateHandler);
-
+	console.log(monthsDiff)
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
 
@@ -407,7 +407,10 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANPOWER/MONTH X̅"
-						total={Math.ceil(tbtAnalytic.totalManpower / (monthsDiff || 0))}
+						total={monthsDiff === 1 ?
+							Math.ceil(tbtAnalytic.totalManpower / new Date(+filteredTbtData[0][2], +filteredTbtData[0][0], 0).getDate())
+							: Math.ceil(tbtAnalytic.totalManpower / (monthsDiff || 0))
+						}
 						color="info"
 						icon={'material-symbols:supervisor-account-outline'}
 					/>
