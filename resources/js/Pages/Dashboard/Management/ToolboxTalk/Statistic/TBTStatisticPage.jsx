@@ -4,7 +4,7 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 import { dispatch, useSelector } from '@/redux/store';
 import { getTbts, } from '@/redux/slices/toolboxtalk';
 // mui
-const { Card, Container, Typography, Divider, useTheme, Stack, Button, Link, IconButton } = await import('@mui/material');
+const { Box, Card, Container, Typography, Divider, useTheme, Stack, Button, Link, IconButton } = await import('@mui/material');
 // Components
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs/CustomBreadcrumbs';
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
@@ -19,23 +19,23 @@ const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialo
 const { TBTNewEditStatisTicDialog } = await import('@/sections/@dashboard/toolboxtalks/portal/TBTNewEditStatisTicDialog');
 
 const TABLE_HEAD = [
-	"Year",
-	"Jan",
-	"Feb",
-	"Mar",
-	"Apr",
-	"May",
-	"Jun",
-	"Jul",
-	"Aug",
-	"Sep",
-	"Oct",
-	"Nov",
-	"Dec",
-	"Attach File",
-	"Avg. Manpower",
-	"Total Manpower",
-	"Total Manhours",
+	{ label: "Year" },
+	{ label: "Jan", subHeading: true },
+	{ label: "Feb", subHeading: true },
+	{ label: "Mar", subHeading: true },
+	{ label: "Apr", subHeading: true },
+	{ label: "May", subHeading: true },
+	{ label: "Jun", subHeading: true },
+	{ label: "Jul", subHeading: true },
+	{ label: "Aug", subHeading: true },
+	{ label: "Sep", subHeading: true },
+	{ label: "Oct", subHeading: true },
+	{ label: "Nov", subHeading: true },
+	{ label: "Dec", subHeading: true },
+	{ label: "Attach. File" },
+	{ label: "Avg. Manpower" },
+	{ label: "Total Manpower" },
+	{ label: "Total Manhours" },
 ];
 
 const EMPTY_TABLE_ROW = [null, null, null, null, null, null, null, null, null, null, null, null];
@@ -229,11 +229,25 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 					<Scrollbar sx={{ py: 1 }}>
 						<StyledGridBox>
 							<StyledTableHeader gridColumn="1/-1">
-								<Typography variant="h6">HSE Statistic Record (Manhours)</Typography>
+								<Typography variant="h6">HSE HOURS WORKED RECORD</Typography>
 							</StyledTableHeader>
 							{TABLE_HEAD.map((row, idx) => (
 								<StyledTableHead key={idx}>
-									<Typography variant="subtitle2">{row}</Typography>
+									{row?.subHeading ? (
+										<Stack width={1} sx={{ borderColor: theme.palette.grey.A700 }}>
+											<Typography variant="subtitle2" textAlign="center">{row.label}</Typography>
+											<Box borderTop={1} sx={{ borderColor: "inherit" }} display="flex" alignItems="center">
+												<Box width={.5} textAlign="center" borderRight={1} sx={{ borderColor: "inherit" }}>
+													<Typography variant="subtitle2">P</Typography>
+												</Box>
+												<Box width={.5} textAlign="center">
+													<Typography variant="subtitle2">H</Typography>
+												</Box>
+											</Box>
+										</Stack>
+									) : (
+										<Typography variant="subtitle2">{row.label}</Typography>
+									)}
 								</StyledTableHead>
 							))}
 							<StyledTableHead></StyledTableHead>
@@ -254,7 +268,16 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 										</StyledTableCell>
 										{innerRowData.map((innerRow, innerIdx) => (
 											<StyledTableCell key={innerIdx}>
-												<Typography variant="subtitle2" sx={{ wordBreak: "break-all" }}>{(innerRow?.totalManhours || 0)?.toLocaleString()}</Typography>
+												<Box sx={{ borderColor: "inherit" }} width={1} height={1} display="flex" alignItems="center">
+													<Box width={.5} height={1} textAlign="center" borderRight={1} sx={{ borderColor: "inherit" }} display="flex" alignItems="center" justifyContent="center">
+														<Typography variant="subtitle2" sx={{ wordBreak: "break-all" }}>{(innerRow?.totalManpower || 0)?.toLocaleString()}</Typography>
+													</Box>
+													<Box width={.5} height={1} textAlign="center" display="flex" alignItems="center" justifyContent="center">
+														<Typography variant="subtitle2" sx={{ wordBreak: "break-all" }}>
+															{(innerRow?.totalManhours || 0)?.toLocaleString()}
+														</Typography>
+													</Box>
+												</Box>
 											</StyledTableCell>
 										))}
 										<StyledTableCell>
