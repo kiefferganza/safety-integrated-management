@@ -148,9 +148,10 @@ const navConfig = [
 				path: PATH_DASHBOARD.ppe.root,
 				icon: ICONS.cart,
 				children: [
-					{ title: 'create', path: PATH_DASHBOARD.ppe.new, disabled: true },
-					{ title: 'list', path: PATH_DASHBOARD.ppe.root, disabled: true },
-					{ title: 'report', path: PATH_DASHBOARD.ppe.report, disabled: true }
+					{ title: 'create', path: PATH_DASHBOARD.ppe.new },
+					{ title: 'list', path: PATH_DASHBOARD.ppe.root },
+					{ title: 'report', path: PATH_DASHBOARD.ppe.report },
+					{ title: 'report list', path: PATH_DASHBOARD.ppe.report, disabled: true }
 				],
 			},
 

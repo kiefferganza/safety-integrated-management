@@ -23,6 +23,8 @@ class Inventory extends Model
 		parent::boot();
 
 		static::creating(function ($inventory) {
+			// $sequence = Inventory::where('is_removed', 0)->count() + 1;
+			// $inventory->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
 			$inventory->slug = Str::slug($inventory->item);
 		});
 	}

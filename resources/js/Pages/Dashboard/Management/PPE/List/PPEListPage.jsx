@@ -432,7 +432,7 @@ function applyFilter ({ inputData, comparator, filterByStatus, filterName, filte
 
 	if (filterStartDate && !filterEndDate) {
 		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
-		inputData = inputData.filter(product => fTimestamp(new Date(product.date_created)) >= startDateTimestamp);
+		inputData = inputData.filter(product => fTimestamp(new Date(product.date_updated)) >= startDateTimestamp);
 	}
 
 	if (filterStartDate && filterEndDate) {
@@ -440,8 +440,8 @@ function applyFilter ({ inputData, comparator, filterByStatus, filterName, filte
 		const endDateTimestamp = filterEndDate.setHours(0, 0, 0, 0);
 		inputData = inputData.filter(
 			(product) =>
-				fTimestamp(product.date_created) >= startDateTimestamp &&
-				fTimestamp(product.date_created) <= endDateTimestamp
+				fTimestamp(product.date_updated) >= startDateTimestamp &&
+				fTimestamp(product.date_updated) <= endDateTimestamp
 		);
 	}
 

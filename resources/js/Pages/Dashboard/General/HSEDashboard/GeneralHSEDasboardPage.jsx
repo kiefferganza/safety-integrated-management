@@ -297,7 +297,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 	const tbtMonthChartData = getTbtMonthChartData();
 	const years = new Set(tbtData.map(d => d[2]));
 	const monthsDiff = monthDiff(startTbtDateHandler, endTbtDateHandler);
-	console.log(monthsDiff)
+
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
 

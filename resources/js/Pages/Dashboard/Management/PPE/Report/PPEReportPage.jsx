@@ -1,7 +1,28 @@
 import { useEffect, useState } from "react";
 import { Link as InertiaLink } from "@inertiajs/inertia-react";
+const { PDFViewer } = await import('@react-pdf/renderer');
 // mui
-const { Container, Card, Divider, Stack, Table, TableBody, TableCell, TableContainer, TableRow, useTheme, Link } = await import("@mui/material");
+const {
+	Button,
+	Box,
+	Container,
+	Card,
+	Checkbox,
+	CircularProgress,
+	Dialog,
+	DialogActions,
+	Divider,
+	Stack,
+	Table,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableRow,
+	Tooltip,
+	IconButton,
+	useTheme,
+	Link
+} = await import("@mui/material");
 // utils
 import { fTimestamp } from "@/utils/formatTime";
 // Components
@@ -13,6 +34,7 @@ import {
 	TableEmptyRows,
 	TableHeadCustom,
 	TablePaginationCustom,
+	TableSelectedAction,
 } from '@/Components/table';
 import Scrollbar from "@/Components/scrollbar"
 import Label from "@/Components/label";
@@ -22,11 +44,12 @@ import { PATH_DASHBOARD } from "@/routes/paths";
 import { fCurrencyNumberAndSymbol } from "@/utils/formatNumber";
 import { sentenceCase } from "change-case";
 import Image from "@/Components/image/Image";
+import Iconify from "@/Components/iconify/Iconify";
+import PpePDF from "@/sections/@dashboard/ppe/details/PpePDF";
 const { PpeAnalytic } = await import("@/sections/@dashboard/ppe/PpeAnalytic");
 const { PpeReportTableToolbar } = await import("@/sections/@dashboard/ppe/details/PpeReportTableToolbar");
 
 const TABLE_HEAD = [
-	{ id: 'inventory_id', label: '#', align: 'left' },
 	{ id: 'item', label: 'Product', align: 'left' },
 	{ id: 'inboundTotalQty', label: 'Quantity Received', align: 'center' },
 	{ id: 'outboundTotalQty', label: 'Quantity Issued', align: 'center' },
@@ -46,6 +69,12 @@ const PPEReportPage = ({ inventories }) => {
 		orderBy,
 		rowsPerPage,
 		setPage,
+		//
+		selected,
+		setSelected,
+		onSelectRow,
+		onSelectAllRows,
+		//
 		//
 		onSort,
 		onChangeDense,
@@ -67,6 +96,17 @@ const PPEReportPage = ({ inventories }) => {
 	const [filterStartDate, setFilterStartDate] = useState(null);
 
 	const [filterEndDate, setFilterEndDate] = useState(null);
+
+	const [open, setOpen] = useState(false);
+
+	const handleOpen = () => {
+		setOpen(true);
+	};
+
+	const handleClose = () => {
+		setOpen(false);
+	};
+
 
 	useEffect(() => {
 		if (inventories) {
@@ -118,198 +158,260 @@ const PPEReportPage = ({ inventories }) => {
 	const totals = dataFiltered.reduce((acc, curr) => ({
 		totalOrder: acc.totalOrder + (curr?.outboundTotalQty || 0),
 		totalReceived: acc.totalReceived + (curr?.inboundTotalQty || 0),
-		subtotal: acc.subtotal + curr.item_price
+		subtotal: acc.subtotal + (curr.item_price * curr?.outboundTotalQty || 0)
 	}), {
 		totalOrder: 0,
 		totalReceived: 0,
 		subtotal: 0
 	});
 
+	const list = tableData.filter(data => selected.includes(data.inventory_id));
+
 	return (
-		<Container maxWidth={themeStretch ? false : 'lg'}>
-			<CustomBreadcrumbs
-				heading="PPE Report"
-				links={[
-					{ name: 'Dashboard', href: PATH_DASHBOARD.root },
-					{
-						name: 'PPE',
-						href: PATH_DASHBOARD.ppe.root,
-					},
-					{ name: 'Report' },
-				]}
-			/>
-
-			<Card sx={{ mb: 5 }}>
-				<Scrollbar>
-					<Stack
-						direction="row"
-						divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-						sx={{ py: 2 }}
-					>
-						<PpeAnalytic
-							title="Total"
-							total={dataFiltered.length}
-							percent={100}
-							icon="ri:luggage-cart-line"
-							color={theme.palette.info.main}
-						/>
-
-						<PpeAnalytic
-							title="Order Quantity"
-							total={totals.totalOrder}
-							percent={100}
-							icon="material-symbols:vertical-align-top"
-							color={theme.palette.success.main}
-						/>
-
-						<PpeAnalytic
-							title="Received Quantity"
-							total={totals.totalReceived}
-							percent={100}
-							icon="material-symbols:vertical-align-bottom"
-							color={theme.palette.info.main}
-						/>
-
-						<PpeAnalytic
-							title="Subtotal"
-							rawTotal={`${(totals?.subtotal || 0)?.toLocaleString()}`}
-							percent={100}
-							icon="material-symbols:attach-money"
-							color={theme.palette.success.main}
-						/>
-
-						<PpeAnalytic
-							title="In Stock"
-							total={getLengthByStatus("in_stock")}
-							percent={getPercentByStatus("in_stock")}
-							icon="bi:cart-check"
-							color={theme.palette.info.main}
-						/>
-
-						<PpeAnalytic
-							title="Low Stock"
-							total={getLengthByStatus("low_stock")}
-							percent={getPercentByStatus("low_stock")}
-							icon="bi:cart-dash"
-							color={theme.palette.warning.main}
-						/>
-
-						<PpeAnalytic
-							title="Out Of Stock"
-							total={getLengthByStatus("out_of_stock")}
-							percent={getPercentByStatus("out_of_stock")}
-							icon="carbon:shopping-cart-clear"
-							color={theme.palette.error.main}
-						/>
-					</Stack>
-				</Scrollbar>
-			</Card>
-
-			<Card>
-				<PpeReportTableToolbar
-					filterName={filterName}
-					filterStatus={filterStatus}
-					onFilterName={handleFilterName}
-					onFilterStatus={handleFilterStatus}
-					filterStartDate={filterStartDate}
-					filterEndDate={filterEndDate}
-					onFilterStartDate={(newValue) => {
-						if (filterEndDate) {
-							setFilterEndDate(null);
-						}
-						setFilterStartDate(newValue);
-					}}
-					onFilterEndDate={(newValue) => {
-						setFilterEndDate(newValue);
-					}}
-					isFiltered={isFiltered}
-					onResetFilter={handleResetFilter}
+		<>
+			<Container maxWidth={themeStretch ? false : 'lg'}>
+				<CustomBreadcrumbs
+					heading="PPE Report"
+					links={[
+						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
+						{
+							name: 'PPE',
+							href: PATH_DASHBOARD.ppe.root,
+						},
+						{ name: 'Report' },
+					]}
 				/>
-				<TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+
+				<Card sx={{ mb: 5 }}>
 					<Scrollbar>
-						<Table size={dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-							<TableHeadCustom
-								order={order}
-								orderBy={orderBy}
-								headLabel={TABLE_HEAD}
-								rowCount={tableData.length}
-								onSort={onSort}
-								sx={{
-									borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
-									whiteSpace: "nowrap",
-									'& th': { backgroundColor: 'transparent' },
-								}}
+						<Stack
+							direction="row"
+							divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
+							sx={{ py: 2 }}
+						>
+							<PpeAnalytic
+								title="Total"
+								total={dataFiltered.length}
+								percent={100}
+								icon="ri:luggage-cart-line"
+								color={theme.palette.info.main}
 							/>
 
-							<TableBody>
-								{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, idx) =>
-									<TableRow
-										key={row.inventory_id}
-										sx={{
-											borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
-										}}
-									>
-										<TableCell>{idx + 1}</TableCell>
-										<TableCell>
-											<Stack direction="row" alignItems="center" spacing={2}>
-												<Image
-													disabledEffect
-													visibleByDefault
-													alt={row.item}
-													src={row.img_src ? `/storage/media/photos/inventory/${row.img_src}` : '/storage/assets/placeholder.svg'}
-													sx={{ borderRadius: 1.5, width: 48, height: 48 }}
-												/>
-												<Link href={PATH_DASHBOARD.ppe.view(row.slug)} component={InertiaLink} noWrap variant="subtitle2" sx={{ cursor: 'pointer', textTransform: 'capitalize' }}>{row.item}</Link>
-											</Stack>
-										</TableCell>
-										<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.inboundTotalQty || 0).toLocaleString()}</TableCell>
-										<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.outboundTotalQty || 0).toLocaleString()}</TableCell>
-										<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.current_stock_qty || 0).toLocaleString()}</TableCell>
-										<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{row.min_qty}</TableCell>
-										<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{fCurrencyNumberAndSymbol(row.item_price, row.item_currency)}</TableCell>
-										<TableCell sx={{ whiteSpace: "nowrap" }} align="left">
-											<span style={{ display: "block" }}>{(row?.outboundMinQty || 0).toLocaleString()} Item</span>
-											<span style={{ display: "block" }}>{fCurrencyNumberAndSymbol((row.outboundMinQty || 0) * row.item_price, row.item_currency)}</span>
-										</TableCell>
-										<TableCell sx={{ whiteSpace: "nowrap" }} align="left">
-											<span style={{ display: "block" }}>{(row?.outboundMaxQty || 0).toLocaleString()} Item </span>
-											<span style={{ display: "block" }}>{fCurrencyNumberAndSymbol((row.outboundMaxQty || 0) * row.item_price, row.item_currency)}</span>
-										</TableCell>
-										<TableCell align="center">
-											<Label
-												variant="soft"
-												color={
-													(row.status === 'out_of_stock' && 'error') || (row.status === 'low_stock' && 'warning') || 'success'
-												}
-												sx={{ textTransform: 'capitalize' }}
-											>
-												{row.status ? sentenceCase(row.status) : ''}
-											</Label>
-										</TableCell>
-									</TableRow>
-								)}
+							<PpeAnalytic
+								title="Order Quantity"
+								total={totals.totalOrder}
+								percent={100}
+								icon="material-symbols:vertical-align-top"
+								color={theme.palette.success.main}
+							/>
 
-								<TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, tableData.length)} />
+							<PpeAnalytic
+								title="Received Quantity"
+								total={totals.totalReceived}
+								percent={100}
+								icon="material-symbols:vertical-align-bottom"
+								color={theme.palette.info.main}
+							/>
 
-								<TableNoData isNotFound={isNotFound} />
-							</TableBody>
-						</Table>
+							<PpeAnalytic
+								title="Subtotal"
+								rawTotal={`IQD ${(totals?.subtotal || 0)?.toLocaleString()}`}
+								percent={100}
+								icon="mdi:money"
+								color={theme.palette.success.main}
+							/>
+
+							<PpeAnalytic
+								title="In Stock"
+								total={getLengthByStatus("in_stock")}
+								percent={getPercentByStatus("in_stock")}
+								icon="bi:cart-check"
+								color={theme.palette.info.main}
+							/>
+
+							<PpeAnalytic
+								title="Low Stock"
+								total={getLengthByStatus("low_stock")}
+								percent={getPercentByStatus("low_stock")}
+								icon="bi:cart-dash"
+								color={theme.palette.warning.main}
+							/>
+
+							<PpeAnalytic
+								title="Out Of Stock"
+								total={getLengthByStatus("out_of_stock")}
+								percent={getPercentByStatus("out_of_stock")}
+								icon="carbon:shopping-cart-clear"
+								color={theme.palette.error.main}
+							/>
+						</Stack>
 					</Scrollbar>
-				</TableContainer>
+				</Card>
 
-				<TablePaginationCustom
-					count={dataFiltered.length}
-					page={page}
-					rowsPerPage={rowsPerPage}
-					onPageChange={onChangePage}
-					onRowsPerPageChange={onChangeRowsPerPage}
-					//
-					dense={dense}
-					onChangeDense={onChangeDense}
-					rowsPerPageOptions={[5, 10, 25, inventories.length || 30]}
-				/>
-			</Card>
-		</Container>
+				<Card>
+					<PpeReportTableToolbar
+						filterName={filterName}
+						filterStatus={filterStatus}
+						onFilterName={handleFilterName}
+						onFilterStatus={handleFilterStatus}
+						filterStartDate={filterStartDate}
+						filterEndDate={filterEndDate}
+						onFilterStartDate={(newValue) => {
+							if (filterEndDate) {
+								setFilterEndDate(null);
+							}
+							setFilterStartDate(newValue);
+						}}
+						onFilterEndDate={(newValue) => {
+							setFilterEndDate(newValue);
+						}}
+						isFiltered={isFiltered}
+						onResetFilter={handleResetFilter}
+					/>
+					<TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+						<TableSelectedAction
+							dense={dense}
+							numSelected={selected.length}
+							rowCount={tableData.length}
+							onSelectAllRows={(checked) =>
+								onSelectAllRows(
+									checked,
+									tableData.map((row) => row.inventory_id)
+								)
+							}
+							action={
+								<Stack direction="row" spacing={1}>
+									<Tooltip title="Preview">
+										<IconButton color="primary" onClick={handleOpen}>
+											<Iconify icon="eva:eye-fill" />
+										</IconButton>
+									</Tooltip>
+									<Button>
+										Generate Report
+									</Button>
+								</Stack>
+							}
+						/>
+
+						<Scrollbar>
+							<Table size={dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+								<TableHeadCustom
+									order={order}
+									orderBy={orderBy}
+									headLabel={TABLE_HEAD}
+									rowCount={dataFiltered.length}
+									onSort={onSort}
+									sx={{
+										borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
+										whiteSpace: "nowrap",
+										'& th': { backgroundColor: 'transparent' },
+									}}
+									onSelectAllRows={(checked) =>
+										onSelectAllRows(
+											checked,
+											dataFiltered.map((row) => row.inventory_id)
+										)
+									}
+								/>
+
+								<TableBody>
+									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) =>
+										<TableRow
+											key={row.inventory_id}
+											sx={{
+												borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
+											}}
+										>
+											<TableCell padding="checkbox">
+												<Checkbox
+													checked={selected.includes(row.inventory_id)}
+													onClick={() => onSelectRow(row.inventory_id)}
+												/>
+											</TableCell>
+											<TableCell>
+												<Stack direction="row" alignItems="center" spacing={2}>
+													<Image
+														disabledEffect
+														visibleByDefault
+														alt={row.item}
+														src={row.img_src ? `/storage/media/photos/inventory/${row.img_src}` : '/storage/assets/placeholder.svg'}
+														sx={{ borderRadius: 1.5, width: 48, height: 48 }}
+													/>
+													<Link href={PATH_DASHBOARD.ppe.view(row.slug)} component={InertiaLink} noWrap variant="subtitle2" sx={{ cursor: 'pointer', textTransform: 'capitalize' }}>{row.item}</Link>
+												</Stack>
+											</TableCell>
+											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.inboundTotalQty || 0).toLocaleString()}</TableCell>
+											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.outboundTotalQty || 0).toLocaleString()}</TableCell>
+											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.current_stock_qty || 0).toLocaleString()}</TableCell>
+											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{row.min_qty}</TableCell>
+											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{fCurrencyNumberAndSymbol(row.item_price, row.item_currency)}</TableCell>
+											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">
+												<span style={{ display: "block" }}>{(row?.outboundMinQty || 0).toLocaleString()} Item</span>
+												<span style={{ display: "block" }}>{fCurrencyNumberAndSymbol((row.outboundMinQty || 0) * row.item_price, row.item_currency)}</span>
+											</TableCell>
+											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">
+												<span style={{ display: "block" }}>{(row?.outboundMaxQty || 0).toLocaleString()} Item </span>
+												<span style={{ display: "block" }}>{fCurrencyNumberAndSymbol((row.outboundMaxQty || 0) * row.item_price, row.item_currency)}</span>
+											</TableCell>
+											<TableCell align="center">
+												<Label
+													variant="soft"
+													color={
+														(row.status === 'out_of_stock' && 'error') || (row.status === 'low_stock' && 'warning') || 'success'
+													}
+													sx={{ textTransform: 'capitalize' }}
+												>
+													{row.status ? sentenceCase(row.status) : ''}
+												</Label>
+											</TableCell>
+										</TableRow>
+									)}
+
+									<TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, tableData.length)} />
+
+									<TableNoData isNotFound={isNotFound} />
+								</TableBody>
+							</Table>
+						</Scrollbar>
+					</TableContainer>
+
+					<TablePaginationCustom
+						count={dataFiltered.length}
+						page={page}
+						rowsPerPage={rowsPerPage}
+						onPageChange={onChangePage}
+						onRowsPerPageChange={onChangeRowsPerPage}
+						//
+						dense={dense}
+						onChangeDense={onChangeDense}
+						rowsPerPageOptions={[5, 10, 25, inventories.length || 30]}
+					/>
+				</Card>
+			</Container>
+			<Dialog fullScreen open={open}>
+				<Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+					<DialogActions
+						sx={{
+							zIndex: 9,
+							padding: '12px !important',
+							boxShadow: (theme) => theme.customShadows.z8,
+						}}
+					>
+						<Tooltip title="Close">
+							<IconButton color="inherit" onClick={handleClose}>
+								<Iconify icon="eva:close-fill" />
+							</IconButton>
+						</Tooltip>
+					</DialogActions>
+
+					<Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
+						<PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+							<PpePDF report={{ list }} />
+						</PDFViewer>
+					</Box>
+				</Box>
+			</Dialog>
+		</>
 	)
 }
 
@@ -341,7 +443,7 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 
 	if (filterStartDate && !filterEndDate) {
 		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
-		inputData = inputData.filter(product => fTimestamp(new Date(product.date_created)) >= startDateTimestamp);
+		inputData = inputData.filter(product => fTimestamp(new Date(product.date_updated)) >= startDateTimestamp);
 	}
 
 	if (filterStartDate && filterEndDate) {
@@ -349,8 +451,8 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 		const endDateTimestamp = filterEndDate.setHours(0, 0, 0, 0);
 		inputData = inputData.filter(
 			(product) =>
-				fTimestamp(product.date_created) >= startDateTimestamp &&
-				fTimestamp(product.date_created) <= endDateTimestamp
+				fTimestamp(product.date_updated) >= startDateTimestamp &&
+				fTimestamp(product.date_updated) <= endDateTimestamp
 		);
 	}
 

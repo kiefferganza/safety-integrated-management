@@ -5,6 +5,7 @@ import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 const PpeCreatePage = lazy(() => import("./PpeCreatePage"));
 
 const index = () => {
+
 	return (
 		<>
 			<Head>

@@ -5,8 +5,8 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { LoadingButton } from '@mui/lab';
-import { Card, Grid, Stack, TextField, Typography, InputAdornment, Box } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
+const { Card, Grid, Stack, TextField, Typography, InputAdornment, Box } = await import('@mui/material');
 //
 import { currencies } from '@/_mock/arrays/_currencies';
 import { Inertia } from '@inertiajs/inertia';
@@ -20,7 +20,6 @@ import FormProvider, {
 	RHFRadioGroup,
 	RHFAutocomplete,
 } from '@/Components/hook-form';
-import { PATH_DASHBOARD } from '@/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -48,24 +47,24 @@ export function PpeNewEditForm ({ isEdit, currentProduct }) {
 		item: Yup.string().required('Name is required'),
 		description: Yup.string().required('Description is required'),
 		current_stock_qty: Yup.number().test("min", "Must be a positive number.", (val) => {
-			if (isEdit) return true;
 			return val >= 0;
 		}),
 		min_qty: Yup.number().moreThan(-1, "Must be a positive number."),
-		item_price: Yup.number().moreThan(0, 'Price should not be 0'),
+		item_price: Yup.number().moreThan(0, 'Price should not be 0')
 	});
 
 
 	const defaultValues = useMemo(
 		() => ({
 			item: currentProduct?.item || '',
+			location: currentProduct?.location || '',
 			description: currentProduct?.description || '',
 			img_src: currentProduct?.img_src ? `/storage/media/photos/inventory/${currentProduct?.img_src}` : '',
 			current_stock_qty: currentProduct?.current_stock_qty || 0,
 			min_qty: currentProduct?.min_qty || 0,
-			item_currency: currentProduct?.price || 'USD',
+			item_currency: currentProduct?.item_currency || 'IQD',
 			item_price: currentProduct?.item_price || 0,
-			type: currentProduct?.type || TYPE_OPTIONS[2].value,
+			type: currentProduct?.try || TYPE_OPTIONS[2].value,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[currentProduct]
@@ -105,15 +104,27 @@ export function PpeNewEditForm ({ isEdit, currentProduct }) {
 	}, [isEdit, currentProduct, resErrors]);
 
 	const onSubmit = async (data) => {
-		Inertia.post(!isEdit ? route("ppe.management.store") : PATH_DASHBOARD.ppe.update(currentProduct?.inventory_id), data, {
-			preserveScroll: true,
-			onStart () {
-				load(!isEdit ? "Creating product." : "Updating product", "please wait...");
-			},
-			onFinish () {
-				stop();
-			}
-		});
+		if (isEdit && currentProduct) {
+			Inertia.post(route("ppe.management.update", currentProduct?.inventory_id), data, {
+				preserveScroll: true,
+				onStart () {
+					load(!isEdit ? "Creating product." : "Updating product", "please wait...");
+				},
+				onFinish () {
+					stop();
+				}
+			});
+		} else {
+			Inertia.post(route("ppe.management.store"), data, {
+				preserveScroll: true,
+				onStart () {
+					load(!isEdit ? "Creating product." : "Updating product", "please wait...");
+				},
+				onFinish () {
+					stop();
+				}
+			});
+		}
 	};
 
 	const handleDrop = useCallback(
@@ -133,6 +144,7 @@ export function PpeNewEditForm ({ isEdit, currentProduct }) {
 				<Grid item xs={12} md={8}>
 					<Card sx={{ p: 3 }}>
 						<Stack spacing={3}>
+
 							<RHFTextField name="item" label="Product Name" />
 
 							<Stack spacing={1}>
@@ -173,7 +185,6 @@ export function PpeNewEditForm ({ isEdit, currentProduct }) {
 									InputProps={{
 										type: 'number',
 									}}
-									disabled={isEdit}
 								/>
 
 								<RHFTextField

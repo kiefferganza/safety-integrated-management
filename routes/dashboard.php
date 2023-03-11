@@ -183,11 +183,12 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/new', [InventoryController::class, "store"])->name('store');
 		Route::post('/delete', [InventoryController::class, "destroy"])->name('destroy');
 		Route::get('/report', [InventoryController::class, "report"])->name('report');
-		Route::get('/update-report', [InventoryController::class, "updateReport"]);
+		Route::get('/update-ppe', [InventoryController::class, "updatePpe"]);
 
 		Route::post('/product/add-remove-stock/{inventory}', [InventoryController::class, "add_remove_stock"]);
 		Route::get('/product/{inventory}', [InventoryController::class, "show"])->name('show');
-		Route::get('/product/{inventory}/edit', [InventoryController::class, "edit"]);
+		Route::get('/product/{inventory}/edit', [InventoryController::class, "edit"])->name('edit');
+		Route::post('/product/{inventory}/edit', [InventoryController::class, "update"])->name('update');
 	});
 
 	/**
