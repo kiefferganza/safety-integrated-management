@@ -9,6 +9,7 @@ use App\Http\Controllers\FilePageController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionReportController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ToolboxTalkController;
 use App\Http\Controllers\TrainingController;
@@ -182,9 +183,14 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::get('/new', [InventoryController::class, "create"])->name('create');
 		Route::post('/new', [InventoryController::class, "store"])->name('store');
 		Route::post('/delete', [InventoryController::class, "destroy"])->name('destroy');
-		Route::get('/report', [InventoryController::class, "report"])->name('report');
-		Route::get('/update-ppe', [InventoryController::class, "updatePpe"]);
 
+		// Report
+		Route::get('/report', [InventoryReportController::class, "index"])->name('report');
+		Route::get('/report-list', [InventoryReportController::class, "reportList"])->name('report.list');
+		Route::post('/report/new', [InventoryReportController::class, "store"])->name('report.store');
+		Route::delete('/report/delete', [InventoryReportController::class, "destroy"])->name('report.destroy');
+
+		// Products
 		Route::post('/product/add-remove-stock/{inventory}', [InventoryController::class, "add_remove_stock"]);
 		Route::get('/product/{inventory}', [InventoryController::class, "show"])->name('show');
 		Route::get('/product/{inventory}/edit', [InventoryController::class, "edit"])->name('edit');

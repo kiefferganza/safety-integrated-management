@@ -2,19 +2,19 @@ import { useForm } from "react-hook-form";
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Inertia } from "@inertiajs/inertia";
+import { fCurrencyNumberAndSymbol } from "@/utils/formatNumber";
+import { sentenceCase } from "change-case";
+import { useSwal } from "@/hooks/useSwal";
 // mui
-const { Autocomplete, Box, Button, Dialog, DialogContent, DialogTitle, Divider, Stack, TextField, Typography, FormHelperText, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } = await import("@mui/material");
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+const { Autocomplete, Box, Button, Dialog, DialogContent, DialogTitle, Divider, Stack, TextField, Typography, FormHelperText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } = await import("@mui/material");
+const { MobileDatePicker } = await import('@mui/x-date-pickers/MobileDatePicker');
 // Components
 import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
 import { RHFTextField } from "@/Components/hook-form";
 import FormProvider from "@/Components/hook-form/FormProvider";
 import Scrollbar from "@/Components/scrollbar/Scrollbar";
-import Iconify from "@/Components/iconify/Iconify";
-import { fCurrencyNumberAndSymbol } from "@/utils/formatNumber";
 import Image from "@/Components/image/Image";
 import Label from "@/Components/label/Label";
-import { sentenceCase } from "change-case";
 
 const newBudgetForecastSchema = Yup.object().shape({
 	project_code: Yup.string().required('Project Code is required'),
@@ -24,16 +24,17 @@ const newBudgetForecastSchema = Yup.object().shape({
 	location: Yup.string().required('Location is required'),
 	contract_no: Yup.string().required("Contract no. is required"),
 	conducted_by: Yup.string().required("This field is required"),
-	forecas_start_date: Yup.date().nullable().required("Forecast date range is required"),
+	forecast_start_date: Yup.date().nullable().required("Forecast date range is required"),
 	forecast_end_date: Yup.date().nullable().required("Forecast date range is required"),
 	inventory_date: Yup.date().nullable().required("Inventory date is required"),
 	submitted_date: Yup.date().nullable().required("Submitted date is required"),
-	subbmitted_id: Yup.number().nullable().required("Personel is required"),
+	submitted_id: Yup.number().nullable().required("Personel is required"),
 	reviewer_id: Yup.number().nullable().required("Reviewer personel is required"),
 	approval_id: Yup.number().nullable().required("Approval personel is required"),
 });
 
 export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_no, ...other }) => {
+	const { load, stop } = useSwal();
 	const {
 		startDate,
 		endDate,
@@ -44,7 +45,8 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 		onClose: onClosePicker,
 		isSelected: isSelectedValuePicker,
 		isError,
-		label
+		label,
+		onReset
 	} = useDateRangePicker(null, null);
 
 	const methods = useForm({
@@ -59,12 +61,12 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 			document_level: "",
 			inventory_date: null,
 			submitted_date: null,
-			forecas_start_date: null,
+			forecast_start_date: null,
 			forecast_end_date: null,
 			location: "",
 			contract_no: "",
 			conducted_by: "",
-			subbmitted_id: null,
+			submitted_id: null,
 			reviewer_id: null,
 			approval_id: null,
 			remarks: "",
@@ -76,7 +78,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 	const values = watch();
 
 	const handleChangeStartDate = (newValue) => {
-		setValue("forecas_start_date", newValue, { shouldValidate: true });
+		setValue("forecast_start_date", newValue, { shouldValidate: true });
 		onChangeStartDate(newValue);
 	};
 
@@ -86,7 +88,10 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 	};
 
 	const onSubmit = (data) => {
-		Inertia.post("", data, {
+		Inertia.post(route("ppe.management.report.store"), {
+			...data,
+			inventories
+		}, {
 			preserveScroll: true,
 			onStart () {
 				handleClose();
@@ -100,6 +105,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 
 	const handleClose = () => {
 		onClose();
+		onReset();
 		reset();
 	}
 
@@ -110,9 +116,6 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 		}
 		return null;
 	}
-
-	// console.log(startDate, endDate);
-	console.log(inventories);
 
 	const options = employees.map((option) => ({ id: option.employee_id, label: option.fullname, user_id: option.user_id }));
 	return (
@@ -201,10 +204,10 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 									<Stack width={1} height={1}>
 										<Button
 											variant="outlined"
-											color={(!!errors?.forecas_start_date?.message || !!errors?.forecast_end_date?.message) ? "error" : "inherit"}
+											color={(!!errors?.forecast_start_date?.message || !!errors?.forecast_end_date?.message) ? "error" : "inherit"}
 											sx={{
 												textTransform: 'unset',
-												color: (!!errors?.forecas_start_date?.message || !!errors?.forecast_end_date?.message) ? "text.error" : 'text.secondary',
+												color: (!!errors?.forecast_start_date?.message || !!errors?.forecast_end_date?.message) ? "text.error" : 'text.secondary',
 												width: { xs: 1, md: 'auto' },
 												justifyContent: 'flex-start',
 												fontWeight: 'fontWeightMedium',
@@ -216,7 +219,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 											{isSelectedValuePicker ? label : 'Budget Forecast Date'}
 											<Box sx={{ flexGrow: 1 }} />
 										</Button>
-										{(!!errors?.forecas_start_date?.message || !!errors?.forecast_end_date?.message) && (
+										{(!!errors?.forecast_start_date?.message || !!errors?.forecast_end_date?.message) && (
 											<FormHelperText error sx={{ ml: 1 }}>Forecast date range is required</FormHelperText>
 										)}
 									</Stack>
@@ -249,18 +252,18 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
 								<PersonelAutocomplete
-									value={getAutocompleteValue(values.subbmitted_id)}
+									value={getAutocompleteValue(values.submitted_id)}
 									onChange={(_event, newValue) => {
 										if (newValue) {
-											setValue('subbmitted_id', newValue.id, { shouldValidate: true, shouldDirty: true });
+											setValue('submitted_id', newValue.id, { shouldValidate: true, shouldDirty: true });
 										} else {
-											setValue('subbmitted_id', '', { shouldValidate: true, shouldDirty: true });
+											setValue('submitted_id', '', { shouldValidate: true, shouldDirty: true });
 										}
 									}}
 									isOptionEqualToValue={(option, value) => option.label === value}
 									options={options}
 									label="Submitted By"
-									error={errors?.subbmitted_id?.message}
+									error={errors?.submitted_id?.message}
 								/>
 								<PersonelAutocomplete
 									value={getAutocompleteValue(values.reviewer_id)}

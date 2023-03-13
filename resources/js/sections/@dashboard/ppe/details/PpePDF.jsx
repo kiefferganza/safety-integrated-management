@@ -6,34 +6,33 @@ import { format } from 'date-fns';
 import { useMemo } from 'react';
 import { useTheme } from '@mui/material';
 import { sentenceCase } from 'change-case';
+import { fDate } from '@/utils/formatTime';
 
 // ----------------------------------------------------------------------
 const PER_PAGE = 12;
 
-export default function PpePDF ({ report }) {
+export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 	const theme = useTheme();
 
 	const documents = useMemo(() => {
-		if (report.list.length > PER_PAGE) {
+		if (report.inventories.length > PER_PAGE) {
 			const chunkSize = PER_PAGE;
 			let arr = [];
-			for (let i = 0; i < report.list.length; i += chunkSize) {
-				const chunk = report.list.slice(i, i + chunkSize);
+			for (let i = 0; i < report.inventories.length; i += chunkSize) {
+				const chunk = report.inventories.slice(i, i + chunkSize);
 				arr.push(chunk)
 			}
 			return arr;
 		} else {
-			return [report.list];
+			return [report.inventories];
 		}
 	}, [report]);
 
-	console.log(documents)
-
 	return (
-		<Document title={"PPE REPORT PREVIEW"}>
+		<Document title={title}>
 			{documents.map((doc, index) => {
-				const total = doc.reduce((acc, curr) => acc + ((curr?.outboundTotalQty || 0) * curr.item_price), 0);
-				const curr = doc.at(-1).item_currency;
+				const total = doc.reduce((acc, curr) => acc + ((curr?.outboundTotalQty || curr?.outbound_total_qty || 0) * (curr?.item_price || curr?.price)), 0);
+				const curr = doc.at(-1)?.item_currency || doc.at(-1)?.currency;
 				return (
 					<Page size="A4" style={styles.page} key={index}>
 						<View style={styles.mb16}>
@@ -46,7 +45,7 @@ export default function PpePDF ({ report }) {
 							<View style={styles.gridContainer}>
 								<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
 									<Text style={styles.subtitle2}>CMS Number:</Text>
-									<Text style={[styles.body1, { fontWeight: 700 }]}>{report?.cms || "______"}</Text>
+									<Text style={[styles.body1, { fontWeight: 700 }]}>{report?.form_number || "_______"}</Text>
 								</View>
 								<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
 									<Text style={styles.subtitle2}>Revision:</Text>
@@ -64,21 +63,21 @@ export default function PpePDF ({ report }) {
 								<View style={{ flexDirection: 'column' }}>
 									<Text style={styles.subtitle2}>Contract No.</Text>
 									<View style={{ width: '100%' }}>
-										<Text style={[styles.underlineText, styles.body1]}>{"______"}</Text>
+										<Text style={[styles.underlineText, styles.body1, { textTransform: "uppercase" }]}>{report?.contract_no || "_______"}</Text>
 									</View>
 								</View>
 
 								<View style={{ flexDirection: 'column' }}>
 									<Text style={styles.subtitle2}>Inventory Date</Text>
 									<View style={{ width: '100%' }}>
-										<Text style={[styles.underlineText, styles.body1]}>{"______"}</Text>
+										<Text style={[styles.underlineText, styles.body1]}>{report?.inventory_date ? fDate(report?.inventory_date) : "_______"}</Text>
 									</View>
 								</View>
 
 								<View style={{ flexDirection: 'column' }}>
 									<Text style={styles.subtitle2}>Conducted By</Text>
 									<View style={{ width: '100%' }}>
-										<Text style={[styles.underlineText, styles.body1]}>{"______"}</Text>
+										<Text style={[styles.underlineText, styles.body1, { textTransform: "capitalize" }]}>{report?.conducted_by || "_______"}</Text>
 									</View>
 								</View>
 							</View>
@@ -87,14 +86,14 @@ export default function PpePDF ({ report }) {
 								<View style={{ flexDirection: 'column' }}>
 									<Text style={styles.subtitle2}>Budget Forecast Date</Text>
 									<View style={{ width: '100%' }}>
-										<Text style={[styles.underlineText, styles.body1]}>{"______"}</Text>
+										<Text style={[styles.underlineText, styles.body1]}>{report?.shortLabel || "_______"}</Text>
 									</View>
 								</View>
 
 								<View style={{ flexDirection: 'column' }}>
 									<Text style={styles.subtitle2}>Location</Text>
 									<View style={{ width: '100%', minHeight: 16 }}>
-										<Text style={[styles.underlineText, styles.body1]}>{"______"}</Text>
+										<Text style={[styles.underlineText, styles.body1, { textTransform: "capitalize" }]}>{report?.location || "_______"}</Text>
 									</View>
 								</View>
 
@@ -102,7 +101,7 @@ export default function PpePDF ({ report }) {
 									<Text style={styles.subtitle2}>Submitted</Text>
 									<View style={{ width: '100%' }}>
 										<Text style={[styles.underlineText, styles.body1]}>
-											{"______"}
+											{report?.submitted_date ? fDate(doc.submitted_date) : "_______"}
 										</Text>
 									</View>
 								</View>
@@ -166,39 +165,39 @@ export default function PpePDF ({ report }) {
 										</View>
 
 										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6, marginLeft: 16 }}>{(row?.inboundTotalQty || 0).toLocaleString()}</Text>
+											<Text style={{ fontSize: 6, marginLeft: 16 }}>{(row?.inboundTotalQty || row?.inbound_total_qty || 0).toLocaleString()}</Text>
 										</View>
 
 										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6 }}>{(row?.outboundTotalQty || 0).toLocaleString()}</Text>
+											<Text style={{ fontSize: 6 }}>{(row?.outboundTotalQty || row?.outbound_total_qty || 0).toLocaleString()}</Text>
 										</View>
 
 										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6 }}>{row.current_stock_qty.toLocaleString()}</Text>
+											<Text style={{ fontSize: 6 }}>{(row?.current_stock_qty || row?.qty || 0).toLocaleString()}</Text>
 										</View>
 
 										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6 }}>{row.min_qty.toLocaleString()}</Text>
+											<Text style={{ fontSize: 6 }}>{(row?.min_qty || row?.level || 0).toLocaleString()}</Text>
 										</View>
 
 										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6 }}>{row.item_currency} {(row.item_price || 0).toLocaleString()}</Text>
+											<Text style={{ fontSize: 6 }}>{row?.item_currency || row?.currency} {(row?.item_price || row?.price || 0).toLocaleString()}</Text>
 										</View>
 
 										<View style={styles.tableCell_2}>
 											<View>
-												<Text style={{ fontSize: 6 }}>{(row?.outboundMinQty || 0).toLocaleString()} Item</Text>
+												<Text style={{ fontSize: 6 }}>{(row?.outboundMinQty || row?.outbound_min_qty || 0).toLocaleString()} Item</Text>
 											</View>
 											<View>
-												<Text style={{ fontSize: 6 }}>{row.item_currency} {((row.outboundMinQty || 0) * row.item_price).toLocaleString()}</Text>
+												<Text style={{ fontSize: 6 }}>{row?.item_currency || row?.currency} {((row?.outboundMinQty || row?.outbound_min_qty || 0) * (row?.item_price || row?.price)).toLocaleString()}</Text>
 											</View>
 										</View>
 										<View style={styles.tableCell_2}>
 											<View>
-												<Text style={{ fontSize: 6 }}>{(row?.outboundMaxQty || 0).toLocaleString()} Item</Text>
+												<Text style={{ fontSize: 6 }}>{(row?.outboundMaxQty || row?.outbound_max_qty || 0).toLocaleString()} Item</Text>
 											</View>
 											<View>
-												<Text style={{ fontSize: 6 }}>{row.item_currency} {((row.outboundMaxQty || 0) * row.item_price).toLocaleString()}</Text>
+												<Text style={{ fontSize: 6 }}>{row?.item_currency || row?.currency} {((row?.outboundMaxQty || row?.outbound_max_qty || 0) * (row?.item_price || row?.price)).toLocaleString()}</Text>
 											</View>
 										</View>
 										<View style={styles.tableCell_3}>
@@ -266,16 +265,25 @@ export default function PpePDF ({ report }) {
 							</View>
 							<View style={{ flexDirection: 'row' }}>
 								<View style={{ width: "33.3%" }}>
-									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}></Text>
-									<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Submitted By</Text>
+									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.submitted?.fullname}</Text>
+									<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4, lineHeight: 0 }]}>Submitted By</Text>
+									{report?.submitted && (
+										<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.submitted?.position}</Text>
+									)}
 								</View>
 								<View style={{ width: "33.3%" }}>
-									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}></Text>
-									<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Reviewed By</Text>
+									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.reviewer?.fullname}</Text>
+									<Text style={[styles.body1, { borderTop: 1, width: 140, lineHeight: 0, textAlign: 'center', paddingTop: 4 }]}>Reviewed By</Text>
+									{report?.reviewer && (
+										<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.reviewer?.position}</Text>
+									)}
 								</View>
 								<View style={{ width: "33.3%" }}>
-									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}></Text>
-									<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
+									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.approval?.fullname}</Text>
+									<Text style={[styles.body1, { borderTop: 1, width: 140, lineHeight: 0, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
+									{report?.approval && (
+										<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.approval?.position}</Text>
+									)}
 								</View>
 							</View>
 						</View>

@@ -11,6 +11,8 @@ class InventoryReport extends Model
 
 	protected $guarded = [];
 
+	protected $appends = ['form_number'];
+
 	protected static function boot() {
 		parent::boot();
 
@@ -39,6 +41,17 @@ class InventoryReport extends Model
 	}
 
 
+	public function getFormNumberAttribute() {
+		$form_number = sprintf("%s-%s-%s-%s", $this->attributes["project_code"], $this->attributes["originator"],$this->attributes["discipline"],$this->attributes["document_type"]);
+		if($this->attributes["document_zone"]) {
+			$form_number .= "-". $this->attributes["document_zone"];
+		}
+		if($this->attributes["document_level"]) {
+			$form_number .= "-". $this->attributes["document_level"];
+		}
+		$form_number .= "-" . $this->attributes["sequence_no"];
+		return strtoupper($form_number);
+	}
 	
 
 }

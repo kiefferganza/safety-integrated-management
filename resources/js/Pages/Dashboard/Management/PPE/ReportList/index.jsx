@@ -2,17 +2,17 @@ import { Suspense, lazy } from "react";
 import { Head } from '@inertiajs/inertia-react';
 import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-const PPEReportPage = lazy(() => import("./PPEReportPage"));
+const PPEReportListPage = lazy(() => import("./PPEReportListPage"));
 
-const index = ({ inventories, employees, sequence_no }) => {
+const index = ({ inventoryReports }) => {
 	return (
 		<>
 			<Head>
-				<title> PPE: Report</title>
+				<title> PPE: Report List</title>
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
-					<PPEReportPage inventories={inventories} employees={employees} sequence_no={sequence_no} />
+					<PPEReportListPage inventoryReports={inventoryReports} />
 				</DashboardLayout>
 			</Suspense>
 		</>

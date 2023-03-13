@@ -20,4 +20,5 @@ class InventoryReportList extends Model
 		return $this->belongsTo(InventoryBound::class);
 	}
 	
+	
 }

@@ -61,7 +61,7 @@ const TABLE_HEAD = [
 	{ id: 'status', label: 'Status', align: 'center' },
 ];
 
-const PPEReportPage = ({ inventories, employees }) => {
+const PPEReportPage = ({ inventories, employees, sequence_no }) => {
 	const {
 		dense,
 		page,
@@ -417,7 +417,7 @@ const PPEReportPage = ({ inventories, employees }) => {
 
 					<Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
 						<PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-							<PpePDF report={{ list }} />
+							<PpePDF report={{ inventories: list }} />
 						</PDFViewer>
 					</Box>
 				</Box>
@@ -427,6 +427,7 @@ const PPEReportPage = ({ inventories, employees }) => {
 				onClose={handleCloseNewReport}
 				inventories={list}
 				employees={employees}
+				sequence_no={sequence_no}
 			/>
 		</>
 	)
