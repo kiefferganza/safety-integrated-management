@@ -228,7 +228,11 @@ class InventoryController extends Controller
 		});
 
 		return Inertia::render("Dashboard/Management/PPE/Report/index", [
-			"inventories" => $inventories
+			"inventories" => $inventories,
+			"employees" => Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
+				->where("is_deleted", 0)
+				->where("sub_id", auth()->user()->subscriber_id)
+				->get()
 		]);
 	}
 	

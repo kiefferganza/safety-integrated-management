@@ -8,7 +8,6 @@ const {
 	Container,
 	Card,
 	Checkbox,
-	CircularProgress,
 	Dialog,
 	DialogActions,
 	Divider,
@@ -46,6 +45,7 @@ import { sentenceCase } from "change-case";
 import Image from "@/Components/image/Image";
 import Iconify from "@/Components/iconify/Iconify";
 import PpePDF from "@/sections/@dashboard/ppe/details/PpePDF";
+const { NewPpeReport } = await import("@/sections/@dashboard/ppe/portal/NewPpeReport");
 const { PpeAnalytic } = await import("@/sections/@dashboard/ppe/PpeAnalytic");
 const { PpeReportTableToolbar } = await import("@/sections/@dashboard/ppe/details/PpeReportTableToolbar");
 
@@ -61,7 +61,7 @@ const TABLE_HEAD = [
 	{ id: 'status', label: 'Status', align: 'center' },
 ];
 
-const PPEReportPage = ({ inventories }) => {
+const PPEReportPage = ({ inventories, employees }) => {
 	const {
 		dense,
 		page,
@@ -97,7 +97,18 @@ const PPEReportPage = ({ inventories }) => {
 
 	const [filterEndDate, setFilterEndDate] = useState(null);
 
+	const [openNewReport, setOpenNewReport] = useState(false);
+
 	const [open, setOpen] = useState(false);
+
+	const handleOpenNewReport = () => {
+		setOpenNewReport(true);
+	}
+
+	const handleCloseNewReport = () => {
+		setSelected([]);
+		setOpenNewReport(false);
+	}
 
 	const handleOpen = () => {
 		setOpen(true);
@@ -286,8 +297,8 @@ const PPEReportPage = ({ inventories }) => {
 											<Iconify icon="eva:eye-fill" />
 										</IconButton>
 									</Tooltip>
-									<Button>
-										Generate Report
+									<Button onClick={handleOpenNewReport}>
+										Generate Budget Forecast
 									</Button>
 								</Stack>
 							}
@@ -411,6 +422,12 @@ const PPEReportPage = ({ inventories }) => {
 					</Box>
 				</Box>
 			</Dialog>
+			<NewPpeReport
+				open={openNewReport}
+				onClose={handleCloseNewReport}
+				inventories={list}
+				employees={employees}
+			/>
 		</>
 	)
 }

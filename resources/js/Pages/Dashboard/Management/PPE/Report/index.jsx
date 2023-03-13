@@ -4,7 +4,7 @@ import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 const PPEReportPage = lazy(() => import("./PPEReportPage"));
 
-const index = ({ inventories }) => {
+const index = ({ inventories, employees }) => {
 	return (
 		<>
 			<Head>
@@ -12,7 +12,7 @@ const index = ({ inventories }) => {
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
-					<PPEReportPage inventories={inventories} />
+					<PPEReportPage inventories={inventories} employees={employees} />
 				</DashboardLayout>
 			</Suspense>
 		</>
