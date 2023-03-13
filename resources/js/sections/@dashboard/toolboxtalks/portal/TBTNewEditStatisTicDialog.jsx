@@ -9,8 +9,8 @@ import { useSwal } from "@/hooks/useSwal";
 const { Button, Dialog, DialogContent, DialogTitle, Divider, Grid, Stack, TextField, Typography } = await import("@mui/material");
 const { MobileDatePicker } = await import('@mui/x-date-pickers');
 // Components
-const { RHFTextField, RHFUpload } = await import("@/Components/hook-form");
-const { MultiFilePreview } = await import("@/Components/upload");
+import { RHFTextField } from "@/Components/hook-form";
+import { MultiFilePreview, Upload } from "@/Components/upload";
 import FormProvider from "@/Components/hook-form/FormProvider";
 import Iconify from "@/Components/iconify";
 import { PATH_DASHBOARD } from "@/routes/paths";
@@ -42,30 +42,30 @@ const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisable
 			}
 		}),
 		file_src: Yup.mixed().required("Please attach a file."),
-		manpower_1_January: Yup.number(),
-		manhours_1_January: Yup.number(),
-		manpower_2_February: Yup.number(),
-		manhours_2_February: Yup.number(),
-		manpower_3_March: Yup.number(),
-		manhours_3_March: Yup.number(),
-		manpower_4_April: Yup.number(),
-		manhours_4_April: Yup.number(),
-		manpower_5_May: Yup.number(),
-		manhours_5_May: Yup.number(),
-		manpower_6_June: Yup.number(),
-		manhours_6_June: Yup.number(),
-		manpower_7_July: Yup.number(),
-		manhours_7_July: Yup.number(),
-		manpower_8_August: Yup.number(),
-		manhours_8_August: Yup.number(),
-		manpower_9_September: Yup.number(),
-		manhours_9_September: Yup.number(),
-		manpower_10_October: Yup.number(),
-		manhours_10_October: Yup.number(),
-		manpower_11_November: Yup.number(),
-		manhours_11_November: Yup.number(),
-		manpower_12_December: Yup.number(),
-		manhours_12_December: Yup.number(),
+		manpower_1_January: Yup.string(),
+		manhours_1_January: Yup.string(),
+		manpower_2_February: Yup.string(),
+		manhours_2_February: Yup.string(),
+		manpower_3_March: Yup.string(),
+		manhours_3_March: Yup.string(),
+		manpower_4_April: Yup.string(),
+		manhours_4_April: Yup.string(),
+		manpower_5_May: Yup.string(),
+		manhours_5_May: Yup.string(),
+		manpower_6_June: Yup.string(),
+		manhours_6_June: Yup.string(),
+		manpower_7_July: Yup.string(),
+		manhours_7_July: Yup.string(),
+		manpower_8_August: Yup.string(),
+		manhours_8_August: Yup.string(),
+		manpower_9_September: Yup.string(),
+		manhours_9_September: Yup.string(),
+		manpower_10_October: Yup.string(),
+		manhours_10_October: Yup.string(),
+		manpower_11_November: Yup.string(),
+		manhours_11_November: Yup.string(),
+		manpower_12_December: Yup.string(),
+		manhours_12_December: Yup.string(),
 	});
 
 	const defaultValues = {
@@ -132,17 +132,17 @@ const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisable
 			const monthInAcc = acc.findIndex(a => a.month_code === +m);
 			if (monthInAcc !== -1) {
 				if (d === "manpower") {
-					acc[monthInAcc].manpower = mon[1];
+					acc[monthInAcc].manpower = Number(mon[1]?.replace(/,/g, ""));
 				}
 				if (d === "manhours") {
-					acc[monthInAcc].manhours = mon[1];
+					acc[monthInAcc].manhours = Number(mon[1]?.replace(/,/g, ""));
 				}
 				acc[monthInAcc].month_code = +m
 				acc[monthInAcc].month = l;
 			} else {
 				acc.push({
-					manpower: d === "manpower" ? mon[1] : 0,
-					manhours: d === "manhours" ? mon[1] : 0,
+					manpower: d === "manpower" ? Number(mon[1]?.replace(/,/g, "")) : 0,
+					manhours: d === "manhours" ? Number(mon[1]?.replace(/,/g, "")) : 0,
 					month: l,
 					month_code: +m
 				});
@@ -154,6 +154,7 @@ const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisable
 			year: selYear,
 			months: monthsData
 		}
+
 		if (typeof file_src !== "string") {
 			newData.file_src = file_src;
 		}
@@ -199,26 +200,38 @@ const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisable
 					label="Manpower"
 					placeholder="0"
 					size="small"
-					value={getValues(`manpower_${mon.month_code}_${mon.label}`) === 0 ? '' : getValues(`manpower_${mon.month_code}_${mon.label}`)}
-					onChange={(event) => setValue(`manpower_${mon.month_code}_${mon.label}`, Number(event.target.value), { shouldValidate: true })}
+					value={getValues(`manpower_${mon.month_code}_${mon.label}`)}
+					onChange={(event) => {
+						const val = +(event.target.value + "").replace(/,/g, "");
+						if (event.target.value !== "") {
+							if (val) {
+								setValue(`manpower_${mon.month_code}_${mon.label}`, val.toLocaleString(), { shouldValidate: true })
+							}
+						} else {
+							setValue(`manpower_${mon.month_code}_${mon.label}`, "0", { shouldValidate: true })
+						}
+					}}
 					sx={{ maxWidth: 220 }}
 					InputLabelProps={{ shrink: true }}
-					InputProps={{
-						type: 'number',
-					}}
 				/>
 				<RHFTextField
 					name={`manhours_${mon.month_code}_${mon.label}`}
 					label="Manhour"
 					placeholder="0"
 					size="small"
-					value={getValues(`manhours_${mon.month_code}_${mon.label}`) === 0 ? '' : getValues(`manhours_${mon.month_code}_${mon.label}`)}
-					onChange={(event) => setValue(`manhours_${mon.month_code}_${mon.label}`, Number(event.target.value), { shouldValidate: true })}
+					value={getValues(`manhours_${mon.month_code}_${mon.label}`)}
+					onChange={(event) => {
+						if (event.target.value !== "") {
+							const val = +(event.target.value + "").replace(/,/g, "");
+							if (val) {
+								setValue(`manhours_${mon.month_code}_${mon.label}`, val.toLocaleString(), { shouldValidate: true })
+							}
+						} else {
+							setValue(`manhours_${mon.month_code}_${mon.label}`, "0", { shouldValidate: true })
+						}
+					}}
 					sx={{ maxWidth: 220 }}
 					InputLabelProps={{ shrink: true }}
-					InputProps={{
-						type: 'number',
-					}}
 				/>
 			</Stack>
 			<Divider sx={{ borderStyle: "dashed", mb: 1 }} />
@@ -226,7 +239,7 @@ const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisable
 	)
 
 	return (
-		<Dialog fullWidth maxWidth="md" open={open} onClose={handleClose} {...other}>
+		<Dialog fullWidth maxWidth="lg" open={open} onClose={handleClose} {...other}>
 			<Stack direction="row" justifyContent="space-between" alignItems="center">
 				<DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>
 					{statistic ? `Update Record For ${statistic.year}` : "Insert Record"}
@@ -278,12 +291,7 @@ const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisable
 						</Grid>
 					</Grid>
 					<Stack sx={{ my: 2 }}>
-						<RHFUpload
-							name="file_src"
-							maxSize={3145728}
-							onDrop={handleDrop}
-							accept={null}
-						/>
+						<Upload maxSize={3145728} error={!!errors?.file_src?.message} helperText={errors?.file_src?.message} file={values.file_src || null} onDrop={handleDrop} />
 						<MultiFilePreview files={values?.file_src ? [values.file_src] : []} onRemove={onRemove} />
 					</Stack>
 					<Stack direction="row" justifyContent="end">
