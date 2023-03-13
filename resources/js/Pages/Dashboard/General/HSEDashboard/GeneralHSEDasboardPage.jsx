@@ -150,8 +150,8 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				return acc;
 			}, []);
 
-			const yStart = Array.from(years).at(0) ? new Date(Array.from(years).at(0), 0, 1) : 0;
-			const yEnd = Array.from(years).at(0) ? new Date(Array.from(years).at(0), 11, 1) : 0;
+			const yStart = Array.from(years).at(-1) ? new Date(Array.from(years).at(-1), 0, 1) : 0;
+			const yEnd = Array.from(years).at(-1) ? new Date(Array.from(years).at(-1), 11, 1) : 0;
 			setStartTbtDate(yStart);
 			setTbtStartDateHandler(yStart);
 			setEndTbtDate(yEnd);
