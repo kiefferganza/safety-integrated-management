@@ -208,7 +208,6 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 											sx={{
 												textTransform: 'unset',
 												color: (!!errors?.forecast_start_date?.message || !!errors?.forecast_end_date?.message) ? "text.error" : 'text.secondary',
-												width: { xs: 1, md: 'auto' },
 												justifyContent: 'flex-start',
 												fontWeight: 'fontWeightMedium',
 												width: 1,

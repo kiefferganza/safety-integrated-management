@@ -34,8 +34,7 @@ export default function AuthLoginForm () {
 		e.preventDefault();
 
 		if (data.remember) {
-			delete data.password;
-			localStorage.setItem('remember', JSON.stringify(data));
+			localStorage.setItem('remember', JSON.stringify({ ...data, password: null }));
 		} else {
 			localStorage.removeItem('remember');
 		}
