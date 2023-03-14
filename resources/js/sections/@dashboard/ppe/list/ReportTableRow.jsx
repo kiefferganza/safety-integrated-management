@@ -4,6 +4,7 @@ import { useState } from 'react';
 const { Button, CircularProgress, TableRow, MenuItem, TableCell, IconButton, Divider, Box, Dialog, DialogActions, Tooltip, useTheme } = await import('@mui/material');
 // utils
 import { fDate } from '@/utils/formatTime';
+import { endOfMonth, startOfMonth } from 'date-fns';
 // components
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
@@ -26,19 +27,17 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 		contract_no,
 		location,
 		conducted_by,
-		forecast_start_date,
-		forecast_end_date,
-		inventory_date,
+		inventory_start_date,
+		inventory_end_date,
+		budget_forcast_date,
 		submitted_date,
 		submitted
 	} = row;
 
 	const { shortLabel } = useDateRangePicker(
-		new Date(forecast_start_date),
-		new Date(forecast_end_date)
+		new Date(inventory_start_date),
+		new Date(inventory_end_date)
 	);
-
-	const theme = useTheme();
 
 	const [open, setOpen] = useState(false);
 
@@ -70,6 +69,8 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 		setOpenPopover(null);
 	};
 
+	const forcastDate = new Date(budget_forcast_date);
+	const forcastMonth = `${fDate(startOfMonth(forcastDate), 'dd')} - ${fDate(endOfMonth(forcastDate), 'dd MMM yyyy')}`;
 	return (
 		<>
 			<TableRow hover>
@@ -81,9 +82,9 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 
 				<TableCell sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }} align="left">{conducted_by}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap" }}>{shortLabel}</TableCell>
+				<TableCell sx={{ whiteSpace: "nowrap" }}>{forcastMonth}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap" }}>{fDate(inventory_date)}</TableCell>
+				<TableCell sx={{ whiteSpace: "nowrap" }}>{shortLabel}</TableCell>
 
 				<TableCell sx={{ whiteSpace: "nowrap" }}>{fDate(submitted_date)}</TableCell>
 

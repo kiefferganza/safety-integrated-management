@@ -29,9 +29,9 @@ return new class extends Migration
 						$table->string('contract_no');
 						$table->string('location');
 						$table->string('conducted_by');
-						$table->date('inventory_date');
-						$table->date('forecast_start_date');
-						$table->date('forecast_end_date');
+						$table->date('budget_forcast_date');
+						$table->date('inventory_start_date');
+						$table->date('inventory_end_date');
 						$table->date('submitted_date');
 						$table->text('remarks');
 						$table->softDeletes();

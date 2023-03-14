@@ -71,15 +71,14 @@ class InventoryReportController extends Controller
 			'project_code' => 'string|required',
 			'discipline' => 'string|required',
 			'document_type' => 'string|required',
-			'submitted_id' => 'integer|required',
 			'approval_id' => 'integer|required',
 			'reviewer_id' => 'integer|required',
 			'location' => 'string|required',
 			'contract_no' => 'string|required',
 			'conducted_by' => 'string|required',
-			'inventory_date' => 'date|required',
-			'forecast_start_date' => 'date|required',
-			'forecast_end_date' => 'date|required',
+			'budget_forcast_date' => 'date|required',
+			'inventory_start_date' => 'date|required',
+			'inventory_end_date' => 'date|required',
 			'submitted_date' => 'date|required',
 			'inventories' => 'array|required|min:1',
 		]);
@@ -92,15 +91,15 @@ class InventoryReportController extends Controller
 		$inventoryReport->document_zone = $request->document_zone;
 		$inventoryReport->document_level = $request->document_level;
 
-		$inventoryReport->submitted_id = $request->submitted_id;
+		$inventoryReport->submitted_id = auth()->user()->emp_id;
 		$inventoryReport->approval_id = $request->approval_id;
 		$inventoryReport->reviewer_id = $request->reviewer_id;
 		$inventoryReport->location = $request->location;
 		$inventoryReport->contract_no = $request->contract_no;
 		$inventoryReport->conducted_by = $request->conducted_by;
-		$inventoryReport->inventory_date = $request->inventory_date;
-		$inventoryReport->forecast_start_date = $request->forecast_start_date;
-		$inventoryReport->forecast_end_date = $request->forecast_end_date;
+		$inventoryReport->budget_forcast_date = $request->budget_forcast_date;
+		$inventoryReport->inventory_start_date = $request->inventory_start_date;
+		$inventoryReport->inventory_end_date = $request->inventory_end_date;
 		$inventoryReport->submitted_date = $request->submitted_date;
 		$inventoryReport->remarks = $request->remarks;
 
@@ -108,8 +107,6 @@ class InventoryReportController extends Controller
 
 		$inventories = [];
 		foreach ($request->inventories as $inventory) {
-			// $newInvList = ;
-			// $inventories[] = $newInvList;
 			$inventories[] = array(
 				"inventory_id" => $inventory["inventory_id"],
 				"item" => $inventory["item"],

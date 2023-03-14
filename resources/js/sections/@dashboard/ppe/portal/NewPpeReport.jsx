@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Inertia } from "@inertiajs/inertia";
+import { usePage } from "@inertiajs/inertia-react";
 import { fCurrencyNumberAndSymbol } from "@/utils/formatNumber";
 import { sentenceCase } from "change-case";
 import { useSwal } from "@/hooks/useSwal";
@@ -24,16 +25,16 @@ const newBudgetForecastSchema = Yup.object().shape({
 	location: Yup.string().required('Location is required'),
 	contract_no: Yup.string().required("Contract no. is required"),
 	conducted_by: Yup.string().required("This field is required"),
-	forecast_start_date: Yup.date().nullable().required("Forecast date range is required"),
-	forecast_end_date: Yup.date().nullable().required("Forecast date range is required"),
-	inventory_date: Yup.date().nullable().required("Inventory date is required"),
+	inventory_start_date: Yup.date().nullable().required("Inventory date range is required"),
+	inventory_end_date: Yup.date().nullable().required("Inventory date range is required"),
+	budget_forcast_date: Yup.date().nullable().required("Forcast date is required"),
 	submitted_date: Yup.date().nullable().required("Submitted date is required"),
-	submitted_id: Yup.number().nullable().required("Personel is required"),
 	reviewer_id: Yup.number().nullable().required("Reviewer personel is required"),
 	approval_id: Yup.number().nullable().required("Approval personel is required"),
 });
 
 export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_no, ...other }) => {
+	const { auth: { user } } = usePage().props
 	const { load, stop } = useSwal();
 	const {
 		startDate,
@@ -59,14 +60,13 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 			document_type: "",
 			document_zone: "",
 			document_level: "",
-			inventory_date: null,
+			budget_forcast_date: null,
 			submitted_date: null,
-			forecast_start_date: null,
-			forecast_end_date: null,
+			inventory_start_date: null,
+			inventory_end_date: null,
 			location: "",
 			contract_no: "",
 			conducted_by: "",
-			submitted_id: null,
 			reviewer_id: null,
 			approval_id: null,
 			remarks: "",
@@ -78,12 +78,12 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 	const values = watch();
 
 	const handleChangeStartDate = (newValue) => {
-		setValue("forecast_start_date", newValue, { shouldValidate: true });
+		setValue("inventory_start_date", newValue, { shouldValidate: true });
 		onChangeStartDate(newValue);
 	};
 
 	const handleChangeEndDate = (newValue) => {
-		setValue("forecast_end_date", newValue, { shouldValidate: true });
+		setValue("inventory_end_date", newValue, { shouldValidate: true });
 		onChangeEndDate(newValue);
 	};
 
@@ -182,32 +182,32 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 
 								<RHFTextField name="location" label="Location" fullWidth />
 
-								<RHFTextField name="conducted_by" label="Conducted By" fullWidth />
+								<PersonelAutocomplete
+									value={employees.find(per => per.employee_id == values.conducted_by)?.fullname}
+									onChange={(_event, newValue) => {
+										if (newValue) {
+											setValue('conducted_by', newValue.label, { shouldValidate: true, shouldDirty: true });
+										} else {
+											setValue('conducted_by', '', { shouldValidate: true, shouldDirty: true });
+										}
+									}}
+									isOptionEqualToValue={(option, value) => option.label === value.label}
+									options={options}
+									label="Conducted By"
+									error={errors?.conducted_by?.message}
+								/>
 
 							</Stack>
 
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
-
-								<MobileDatePicker
-									label="Inventory Date"
-									inputFormat="d-MMM-yyyy"
-									value={values?.inventory_date}
-									onChange={(val) => {
-										setValue("inventory_date", val, { shouldValidate: true });
-									}}
-									renderInput={(params) =>
-										<TextField {...params} fullWidth error={!!errors?.inventory_date?.message} helperText={errors?.inventory_date?.message} />
-									}
-								/>
-
 								<Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} width={1}>
 									<Stack width={1} height={1}>
 										<Button
 											variant="outlined"
-											color={(!!errors?.forecast_start_date?.message || !!errors?.forecast_end_date?.message) ? "error" : "inherit"}
+											color={(!!errors?.inventory_start_date?.message || !!errors?.inventory_end_date?.message) ? "error" : "inherit"}
 											sx={{
 												textTransform: 'unset',
-												color: (!!errors?.forecast_start_date?.message || !!errors?.forecast_end_date?.message) ? "text.error" : 'text.secondary',
+												color: (!!errors?.inventory_start_date?.message || !!errors?.inventory_end_date?.message) ? "text.error" : 'text.secondary',
 												justifyContent: 'flex-start',
 												fontWeight: 'fontWeightMedium',
 												width: 1,
@@ -215,10 +215,10 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 											}}
 											onClick={onOpenPicker}
 										>
-											{isSelectedValuePicker ? label : 'Budget Forecast Date'}
+											{isSelectedValuePicker ? label : 'Inventory Date Range'}
 											<Box sx={{ flexGrow: 1 }} />
 										</Button>
-										{(!!errors?.forecast_start_date?.message || !!errors?.forecast_end_date?.message) && (
+										{(!!errors?.inventory_start_date?.message || !!errors?.inventory_end_date?.message) && (
 											<FormHelperText error sx={{ ml: 1 }}>Forecast date range is required</FormHelperText>
 										)}
 									</Stack>
@@ -236,7 +236,21 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 								</Stack>
 
 								<MobileDatePicker
-									label="Submitted"
+									label="Budget Forecast Date"
+									inputFormat="MMM-yyyy"
+									openTo={"year"}
+									views={["year", "month"]}
+									value={values?.budget_forcast_date}
+									onChange={(val) => {
+										setValue("budget_forcast_date", val, { shouldValidate: true });
+									}}
+									renderInput={(params) =>
+										<TextField {...params} fullWidth error={!!errors?.budget_forcast_date?.message} helperText={errors?.budget_forcast_date?.message} />
+									}
+								/>
+
+								<MobileDatePicker
+									label="Submitted Date"
 									inputFormat="d-MMM-yyyy"
 									value={values?.submitted_date}
 									onChange={(val) => {
@@ -250,7 +264,13 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 							</Stack>
 
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
-								<PersonelAutocomplete
+								<TextField
+									fullWidth
+									label="Submitted By"
+									value={user?.employee?.fullname}
+									disabled
+								/>
+								{/* <PersonelAutocomplete
 									value={getAutocompleteValue(values.submitted_id)}
 									onChange={(_event, newValue) => {
 										if (newValue) {
@@ -263,7 +283,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 									options={options}
 									label="Submitted By"
 									error={errors?.submitted_id?.message}
-								/>
+								/> */}
 								<PersonelAutocomplete
 									value={getAutocompleteValue(values.reviewer_id)}
 									onChange={(_event, newValue) => {

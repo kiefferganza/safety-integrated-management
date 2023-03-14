@@ -2,7 +2,7 @@
 import { Page, View, Text, Image, Document } from '@react-pdf/renderer';
 // utils
 import styles from './PpeStyle';
-import { format } from 'date-fns';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { useMemo } from 'react';
 import { useTheme } from '@mui/material';
 import { sentenceCase } from 'change-case';
@@ -15,7 +15,7 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 	const theme = useTheme();
 
 	const documents = useMemo(() => {
-		if (report.inventories.length > PER_PAGE) {
+		if (report?.inventories.length > PER_PAGE) {
 			const chunkSize = PER_PAGE;
 			let arr = [];
 			for (let i = 0; i < report.inventories.length; i += chunkSize) {
@@ -28,6 +28,9 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 		}
 	}, [report]);
 
+	const overallTotal = report?.inventories ? report.inventories.reduce((acc, curr) => acc + ((curr?.outboundTotalQty || curr?.outbound_total_qty || 0) * (curr?.item_price || curr?.price)), 0) : 0;
+
+	const forcastMonth = report.budget_forcast_date ? `${fDate(startOfMonth(new Date(report.budget_forcast_date)), 'dd')} - ${fDate(endOfMonth(new Date(report.budget_forcast_date)), 'dd MMM yyyy')}` : "_______";
 	return (
 		<Document title={title}>
 			{documents.map((doc, index) => {
@@ -70,7 +73,7 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 								<View style={{ flexDirection: 'column' }}>
 									<Text style={styles.subtitle2}>Inventory Date</Text>
 									<View style={{ width: '100%' }}>
-										<Text style={[styles.underlineText, styles.body1]}>{report?.inventory_date ? fDate(report?.inventory_date) : "_______"}</Text>
+										<Text style={[styles.underlineText, styles.body1]}>{report?.shortLabel || "_______"}</Text>
 									</View>
 								</View>
 
@@ -86,7 +89,7 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 								<View style={{ flexDirection: 'column' }}>
 									<Text style={styles.subtitle2}>Budget Forecast Date</Text>
 									<View style={{ width: '100%' }}>
-										<Text style={[styles.underlineText, styles.body1]}>{report?.shortLabel || "_______"}</Text>
+										<Text style={[styles.underlineText, styles.body1]}>{forcastMonth}</Text>
 									</View>
 								</View>
 
@@ -101,7 +104,7 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 									<Text style={styles.subtitle2}>Submitted</Text>
 									<View style={{ width: '100%' }}>
 										<Text style={[styles.underlineText, styles.body1]}>
-											{report?.submitted_date ? fDate(doc.submitted_date) : "_______"}
+											{report?.submitted_date ? fDate(report.submitted_date) : "_______"}
 										</Text>
 									</View>
 								</View>
@@ -230,7 +233,7 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 										</View>
 									))
 								)}
-								<View style={[styles.tableRow, { marginTop: 16, borderBottomWidth: 0 }]}>
+								<View style={[styles.tableRow, { marginTop: 8, borderBottomWidth: 0 }]}>
 									<View style={styles.tableCell_1}></View>
 
 									<View style={styles.tableCell_2}></View>
@@ -251,11 +254,34 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 										<Text style={[styles.subtitle2, { borderBottomWidth: 1 }]}>{curr} {(total || 0)?.toLocaleString()}</Text>
 									</View>
 								</View>
+								{(index + 1) === documents?.length && (
+									<View style={[styles.tableRow, { marginTop: 8, borderBottomWidth: 0 }]}>
+										<View style={styles.tableCell_1}></View>
+
+										<View style={styles.tableCell_2}></View>
+
+										<View style={[styles.tableCell_2]}></View>
+
+										<View style={[styles.tableCell_2]}></View>
+
+										<View style={styles.tableCell_2}></View>
+
+										<View style={[styles.tableCell_2]}></View>
+
+										<View style={[styles.tableCell_2]}>
+											<Text style={styles.subtitle2}>Grand Total:</Text>
+										</View>
+
+										<View style={styles.tableCell_2}>
+											<Text style={[styles.subtitle2, { borderBottomWidth: 1 }]}>{curr} {(overallTotal)?.toLocaleString()}</Text>
+										</View>
+									</View>
+								)}
 							</View>
 						</View>
 
-						<View style={[styles.mb40, { marginTop: 40 }]}>
-							<View style={{ marginBottom: 56 }}>
+						<View style={[styles.mb40, { marginTop: 24 }]}>
+							<View style={{ marginBottom: 48 }}>
 								<View style={[styles.gridContainer, styles.mb16]}>
 									<Text style={styles.subtitle2}>Remarks</Text>
 								</View>
