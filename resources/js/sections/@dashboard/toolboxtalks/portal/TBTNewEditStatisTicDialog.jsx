@@ -132,17 +132,17 @@ const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisable
 			const monthInAcc = acc.findIndex(a => a.month_code === +m);
 			if (monthInAcc !== -1) {
 				if (d === "manpower") {
-					acc[monthInAcc].manpower = Number(mon[1]?.replace(/,/g, ""));
+					acc[monthInAcc].manpower = parseFloat(mon[1]?.replace(/,/g, ""));
 				}
 				if (d === "manhours") {
-					acc[monthInAcc].manhours = Number(mon[1]?.replace(/,/g, ""));
+					acc[monthInAcc].manhours = parseFloat(mon[1]?.replace(/,/g, ""));
 				}
 				acc[monthInAcc].month_code = +m
 				acc[monthInAcc].month = l;
 			} else {
 				acc.push({
-					manpower: d === "manpower" ? Number(mon[1]?.replace(/,/g, "")) : 0,
-					manhours: d === "manhours" ? Number(mon[1]?.replace(/,/g, "")) : 0,
+					manpower: d === "manpower" ? parseFloat(mon[1]?.replace(/,/g, "")) : 0,
+					manhours: d === "manhours" ? parseFloat(mon[1]?.replace(/,/g, "")) : 0,
 					month: l,
 					month_code: +m
 				});
@@ -202,10 +202,10 @@ const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisable
 					size="small"
 					value={getValues(`manpower_${mon.month_code}_${mon.label}`)}
 					onChange={(event) => {
-						const val = +(event.target.value + "").replace(/,/g, "");
+						const val = parseFloat((event.target.value + "").replace(/,/g, "")).toLocaleString();
 						if (event.target.value !== "") {
 							if (val) {
-								setValue(`manpower_${mon.month_code}_${mon.label}`, val.toLocaleString(), { shouldValidate: true })
+								setValue(`manpower_${mon.month_code}_${mon.label}`, event.target.value.at(-1) === "." ? val + "." : val, { shouldValidate: true })
 							}
 						} else {
 							setValue(`manpower_${mon.month_code}_${mon.label}`, "0", { shouldValidate: true })
@@ -222,13 +222,14 @@ const TBTNewEditStatisTicDialog = memo(({ open, onClose, statistic, yearsDisable
 					value={getValues(`manhours_${mon.month_code}_${mon.label}`)}
 					onChange={(event) => {
 						if (event.target.value !== "") {
-							const val = +(event.target.value + "").replace(/,/g, "");
+							const val = parseFloat((event.target.value + "").replace(/,/g, "")).toLocaleString();
 							if (val) {
-								setValue(`manhours_${mon.month_code}_${mon.label}`, val.toLocaleString(), { shouldValidate: true })
+								setValue(`manhours_${mon.month_code}_${mon.label}`, event.target.value.at(-1) === "." ? val + "." : val, { shouldValidate: true })
 							}
 						} else {
 							setValue(`manhours_${mon.month_code}_${mon.label}`, "0", { shouldValidate: true })
 						}
+						// setValue(`manhours_${mon.month_code}_${mon.label}`, event.target.value, { shouldValidate: true })
 					}}
 					sx={{ maxWidth: 220 }}
 					InputLabelProps={{ shrink: true }}

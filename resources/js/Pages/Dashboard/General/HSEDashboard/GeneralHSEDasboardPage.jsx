@@ -152,12 +152,14 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 
 			const yStart = Array.from(years).at(-1) ? new Date(Array.from(years).at(-1), 0, 1) : 0;
 			const yEnd = Array.from(years).at(-1) ? new Date(Array.from(years).at(-1), 11, 1) : 0;
+
 			setStartTbtDate(yStart);
 			setTbtStartDateHandler(yStart);
 			setEndTbtDate(yEnd);
 			setEndTbtDateHandler(yEnd);
-			setFilteredTbtData(tbt.slice(0, 12));
+			setFilteredTbtData(tbt.slice(-12));
 			setTbtData(tbt);
+			console.log(tbt, tbt.slice(-12))
 		}
 	}, [totalTbtByYear, tbtStatistics]);
 
@@ -398,21 +400,21 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
-						title="MANPOWER"
-						total={tbtAnalytic.totalManpower}
-						icon={'simple-line-icons:user'}
-					/>
-				</Grid>
-
-				<Grid item xs={12} sm={6} md={3}>
-					<AnalyticsWidgetSummary
-						title="MANPOWER/MONTH X̅"
+						title="MANPOWER X̅"
 						total={monthsDiff === 1 ?
 							Math.ceil(tbtAnalytic.totalManpower / new Date(+filteredTbtData[0][2], +filteredTbtData[0][0], 0).getDate())
 							: Math.ceil(tbtAnalytic.totalManpower / (monthsDiff || 0))
 						}
 						color="info"
 						icon={'material-symbols:supervisor-account-outline'}
+					/>
+				</Grid>
+
+				<Grid item xs={12} sm={6} md={3}>
+					<AnalyticsWidgetSummary
+						title="MANPOWER"
+						total={tbtAnalytic.totalManpower}
+						icon={'simple-line-icons:user'}
 					/>
 				</Grid>
 

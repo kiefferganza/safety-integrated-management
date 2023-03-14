@@ -18,8 +18,8 @@ return new class extends Migration
 						$table->foreignId('tbt_statistic_id')->constrained('tbt_statistics')->onDelete('cascade');
 						$table->smallInteger('month_code');
 						$table->string('month');
-						$table->integer('manpower');
-						$table->integer('manhours');
+						$table->float('manpower');
+						$table->float('manhours');
             $table->timestamps();
         });
     }

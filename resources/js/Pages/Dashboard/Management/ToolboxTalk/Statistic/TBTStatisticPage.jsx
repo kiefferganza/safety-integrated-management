@@ -130,6 +130,7 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 			})
 		}
 	}
+
 	const handleOpenConfirm = (id) => {
 		if (id) {
 			setSelectedId(id);
@@ -270,11 +271,11 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 											<StyledTableCell key={innerIdx}>
 												<Box sx={{ borderColor: "inherit" }} width={1} height={1} display="flex" alignItems="center">
 													<Box width={.5} height={1} textAlign="center" borderRight={1} sx={{ borderColor: "inherit" }} display="flex" alignItems="center" justifyContent="center">
-														<Typography variant="subtitle2" sx={{ wordBreak: "break-all" }}>{(innerRow?.totalManpower || 0)?.toLocaleString()}</Typography>
+														<Typography variant="subtitle2" sx={{ wordBreak: "break-all" }}>{(Math.ceil(innerRow?.totalManpower) || 0)?.toLocaleString()}</Typography>
 													</Box>
 													<Box width={.5} height={1} textAlign="center" display="flex" alignItems="center" justifyContent="center">
 														<Typography variant="subtitle2" sx={{ wordBreak: "break-all" }}>
-															{(innerRow?.totalManhours || 0)?.toLocaleString()}
+															{(Math.ceil(innerRow?.totalManhours) || 0)?.toLocaleString()}
 														</Typography>
 													</Box>
 												</Box>
@@ -291,10 +292,10 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 											<Typography variant="subtitle2">{row[1] ? Math.ceil(totals?.totalManpower / 12) : 0}</Typography>
 										</StyledTableCell>
 										<StyledTableCell>
-											<Typography variant="subtitle2">{row[1] ? totals?.totalManpower?.toLocaleString() : 0}</Typography>
+											<Typography variant="subtitle2">{row[1] ? Math.ceil(totals?.totalManpower)?.toLocaleString() : 0}</Typography>
 										</StyledTableCell>
 										<StyledTableCell sx={{ borderRightWidth: 1 }}>
-											<Typography variant="subtitle2">{row[1] ? totals?.totalManhours?.toLocaleString() : 0}</Typography>
+											<Typography variant="subtitle2">{row[1] ? Math.ceil(totals?.totalManhours)?.toLocaleString() : 0}</Typography>
 										</StyledTableCell>
 										<StyledTableCell sx={{ borderRightWidth: 1 }}>
 											<Stack direction="row" spacing={.5}>
@@ -310,10 +311,10 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 								)
 							})}
 							<StyledTableCell gridColumn="16">
-								<Typography variant="subtitle2">{(total?.totalManpower || 0).toLocaleString()}</Typography>
+								<Typography variant="subtitle2">{(Math.ceil(total?.totalManpower) || 0).toLocaleString()}</Typography>
 							</StyledTableCell>
 							<StyledTableCell gridColumn="17" sx={{ borderRightWidth: 1 }}>
-								<Typography variant="subtitle2">{(total?.totalManhours || 0).toLocaleString()}</Typography>
+								<Typography variant="subtitle2">{(Math.ceil(total?.totalManhours) || 0).toLocaleString()}</Typography>
 							</StyledTableCell>
 						</StyledGridBox>
 					</Scrollbar>
