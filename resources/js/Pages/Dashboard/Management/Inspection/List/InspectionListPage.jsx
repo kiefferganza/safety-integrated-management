@@ -21,12 +21,11 @@ import {
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
-import { fDate, fTimestamp } from '@/utils/formatTime';
+import { fTimestamp } from '@/utils/formatTime';
 // components
 import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';
-import ConfirmDialog from '@/Components/confirm-dialog';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import { useSettingsContext } from '@/Components/settings';
 import {
@@ -92,8 +91,6 @@ const InspectionListPage = ({ user, inspections }) => {
 	});
 
 	const [anchorLegendEl, setAnchorLegendEl] = useState(null);
-
-	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [tableData, setTableData] = useState([]);
 
@@ -190,14 +187,6 @@ const InspectionListPage = ({ user, inspections }) => {
 		{ value: 'O.D.', label: 'Overdue Days', color: 'error', count: getDueDays }
 	];
 
-	const handleOpenConfirm = () => {
-		setOpenConfirm(true);
-	};
-
-	const handleCloseConfirm = () => {
-		setOpenConfirm(false);
-	};
-
 	const handleFilterType = (_event, newValue) => {
 		setPage(0);
 		setFilterType(newValue);
@@ -221,20 +210,6 @@ const InspectionListPage = ({ user, inspections }) => {
 				load("Deleting inspection", "Please wait...");
 			},
 			onFinish: stop,
-			preserveScroll: true
-		});
-	};
-
-	const handleDeleteRows = (selected) => {
-		Inertia.post(route('inspection.management.delete'), { ids: selected }, {
-			onStart: () => {
-				load(`Deleting ${selected.length} inspections`, "Please wait...");
-			},
-			onFinish: () => {
-				setSelected([]);
-				setPage(0);
-				stop();
-			},
 			preserveScroll: true
 		});
 	};
@@ -428,12 +403,6 @@ const InspectionListPage = ({ user, inspections }) => {
 											<Iconify icon="eva:printer-fill" />
 										</IconButton>
 									</Tooltip>
-
-									<Tooltip title="Delete">
-										<IconButton color="primary" onClick={handleOpenConfirm}>
-											<Iconify icon="eva:trash-2-outline" />
-										</IconButton>
-									</Tooltip>
 								</Stack>
 							}
 						/>
@@ -490,28 +459,6 @@ const InspectionListPage = ({ user, inspections }) => {
 				</Card>
 			</Container>
 
-			<ConfirmDialog
-				open={openConfirm}
-				onClose={handleCloseConfirm}
-				title="Delete"
-				content={
-					<>
-						Are you sure want to delete <strong> {selected.length} </strong> items?
-					</>
-				}
-				action={
-					<Button
-						variant="contained"
-						color="error"
-						onClick={() => {
-							handleDeleteRows(selected);
-							handleCloseConfirm();
-						}}
-					>
-						Delete
-					</Button>
-				}
-			/>
 			<Popover
 				id="mouse-over-popover"
 				sx={{
@@ -562,7 +509,7 @@ const getNumberOfObservation = (reports) => reports.filter(report => report.ref_
 
 const getNumberOfPositiveObservation = (reports) => reports.filter(report => report.ref_score === 1).length;
 
-const getNumberOfNegativeObservation = (reports) => reports.filter(report => ((report.ref_score === 2 || report.ref_score === 3) && report.ref_score !== 4) && report.item_status !== "2" && report.item_status !== null).length;
+const getNumberOfNegativeObservation = (reports) => reports.filter(report => (report.ref_score === 2 || report.ref_score === 3) && report.item_status !== "2").length;
 
 
 const getInspectionStatus = (status) => {
@@ -640,9 +587,6 @@ function applyFilter ({
 	inputData = stabilizedThis.map((el) => el[0]);
 
 	if (filterName) {
-		console.log(inputData);
-		// toolbox.cms.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
-		// toolbox.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
 		inputData = inputData.filter((inspection) =>
 			inspection.form_number.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
 			inspection.reviewer.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||

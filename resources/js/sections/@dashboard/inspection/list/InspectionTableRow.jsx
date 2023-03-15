@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { Link, } from '@inertiajs/inertia-react';
+import { Link, usePage, } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from '@/routes/paths';
 // @mui
 import {
@@ -34,6 +34,7 @@ InspectionTableRow.propTypes = {
 };
 
 export default function InspectionTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+	const { auth: { user } } = usePage().props;
 	const [openDetail, setOpenDetail] = useState(false);
 	const [openConfirm, setOpenConfirm] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
@@ -158,18 +159,22 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 				)}
 
 
-				<Divider sx={{ borderStyle: 'dashed' }} />
+				{user?.emp_id === row.employee_id && (
+					<>
+						<Divider sx={{ borderStyle: 'dashed' }} />
 
-				<MenuItem
-					onClick={() => {
-						handleOpenConfirm();
-						handleClosePopover();
-					}}
-					sx={{ color: 'error.main' }}
-				>
-					<Iconify icon="eva:trash-2-outline" />
-					Delete
-				</MenuItem>
+						<MenuItem
+							onClick={() => {
+								handleOpenConfirm();
+								handleClosePopover();
+							}}
+							sx={{ color: 'error.main' }}
+						>
+							<Iconify icon="eva:trash-2-outline" />
+							Delete
+						</MenuItem>
+					</>
+				)}
 			</MenuPopover>
 
 			<ConfirmDialog

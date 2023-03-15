@@ -8,7 +8,7 @@ import Iconify from '@/Components/iconify';
 
 const INPUT_WIDTH = 160;
 
-EmployeeTableToolbar.propTypes = {
+InspectionTableToolbar.propTypes = {
 	isFiltered: PropTypes.bool,
 	filterName: PropTypes.string,
 	onFilterName: PropTypes.func,
@@ -19,7 +19,7 @@ EmployeeTableToolbar.propTypes = {
 	filterEndDate: PropTypes.instanceOf(Date),
 };
 
-export default function EmployeeTableToolbar ({
+export default function InspectionTableToolbar ({
 	isFiltered,
 	filterName,
 	onFilterName,

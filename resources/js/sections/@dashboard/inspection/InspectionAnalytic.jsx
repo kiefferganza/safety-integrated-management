@@ -2,8 +2,6 @@ import PropTypes from 'prop-types';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Stack, Typography, Box, CircularProgress } from '@mui/material';
-// utils
-import { fShortenNumber } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 
@@ -17,7 +15,7 @@ InspectionAnalytic.propTypes = {
 	percent: PropTypes.number,
 };
 
-export default function InspectionAnalytic ({ title, total, icon, color, percent }) {
+export default function InspectionAnalytic ({ title, total, icon, color, percent, itemTitle = "inspections" }) {
 	return (
 		<Stack direction="row" alignItems="center" justifyContent="center" sx={{ width: 1, minWidth: 200 }}>
 			<Stack alignItems="center" justifyContent="center" sx={{ position: 'relative' }}>
@@ -44,9 +42,9 @@ export default function InspectionAnalytic ({ title, total, icon, color, percent
 				<Typography variant="h6">{title}</Typography>
 
 				<Typography variant="subtitle2">
-					{fShortenNumber(total) || 0}{' '}
+					{total?.toLocaleString() || 0}{' '}
 					<Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
-						inspections
+						{itemTitle}
 					</Box>
 				</Typography>
 			</Stack>
