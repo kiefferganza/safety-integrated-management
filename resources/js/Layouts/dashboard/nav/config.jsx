@@ -116,7 +116,7 @@ const navConfig = [
 						path: PATH_DASHBOARD.inspection.safetyObservation,
 						children: [
 							{ title: 'list', path: PATH_DASHBOARD.inspection.list },
-							{ title: 'report', path: PATH_DASHBOARD.inspection.report, disabled: true },
+							{ title: 'report', path: PATH_DASHBOARD.inspection.report },
 						],
 					},
 					{ title: 'machineries', path: PATH_DASHBOARD.inspection.machineries, disabled: true },

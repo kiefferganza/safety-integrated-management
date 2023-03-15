@@ -7,6 +7,7 @@ use App\Models\Inspection;
 use App\Models\InspectionReportList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class InspectionController extends Controller
@@ -14,12 +15,13 @@ class InspectionController extends Controller
 
 	public function index()
 	{
-		$user = Auth::user();
+		// $user = Auth::user();
 
-		$emp_id = $user->user_id;
+		// $emp_id = $user->user_id;
 
 		$inspections =	Inspection::select("inspection_id","employee_id", "reviewer_id", "verifier_id","accompanied_by", "date_issued", "form_number", "status", "revision_no", "location", "contract_no", "inspected_by", "inspected_date","inspected_time", "avg_score", "date_issued","date_due")
-		->whereRaw("(employee_id = ? AND is_deleted = 0) OR (reviewer_id = ? AND status = 1 AND is_deleted = 0) OR (verifier_id = ? AND status = 2 AND is_deleted = 0) OR (status != 0 AND is_deleted = 0)", array($emp_id, $emp_id, $emp_id))
+		->where("is_deleted", 0)
+		// ->whereRaw("(employee_id = ? AND is_deleted = 0) OR (reviewer_id = ? AND status = 1 AND is_deleted = 0) OR (verifier_id = ? AND status = 2 AND is_deleted = 0) OR (status != 0 AND is_deleted = 0)", array($emp_id, $emp_id, $emp_id))
 		->with([
 			"reviewer",
 			"verifier",
@@ -186,6 +188,49 @@ class InspectionController extends Controller
 		return redirect()->back()
 		->with("message",	"Item deleted successfully!")
 		->with("type", "success");
+	}
+
+
+
+	public function reportList() {
+		$inspections = InspectionReportList::select(
+			"section_title",
+			"table_name",
+			"ref_num",
+			"list_id",
+			"tbl_inspection_reports.is_deleted",
+			DB::raw("COUNT(CASE WHEN item_status='1' THEN 1 ELSE NULL END) as 'closed',
+				COUNT(CASE WHEN item_status is NULL AND ref_score>1 AND ref_score!=4 THEN 1 ELSE NULL END) as 'negative',
+				COUNT(CASE WHEN item_status is NULL AND ref_score=1 AND ref_score!=4 THEN 1 ELSE NULL END) as 'positive'"
+			)
+		)
+		->join("tbl_inspection_reports", "tbl_inspection_reports.inspection_id", "tbl_inspection_reports_list.inspection_id")
+		->where("tbl_inspection_reports.is_deleted", 0)
+		->where("ref_num", "<", 35)
+		->groupBy("ref_num")
+		->get()
+		->toArray();
+		$others = InspectionReportList::select(
+			"section_title",
+			"tbl_inspection_reports.is_deleted",
+			"list_id",
+			DB::raw("COUNT(CASE WHEN item_status='1' THEN 1 ELSE NULL END) as 'closed',
+				COUNT(CASE WHEN item_status is NULL AND ref_score>1 AND ref_score!=4 THEN 1 ELSE NULL END) as 'negative',
+				COUNT(CASE WHEN item_status is NULL AND ref_score=1 AND ref_score!=4 THEN 1 ELSE NULL END) as 'positive'"
+			)
+		)
+		->join("tbl_inspection_reports", "tbl_inspection_reports.inspection_id", "tbl_inspection_reports_list.inspection_id")
+		->where("ref_num", ">", 35)
+		->where("section_title", "!=", "")
+		->where("section_title", "!=", NULL)
+		->where("tbl_inspection_reports.is_deleted", 0)
+		->groupBy("section_title")
+		->get()
+		->toArray();
+		
+		return Inertia::render("Dashboard/Management/Inspection/Report/index", [
+			"inspectionReport" => array_merge($inspections, $others),
+		]);
 	}
 
 

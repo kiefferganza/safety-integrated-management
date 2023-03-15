@@ -137,6 +137,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	Route::prefix('inspection')->as('inspection.management.')->group(function() {
 		// Lists
 		Route::get('/site/list', [InspectionController::class, "index"])->name('list');
+		Route::get('/site/report', [InspectionController::class, "reportList"])->name('report');
 		Route::get('/new', [InspectionController::class, "create"])->name('new');
 		Route::post('/new', [InspectionController::class, "store"])->name('store');
 		Route::post('/delete', [InspectionController::class, "delete"])->name('delete');

@@ -102,7 +102,7 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Product List"
+					heading="Report List"
 					links={[
 						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{
@@ -112,8 +112,7 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 						{
 							name: 'Report',
 							href: PATH_DASHBOARD.ppe.report,
-						},
-						{ name: 'Report List' },
+						}
 					]}
 				/>
 				<Card>
