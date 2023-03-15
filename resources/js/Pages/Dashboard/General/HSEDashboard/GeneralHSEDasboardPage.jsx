@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { getMonth, getYear } from 'date-fns';
+import { isWithinInterval } from 'date-fns';
 // @mui
 const { Grid, Container, Button, TextField, Box, Typography, Stack, Divider, useTheme } = await import('@mui/material');
 const { MobileDatePicker } = await import('@mui/x-date-pickers');
@@ -159,23 +159,16 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 			setEndTbtDateHandler(yEnd);
 			setFilteredTbtData(tbt.slice(-12));
 			setTbtData(tbt);
-			console.log(tbt, tbt.slice(-12))
 		}
 	}, [totalTbtByYear, tbtStatistics]);
 
 	const filterTbtBySelectedDate = (start, end) => {
-		const selStartYear = getYear(start);
-		const selStartMonth = getMonth(start) + 1;
-		const selEndYear = getYear(end);
-		const selEndMonth = getMonth(end) + 1;
-
 		const filteredTbt = tbtData.filter((d) => {
-			const m = d[0];
-			const y = d[2];
-			const isStart = (m >= selStartMonth && y == selStartYear);
-			const isEnd = (m <= selEndMonth && y == selEndYear);
-			if (selStartYear === selEndYear) return isStart && isEnd;
-			return isStart || isEnd;
+			const date = new Date(+d[2], +d[0] - 1);
+			return isWithinInterval(date, {
+				start,
+				end
+			})
 		});
 		setFilteredTbtData(filteredTbt);
 	}
@@ -296,10 +289,10 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 			daysWoWork: 0,
 		};
 	}
+
 	const tbtMonthChartData = getTbtMonthChartData();
 	const years = new Set(tbtData.map(d => d[2]));
 	const monthsDiff = monthDiff(startTbtDateHandler, endTbtDateHandler);
-
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
 
@@ -413,7 +406,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANPOWER"
-						total={tbtAnalytic.totalManpower}
+						total={Math.ceil(tbtAnalytic.totalManpower)}
 						icon={'simple-line-icons:user'}
 					/>
 				</Grid>
@@ -421,7 +414,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="MANHOURS"
-						total={tbtAnalytic.totalManhours}
+						total={Math.ceil(tbtAnalytic.totalManhours)}
 						icon={'mdi:clock-time-four-outline'}
 						color="warning"
 					/>
@@ -430,7 +423,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="SAFE MANHOURS"
-						total={tbtAnalytic.safeManhours}
+						total={Math.ceil(tbtAnalytic.safeManhours)}
 						color="success"
 						icon={'mdi:clock-time-four-outline'}
 					/>
