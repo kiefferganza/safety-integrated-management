@@ -270,27 +270,13 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 									value={user?.employee?.fullname}
 									disabled
 								/>
-								{/* <PersonelAutocomplete
-									value={getAutocompleteValue(values.submitted_id)}
-									onChange={(_event, newValue) => {
-										if (newValue) {
-											setValue('submitted_id', newValue.id, { shouldValidate: true, shouldDirty: true });
-										} else {
-											setValue('submitted_id', '', { shouldValidate: true, shouldDirty: true });
-										}
-									}}
-									isOptionEqualToValue={(option, value) => option.label === value}
-									options={options}
-									label="Submitted By"
-									error={errors?.submitted_id?.message}
-								/> */}
 								<PersonelAutocomplete
 									value={getAutocompleteValue(values.reviewer_id)}
 									onChange={(_event, newValue) => {
 										if (newValue) {
 											setValue('reviewer_id', newValue.id, { shouldValidate: true, shouldDirty: true });
 										} else {
-											setValue('reviewer_id', '', { shouldValidate: true, shouldDirty: true });
+											setValue('reviewer_id', null, { shouldValidate: true, shouldDirty: true });
 										}
 									}}
 									isOptionEqualToValue={(option, value) => option.label === value}
@@ -304,7 +290,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 										if (newValue) {
 											setValue('approval_id', newValue.id, { shouldValidate: true, shouldDirty: true });
 										} else {
-											setValue('approval_id', '', { shouldValidate: true, shouldDirty: true });
+											setValue('approval_id', null, { shouldValidate: true, shouldDirty: true });
 										}
 									}}
 									isOptionEqualToValue={(option, value) => option.label === value}

@@ -33,7 +33,7 @@ return new class extends Migration
 						$table->date('inventory_start_date');
 						$table->date('inventory_end_date');
 						$table->date('submitted_date');
-						$table->text('remarks');
+						$table->text('remarks')->nullable();
 						$table->softDeletes();
             $table->timestamps();
         });
