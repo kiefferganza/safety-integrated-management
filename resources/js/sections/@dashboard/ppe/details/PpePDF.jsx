@@ -56,7 +56,7 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 								</View>
 								<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
 									<Text style={styles.subtitle2}>Rollout Date:</Text>
-									<Text></Text>
+									<Text>{fDate(report?.created_at)}</Text>
 								</View>
 							</View>
 						</View>
@@ -289,29 +289,31 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 									<Text style={styles.body1}>{report?.remarks}</Text>
 								</View>
 							</View>
-							<View style={{ flexDirection: 'row' }}>
-								<View style={{ width: "33.3%" }}>
-									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.submitted?.fullname}</Text>
-									<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4, lineHeight: 0 }]}>Submitted By</Text>
-									{report?.submitted && (
-										<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.submitted?.position}</Text>
-									)}
+							{(index + 1) === documents?.length && (
+								<View style={{ flexDirection: 'row' }}>
+									<View style={{ width: "33.3%" }}>
+										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.submitted?.fullname}</Text>
+										<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4, lineHeight: 0 }]}>Submitted By</Text>
+										{report?.submitted && (
+											<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.submitted?.position}</Text>
+										)}
+									</View>
+									<View style={{ width: "33.3%" }}>
+										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.reviewer?.fullname}</Text>
+										<Text style={[styles.body1, { borderTop: 1, width: 140, lineHeight: 0, textAlign: 'center', paddingTop: 4 }]}>Reviewed By</Text>
+										{report?.reviewer && (
+											<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.reviewer?.position}</Text>
+										)}
+									</View>
+									<View style={{ width: "33.3%" }}>
+										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.approval?.fullname}</Text>
+										<Text style={[styles.body1, { borderTop: 1, width: 140, lineHeight: 0, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
+										{report?.approval && (
+											<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.approval?.position}</Text>
+										)}
+									</View>
 								</View>
-								<View style={{ width: "33.3%" }}>
-									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.reviewer?.fullname}</Text>
-									<Text style={[styles.body1, { borderTop: 1, width: 140, lineHeight: 0, textAlign: 'center', paddingTop: 4 }]}>Reviewed By</Text>
-									{report?.reviewer && (
-										<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.reviewer?.position}</Text>
-									)}
-								</View>
-								<View style={{ width: "33.3%" }}>
-									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.approval?.fullname}</Text>
-									<Text style={[styles.body1, { borderTop: 1, width: 140, lineHeight: 0, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
-									{report?.approval && (
-										<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.approval?.position}</Text>
-									)}
-								</View>
-							</View>
+							)}
 						</View>
 
 						<View style={[styles.gridContainer, styles.footer]}>

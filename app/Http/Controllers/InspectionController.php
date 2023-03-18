@@ -193,6 +193,7 @@ class InspectionController extends Controller
 
 
 	public function reportList() {
+		dd(InspectionReportList::select("date_submitted")->where("item_status", NULL)->orderByDesc("list_id")->limit(30)->get());
 		$inspections = InspectionReportList::select(
 			"section_title",
 			"table_name",
@@ -200,11 +201,12 @@ class InspectionController extends Controller
 			"list_id",
 			"tbl_inspection_reports.is_deleted",
 			DB::raw("COUNT(CASE WHEN item_status='1' THEN 1 ELSE NULL END) as 'closed',
-				COUNT(CASE WHEN item_status is NULL AND ref_score>1 AND ref_score!=4 THEN 1 ELSE NULL END) as 'negative',
-				COUNT(CASE WHEN item_status is NULL AND ref_score=1 AND ref_score!=4 THEN 1 ELSE NULL END) as 'positive'"
+				COUNT(CASE WHEN ref_score>1 AND ref_score!=4 THEN 1 ELSE NULL END) as 'negative',
+				COUNT(CASE WHEN ref_score=1 THEN 1 ELSE NULL END) as 'positive'"
 			)
 		)
 		->join("tbl_inspection_reports", "tbl_inspection_reports.inspection_id", "tbl_inspection_reports_list.inspection_id")
+		->where("item_status", "!=", NULL)
 		->where("tbl_inspection_reports.is_deleted", 0)
 		->where("ref_num", "<", 35)
 		->groupBy("ref_num")
@@ -215,11 +217,12 @@ class InspectionController extends Controller
 			"tbl_inspection_reports.is_deleted",
 			"list_id",
 			DB::raw("COUNT(CASE WHEN item_status='1' THEN 1 ELSE NULL END) as 'closed',
-				COUNT(CASE WHEN item_status is NULL AND ref_score>1 AND ref_score!=4 THEN 1 ELSE NULL END) as 'negative',
-				COUNT(CASE WHEN item_status is NULL AND ref_score=1 AND ref_score!=4 THEN 1 ELSE NULL END) as 'positive'"
+				COUNT(CASE WHEN ref_score>1 AND ref_score!=4 THEN 1 ELSE NULL END) as 'negative',
+				COUNT(CASE WHEN ref_score=1 THEN 1 ELSE NULL END) as 'positive'"
 			)
 		)
 		->join("tbl_inspection_reports", "tbl_inspection_reports.inspection_id", "tbl_inspection_reports_list.inspection_id")
+		->where("item_status", "!=", NULL)
 		->where("ref_num", ">", 35)
 		->where("section_title", "!=", "")
 		->where("section_title", "!=", NULL)

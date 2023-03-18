@@ -13,6 +13,7 @@ import { useDateRangePicker } from '@/Components/date-range-picker';
 const { PDFViewer } = await import('@react-pdf/renderer');
 import PpePDF from '../details/PpePDF';
 import { PDFDownloadLink } from '@react-pdf/renderer';
+import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -22,6 +23,8 @@ ReportTableRow.propTypes = {
 };
 
 export default function ReportTableRow ({ row, onDeleteRow }) {
+	const { auth: { user } } = usePage().props;
+
 	const {
 		form_number,
 		contract_no,
@@ -82,9 +85,9 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 
 				<TableCell sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }} align="left">{conducted_by}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap" }}>{forcastMonth}</TableCell>
-
 				<TableCell sx={{ whiteSpace: "nowrap" }}>{shortLabel}</TableCell>
+
+				<TableCell sx={{ whiteSpace: "nowrap" }}>{forcastMonth}</TableCell>
 
 				<TableCell sx={{ whiteSpace: "nowrap" }}>{fDate(submitted_date)}</TableCell>
 
@@ -118,7 +121,7 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 								handleClosePopover();
 							}}
 						>
-							{loading ? <CircularProgress size={18} color="inherit" /> : <Iconify icon="eva:download-fill" />}
+							{loading ? <CircularProgress size={18} color="inherit" sx={{ marginRight: 1.5 }} /> : <Iconify icon="eva:download-fill" />}
 							Download
 						</MenuItem>
 					)}
@@ -135,10 +138,10 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 				<MenuItem
 					onClick={() => {
 						handleOpenConfirm();
-						// handleClosePopover();
+						handleClosePopover();
 					}}
 					sx={{ color: 'error.main' }}
-					disabled
+					disabled={user?.emp_id !== submitted.employee_id}
 				>
 					<Iconify icon="eva:trash-2-outline" />
 					Delete

@@ -159,7 +159,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 				)}
 
 
-				{user?.emp_id === row.employee_id && (
+				{user?.emp_id === row.employee_id || user?.emp_id === 1 && (
 					<>
 						<Divider sx={{ borderStyle: 'dashed' }} />
 

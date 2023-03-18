@@ -141,7 +141,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				};
 			}, totalTbtByYear);
 			let years = new Set;
-
+			console.log(totalTbtByYear);
 			const tbt = Object.entries(tbtAndStatistics).reduce((acc, curr) => {
 				years.add(curr[0]);
 				const monthsData = Object.entries(curr[1]);
@@ -201,7 +201,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 		if (total) {
 			acc.totalManpower += total[1].totalManpower;
 			acc.totalManhours += total[1].totalManhours;
-			acc.safeManhours += total[1].safeManhours;
+			acc.safeManhours += total[1].totalManhours === 0 ? 0 : total[1].safeManhours;
 			acc.daysWork += total[1].daysWork;
 			acc.daysWoWork += total[1].daysWoWork;
 			acc.location = new Set([...acc.location, ...total[1].location]);
@@ -491,7 +491,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 							series: tbtMonthChartData.tbt.reduce((acc, curr) => {
 								acc[0].data.push(curr[1].totalManpower);
 								acc[1].data.push(curr[1].totalManhours);
-								acc[2].data.push(curr[1].safeManhours);
+								acc[2].data.push(curr[1].totalManhours === 0 ? 0 : curr[1].safeManhours);
 								return acc;
 							}, [
 								{
