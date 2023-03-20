@@ -75,14 +75,14 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 					if (data === null) {
 						return [year, findStat.months.sort((a, b) => a.month_code - b.month_code).map(m => ({
 							...m,
-							totalManhours: m.manhours,
-							totalManpower: m.manpower
+							totalManhours: Math.round(m.manhours),
+							totalManpower: Math.round(m.manpower)
 						})), findStat.src, findStat.id];
 					} else {
 						const months = findStat.months.map(month => ({
 							...totalTbtByYear[year][month.month_code],
-							totalManpower: totalTbtByYear[year][month.month_code].totalManpower + month.manpower,
-							totalManhours: totalTbtByYear[year][month.month_code].totalManhours + month.manhours
+							totalManpower: totalTbtByYear[year][month.month_code].totalManpower + Math.round(month.manpower),
+							totalManhours: totalTbtByYear[year][month.month_code].totalManhours + Math.round(month.manhours)
 						}));
 						return [year, months, findStat.src, findStat.id]
 					}
@@ -151,8 +151,8 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 	const total = data.reduce((acc, curr) => {
 		if (curr[1] !== null) {
 			const totalByMonth = curr[1].reduce((innerCurr, innerAcc) => ({
-				totalManpower: innerAcc.totalManpower + innerCurr.totalManpower,
-				totalManhours: innerAcc.totalManhours + innerCurr.totalManhours
+				totalManpower: innerAcc.totalManpower + Math.round(innerCurr.totalManpower),
+				totalManhours: innerAcc.totalManhours + Math.round(innerCurr.totalManhours)
 			}), {
 				totalManpower: 0,
 				totalManhours: 0

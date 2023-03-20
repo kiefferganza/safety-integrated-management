@@ -151,7 +151,10 @@ class ToolboxTalkController extends Controller
 	public function statistic() {
 		$statistics = TbtStatistic::with("months:id,tbt_statistic_id,manhours,manpower,month_code,month")->get();
 		$statistics->transform(function($item) {
-			$item->src = $item->getMedia()[0]->getFullUrl();
+			$file = $item->getFirstMedia();
+			if($file) {
+				$item->src = $file->getFullUrl();
+			}
 			return $item;
 		});
 

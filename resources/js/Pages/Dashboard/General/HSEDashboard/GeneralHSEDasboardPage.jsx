@@ -788,8 +788,8 @@ function calculateItd ({ monthsObj, currMonth, currTotal }) {
 	if (prevMonth in monthsObj) {
 		const month = monthsObj[prevMonth];
 		const total = {
-			totalManpower: currTotal.totalManpower + month.totalManpower,
-			totalManhours: currTotal.totalManhours + month.totalManhours,
+			totalManpower: currTotal.totalManpower + Math.round(month.totalManpower),
+			totalManhours: currTotal.totalManhours + Math.round(month.totalManhours),
 			daysWork: currTotal.daysWork + month.daysWork,
 			daysWoWork: currTotal.daysWoWork + month.daysWoWork,
 			location: new Set([...currTotal.location, ...month.location])
