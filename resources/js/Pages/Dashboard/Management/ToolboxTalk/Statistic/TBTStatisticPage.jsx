@@ -167,6 +167,11 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 	});
 
 	const disabledYears = statistics.map(a => +a.year);
+	let monthsDiff = 12;
+	if (data.length > 0) {
+		const lastMonthOnLastYearWithData = data.at(-1)[1].findIndex(d => d?.totalManpower === 0 && d?.totalManhours === 0);
+		monthsDiff = monthDiff(new Date(+data.at(0)[0], 0, 1), new Date(+data.at(-1)[0], lastMonthOnLastYearWithData === -1 ? 0 : lastMonthOnLastYearWithData - 1, 1));
+	}
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -202,7 +207,7 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 						>
 							<ToolboxTalkAnalytic
 								title="Avg. Manpower/Month"
-								total={Math.round(total?.totalManpower / 12)}
+								total={Math.round(total?.totalManpower / monthsDiff)}
 								percent={100}
 								icon="akar-icons:people-group"
 								color={theme.palette.success.main}
@@ -350,6 +355,13 @@ function generateArrayOfYears () {
 		years.unshift([i, null])
 	}
 	return years
+}
+
+function monthDiff (dateFrom, dateTo) {
+	if (dateFrom && dateTo) {
+		return dateTo.getMonth() - dateFrom.getMonth() +
+			(12 * (dateTo.getFullYear() - dateFrom.getFullYear())) + 1
+	}
 }
 
 export default TBTStatisticPage;

@@ -288,7 +288,6 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 			daysWoWork: 0,
 		};
 	}
-
 	const tbtMonthChartData = getTbtMonthChartData();
 	const years = new Set(tbtData.map(d => d[2]));
 	const monthsDiff = monthDiff(startTbtDateHandler, endTbtDateHandler);
