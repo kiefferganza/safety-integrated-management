@@ -202,7 +202,7 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 						>
 							<ToolboxTalkAnalytic
 								title="Avg. Manpower/Month"
-								total={Math.ceil(total?.totalManpower / 12)}
+								total={Math.round(total?.totalManpower / 12)}
 								percent={100}
 								icon="akar-icons:people-group"
 								color={theme.palette.success.main}
@@ -271,11 +271,11 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 											<StyledTableCell key={innerIdx}>
 												<Box sx={{ borderColor: "inherit" }} width={1} height={1} display="flex" alignItems="center">
 													<Box width={.5} height={1} textAlign="center" borderRight={1} sx={{ borderColor: "inherit" }} display="flex" alignItems="center" justifyContent="center">
-														<Typography variant="subtitle2" sx={{ wordBreak: "break-all" }}>{(Math.ceil(innerRow?.totalManpower) || 0)?.toLocaleString()}</Typography>
+														<Typography variant="subtitle2" sx={{ wordBreak: "break-all" }}>{(Math.round(innerRow?.totalManpower) || 0)?.toLocaleString()}</Typography>
 													</Box>
 													<Box width={.5} height={1} textAlign="center" display="flex" alignItems="center" justifyContent="center">
 														<Typography variant="subtitle2" sx={{ wordBreak: "break-all" }}>
-															{(Math.ceil(innerRow?.totalManhours) || 0)?.toLocaleString()}
+															{(Math.round(innerRow?.totalManhours) || 0)?.toLocaleString()}
 														</Typography>
 													</Box>
 												</Box>
@@ -289,13 +289,13 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 											)}
 										</StyledTableCell>
 										<StyledTableCell>
-											<Typography variant="subtitle2">{row[1] ? Math.ceil(totals?.totalManpower / 12) : 0}</Typography>
+											<Typography variant="subtitle2">{row[1] ? Math.round(totals?.totalManpower / 12) : 0}</Typography>
 										</StyledTableCell>
 										<StyledTableCell>
-											<Typography variant="subtitle2">{row[1] ? Math.ceil(totals?.totalManpower)?.toLocaleString() : 0}</Typography>
+											<Typography variant="subtitle2">{row[1] ? Math.round(totals?.totalManpower)?.toLocaleString() : 0}</Typography>
 										</StyledTableCell>
 										<StyledTableCell sx={{ borderRightWidth: 1 }}>
-											<Typography variant="subtitle2">{row[1] ? Math.ceil(totals?.totalManhours)?.toLocaleString() : 0}</Typography>
+											<Typography variant="subtitle2">{row[1] ? Math.round(totals?.totalManhours)?.toLocaleString() : 0}</Typography>
 										</StyledTableCell>
 										<StyledTableCell sx={{ borderRightWidth: 1 }}>
 											<Stack direction="row" spacing={.5}>
@@ -311,10 +311,10 @@ const TBTStatisticPage = ({ statistics = [] }) => {
 								)
 							})}
 							<StyledTableCell gridColumn="16">
-								<Typography variant="subtitle2">{(Math.ceil(total?.totalManpower) || 0).toLocaleString()}</Typography>
+								<Typography variant="subtitle2">{(Math.round(total?.totalManpower) || 0).toLocaleString()}</Typography>
 							</StyledTableCell>
 							<StyledTableCell gridColumn="17" sx={{ borderRightWidth: 1 }}>
-								<Typography variant="subtitle2">{(Math.ceil(total?.totalManhours) || 0).toLocaleString()}</Typography>
+								<Typography variant="subtitle2">{(Math.round(total?.totalManhours) || 0).toLocaleString()}</Typography>
 							</StyledTableCell>
 						</StyledGridBox>
 					</Scrollbar>
