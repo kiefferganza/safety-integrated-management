@@ -136,7 +136,6 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 */
 	Route::prefix('inspection')->as('inspection.management.')->group(function() {
 		// Lists
-		Route::get('/move-files', [InspectionController::class, "move_files"]);
 		Route::get('/site/list', [InspectionController::class, "index"])->name('list');
 		Route::get('/site/report', [InspectionController::class, "reportList"])->name('report');
 		Route::get('/new', [InspectionController::class, "create"])->name('new');

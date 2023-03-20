@@ -102,7 +102,7 @@ const PPEReportListPage = ({ inspectionReport = [] }) => {
 		positive: 0,
 		negative: 0
 	});
-	console.log(inspectionReport);
+
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'}>

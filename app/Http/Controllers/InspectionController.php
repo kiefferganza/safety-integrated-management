@@ -7,30 +7,28 @@ use App\Models\Inspection;
 use App\Models\InspectionReportList;
 use App\Services\InspectionService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Storage;
 class InspectionController extends Controller
 {
 
-	public function move_files() {
-		Inspection::where("is_deleted", 1)->delete();
-		InspectionReportList::where("is_deleted", 1)->delete();
+	// public function move_files() { 
+	// 	Inspection::where("is_deleted", 1)->delete();
+	// 	InspectionReportList::where("is_deleted", 1)->delete();
 
-		$inspectionReport = InspectionReportList::select("list_id", "photo_after", "photo_before")->where('photo_after', '!=', null)->where('photo_before', '!=', null)->get();
-		$inspectionReport->map(function ($report) {
-			if(Storage::exists("public/media/inspection/".$report->photo_before)) {
-				$report->addMedia(Storage::path("public/media/inspection/".$report->photo_before))->toMediaCollection("before");
-			}
-			if(Storage::exists("public/media/inspection/".$report->photo_after)) {
-				$report->addMedia(Storage::path("public/media/inspection/".$report->photo_after))->toMediaCollection("after");
-			}
-			$report->update(["photo_before" => null, "photo_after" => null]);
-			return $report;
-		});
-		return count($inspectionReport);
-	}
+	// 	$inspectionReport = InspectionReportList::select("list_id", "photo_after", "photo_before")->where('photo_after', '!=', null)->where('photo_before', '!=', null)->get();
+	// 	$inspectionReport->map(function ($report) {
+	// 		if(Storage::exists("public/media/inspection/".$report->photo_before)) {
+	// 			$report->addMedia(Storage::path("public/media/inspection/".$report->photo_before))->toMediaCollection("before");
+	// 		}
+	// 		if(Storage::exists("public/media/inspection/".$report->photo_after)) {
+	// 			$report->addMedia(Storage::path("public/media/inspection/".$report->photo_after))->toMediaCollection("after");
+	// 		}
+	// 		$report->update(["photo_before" => null, "photo_after" => null]);
+	// 		return $report;
+	// 	});
+	// 	return count($inspectionReport);
+	// }
 
 	public function index()
 	{
@@ -90,10 +88,10 @@ class InspectionController extends Controller
 			$before = $item->getFirstMedia("before");
 			$after = $item->getFirstMedia("after");
 			if($before) {
-				$item->photo_before = $before->getUrl();
+				$item->photo_before = $before->getFullUrl();
 			}
 			if($after) {
-				$item->photo_after = $after->getUrl();
+				$item->photo_after = $after->getFullUrl();
 			}
 			return $item;
 		});

@@ -77,10 +77,10 @@ class InspectionService {
 			$before = $item->getFirstMedia("before");
 			$after = $item->getFirstMedia("after");
 			if($before) {
-				$item->photo_before = $before->getUrl();
+				$item->photo_before = $before->getFullUrl();
 			}
 			if($after) {
-				$item->photo_after = $after->getUrl();
+				$item->photo_after = $after->getFullUrl();
 			}
 			return $item;
 		});

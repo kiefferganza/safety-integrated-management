@@ -35,7 +35,11 @@ const index = ({ inspection }) => {
 									href: PATH_DASHBOARD.inspection.list,
 								},
 								{
-									name: inspection?.form_number?.toUpperCase(),
+									name: "Detail",
+									href: PATH_DASHBOARD.inspection.view(inspection.inspection_id),
+								},
+								{
+									name: inspection?.form_number?.toUpperCase()
 								},
 							]}
 						/>
