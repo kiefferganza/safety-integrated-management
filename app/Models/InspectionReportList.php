@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class InspectionReportList extends Model
+class InspectionReportList extends Model implements HasMedia 
 {
-	use HasFactory;
+	use HasFactory, InteractsWithMedia;
 
 	protected $table = 'tbl_inspection_reports_list';
 

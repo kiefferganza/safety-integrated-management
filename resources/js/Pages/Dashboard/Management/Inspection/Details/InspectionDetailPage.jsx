@@ -1,45 +1,19 @@
-import { useEffect, useMemo } from 'react';
-import { Box, Grid, Stack, Typography } from "@mui/material";
-import { HeadingTH, TCell, TRow } from "../form/styledInspectionForm";
-import { format } from "date-fns";
+import { useMemo, useState } from 'react';
+const { Box, Grid, Stack, Typography, Tab, Tabs, Button } = await import("@mui/material");
+import { HeadingTH, TCell, TRow } from "@/sections/@dashboard/inspection/form/styledInspectionForm";
 import { getScoreColor } from "@/utils/inspection";
 import Image from "@/Components/image";
 import Iconify from "@/Components/iconify";
+import Findings from '@/sections/@dashboard/inspection/details/Findings';
+import { Link, usePage } from '@inertiajs/inertia-react';
+import { PATH_DASHBOARD } from '@/routes/paths';
 
-const sectionE_arr = [
-	"Oil spillage",
-	"Traffic control",
-	"Parking",
-	"Site control",
-	"Health hazard",
-	"Utilities",
-	"Waste collection/disposal",
-	"Smoking",
-	"Environmental issue",
-	"Stability of structure/materials",
-	"Communication",
-	"Exclusion zone",
-	"Impalement",
-	"Flying objects/debris",
-	"Grinding/cutting discs",
-	"Lonely working",
-	"Gas monitoring",
-	"Spillage (bio-hazard)",
-	"Voids un-protected",
-	"Emergency procedure",
-	"Task Lighting",
-	"Handtools",
-	"Supervision",
-	"Working on live traffic",
-	"Utilities",
-	"Trip slip fall",
-	"Rotating Parts"
-]
+const InspectionDetailPage = ({ inspection }) => {
+	const { auth: { user } } = usePage().props;
+	const [currentTab, setCurrentTab] = useState('details');
 
-const ReportList = ({ inspection }) => {
-
-	const reports = useMemo(() => {
-		return inspection.report_list.reduce((acc, curr) => {
+	const items = useMemo(() => {
+		const sections = inspection.report_list.reduce((acc, curr) => {
 			if (curr.ref_num >= 1 && curr.ref_num <= 6) {
 				acc.sectionA.push(curr);
 			} else if (curr.ref_num > 6 && curr.ref_num <= 13) {
@@ -62,12 +36,82 @@ const ReportList = ({ inspection }) => {
 			sectionD: [],
 			sectionE: []
 		});
+		const unsatisfactoryItems = inspection.report_list.filter(report => report.ref_score === 2 || report.ref_score === 3);
+		return {
+			sections,
+			unsatisfactoryItems
+		}
 	}, [inspection]);
 
-	// console.log(inspection);
+	const TABS = [
+		{
+			value: 'details',
+			label: 'Details',
+			icon: <Iconify icon="heroicons:document-chart-bar" />,
+			component: <InspectionDetails inspection={inspection} reports={items.sections} />,
+		},
+		{
+			value: 'findings',
+			label: 'Findings',
+			icon: <Iconify icon="heroicons:document-magnifying-glass" />,
+			component: <Findings inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />
+		}
+	];
+
+	const getInspectionType = ({ employee_id, reviewer_id, verifier_id, status }) => {
+		if (employee_id === user.emp_id) {
+			return 'submitted';
+		} else if (reviewer_id === user.emp_id && (status === 1 || status === 4)) {
+			return 'review';
+		} else if (verifier_id === user.emp_id && status === 2) {
+			return 'verify';
+		} else if (status !== 0) {
+			return 'closeout';
+		}
+		return 'closeout';
+	}
+	const inspectionType = getInspectionType({
+		employee_id: inspection.employee_id,
+		reviewer_id: inspection.reviewer_id,
+		verifier_id: inspection.verifier_id,
+		status: inspection.status,
+	});
 
 	return (
 		<Box>
+			<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.5 }}>
+				<Tabs
+					value={currentTab}
+					onChange={(event, newValue) => setCurrentTab(newValue)}
+					sx={{
+						width: 1,
+						bgcolor: 'background.paper'
+					}}
+				>
+					{TABS.map((tab) => (
+						<Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
+					))}
+				</Tabs>
+				<Stack spacing={1} direction="row" alignItems="center">
+					{inspectionType === "submitted" && (inspection.status !== 3 || inspection.status !== 2) && (
+						<Button variant="contained" component={Link} href={PATH_DASHBOARD.inspection.edit(inspection.inspection_id)}>Edit</Button>
+					)}
+					{inspectionType === "review" && (inspection.status === 1 || inspection.status === 0) && (
+						<Button variant="contained" component={Link} href={PATH_DASHBOARD.inspection.review(inspection.inspection_id)}>Review</Button>
+					)}
+					{inspectionType === "review" && inspection.status === 2 && (
+						<Button variant="contained" component={Link} href={PATH_DASHBOARD.inspection.verify(inspection.inspection_id)}>Verify</Button>
+					)}
+				</Stack>
+			</Stack>
+			{TABS.map((tab) => tab.value === currentTab && <Box key={tab.value}> {tab.component} </Box>)}
+		</Box >
+	)
+}
+
+function InspectionDetails ({ inspection, reports }) {
+	return (
+		<>
 			<Box sx={{ mb: 2 }}>
 				<Box sx={{ mb: { xs: 0, md: -1 } }}>
 					<Image disabledEffect alt="logo" src="/logo/Fiafi-logo.png" sx={{ maxWidth: 160, margin: { xs: '0px auto 8px auto', md: 0 } }} />
@@ -414,8 +458,8 @@ const ReportList = ({ inspection }) => {
 					</Stack>
 				</Grid>
 			</Grid>
-		</Box >
+		</>
 	)
 }
 
-export default ReportList
+export default InspectionDetailPage

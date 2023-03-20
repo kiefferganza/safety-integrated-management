@@ -18,6 +18,17 @@ class Inspection extends Model
 	protected $guarded = [];
 
 
+	protected static function boot() {
+		parent::boot();
+
+		static::creating(function ($inspection) {
+			// Plus 82 there are 82 is_deleted items mixed must adjust.
+			$sequence = Inspection::where('is_deleted', 0)->count() + 82;
+			$inspection->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
+		});
+	}
+
+
 	public function submitted() {
 		return $this->hasOne(Employee::class, "employee_id");
 	}

@@ -12,23 +12,15 @@ class InspectionReportController extends Controller
 
 	public function update(Inspection $inspection,Request $request) {
 		foreach ($request->reports as $report) {
-			$inspection_report = InspectionReportList::find($report["list_id"]);
-			if($inspection_report) {
-				$inspection_report->findings = $report["findings"];
+			$inspectionReport = InspectionReportList::find($report["list_id"]);
+			if($inspectionReport) {
+				$inspectionReport->findings = $report["findings"];
 
 				if($report["photo_before"]) {
-					if(Storage::exists("public/media/inspection/" . $inspection_report->photo_before)) {
-						Storage::delete("public/media/inspection/" . $inspection_report->photo_before);
-					}
-
-					$file = $report["photo_before"]->getClientOriginalName();
-					$extension = pathinfo($file, PATHINFO_EXTENSION);
-					$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
-					$report["photo_before"]->storeAs('media/inspection', $file_name, 'public');
-					$inspection_report->photo_before = $file_name;
-
+					$inspectionReport->clearMediaCollection("before");
+					$inspectionReport->addMedia($report["photo_before"])->toMediaCollection("before");
 				}
-				$inspection_report->save();
+				$inspectionReport->save();
 			}
 		}
 
@@ -45,30 +37,21 @@ class InspectionReportController extends Controller
 
   public function review_update(Inspection $inspection,Request $request) {
 		foreach ($request->reports as $report) {
-			$inspection_report = InspectionReportList::find($report["list_id"]);
-			if($inspection_report) {
-				$inspection_report->action_taken = $report["action_taken"];
+			$inspectionReport = InspectionReportList::find($report["list_id"]);
+			if($inspectionReport) {
+				$inspectionReport->action_taken = $report["action_taken"];
 
 				if($report["photo_after"]) {
-					if(Storage::exists("public/media/inspection/" . $inspection_report->photo_after)) {
-						Storage::delete("public/media/inspection/" . $inspection_report->photo_after);
-					}
-
-					$file = $report["photo_after"]->getClientOriginalName();
-					$extension = pathinfo($file, PATHINFO_EXTENSION);
-					$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
-					$report["photo_after"]->storeAs('media/inspection', $file_name, 'public');
-					$inspection_report->photo_after = $file_name;
-
+					$inspectionReport->clearMediaCollection("after");
+					$inspectionReport->addMedia($report["photo_after"])->toMediaCollection("after");
 				}
-				$inspection_report->save();
+				$inspectionReport->save();
 			}
 		}
 		if($request->isCompleted && $request->isCompleted !== "0") {
 			$inspection->status = 2;
 		}
 
-		$inspection->increment('revision_no');
 		$inspection->save();
 
 		return redirect()->back()
@@ -83,7 +66,7 @@ class InspectionReportController extends Controller
 		foreach ($request->reports as $report) {
 			$inspection_report = InspectionReportList::find($report["list_id"]);
 			if($inspection_report) {
-				$inspection_report->item_status = (int)$report["item_status"];
+				$inspection_report->item_status = $report["item_status"];
 				$inspection_report->save();
 			}
 		}

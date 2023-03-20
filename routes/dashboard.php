@@ -136,19 +136,20 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 */
 	Route::prefix('inspection')->as('inspection.management.')->group(function() {
 		// Lists
+		Route::get('/move-files', [InspectionController::class, "move_files"]);
 		Route::get('/site/list', [InspectionController::class, "index"])->name('list');
 		Route::get('/site/report', [InspectionController::class, "reportList"])->name('report');
 		Route::get('/new', [InspectionController::class, "create"])->name('new');
 		Route::post('/new', [InspectionController::class, "store"])->name('store');
 		Route::post('/delete', [InspectionController::class, "delete"])->name('delete');
 		// CRUD
+		Route::get('/{inspection}', [InspectionController::class, "view"])->name('view');
 		Route::get('/{inspection}/edit', [InspectionController::class, "edit"]);
 		Route::post('/{inspection}/edit', [InspectionReportController::class, "update"]);
 		Route::get('/{inspection}/review', [InspectionController::class, "review"]);
 		Route::post('/{inspection}/review', [InspectionReportController::class, "review_update"]);
 		Route::get('/{inspection}/verify', [InspectionController::class, "verify"]);
 		Route::post('/{inspection}/verify', [InspectionReportController::class, "verify_update"]);
-		Route::get('/{inspection}/findings', [InspectionController::class, "findings"]);
 	});
 
 	/**

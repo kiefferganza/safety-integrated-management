@@ -1,4 +1,9 @@
 import { useEffect, useState } from 'react';
+import { differenceInDays } from 'date-fns';
+import { Head, Link } from '@inertiajs/inertia-react';
+import { useSwal } from '@/hooks/useSwal';
+import { Inertia } from '@inertiajs/inertia';
+import { employeeName } from '@/utils/formatName';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import {
@@ -27,6 +32,7 @@ import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import ConfirmDialog from '@/Components/confirm-dialog';
 import { useSettingsContext } from '@/Components/settings';
 import {
 	useTable,
@@ -39,14 +45,9 @@ import {
 	TablePaginationCustom,
 } from '@/Components/table';
 // sections
-// import EmployeeAnalytic from '@/sections/@dashboard/employee/EmployeeAnalytic';
-import { Head, Link } from '@inertiajs/inertia-react';
-import { useSwal } from '@/hooks/useSwal';
-import { Inertia } from '@inertiajs/inertia';
-import { employeeName } from '@/utils/formatName';
 import { InspectionTableRow, InspectionTableToolbar } from '@/sections/@dashboard/inspection/list';
 import InspectionAnalytic from '@/sections/@dashboard/inspection/InspectionAnalytic';
-import { differenceInDays } from 'date-fns';
+
 
 // ----------------------------------------------------------------------
 
@@ -89,6 +90,8 @@ const InspectionListPage = ({ user, inspections }) => {
 		defaultOrderBy: "date_issued",
 		defaultOrder: "desc"
 	});
+
+	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [anchorLegendEl, setAnchorLegendEl] = useState(null);
 
@@ -187,6 +190,14 @@ const InspectionListPage = ({ user, inspections }) => {
 		{ value: 'O.D.', label: 'Overdue Days', color: 'error', count: getDueDays }
 	];
 
+	const handleOpenConfirm = () => {
+		setOpenConfirm(true);
+	};
+
+	const handleCloseConfirm = () => {
+		setOpenConfirm(false);
+	};
+
 	const handleFilterType = (_event, newValue) => {
 		setPage(0);
 		setFilterType(newValue);
@@ -210,6 +221,21 @@ const InspectionListPage = ({ user, inspections }) => {
 				load("Deleting inspection", "Please wait...");
 			},
 			onFinish: stop,
+			preserveScroll: true
+		});
+	};
+
+	const handleDeleteRows = (selected) => {
+		if (user?.emp_id !== 1) return;
+		Inertia.post(route('inspection.management.delete'), { ids: selected }, {
+			onStart: () => {
+				load(`Deleting ${selected.length} inspections`, "Please wait...");
+			},
+			onFinish: () => {
+				setSelected([]);
+				setPage(0);
+				stop();
+			},
 			preserveScroll: true
 		});
 	};
@@ -403,6 +429,13 @@ const InspectionListPage = ({ user, inspections }) => {
 											<Iconify icon="eva:printer-fill" />
 										</IconButton>
 									</Tooltip>
+									{user.emp_id === 1 && (
+										<Tooltip title="Delete">
+											<IconButton color="primary" onClick={handleOpenConfirm}>
+												<Iconify icon="eva:trash-2-outline" />
+											</IconButton>
+										</Tooltip>
+									)}
 								</Stack>
 							}
 						/>
@@ -458,6 +491,29 @@ const InspectionListPage = ({ user, inspections }) => {
 					/>
 				</Card>
 			</Container>
+
+			<ConfirmDialog
+				open={openConfirm}
+				onClose={handleCloseConfirm}
+				title="Delete"
+				content={
+					<>
+						Are you sure want to delete <strong> {selected.length} </strong> items?
+					</>
+				}
+				action={
+					<Button
+						variant="contained"
+						color="error"
+						onClick={() => {
+							handleDeleteRows(selected);
+							handleCloseConfirm();
+						}}
+					>
+						Delete
+					</Button>
+				}
+			/>
 
 			<Popover
 				id="mouse-over-popover"

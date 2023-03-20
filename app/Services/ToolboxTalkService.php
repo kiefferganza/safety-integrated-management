@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\ToolboxTalk;
 use App\Models\ToolboxTalkFile;
 use App\Models\ToolboxTalkParticipant;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ToolboxTalkService {

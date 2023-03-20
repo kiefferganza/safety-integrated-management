@@ -4,8 +4,6 @@ import Image from '@/Components/image';
 import { format } from 'date-fns';
 // form
 import { Controller, useForm, useFormContext } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
 import FormProvider from '@/Components/hook-form/FormProvider';
 import { Upload } from '@/Components/upload';
 import { LoadingButton } from '@mui/lab';
@@ -17,7 +15,7 @@ const Review = ({ inspection }) => {
 	const defaultValues = useMemo(() => ({
 		reports: inspection?.report_list.map(sec => ({
 			photo_after: null,
-			photo_after_prev: sec?.photo_after ? `/storage/media/inspection/${sec.photo_after}` : "/storage/media/inspection/blank.png",
+			photo_after_prev: sec?.photo_after || "/storage/media/inspection/blank.png",
 			action_taken: sec?.action_taken || "",
 			list_id: sec?.list_id,
 			photo_before: sec?.photo_before || null,
@@ -62,7 +60,6 @@ const Review = ({ inspection }) => {
 
 	const getItemStatus = (status) => {
 		switch (status) {
-			case 1:
 			case "1":
 				return {
 					text: "Approved",
@@ -70,7 +67,6 @@ const Review = ({ inspection }) => {
 					icon: "material-symbols:check-small-rounded",
 					statusClass: "success"
 				}
-			case 2:
 			case "2":
 				return {
 					text: "Failed",
@@ -161,7 +157,8 @@ const Review = ({ inspection }) => {
 											<Typography sx={{ pl: 1 }} fontWeight={700}>Photo (Before)</Typography>
 										</Box>
 										<Box height="340px" borderBottom={1} display="flex">
-											<Image sx={{ width: "100%", "&>span>img": { objectFit: "fill" } }} src={sec?.photo_before ? `/storage/media/inspection/${sec.photo_before}` : "/storage/media/inspection/blank.png"} />
+											{/* <Image sx={{ width: "100%", "&>span>img": { objectFit: "fill" } }} src={sec?.photo_before ? `/storage/media/inspection/${sec.photo_before}` : "/storage/media/inspection/blank.png"} /> */}
+											<Image sx={{ width: "100%", "&>span>img": { objectFit: "fill" } }} src={sec?.photo_before ? sec.photo_before : "/storage/media/inspection/blank.png"} />
 										</Box>
 										<Box height={1} sx={{ px: 1, pt: 1, minHeight: '140px' }}>
 											<Stack justifyContent="space-between" direction="row" sx={{ color: "#c00000", mb: 2 }}>

@@ -142,6 +142,7 @@ export const PATH_DASHBOARD = {
 		report: path(ROOTS_DASHBOARD, '/inspection/site/report'),
 		machineries: path(ROOTS_DASHBOARD, '/inspection/machineries'),
 		toolsAndEquipments: path(ROOTS_DASHBOARD, '/inspection/tools-and-equipments'),
+		view: (id) => path(ROOTS_DASHBOARD, `/inspection/${id}`),
 		edit: (id) => path(ROOTS_DASHBOARD, `/inspection/${id}/edit`),
 		review: (id) => path(ROOTS_DASHBOARD, `/inspection/${id}/review`),
 		verify: (id) => path(ROOTS_DASHBOARD, `/inspection/${id}/verify`),

@@ -6,23 +6,58 @@ import { Head } from '@inertiajs/inertia-react';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // components
-const Findings = lazy(() => import('@/sections/@dashboard/inspection/details/Findings'));
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
+import Label from '@/Components/label';
+const InspectionDetailPage = lazy(() => import('./InspectionDetailPage'));
 
 const index = ({ inspection }) => {
 	const { themeStretch } = useSettingsContext();
 
+	const getInspectionStatus = (status) => {
+		let result = {
+			code: status,
+			classType: 'default',
+			text: '',
+			tooltip: '',
+		};
+		switch (status) {
+			case 1:
+			case 0:
+				result.classType = 'warning';
+				result.text = 'I P';
+				result.tooltip = 'In Progress';
+				break;
+			case 2:
+				result.classType = 'error';
+				result.text = 'W F C';
+				result.tooltip = 'Waiting For Closure';
+				break;
+			case 3:
+				result.classType = 'success';
+				result.text = 'C';
+				result.tooltip = 'Closed';
+				break;
+			default:
+				result.classType = 'error';
+				result.text = 'F R'
+				result.tooltip = 'For Revision'
+		}
+		return result;
+	}
+
+	const inspectionStatus = getInspectionStatus(inspection.status);
+
 	return (
 		<>
 			<Head>
-				<title>Unsatisfactory Items</title>
+				<title>Inspection - Details</title>
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
 					<Container maxWidth={themeStretch ? false : 'lg'}>
 						<CustomBreadcrumbs
-							heading="Edit Item"
+							heading={inspection?.form_number?.toUpperCase()}
 							links={[
 								{
 									name: 'Dashboard',
@@ -36,9 +71,17 @@ const index = ({ inspection }) => {
 									name: inspection?.form_number?.toUpperCase(),
 								},
 							]}
+							action={
+								<Label
+									variant="soft"
+									color={inspectionStatus.classType}
+								>
+									{inspectionStatus.tooltip}
+								</Label>
+							}
 						/>
 
-						<Findings inspection={inspection} />
+						<InspectionDetailPage inspection={inspection} />
 					</Container>
 				</DashboardLayout>
 			</Suspense>

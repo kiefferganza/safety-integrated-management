@@ -4,6 +4,7 @@ namespace App\Services\MediaLibrary;
 
 use \Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\Support\PathGenerator\PathGenerator as BasePathGenerator;
+use Illuminate\Support\Str;
 
 class CustomPathGenerator implements BasePathGenerator
 {
@@ -16,8 +17,7 @@ class CustomPathGenerator implements BasePathGenerator
      */
     public function getPath(Media $media): string
     {
-			return strtolower(substr(strrchr($media->model_type, '\\'), 1)).'/'. md5($media->id . config('app.key')) .'/';
-        // return md5($media->id . config('app.key')) . '/';
+			return Str::kebab(substr(strrchr($media->model_type, '\\'), 1)).'/'. md5($media->id . config('app.key')) .'/';
     }
 
     /**

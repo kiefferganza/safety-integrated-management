@@ -7,7 +7,6 @@ import Iconify from '@/Components/iconify';
 const Findings = ({ inspection }) => {
 	const getItemStatus = (status) => {
 		switch (status) {
-			case 1:
 			case "1":
 				return {
 					text: "Approved",
@@ -15,7 +14,6 @@ const Findings = ({ inspection }) => {
 					icon: "material-symbols:check-small-rounded",
 					statusClass: "success"
 				}
-			case 2:
 			case "2":
 				return {
 					text: "Failed",
@@ -85,10 +83,10 @@ const Findings = ({ inspection }) => {
 			</Box>
 
 			<Grid container spacing={5}>
-				{inspection.report_list?.map((sec, index) => {
+				{inspection.report_list?.map((sec) => {
 					const itemStatus = getItemStatus(sec.item_status);
-					const photoBefore = sec.photo_before ? `/storage/media/inspection/${sec.photo_before}` : "/storage/media/inspection/blank.png";
-					const photoAfter = sec.photo_after ? `/storage/media/inspection/${sec.photo_after}` : "/storage/media/inspection/blank.png";
+					const photoBefore = sec.photo_before || "/storage/media/inspection/blank.png";
+					const photoAfter = sec.photo_after || "/storage/media/inspection/blank.png";
 
 					return (
 						<Fragment key={sec.list_id}>

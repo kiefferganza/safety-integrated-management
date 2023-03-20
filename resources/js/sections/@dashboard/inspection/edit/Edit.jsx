@@ -16,11 +16,11 @@ const Edit = ({ inspection }) => {
 	const [loading, setLoading] = useState(false);
 	const defaultValues = useMemo(() => ({
 		reports: inspection?.report_list.map(sec => ({
-			photo_after: sec?.photo_after ? `/storage/media/inspection/${sec.photo_after}` : "/storage/media/inspection/blank.png",
+			photo_after: sec?.photo_after || "/storage/media/inspection/blank.png",
 			action_taken: sec?.action_taken || "",
 			list_id: sec?.list_id,
 			photo_before: null,
-			photo_before_prev: sec?.photo_before ? `/storage/media/inspection/${sec.photo_before}` : "/storage/media/inspection/blank.png",
+			photo_before_prev: sec?.photo_before || "/storage/media/inspection/blank.png",
 			findings: sec?.findings || "",
 			ref_num: sec?.ref_num,
 			item_status: sec?.item_status
@@ -62,14 +62,14 @@ const Edit = ({ inspection }) => {
 
 	const getItemStatus = (status) => {
 		switch (status) {
-			case 1:
+			case "1":
 				return {
 					text: "Approved",
 					start: "A",
 					icon: "material-symbols:check-small-rounded",
 					statusClass: "success"
 				}
-			case 2:
+			case "2":
 				return {
 					text: "Failed",
 					start: "F",

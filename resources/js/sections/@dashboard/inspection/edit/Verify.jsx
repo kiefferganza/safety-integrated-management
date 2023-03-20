@@ -16,15 +16,16 @@ import { useSwal } from '@/hooks/useSwal';
 const Verify = ({ inspection }) => {
 	const { load, stop, warning } = useSwal();
 	const [loading, setLoading] = useState(false);
+	console.log(inspection)
 	const defaultValues = useMemo(() => ({
 		reports: inspection?.report_list.map(sec => ({
-			photo_after: sec?.photo_after ? `/storage/media/inspection/${sec.photo_after}` : "/storage/media/inspection/blank.png",
+			photo_after: sec?.photo_after || "/storage/media/inspection/blank.png",
 			action_taken: sec?.action_taken || "",
 			list_id: sec?.list_id,
-			photo_before: sec?.photo_before ? `/storage/media/inspection/${sec.photo_before}` : "/storage/media/inspection/blank.png",
+			photo_before: sec?.photo_before || "/storage/media/inspection/blank.png",
 			findings: sec?.findings || "",
 			ref_num: sec?.ref_num,
-			item_status: sec?.item_status ? sec?.item_status + "" : ""
+			item_status: sec?.item_status ? sec?.item_status : ""
 		}))
 	}), [inspection]);
 
@@ -39,8 +40,9 @@ const Verify = ({ inspection }) => {
 
 
 	const handleSave = (data) => {
-		const isCloseout = data.reports.every(rep => rep.item_status == 2);
-		Inertia.post(`/dashboard/inspection/${inspection.inspection_id}/verify`, { ...data, fails: isCloseout }, {
+		const reports = data.reports.filter(rep => rep.item_status !== "");
+		const isCloseout = reports.some(rep => rep.item_status == 2);
+		Inertia.post(`/dashboard/inspection/${inspection.inspection_id}/verify`, { reports, fails: isCloseout }, {
 			preserveScroll: true,
 			onStart () {
 				load("Please wait");
@@ -56,7 +58,7 @@ const Verify = ({ inspection }) => {
 	const handleCloseout = async () => {
 		const newData = reports.map(rep => ({
 			list_id: rep.list_id,
-			item_status: 1
+			item_status: "1"
 		}));
 
 		const result = await warning("Are you sure you want to close this report?", "Press cancel to undo this action.", "Yes");
@@ -79,7 +81,6 @@ const Verify = ({ inspection }) => {
 
 	const getItemStatus = (status) => {
 		switch (status) {
-			case 1:
 			case "1":
 				return {
 					text: "Approved",
@@ -87,7 +88,6 @@ const Verify = ({ inspection }) => {
 					icon: "material-symbols:check-small-rounded",
 					statusClass: "success"
 				}
-			case 2:
 			case "2":
 				return {
 					text: "Failed",

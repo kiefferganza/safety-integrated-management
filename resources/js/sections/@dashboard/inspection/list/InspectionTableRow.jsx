@@ -22,7 +22,6 @@ import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
-import ReportDialog from '../details/ReportDialog';
 
 // ----------------------------------------------------------------------
 
@@ -35,7 +34,6 @@ InspectionTableRow.propTypes = {
 
 export default function InspectionTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
 	const { auth: { user } } = usePage().props;
-	const [openDetail, setOpenDetail] = useState(false);
 	const [openConfirm, setOpenConfirm] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
 
@@ -54,10 +52,6 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 	const handleClosePopover = () => {
 		setOpenPopover(null);
 	};
-
-	const handleCLoseDetail = () => {
-		setOpenDetail(false);
-	}
 
 	return (
 		<>
@@ -114,10 +108,10 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						setOpenDetail(true);
-					}}
+					component={Link}
+					href={PATH_DASHBOARD.inspection.view(row.inspection_id)}
+					preserveScroll
+					onClick={handleClosePopover}
 				>
 					<Iconify icon="eva:eye-fill" />
 					View
@@ -159,7 +153,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 				)}
 
 
-				{user?.emp_id === row.employee_id || user?.emp_id === 1 && (
+				{(user?.emp_id === row.employee_id || user?.emp_id === 1) && (
 					<>
 						<Divider sx={{ borderStyle: 'dashed' }} />
 
@@ -187,11 +181,6 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 						Delete
 					</Button>
 				}
-			/>
-			<ReportDialog
-				open={openDetail}
-				onClose={handleCLoseDetail}
-				inspection={row}
 			/>
 		</>
 	);
