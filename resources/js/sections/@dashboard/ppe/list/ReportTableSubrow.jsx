@@ -8,7 +8,7 @@ import Label from "@/Components/label";
 const ReportTableSubRow = ({ row, open }) => {
 	const { positions } = usePage().props;
 
-	const approvalStatus = getDocumentReviewStatus(row.status);
+	const reviewerStatus = getDocumentReviewStatus(row.reviewer_status);
 	return (
 		<TableRow>
 			<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
@@ -36,10 +36,10 @@ const ReportTableSubRow = ({ row, open }) => {
 									<TableCell>
 										<Label
 											variant="soft"
-											color={"warning"}
-											sx={{ textTransform: "none" }}
+											color={reviewerStatus.statusClass}
+											sx={{ textTransform: "capitalize" }}
 										>
-											{row.reviewer_status}
+											{reviewerStatus.statusText.toLowerCase()}
 										</Label>
 									</TableCell>
 								</TableRow>
@@ -60,12 +60,14 @@ const ReportTableSubRow = ({ row, open }) => {
 									<TableCell>
 										{row.approval?.position}
 									</TableCell>
-									<TableCell>{row?.approval_remarks}</TableCell>
+									<TableCell>{row?.approval_remarks || "N/A"}</TableCell>
 									<TableCell>
 										<Label
 											variant="soft"
-											color={"warning"}
-											sx={{ textTransform: "none" }}
+											color={
+												(row.approval_status === 'fail' && 'error') || (row.approval_status === 'approved' && 'success') || 'warning'
+											}
+											sx={{ textTransform: "Capitalize" }}
 										>
 											{row.approval_status}
 										</Label>

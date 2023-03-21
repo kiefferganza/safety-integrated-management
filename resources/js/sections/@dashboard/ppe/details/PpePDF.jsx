@@ -56,7 +56,7 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 								</View>
 								<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
 									<Text style={styles.subtitle2}>Rollout Date:</Text>
-									<Text>{fDate(report?.created_at)}</Text>
+									<Text style={[styles.body1, { fontWeight: 700 }]}>{fDate(report?.created_at)}</Text>
 								</View>
 							</View>
 						</View>
@@ -280,16 +280,16 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 							</View>
 						</View>
 
-						<View style={[styles.mb40, { marginTop: 24 }]}>
-							<View style={{ marginBottom: 48 }}>
-								<View style={[styles.gridContainer, styles.mb16]}>
-									<Text style={styles.subtitle2}>Remarks</Text>
+						{(index + 1) === documents?.length && (
+							<View style={[styles.mb40, { marginTop: 24 }]}>
+								<View style={{ marginBottom: 48 }}>
+									<View style={[styles.gridContainer, styles.mb16]}>
+										<Text style={styles.subtitle2}>Remarks</Text>
+									</View>
+									<View style={{ width: '100%', borderBottom: 1, minHeight: 16 }}>
+										<Text style={styles.body1}>{report?.remarks}</Text>
+									</View>
 								</View>
-								<View style={{ width: '100%', borderBottom: 1, minHeight: 16 }}>
-									<Text style={styles.body1}>{report?.remarks}</Text>
-								</View>
-							</View>
-							{(index + 1) === documents?.length && (
 								<View style={{ flexDirection: 'row' }}>
 									<View style={{ width: "33.3%" }}>
 										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.submitted?.fullname}</Text>
@@ -313,18 +313,18 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 										)}
 									</View>
 								</View>
-							)}
-						</View>
+							</View>
+						)}
 
 						<View style={[styles.gridContainer, styles.footer]}>
 							<View style={styles.col3}>
-								<Text style={{ fontSize: 9, textAlign: 'left' }}>Uncontrolled Copy if Printed</Text>
+								<Text style={{ fontSize: 8, textAlign: 'left' }}>Uncontrolled Copy if Printed</Text>
 							</View>
 							<View style={styles.col3}>
-								<Text style={{ fontSize: 9, textAlign: 'center' }}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
+								<Text style={{ fontSize: 8, textAlign: 'center' }}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
 							</View>
 							<View style={styles.col3}>
-								<Text style={{ fontSize: 9, textAlign: 'right' }}>{format(new Date(), 'MM/dd/yy')} Page {`${index + 1} / ${documents.length}`}</Text>
+								<Text style={{ fontSize: 8, textAlign: 'right' }}>{format(new Date(), 'MM/dd/yy')} Page {`${index + 1} / ${documents.length}`}</Text>
 							</View>
 						</View>
 					</Page>

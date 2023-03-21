@@ -88,10 +88,10 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 		if (report.submitted_id === user?.emp_id) {
 			return "submitted";
 		}
-		if (report.reviewer_id === user?.emp_id && report.status === "in_review") {
-			return "";
+		if (report.reviewer_id === user?.emp_id && report.status === "for_review") {
+			return "review";
 		}
-		if (report.approved_id === user?.emp_id && report.status !== "in_review") {
+		if (report.approved_id === user?.emp_id && report.status !== "for_review") {
 			return "approve";
 		}
 		return "";

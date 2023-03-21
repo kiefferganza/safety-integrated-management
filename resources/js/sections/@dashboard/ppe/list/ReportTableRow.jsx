@@ -154,7 +154,7 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 				<MenuItem
 					disabled={row.type !== "submitted"}
 					component={Link}
-					href={PATH_DASHBOARD.ppe.reportView(row.id)}
+					href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
 					preserveScroll
 					onClick={handleClosePopover}
 				>
@@ -164,7 +164,7 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 				<MenuItem
 					disabled={row.type !== "review"}
 					component={Link}
-					href={PATH_DASHBOARD.ppe.reportReview(row.id)}
+					href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
 					preserveScroll
 					onClick={handleClosePopover}
 				>
@@ -174,7 +174,7 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 				<MenuItem
 					disabled={row.type !== "approve"}
 					component={Link}
-					href={PATH_DASHBOARD.ppe.reportApproval(row.id)}
+					href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
 					preserveScroll
 					onClick={handleClosePopover}
 				>
