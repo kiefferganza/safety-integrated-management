@@ -4,15 +4,10 @@ import { sentenceCase } from 'change-case';
 const {
 	Stack,
 	Button,
-	Select,
-	MenuItem,
-	Checkbox,
 	TextField,
-	InputLabel,
-	FormControl,
-	OutlinedInput,
 	InputAdornment,
 } = await import('@mui/material');
+import { DatePicker } from '@mui/x-date-pickers';
 // components
 import Iconify from '@/Components/iconify';
 
@@ -36,6 +31,10 @@ export default function ReportTableToolbar ({
 	filterName,
 	onFilterName,
 	onResetFilter,
+	filterStartDate,
+	filterEndDate,
+	onFilterStartDate,
+	onFilterEndDate,
 }) {
 	return (
 		<Stack
@@ -47,6 +46,45 @@ export default function ReportTableToolbar ({
 			}}
 			sx={{ px: 2.5, py: 3 }}
 		>
+			<DatePicker
+				label="Start Date"
+				value={filterStartDate}
+				onChange={onFilterStartDate}
+				inputFormat="dd MMM yyyy"
+				openTo="year"
+				views={['year', 'month', 'day']}
+				disableMaskedInput
+				renderInput={(params) => (
+					<TextField
+						{...params}
+						fullWidth
+						sx={{
+							maxWidth: { md: INPUT_WIDTH },
+						}}
+					/>
+				)}
+			/>
+
+			<DatePicker
+				label="End Date"
+				value={filterEndDate}
+				onChange={onFilterEndDate}
+				inputFormat="dd MMM yyyy"
+				openTo="year"
+				views={['year', 'month', 'day']}
+				disableMaskedInput
+				minDate={filterStartDate || new Date}
+				renderInput={(params) => (
+					<TextField
+						{...params}
+						fullWidth
+						sx={{
+							maxWidth: { md: INPUT_WIDTH },
+						}}
+					/>
+				)}
+			/>
+
 			<TextField
 				fullWidth
 				value={filterName}

@@ -97,6 +97,9 @@ export const PATH_DASHBOARD = {
 		edit: (name) => path(ROOTS_DASHBOARD, `/ppe/product/${name}/edit`),
 		update: (name) => path(ROOTS_DASHBOARD, `/ppe/product/${name}/update`),
 		addRemoveStock: (id) => path(ROOTS_DASHBOARD, `/ppe/product/add-remove-stock/${id}`),
+		reportView: (id) => path(ROOTS_DASHBOARD, `/ppe/report/${id}`),
+		reportReview: (id) => path(ROOTS_DASHBOARD, `/ppe/report/${id}/review`),
+		reportApproval: (id) => path(ROOTS_DASHBOARD, `/ppe/report/${id}/approve`),
 	},
 
 	training: {

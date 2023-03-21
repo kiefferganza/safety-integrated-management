@@ -31,6 +31,7 @@ const newBudgetForecastSchema = Yup.object().shape({
 	submitted_date: Yup.date().nullable().required("Submitted date is required"),
 	reviewer_id: Yup.number().nullable().required("Reviewer personel is required"),
 	approval_id: Yup.number().nullable().required("Approval personel is required"),
+	remarks: Yup.string().max(255)
 });
 
 export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_no, ...other }) => {

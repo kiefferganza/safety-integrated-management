@@ -13,7 +13,11 @@ import { useDateRangePicker } from '@/Components/date-range-picker';
 const { PDFViewer } = await import('@react-pdf/renderer');
 import PpePDF from '../details/PpePDF';
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import { usePage } from '@inertiajs/inertia-react';
+import { Link, usePage } from '@inertiajs/inertia-react';
+import ReportTableSubRow from './ReportTableSubrow';
+import { sentenceCase } from 'change-case';
+import Label from '@/Components/label/Label';
+import { PATH_DASHBOARD } from '@/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -41,6 +45,8 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 		new Date(inventory_start_date),
 		new Date(inventory_end_date)
 	);
+
+	const [openCollapse, setOpenCollapse] = useState(false);
 
 	const [open, setOpen] = useState(false);
 
@@ -72,6 +78,31 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 		setOpenPopover(null);
 	};
 
+	const handleTriggerCollapse = () => {
+		setOpenCollapse((currState) => !currState);
+	}
+
+	const getStatusColor = (status) => {
+		let statusColor = "warning";
+		switch (status) {
+			case "for_review":
+				statusColor = "warning";
+				break;
+			case "for_approval":
+				statusColor = "info";
+				break;
+			case "approved":
+				statusColor = "success";
+				break;
+			case "fail":
+				statusColor = "error";
+				break;
+			default:
+				break;
+		}
+		return statusColor;
+	}
+
 	const forcastDate = new Date(budget_forcast_date);
 	const forcastMonth = `${fDate(startOfMonth(forcastDate), 'dd')} - ${fDate(endOfMonth(forcastDate), 'dd MMM yyyy')}`;
 	return (
@@ -79,28 +110,78 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 			<TableRow hover>
 				<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{form_number}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }} align="left">{contract_no}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }} align="left">{contract_no}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }} align="left">{location}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }} align="left">{location}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }} align="left">{conducted_by}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }} align="left">{conducted_by}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap" }}>{shortLabel}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap" }}>{shortLabel}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap" }}>{forcastMonth}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap" }}>{forcastMonth}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap" }}>{fDate(submitted_date)}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap" }}>{fDate(submitted_date)}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap" }}>{submitted?.fullname}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap" }}>{submitted?.fullname}</TableCell>
+
+				<TableCell onClick={handleTriggerCollapse} align="center">
+					<Label
+						variant="soft"
+						color={getStatusColor(row.status)}
+						sx={{ textTransform: "capitalize" }}
+					>
+						{sentenceCase(row.status)}
+					</Label>
+				</TableCell>
 
 				<TableCell sx={{ whiteSpace: "nowrap" }} align="right">
+					<IconButton
+						aria-label="expand row"
+						color={openCollapse ? 'inherit' : 'default'}
+						onClick={handleTriggerCollapse}
+					>
+						<Iconify icon={openCollapse ? "material-symbols:keyboard-arrow-up" : "material-symbols:keyboard-arrow-down"} />
+					</IconButton>
 					<IconButton color={openPopover ? 'primary' : 'default'} onClick={handleOpenPopover}>
 						<Iconify icon="eva:more-vertical-fill" />
 					</IconButton>
 				</TableCell>
 			</TableRow>
 
+			<ReportTableSubRow row={row} open={openCollapse} />
+
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
+				<MenuItem
+					disabled={row.type !== "submitted"}
+					component={Link}
+					href={PATH_DASHBOARD.ppe.reportView(row.id)}
+					preserveScroll
+					onClick={handleClosePopover}
+				>
+					<Iconify icon="eva:eye-outline" />
+					View
+				</MenuItem>
+				<MenuItem
+					disabled={row.type !== "review"}
+					component={Link}
+					href={PATH_DASHBOARD.ppe.reportReview(row.id)}
+					preserveScroll
+					onClick={handleClosePopover}
+				>
+					<Iconify width={16} icon="fontisto:preview" />
+					Review
+				</MenuItem>
+				<MenuItem
+					disabled={row.type !== "approve"}
+					component={Link}
+					href={PATH_DASHBOARD.ppe.reportApproval(row.id)}
+					preserveScroll
+					onClick={handleClosePopover}
+				>
+					<Iconify icon="pajamas:review-checkmark" />
+					Verify
+				</MenuItem>
+				<Divider />
 				<MenuItem
 					onClick={() => {
 						handleOpen();

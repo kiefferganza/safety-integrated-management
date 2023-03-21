@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSwal } from '@/hooks/useSwal';
 // @mui
 const { Card, Table, TableBody, Container, TableContainer } = await import('@mui/material');
@@ -21,6 +21,9 @@ import Scrollbar from '@/Components/scrollbar';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 // sections
 import { ReportTableRow, ReportTableToolbar } from '@/sections/@dashboard/ppe/list';
+import { Divider, Stack, Tab, Tabs } from '@mui/material';
+import Label from '@/Components/label/Label';
+import { usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -33,12 +36,14 @@ const TABLE_HEAD = [
 	{ id: 'budget_forcast_date', label: 'Budget Forecast Date', align: 'left' },
 	{ id: 'submitted_date', label: 'Submitted Date', align: 'left' },
 	{ id: 'submitted_id', label: 'Submitted By', align: 'left' },
+	{ id: 'status', label: 'Status', align: 'left' },
 	{ id: '' },
 ];
 
 // ----------------------------------------------------------------------
 
 const PPEReportListPage = ({ inventoryReports = [] }) => {
+	const { auth: { user } } = usePage().props;
 	const { load, stop } = useSwal();
 	const {
 		dense,
@@ -59,20 +64,63 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 
 	const { themeStretch } = useSettingsContext();
 
+	const [tableData, setTableData] = useState([]);
+
 	const [filterName, setFilterName] = useState('');
+
+	const [filterType, setFilterType] = useState('submitted');
+
+	const [filterStartDate, setFilterStartDate] = useState(null);
+
+	const [filterEndDate, setFilterEndDate] = useState(null);
+
+
+	useEffect(() => {
+		const data = inventoryReports.map((report) => ({
+			...report,
+			type: getReportType(report)
+		}));
+		setTableData(data);
+	}, [inventoryReports]);
+
+
+	const getReportType = (report) => {
+		if (report.submitted_id === user?.emp_id) {
+			return "submitted";
+		}
+		if (report.reviewer_id === user?.emp_id && report.status === "in_review") {
+			return "";
+		}
+		if (report.approved_id === user?.emp_id && report.status !== "in_review") {
+			return "approve";
+		}
+		return "";
+	}
 
 
 	const dataFiltered = applyFilter({
-		inputData: inventoryReports,
+		inputData: tableData,
 		comparator: getComparator(order, orderBy),
-		filterName
+		filterName,
+		filterType,
+		filterStartDate,
+		filterEndDate
 	});
 
 	const denseHeight = dense ? 60 : 80;
 
-	const isFiltered = filterName !== '';
+	const isFiltered = filterName !== '' || filterType !== "submitted" || !!filterStartDate || !!filterEndDate;
 
 	const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
+
+	const getLengthByType = (type) => tableData.filter((item) => item.type === type).length;
+
+	const TABS = [
+		{ value: 'submitted', label: 'Submitted', color: 'default', count: getLengthByType('submitted') },
+		{ value: 'review', label: 'Review', color: 'warning', count: getLengthByType('review') },
+		{ value: 'approve', label: 'Verify & Approve', color: 'success', count: getLengthByType('approve') },
+		{ value: 'control', label: 'Control', color: 'error', count: inventoryReports.length },
+	];
 
 
 	const handleFilterName = (event) => {
@@ -94,8 +142,17 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 		});
 	};
 
+
+	const handleFilterType = (_event, value) => {
+		setPage(0);
+		setFilterType(value);
+	}
+
 	const handleResetFilter = () => {
 		setFilterName('');
+		setFilterType('submitted');
+		setFilterStartDate(null);
+		setFilterEndDate(null);
 	};
 
 	return (
@@ -116,11 +173,45 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 					]}
 				/>
 				<Card>
+					<Stack direction="row" alignItems="center" sx={{ px: 2, bgcolor: 'background.neutral' }}>
+						<Tabs
+							value={filterType}
+							onChange={handleFilterType}
+							sx={{ width: 1, flex: .5 }}
+						>
+							{TABS.map((tab) => (
+								<Tab
+									key={tab.value}
+									value={tab.value}
+									label={tab.label}
+									icon={
+										<Label color={tab.color} sx={{ mr: 1 }}>
+											{tab.count}
+										</Label>
+									}
+								/>
+							))}
+						</Tabs>
+					</Stack>
+
+					<Divider />
+
 					<ReportTableToolbar
 						filterName={filterName}
 						onFilterName={handleFilterName}
 						isFiltered={isFiltered}
+						filterStartDate={filterStartDate}
+						filterEndDate={filterEndDate}
 						onResetFilter={handleResetFilter}
+						onFilterStartDate={(newValue) => {
+							if (filterEndDate) {
+								setFilterEndDate(null);
+							}
+							setFilterStartDate(newValue);
+						}}
+						onFilterEndDate={(newValue) => {
+							setFilterEndDate(newValue);
+						}}
 					/>
 
 					<TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -176,7 +267,7 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 
 // ----------------------------------------------------------------------
 
-function applyFilter ({ inputData, comparator, filterName, filterStartDate, filterEndDate }) {
+function applyFilter ({ inputData, comparator, filterName, filterType, filterStartDate, filterEndDate }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
 
 	stabilizedThis.sort((a, b) => {
@@ -188,7 +279,26 @@ function applyFilter ({ inputData, comparator, filterName, filterStartDate, filt
 	inputData = stabilizedThis.map((el) => el[0]);
 
 	if (filterName) {
-		inputData = inputData.filter((product) => product.form_number.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
+		inputData = inputData.filter((report) => report.form_number.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
+	}
+
+	if (filterType !== 'control') {
+		inputData = inputData.filter((report) => report.type === filterType);
+	}
+
+	if (filterStartDate && !filterEndDate) {
+		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
+		inputData = inputData.filter(report => new Date(report.submitted_date).setHours(0, 0, 0, 0) >= startDateTimestamp);
+	}
+
+	if (filterStartDate && filterEndDate) {
+		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
+		const endDateTimestamp = filterEndDate.setHours(0, 0, 0, 0);
+		inputData = inputData.filter(
+			(report) =>
+				new Date(report.submitted_date).setHours(0, 0, 0, 0) >= startDateTimestamp &&
+				new Date(report.submitted_date).setHours(0, 0, 0, 0) <= endDateTimestamp
+		);
 	}
 
 	return inputData;

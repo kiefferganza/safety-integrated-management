@@ -191,6 +191,10 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/report/new', [InventoryReportController::class, "store"])->name('report.store');
 		Route::delete('/report/delete', [InventoryReportController::class, "destroy"])->name('report.destroy');
 
+		Route::get('/report/{report}', [InventoryReportController::class, "show"])->name('report.show');
+		Route::get('/report/{report}/review', [InventoryReportController::class, "review"])->name('report.review');
+		Route::get('/report/{report}/approve', [InventoryReportController::class, "approve"])->name('report.approve');
+
 		// Products
 		Route::post('/product/add-remove-stock/{inventory}', [InventoryController::class, "add_remove_stock"]);
 		Route::get('/product/{inventory}', [InventoryController::class, "show"])->name('show');
