@@ -27,18 +27,21 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->configureRateLimiting();
+			$this->configureRateLimiting();
 
-        $this->routes(function () {
-					Route::middleware('web')
-							->prefix('api')
-							->group(base_path('routes/api.php'));
+			$this->routes(function () {
+				Route::middleware('web')
+						->prefix('api')
+						->group(base_path('routes/api.php'));
 
-					Route::middleware('web')
-							->group(base_path('routes/web.php'));
-        });
-				Route::bind('inventory', function ($value) {
-					return \App\Models\Inventory::where('inventory_id', $value)->where("is_removed", 0)->orWhere('slug', $value)->firstOrFail();
+				Route::middleware('web')
+						->group(base_path('routes/web.php'));
+			});
+			Route::bind('inventory', function ($value) {
+				return \App\Models\Inventory::where('inventory_id', $value)->where("is_removed", 0)->orWhere('slug', $value)->firstOrFail();
+			});
+			Route::bind('inventoryReport', function ($value) {
+				return \App\Models\InventoryReport::where('id', $value)->orWhere('uuid', $value)->firstOrFail();
 			});
     }
 

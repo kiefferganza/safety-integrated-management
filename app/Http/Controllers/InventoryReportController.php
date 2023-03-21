@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Inventory;
 use App\Models\InventoryBound;
+use App\Models\InventoryReportList;
 use Illuminate\Support\Facades\DB;
 
 class InventoryReportController extends Controller
@@ -46,11 +47,12 @@ class InventoryReportController extends Controller
 			return $inventory;
 		});
 
-		$sequence = InventoryReport::count() + 1;
+		$latestReport = InventoryReport::select("sequence_no")->latest()->first();
+		$sequence = $latestReport ? (int)ltrim($latestReport->sequence_no) + 1 : 1;
 
 		return Inertia::render("Dashboard/Management/PPE/Report/index", [
 			"inventories" => $inventories,
-			"sequence_no" => str_pad($sequence, 6, '0', STR_PAD_LEFT),
+			"sequence_no" => str_pad(ltrim($sequence), 6, '0', STR_PAD_LEFT),
 			"employees" => Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
 				->where("is_deleted", 0)
 				->where("sub_id", auth()->user()->subscriber_id)
@@ -167,10 +169,9 @@ class InventoryReportController extends Controller
 	}
 
 
-
-
 	public function reportList() {
 		$inventoryReports = InventoryReport::with([
+			"comments",
 			"inventories",
 			"submitted" => fn($q) =>
 				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
@@ -182,6 +183,23 @@ class InventoryReportController extends Controller
 		
 		return Inertia::render("Dashboard/Management/PPE/ReportList/index", [
 			"inventoryReports" => $inventoryReports
+		]);
+	}
+
+
+	public function show(InventoryReport $report) {
+		$report->load([
+			"comments",
+			"inventories",
+			"submitted" => fn($q) =>
+				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+			"reviewer" => fn($q) =>
+				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+			"approval" => fn($q) =>
+				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+		]);
+		return Inertia::render("Dashboard/Management/PPE/ReportDetail/index", [
+			"report" => $report
 		]);
 	}
 

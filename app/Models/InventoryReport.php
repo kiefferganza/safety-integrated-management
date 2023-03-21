@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class InventoryReport extends Model
 {
@@ -17,14 +18,21 @@ class InventoryReport extends Model
 		parent::boot();
 
 		static::creating(function ($inventoryReport) {
-			$sequence = InventoryReport::count() + 1;
-			$inventoryReport->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
+			$latestReport = InventoryReport::select("sequence_no")->latest()->first();
+			$sequence = $latestReport ? (int)ltrim($latestReport->sequence_no) + 1 : 1;
+			$inventoryReport->sequence_no = str_pad(ltrim($sequence), 6, '0', STR_PAD_LEFT);
+			$inventoryReport->uuid = (string)Str::uuid();
 		});
 	}
 
 
 	public function inventories() {
 		return $this->hasMany(InventoryReportList:: class);
+	}
+
+
+	public function comments() {
+		return $this->hasMany(InventoryReportComments:: class);
 	}
 
 
