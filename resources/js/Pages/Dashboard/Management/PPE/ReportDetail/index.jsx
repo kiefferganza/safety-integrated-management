@@ -6,14 +6,14 @@ import Container from "@mui/material/Container";
 import { Head } from "@inertiajs/inertia-react";
 import { useSettingsContext } from "@/Components/settings";
 import { PATH_DASHBOARD } from "@/routes/paths";
-import CustomBreadcrumbs from "@/Components/custom-breadcrumbs/CustomBreadcrumbs";
-import PpeReportDetailToolbar from "@/sections/@dashboard/ppe/details/PpeReportDetailToolbar";
-import ReportDetailHead from "@/sections/@dashboard/ppe/details/ReportDetailHead";
+const CustomBreadcrumbs = lazy(() => import("@/Components/custom-breadcrumbs/CustomBreadcrumbs"));
+const PpeReportDetailToolbar = lazy(() => import("@/sections/@dashboard/ppe/details/PpeReportDetailToolbar"));
+const ReportDetailHead = lazy(() => import("@/sections/@dashboard/ppe/details/ReportDetailHead"));
 const ReportDetailPage = lazy(() => import("./ReportDetailPage"));
 
 const index = ({ report }) => {
 	const { themeStretch } = useSettingsContext();
-	console.log(report)
+
 	return (
 		<>
 			<Head>

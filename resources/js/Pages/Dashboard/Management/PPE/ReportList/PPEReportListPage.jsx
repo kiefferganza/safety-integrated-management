@@ -129,11 +129,11 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 	};
 
 	const handleDeleteRow = (id) => {
-		Inertia.post(route('ppe.management.destroy'), { ids: [id] }, {
+		Inertia.delete(route('ppe.management.report.destroy', id), {
 			preserveScroll: true,
 			preserveState: true,
 			onStart () {
-				load("Deleting item", "please wait...")
+				load("Deleting report", "please wait...")
 			},
 			onFinish () {
 				setPage(0);

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Inventory;
 use App\Models\InventoryBound;
+use App\Models\InventoryReportComments;
 use App\Models\InventoryReportList;
 use Illuminate\Support\Facades\DB;
 
@@ -20,6 +21,7 @@ class InventoryReportController extends Controller
 	 */
 	public function index()
 	{
+		$user = auth()->user();
 		$inventories = Inventory::select(
 			"inventory_id",
 			"item",
@@ -55,7 +57,9 @@ class InventoryReportController extends Controller
 			"sequence_no" => str_pad(ltrim($sequence), 6, '0', STR_PAD_LEFT),
 			"employees" => Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
 				->where("is_deleted", 0)
-				->where("sub_id", auth()->user()->subscriber_id)
+				->where("sub_id", $user->subscriber_id)
+				->where("user_id", "!=", null)
+				->where("user_id", "!=", $user->user_id)
 				->get()
 		]);
 	}
@@ -165,7 +169,28 @@ class InventoryReportController extends Controller
 	 */
 	public function destroy(InventoryReport $inventoryReport)
 	{
+		$inventoryReport->delete();
+		
+		return redirect()->back()
+		->with("message", "Report deleted successfully!")
+		->with("type", "success");
+	}
 
+
+	public function show(InventoryReport $inventoryReport) {
+		$inventoryReport->load([
+			"comments",
+			"inventories",
+			"submitted" => fn($q) =>
+				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+			"reviewer" => fn($q) =>
+				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+			"approval" => fn($q) =>
+				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+		]);
+		return Inertia::render("Dashboard/Management/PPE/ReportDetail/index", [
+			"report" => $inventoryReport
+		]);
 	}
 
 
@@ -187,22 +212,103 @@ class InventoryReportController extends Controller
 	}
 
 
-	public function show(InventoryReport $report) {
-		$report->load([
-			"comments",
-			"inventories",
-			"submitted" => fn($q) =>
-				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
-			"reviewer" => fn($q) =>
-				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
-			"approval" => fn($q) =>
-				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+
+	public function postComment(Request $request, InventoryReport $inventoryReport) {
+		$request->validate([
+			"comment" => ["string", "max:255", "required"],
+			"pages" => ["string", "required"],
+			"comment_code" => ["integer", "max:2", "required"],
+			"status" => ["string", "required"]
 		]);
-		return Inertia::render("Dashboard/Management/PPE/ReportDetail/index", [
-			"report" => $report
+
+		$inventoryReport->comments()->create([
+			"inventory_report_id" => $inventoryReport->id,
+			"reviewer_id" => auth()->user()->emp_id,
+			"comment" => $request->comment,
+			"comment_page_section" => $request->pages,
+			"comment_code" => $request->comment_code,
+			"status" => $request->status
 		]);
+
+		return redirect()->back()
+		->with("message", "Comment posted successfully!")
+		->with("type", "success");
 	}
 
+	public function destroyComment(InventoryReportComments $reportComment) {
+		if($reportComment->reviewer_id !== auth()->user()->emp_id) {
+			abort(403);
+		}
+
+		$reportComment->delete();
+
+		return redirect()->back()
+		->with("message", "Comment deleted successfully!")
+		->with("type", "success");
+	}
+
+	public function replyComment(Request $request, InventoryReportComments $reportComment) {
+		$request->validate([
+			"reply" => ["string", "max:255", "required"],
+			"reply_code" => ["string", "max:2", "required"],
+		]);
+		
+		$reportComment->reply = $request->reply;
+		$reportComment->reply_code = $request->reply_code;
+		$reportComment->save();
+
+		return redirect()->back()
+		->with("message", "Reply posted successfully!")
+		->with("type", "success");
+	}
+
+
+	public function changeCommentStatus(Request $request, InventoryReportComments $reportComment) {
+		$request->validate([
+			"status" => ["string", "required"],
+		]);
+		$reportComment->status = $request->status;
+		$reportComment->save();
+
+		return redirect()->back()
+		->with("message", "Comment ". $request->status ." successfully!")
+		->with("type", "success");
+	}
+
+
+	public function approveReview(Request $request, InventoryReport $inventoryReport) {
+		$request->validate([
+			"status" => ["string", "required"],
+			"type" => ["string", "required"],
+		]);
+
+		switch ($request->type) {
+			case 'review':
+				if($request->remarks) {
+					$inventoryReport->reviewer_remarks = $request->remarks;
+				}
+				$inventoryReport->reviewer_status = $request->status;
+				if($request->status !== "A" || $request->status !== "D") {
+					$inventoryReport->status = "for_revision";
+				}else {
+					$inventoryReport->status = "for_approval";
+				}
+				break;
+			case 'approval':
+				if($request->remarks) {
+					$inventoryReport->approval_remarks = $request->remarks;
+				}
+				$inventoryReport->approval_status = $request->status;
+				$inventoryReport->status = "closed";
+				break;
+		}
+
+		$inventoryReport->save();
+
+		return redirect()->back()
+		->with("message", "Status updated successfully!")
+		->with("type", "success");
+	}
 
 
 }

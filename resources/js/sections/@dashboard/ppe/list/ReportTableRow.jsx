@@ -92,6 +92,7 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 				statusColor = "info";
 				break;
 			case "approved":
+			case "closed":
 				statusColor = "success";
 				break;
 			case "fail":
@@ -152,7 +153,6 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem
-					disabled={row.type !== "submitted"}
 					component={Link}
 					href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
 					preserveScroll

@@ -35,6 +35,7 @@ const PpeReportDetailToolbar = ({ inventoryReport }) => {
 				statusColor = "info";
 				break;
 			case "approved":
+			case "closed":
 				statusColor = "success";
 				break;
 			case "fail":

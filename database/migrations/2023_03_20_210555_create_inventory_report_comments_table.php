@@ -18,8 +18,8 @@ return new class extends Migration
 						$table->foreignId("inventory_report_id")->index()->constrained("inventory_reports")->onDelete("cascade");
 						$table->unsignedBigInteger("reviewer_id");
 						$table->string("comment")->nullable();
-						$table->string("comment_page_section")->nullable();
-						$table->string("comment_code")->nullable();
+						$table->text("comment_page_section")->nullable();
+						$table->tinyInteger("comment_code")->nullable();
 						$table->string("reply")->nullable();
 						$table->string("reply_code")->nullable();
 						$table->string("status")->default("open");

@@ -191,9 +191,13 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/report/new', [InventoryReportController::class, "store"])->name('report.store');
 		Route::delete('/report/delete', [InventoryReportController::class, "destroy"])->name('report.destroy');
 
-		Route::get('/report/{inventoryReport::uuid}', [InventoryReportController::class, "show"])->name('report.show');
-		Route::get('/report/{inventoryReport::uuid}/review', [InventoryReportController::class, "review"])->name('report.review');
-		Route::get('/report/{inventoryReport::uuid}/approve', [InventoryReportController::class, "approve"])->name('report.approve');
+		Route::post('/report/comment/{inventoryReport}', [InventoryReportController::class, "postComment"])->name('report.comment');
+		Route::delete('/report/comment/{reportComment}', [InventoryReportController::class, "destroyComment"])->name('report.destroyComment');
+		Route::put('/report/comment/{reportComment}', [InventoryReportController::class, "changeCommentStatus"])->name('report.changeCommentStatus');
+		Route::post('/report/reply/{reportComment}', [InventoryReportController::class, "replyComment"])->name('report.reply');
+		Route::post('/report/review/{inventoryReport}', [InventoryReportController::class, "review"])->name('report.review');
+		Route::post('/report/approve-review/{inventoryReport}', [InventoryReportController::class, "approveReview"])->name('report.approveReview');
+		Route::get('/report/{inventoryReport}', [InventoryReportController::class, "show"])->name('report.show');
 
 		// Products
 		Route::post('/product/add-remove-stock/{inventory}', [InventoryController::class, "add_remove_stock"]);

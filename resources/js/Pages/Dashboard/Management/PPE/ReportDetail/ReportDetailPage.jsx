@@ -1,44 +1,29 @@
 import { useState } from 'react';
 const { Box, Button, Divider, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } = await import('@mui/material');
-import { getDocumentReviewStatus, getDocumentStatus } from '@/utils/formatStatuses';
+import { getDocumentReviewStatus } from '@/utils/formatStatuses';
 // Components
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar/Scrollbar';
 import Label from '@/Components/label/Label';
 import { Inertia } from '@inertiajs/inertia';
-import { PATH_DASHBOARD } from '@/routes/paths';
 import { useSwal } from '@/hooks/useSwal';
-import { sentenceCase } from 'change-case';
 import { usePage } from '@inertiajs/inertia-react';
-import { ReportNewCommentDialog } from '@/sections/@dashboard/ppe/portal/ReportNewCommentDialog';
+import ReportNewCommentDialog from '@/sections/@dashboard/ppe/portal/ReportNewCommentDialog';
+import ReportComments from '@/sections/@dashboard/ppe/details/ReportComments';
+import ReportActionDialog from '@/sections/@dashboard/ppe/portal/ReportActionDialog';
 
 const ReportDetailPage = ({ inventoryReport }) => {
 	const { auth: { user } } = usePage().props;
 	const { load, stop } = useSwal();
-	const [customDocType, setCustomDocType] = useState(null);
+
+	const [openReviewAction, setOpenReviewAction] = useState(false);
+	const [openApproveAction, setOpenApproveAction] = useState(false);
 	const [openComment, setOpenComment] = useState(false);
-	const [openAction, setOpenAction] = useState(false);
-	const [selectedStatus, setSelectedStatus] = useState("");
-	const [actionResponseId, setActionResponseId] = useState(null);
 
-
-	const handleAction = ({ status, responseId }) => {
-		setSelectedStatus(status);
-		if (responseId) {
-			setActionResponseId(responseId);
-		}
-		setOpenAction(true);
-	}
-
-	const handleCloseAction = () => {
-		setOpenAction(false);
-		setActionResponseId(null);
-		setSelectedStatus("");
-	}
+	const [approveStatus, setApproveStatus] = useState(null);
 
 	const handleDeleteComment = (commentId) => {
-		const commentLength = document.comments.filter(com => com.reviewer_id === user?.employee?.employee_id).length;
-		Inertia.post(PATH_DASHBOARD.fileManager.deleteComment(commentId), { commentLength }, {
+		Inertia.delete(route("ppe.management.report.destroyComment", commentId), {
 			preserveScroll: true,
 			onStart () {
 				load("Deleting comment", "please wait...");
@@ -49,12 +34,38 @@ const ReportDetailPage = ({ inventoryReport }) => {
 		});
 	}
 
+	const handleOpenReviewAction = () => {
+		setOpenReviewAction(true);
+	}
+
+	const handleCloseReviewAction = () => {
+		setOpenReviewAction(false);
+	}
+
+
+	const handleOpenApproveAction = () => {
+		setOpenApproveAction(true);
+	}
+
+	const handleCloseApproveAction = () => {
+		setOpenApproveAction(false);
+		setApproveStatus(null);
+	}
+
+
+
+	const isAllCommentsClosed = inventoryReport.comments.every(com => com.status === "closed");
+
 	const reviewerStatusCode = inventoryReport.reviewer_status || "";
 	const reviewerStatus = getDocumentReviewStatus(inventoryReport.reviewer_status);
-	const canReviewStatus = inventoryReport.status === "for_review" && inventoryReport.approval_id === user?.emp_id ? (
-		inventoryReport.comments.length === 0 ? true : !inventoryReport.comments.some(com => com.status === "open")
+	const isCreator = inventoryReport.submitted_id === user?.emp_id;
+	const isReviewer = inventoryReport.reviewer_id === user?.emp_id;
+	const isApproval = inventoryReport.approval_id === user?.emp_id;
+
+	const canReviewStatus = (inventoryReport.status === "for_review" && inventoryReport.status !== "closed") && isReviewer ? (
+		inventoryReport.comments.length === 0 ? true : isAllCommentsClosed
 	) : false;
-	const canApprove = inventoryReport.status !== "for_review" && inventoryReport.approval_id === user?.emp_id;
+	const canApprove = (inventoryReport.status !== "for_review" && inventoryReport.status !== "closed") && isApproval;
 	return (
 		<>
 			<Stack>
@@ -62,7 +73,7 @@ const ReportDetailPage = ({ inventoryReport }) => {
 					<Typography variant="h6" sx={{ color: 'text.disabled' }}>
 						Reviewer's comments
 					</Typography>
-					{inventoryReport.reviewer_id === user?.emp_id && (
+					{isReviewer && inventoryReport.status !== "closed" && (
 						<Button
 							variant="text"
 							startIcon={<Iconify icon="eva:plus-fill" />}
@@ -133,18 +144,16 @@ const ReportDetailPage = ({ inventoryReport }) => {
 							<TableBody>
 								{inventoryReport.comments.map((row, index) => {
 									return (
-										<h1>wew</h1>
-										// <DocumentComments
-										// 	key={row.response_id}
-										// 	row={row}
-										// 	index={index}
-										// 	reviewer={reviewer}
-										// 	commentStatus={commentStatus}
-										// 	docType={typeof docType === "string" ? docType : "review"}
-										// 	onDelete={() => handleDeleteComment(row.response_id)}
-										// 	onAction={handleAction}
-										// 	user={user}
-										// />
+										<ReportComments
+											key={row.id}
+											row={row}
+											index={index}
+											reviewer={inventoryReport.reviewer}
+											onDelete={() => handleDeleteComment(row.id)}
+											isCreator={isCreator}
+											isReviewer={isReviewer}
+											isClosed={inventoryReport.status === 'closed'}
+										/>
 									)
 								})}
 							</TableBody>
@@ -152,67 +161,49 @@ const ReportDetailPage = ({ inventoryReport }) => {
 					</Scrollbar>
 				</TableContainer>
 				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
-				<Typography variant="h6" sx={{ color: 'text.disabled' }}>
-					Document Review Status Code
-				</Typography>
+				<Stack direction="row" alignItems="center" justifyContent="space-between">
+					<Typography variant="h6" sx={{ color: 'text.disabled' }}>
+						Review Status Code
+					</Typography>
+					{isReviewer && inventoryReport.status !== "closed" && (
+						<Button
+							variant="text"
+							startIcon={<Iconify icon="material-symbols:check" />}
+							onClick={handleOpenReviewAction}
+							disabled={!canReviewStatus}
+						>
+							Finish Review
+						</Button>
+					)}
+				</Stack>
 				<Typography variant="caption" sx={{ color: 'text.disabled' }}>
-					Note: you can only choose status code when all of your comments as a reviewer is closed.
+					Note: you can only review when all of your comments as a reviewer is closed.
 				</Typography>
 				<Box display="grid" gridTemplateColumns="repeat(3, 1fr)" border={1} sx={{ borderColor: "text.disabled", mt: 2 }}>
 					<ReviewStatus
-						onClick={() => {
-							if (!canReviewStatus) return;
-							handleAction({ status: "A" });
-						}}
 						borderRight={1}
 						borderBottom={1}
-						canReviewStatus={canReviewStatus}
-						isSelected={(reviewerStatusCode || "").toLowerCase() === "a"}
+						isSelected={((reviewerStatusCode || "").toLowerCase() === "a" && isReviewer)}
 					>A.  Approved</ReviewStatus>
 					<ReviewStatus
-						onClick={() => {
-							if (!canReviewStatus) return;
-							handleAction({ status: "B" });
-						}}
 						borderRight={1}
 						borderBottom={1}
-						canReviewStatus={canReviewStatus}
-						isSelected={(reviewerStatusCode || "").toLowerCase() === "b"}
+						isSelected={((reviewerStatusCode || "").toLowerCase() === "b" && isReviewer)}
 					>B.  SONO</ReviewStatus>
 					<ReviewStatus
-						onClick={() => {
-							if (!canReviewStatus) return;
-							handleAction({ status: "C" });
-						}}
 						borderBottom={1}
-						canReviewStatus={canReviewStatus}
-						isSelected={(reviewerStatusCode || "").toLowerCase() === "c"}
+						isSelected={((reviewerStatusCode || "").toLowerCase() === "c" && isReviewer)}
 					>C.  Fail / Not approved</ReviewStatus>
 					<ReviewStatus
-						onClick={() => {
-							if (!canReviewStatus) return;
-							handleAction({ status: "D" });
-						}}
 						borderRight={1}
-						canReviewStatus={canReviewStatus}
-						isSelected={(reviewerStatusCode || "").toLowerCase() === "d"}
+						isSelected={((reviewerStatusCode || "").toLowerCase() === "d" && isReviewer)}
 					>D.  Approved with comments</ReviewStatus>
 					<ReviewStatus
-						onClick={() => {
-							if (!canReviewStatus) return;
-							handleAction({ status: "E" });
-						}}
 						borderRight={1}
-						canReviewStatus={canReviewStatus}
-						isSelected={(reviewerStatusCode || "").toLowerCase() === "e"}
+						isSelected={((reviewerStatusCode || "").toLowerCase() === "e" && isReviewer)}
 					>E.  NOWC: No Objection with comments</ReviewStatus>
 					<ReviewStatus
-						onClick={() => {
-							if (!canReviewStatus) return;
-							handleAction({ status: "F" });
-						}}
-						canReviewStatus={canReviewStatus}
-						isSelected={(reviewerStatusCode || "").toLowerCase() === "f"}
+						isSelected={((reviewerStatusCode || "").toLowerCase() === "f" && isReviewer)}
 					>F.  Responded / Reviewed / Actioned</ReviewStatus>
 				</Box>
 				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
@@ -328,14 +319,14 @@ const ReportDetailPage = ({ inventoryReport }) => {
 						<Grid container spacing={3}>
 							<Grid item md={6} xs={12}>
 								<Button fullWidth size="large" variant="contained" color="success" onClick={() => {
-									setCustomDocType("approve");
-									handleAction({ status: "A" });
+									setApproveStatus("approved");
+									handleOpenApproveAction();
 								}}>Approved</Button>
 							</Grid>
 							<Grid item md={6} xs={12}>
 								<Button fullWidth size="large" variant="contained" color="error" onClick={() => {
-									setCustomDocType("approve");
-									handleAction({ status: "C" });
+									setApproveStatus("fail");
+									handleOpenApproveAction();
 								}}>Fail/Not approved</Button>
 							</Grid>
 						</Grid>
@@ -348,34 +339,36 @@ const ReportDetailPage = ({ inventoryReport }) => {
 				onClose={() => { setOpenComment(false); }}
 				inventoryReportId={inventoryReport.id}
 			/>
-			{/* <DocumentApproveFailDialog
-				open={openAction}
-				onClose={handleCloseAction}
-				selectedStatus={selectedStatus}
-				actionResponseId={actionResponseId}
-				documentId={document.document_id}
-				docType={customDocType}
-			/> */}
+
+			<ReportActionDialog
+				open={openReviewAction}
+				onClose={handleCloseReviewAction}
+				inventoryReportId={inventoryReport.id}
+				status="A"
+			/>
+
+			<ReportActionDialog
+				open={openApproveAction}
+				onClose={handleCloseApproveAction}
+				inventoryReportId={inventoryReport.id}
+				status={approveStatus}
+				submitText={approveStatus === "approved" ? "Approved" : "Fail/Not Approved"}
+				title={approveStatus === "approved" ? "Approved" : "Fail/Not Approved"}
+				type="approval"
+			/>
 		</>
 	)
 }
 
-function ReviewStatus ({ canReviewStatus, onClick, isSelected = false, children, ...others }) {
+function ReviewStatus ({ isSelected = false, children, ...others }) {
 	const isSelectedStyle = isSelected ? {
 		color: "primary.main",
 		fontWeight: "600",
-		cursor: canReviewStatus ? "pointer" : "default",
 	} : {
-		color: "text.disabled",
-		"&:hover": {
-			color: canReviewStatus ? "text.primary" : "text.disabled",
-			cursor: canReviewStatus ? "pointer" : "default",
-			backgroundColor: "rgba(0, 0, 0, 0.04)"
-		}
+		color: "text.disabled"
 	};
 	return (
 		<Box
-			onClick={onClick}
 			sx={{
 				p: 1,
 				...isSelectedStyle,
