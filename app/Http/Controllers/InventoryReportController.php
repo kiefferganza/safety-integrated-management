@@ -288,11 +288,12 @@ class InventoryReportController extends Controller
 					$inventoryReport->reviewer_remarks = $request->remarks;
 				}
 				$inventoryReport->reviewer_status = $request->status;
-				if($request->status === "A" || $request->status === "D") {
-					$inventoryReport->status = "for_approval";
-				}else {
-					$inventoryReport->status = "for_revision";
-				}
+				$inventoryReport->status = "for_approval";
+				// if($request->status === "A" || $request->status === "D") {
+				// 	$inventoryReport->status = "for_approval";
+				// }else {
+				// 	$inventoryReport->status = "for_revision";
+				// }
 				break;
 			case 'approval':
 				if($request->remarks) {
