@@ -149,14 +149,15 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				return acc;
 			}, []);
 
-			const yStart = Array.from(years).at(-1) ? new Date(Array.from(years).at(-1), 0, 1) : 0;
+			const yStart = Array.from(years).at(0) ? new Date(Array.from(years).at(0), 0, 1) : 0;
 			const yEnd = new Date();
 			// const yEnd = Array.from(years).at(-1) ? new Date(Array.from(years).at(-1), 11, 1) : 0;
+			const lastItemCurrentMonthIdx = tbt.findIndex(t => t[0] === (yEnd.getMonth() + 1).toString() && t[2] === yEnd.getFullYear().toString());
 			setStartTbtDate(yStart);
 			setTbtStartDateHandler(yStart);
 			setEndTbtDate(yEnd);
 			setEndTbtDateHandler(yEnd);
-			setFilteredTbtData(tbt.slice(-12));
+			setFilteredTbtData(tbt.slice(0, lastItemCurrentMonthIdx + 1));
 			setTbtData(tbt);
 		}
 	}, [totalTbtByYear, tbtStatistics]);
@@ -421,7 +422,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						title="SAFE MANHOURS"
-						total={Math.round(tbtAnalytic.safeManhours)}
+						total={Math.round(tbtAnalytic.totalManhours)}
 						color="success"
 						icon={'mdi:clock-time-four-outline'}
 					/>
