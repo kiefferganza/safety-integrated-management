@@ -44,6 +44,7 @@ const TABLE_HEAD = [
 
 const STATUS_OPTIONS = [
 	{ value: 'in_stock', label: 'In stock' },
+	{ value: 'need_reorder', label: 'Need Reorder' },
 	{ value: 'low_stock', label: 'Low stock' },
 	{ value: 'out_of_stock', label: 'Out of stock' },
 ];
@@ -123,6 +124,7 @@ export default function PPEListPage ({ inventory }) {
 	const TABS = [
 		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
 		{ value: 'in_stock', label: 'In Stock', color: 'success', count: getLengthByStatus('in_stock') },
+		{ value: 'need_reorder', label: 'Need Reorder', color: 'info', count: getLengthByStatus('need_reorder') },
 		{ value: 'low_stock', label: 'Low Stock', color: 'warning', count: getLengthByStatus('low_stock') },
 		{ value: 'out_of_stock', label: 'Out Of Stock', color: 'error', count: getLengthByStatus('out_of_stock') }
 	];
@@ -235,6 +237,14 @@ export default function PPEListPage ({ inventory }) {
 								percent={getPercentByStatus("in_stock")}
 								icon="bi:cart-check"
 								color={theme.palette.success.main}
+							/>
+
+							<PpeAnalytic
+								title="Need Reorder"
+								total={getLengthByStatus("need_reorder")}
+								percent={getPercentByStatus("need_reorder")}
+								icon="bi:cart3"
+								color={theme.palette.info.main}
 							/>
 
 							<PpeAnalytic
@@ -399,9 +409,10 @@ export default function PPEListPage ({ inventory }) {
 }
 
 function getStatus (qty, minQty) {
+	if (minQty > qty) return "low_stock"
+	if (qty === minQty || minQty + 10 >= qty) return "need_reorder";
 	if (qty <= 0) return "out_of_stock";
 	if (qty >= minQty) return "in_stock";
-	if (minQty >= qty) return "low_stock"
 	return "in_stock"
 }
 

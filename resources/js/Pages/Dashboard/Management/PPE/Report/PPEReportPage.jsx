@@ -56,8 +56,6 @@ const TABLE_HEAD = [
 	{ id: 'current_stock_qty', label: 'Remaining Quantity', align: 'center' },
 	{ id: 'min_qty', label: 'Reorder Level', align: 'center' },
 	{ id: 'item_price', label: 'Price', align: 'left' },
-	{ id: 'outboundMinQty', label: 'Min Order', align: 'left' },
-	{ id: 'outboundMaxQty', label: 'Max Order', align: 'left' },
 	{ id: 'status', label: 'Status', align: 'center' },
 ];
 
@@ -356,14 +354,6 @@ const PPEReportPage = ({ inventories, employees, sequence_no }) => {
 											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.current_stock_qty || 0).toLocaleString()}</TableCell>
 											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{row.min_qty}</TableCell>
 											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{fCurrencyNumberAndSymbol(row.item_price, row.item_currency)}</TableCell>
-											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">
-												<span style={{ display: "block" }}>{(row?.outboundMinQty || 0).toLocaleString()} Item</span>
-												<span style={{ display: "block" }}>{fCurrencyNumberAndSymbol((row.outboundMinQty || 0) * row.item_price, row.item_currency)}</span>
-											</TableCell>
-											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">
-												<span style={{ display: "block" }}>{(row?.outboundMaxQty || 0).toLocaleString()} Item </span>
-												<span style={{ display: "block" }}>{fCurrencyNumberAndSymbol((row.outboundMaxQty || 0) * row.item_price, row.item_currency)}</span>
-											</TableCell>
 											<TableCell align="center">
 												<Label
 													variant="soft"
@@ -434,10 +424,11 @@ const PPEReportPage = ({ inventories, employees, sequence_no }) => {
 }
 
 function getStatus (qty, minQty) {
+	if (minQty > qty) return "low_stock"
+	if (qty === minQty || minQty + 10 >= qty) return "need_reorder";
 	if (qty <= 0) return "out_of_stock";
 	if (qty >= minQty) return "in_stock";
-	if (minQty >= qty) return "low_stock"
-	return "in_stock"
+	return "in_stock";
 }
 
 function applyFilter ({ inputData, comparator, filterName, filterStatus, filterStartDate, filterEndDate }) {

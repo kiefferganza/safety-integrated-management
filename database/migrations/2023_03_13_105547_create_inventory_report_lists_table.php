@@ -25,11 +25,9 @@ return new class extends Migration
 						$table->string('currency');
 						$table->string('try');
 						$table->bigInteger('inbound_total_qty');
-						$table->bigInteger('inbound_max_qty');
-						$table->bigInteger('inbound_min_qty');
 						$table->bigInteger('outbound_total_qty');
-						$table->bigInteger('outbound_max_qty');
-						$table->bigInteger('outbound_min_qty');
+						$table->bigInteger('max_order');
+						$table->bigInteger('min_order');
 						$table->string('status');
             $table->timestamps();
         });

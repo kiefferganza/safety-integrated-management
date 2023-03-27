@@ -1,4 +1,5 @@
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Inertia } from "@inertiajs/inertia";
@@ -16,6 +17,7 @@ import FormProvider from "@/Components/hook-form/FormProvider";
 import Scrollbar from "@/Components/scrollbar/Scrollbar";
 import Image from "@/Components/image/Image";
 import Label from "@/Components/label/Label";
+import Iconify from "@/Components/iconify/Iconify";
 
 const newBudgetForecastSchema = Yup.object().shape({
 	project_code: Yup.string().required('Project Code is required'),
@@ -31,7 +33,8 @@ const newBudgetForecastSchema = Yup.object().shape({
 	submitted_date: Yup.date().nullable().required("Submitted date is required"),
 	reviewer_id: Yup.number().nullable().required("Reviewer personel is required"),
 	approval_id: Yup.number().nullable().required("Approval personel is required"),
-	remarks: Yup.string().max(255)
+	remarks: Yup.string().max(255),
+	inventories: Yup.array().min(1)
 });
 
 export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_no, ...other }) => {
@@ -51,32 +54,46 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 		onReset
 	} = useDateRangePicker(null, null);
 
+	const defaultValues = {
+		sequence_no: sequence_no || "",
+		project_code: "",
+		originator: "",
+		discipline: "",
+		document_type: "",
+		document_zone: "",
+		document_level: "",
+		budget_forcast_date: null,
+		submitted_date: null,
+		inventory_start_date: null,
+		inventory_end_date: null,
+		location: "",
+		contract_no: "",
+		conducted_by: "",
+		reviewer_id: null,
+		approval_id: null,
+		remarks: "",
+		inventories: inventories.map(inv => ({
+			...inv,
+			minOrder: inv.min_qty,
+			maxOrder: 0,
+			baseNum: 10
+		}))
+	};
+
 	const methods = useForm({
 		resolver: yupResolver(newBudgetForecastSchema),
-		defaultValues: {
-			sequence_no: sequence_no || "",
-			project_code: "",
-			originator: "",
-			discipline: "",
-			document_type: "",
-			document_zone: "",
-			document_level: "",
-			budget_forcast_date: null,
-			submitted_date: null,
-			inventory_start_date: null,
-			inventory_end_date: null,
-			location: "",
-			contract_no: "",
-			conducted_by: "",
-			reviewer_id: null,
-			approval_id: null,
-			remarks: "",
-		}
+		defaultValues
 	});
 
-	const { setValue, watch, handleSubmit, reset, formState: { errors } } = methods;
+	const { setValue, watch, handleSubmit, reset, formState: { errors }, control } = methods;
 
 	const values = watch();
+
+	useEffect(() => {
+		if (inventories?.length > 0) {
+			reset(defaultValues);
+		}
+	}, [inventories])
 
 	const handleChangeStartDate = (newValue) => {
 		setValue("inventory_start_date", newValue, { shouldValidate: true });
@@ -89,10 +106,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 	};
 
 	const onSubmit = (data) => {
-		Inertia.post(route("ppe.management.report.store"), {
-			...data,
-			inventories
-		}, {
+		Inertia.post(route("ppe.management.report.store"), data, {
 			preserveScroll: true,
 			onStart () {
 				handleClose();
@@ -117,6 +131,15 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 		}
 		return null;
 	}
+
+	const handleBaseNumChange = (idx, val) => {
+		setValue(`inventories.${idx}.baseNum`, val);
+	}
+
+	const handleMaxOrderChange = (idx, val) => {
+		setValue(`inventories.${idx}.maxOrder`, val);
+	}
+
 
 	const options = employees.map((option) => ({ id: option.employee_id, label: option.fullname, user_id: option.user_id }));
 	return (
@@ -310,76 +333,130 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 						Products
 					</Typography>
 
-					<Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3} sx={{ paddingX: { xs: 0, md: 2 }, width: 1 }}>
-						<TableContainer sx={{ overflow: 'unset', mb: 5 }}>
-							<Scrollbar>
-								<Table sx={{ minWidth: 800 }}>
-									<TableHead
-										sx={{
-											borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
-											'& th': { backgroundColor: 'transparent' },
-										}}
-									>
-										<TableRow>
-											<TableCell>#</TableCell>
-
-											<TableCell align="left">Product</TableCell>
-
-											<TableCell align="left">Price</TableCell>
-
-											<TableCell align="left">Status</TableCell>
-										</TableRow>
-									</TableHead>
-
-									<TableBody>
-										{inventories.map((inv, idx) => (
-											<TableRow
-												sx={{
-													borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
-												}}
-												key={inv.inventory_id}
-											>
-												<TableCell>{idx + 1}</TableCell>
-
-												<TableCell>
-													<Stack direction="row" alignItems="center" spacing={2}>
-														<Image
-															disabledEffect
-															visibleByDefault
-															alt={inv.item}
-															src={inv.img_src ? `/storage/media/photos/inventory/${inv.img_src}` : '/storage/assets/placeholder.svg'}
-															sx={{ borderRadius: 1.5, width: 48, height: 48 }}
-														/>
-														<Typography variant="subtitle2">{inv.item}</Typography>
-													</Stack>
-												</TableCell>
-
-												<TableCell align="left">
-													{fCurrencyNumberAndSymbol(inv.item_price, inv.item_currency)}
-												</TableCell>
-
-												<TableCell>
-													<Label
-														variant="soft"
-														color={
-															(inv.status === 'out_of_stock' && 'error') || (inv.status === 'low_stock' && 'warning') || 'success'
-														}
-														sx={{ textTransform: 'capitalize' }}
-													>
-														{inv.status ? sentenceCase(inv.status) : ''}
-													</Label>
-												</TableCell>
-											</TableRow>
-										))}
-									</TableBody>
-								</Table>
-							</Scrollbar>
-						</TableContainer>
-					</Stack>
+					<NewProductList
+						inventories={values.inventories}
+						handleBaseNumChange={handleBaseNumChange}
+						handleMaxOrderChange={handleMaxOrderChange}
+					/>
 
 				</FormProvider>
 			</DialogContent>
 		</Dialog>
+	)
+}
+
+
+function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChange }) {
+	// const { fields } = useFieldArray({
+	// 	control,
+	// 	name: "inventories"
+	// });
+
+	return (
+		<Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3} sx={{ paddingX: { xs: 0, md: 2 }, width: 1 }}>
+			<TableContainer sx={{ overflow: 'unset', mb: 5 }}>
+				<Scrollbar>
+					<Table sx={{ minWidth: 800 }}>
+						<TableHead
+							sx={{
+								borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
+								'& th': { backgroundColor: 'transparent' },
+							}}
+						>
+							<TableRow>
+								<TableCell>#</TableCell>
+
+								<TableCell align="left">Product</TableCell>
+
+								<TableCell align="left">Price</TableCell>
+
+								<TableCell align="left">Min Order</TableCell>
+
+								<TableCell align="left">Max Order</TableCell>
+
+								<TableCell align="left">Status</TableCell>
+							</TableRow>
+						</TableHead>
+
+						<TableBody>
+							{inventories.map((inv, idx) => (
+								<TableRow
+									sx={{
+										borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
+									}}
+									key={inv.inventory_id}
+								>
+									<TableCell>{idx + 1}</TableCell>
+
+									<TableCell>
+										<Stack direction="row" alignItems="center" spacing={2}>
+											<Image
+												disabledEffect
+												visibleByDefault
+												alt={inv.item}
+												src={inv.img_src ? `/storage/media/photos/inventory/${inv.img_src}` : '/storage/assets/placeholder.svg'}
+												sx={{ borderRadius: 1.5, width: 48, height: 48 }}
+											/>
+											<Typography variant="subtitle2">{inv.item}</Typography>
+										</Stack>
+									</TableCell>
+
+									<TableCell align="left">
+										{fCurrencyNumberAndSymbol(inv.item_price, inv.item_currency)}
+									</TableCell>
+
+									<TableCell align="left">
+										{(inv?.minOrder || 0).toLocaleString()}
+									</TableCell>
+
+									<TableCell align="left">
+										<Stack spacing={1} direction="row" alignItems="center" justifyContent="center">
+											<span>{inv.maxOrder}</span>
+											<Iconify
+												icon="ic:baseline-minus"
+												width={14}
+												sx={{ cursor: "pointer" }}
+												onClick={() => handleMaxOrderChange(idx, inv.maxOrder - inv.baseNum)}
+											/>
+											<Stack alignItems="center">
+												<Iconify
+													icon="ic:baseline-arrow-drop-up"
+													sx={{ cursor: "pointer" }}
+													onClick={() => handleBaseNumChange(idx, inv.baseNum + 1)}
+												/>
+												<span>{inv.baseNum}</span>
+												<Iconify
+													icon="ic:baseline-arrow-drop-down"
+													sx={{ cursor: "pointer" }}
+													onClick={() => handleBaseNumChange(idx, inv.baseNum - 1)}
+												/>
+											</Stack>
+											<Iconify icon="material-symbols:add"
+												width={14}
+												sx={{ cursor: "pointer" }}
+												onClick={() => handleMaxOrderChange(idx, inv.maxOrder + inv.baseNum)}
+											/>
+										</Stack>
+									</TableCell>
+
+									<TableCell>
+										<Label
+											variant="soft"
+											color={
+												(inv.status === 'out_of_stock' && 'error') || (inv.status === 'low_stock' && 'warning') || 'success'
+											}
+											sx={{ textTransform: 'capitalize' }}
+										>
+											{inv.status ? sentenceCase(inv.status) : ''}
+										</Label>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</Scrollbar>
+			</TableContainer>
+		</Stack>
 	)
 }
 

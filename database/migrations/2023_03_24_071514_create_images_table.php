@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-			Schema::dropIfExists('admin_public_images');
+			Schema::dropIfExists('images');
     }
 };

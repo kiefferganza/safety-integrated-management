@@ -60,7 +60,7 @@ export default function PpeTableToolbar ({
 		>
 			<FormControl
 				sx={{
-					width: { xs: 1, md: 240 },
+					width: { xs: 1, md: 260 },
 				}}
 			>
 				<InputLabel sx={{ '&.Mui-focused': { color: 'text.primary' } }}>Status</InputLabel>

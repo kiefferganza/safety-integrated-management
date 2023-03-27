@@ -188,20 +188,10 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 										</View>
 
 										<View style={styles.tableCell_2}>
-											<View>
-												<Text style={{ fontSize: 6 }}>{(row?.outboundMinQty || row?.outbound_min_qty || 0).toLocaleString()} Item</Text>
-											</View>
-											<View>
-												<Text style={{ fontSize: 6 }}>{row?.item_currency || row?.currency} {((row?.outboundMinQty || row?.outbound_min_qty || 0) * (row?.item_price || row?.price)).toLocaleString()}</Text>
-											</View>
+											<Text style={{ fontSize: 6 }}>{(row?.min_order || 0).toLocaleString()}</Text>
 										</View>
 										<View style={styles.tableCell_2}>
-											<View>
-												<Text style={{ fontSize: 6 }}>{(row?.outboundMaxQty || row?.outbound_max_qty || 0).toLocaleString()} Item</Text>
-											</View>
-											<View>
-												<Text style={{ fontSize: 6 }}>{row?.item_currency || row?.currency} {((row?.outboundMaxQty || row?.outbound_max_qty || 0) * (row?.item_price || row?.price)).toLocaleString()}</Text>
-											</View>
+											<Text style={{ fontSize: 6 }}>{(row?.max_order || 0).toLocaleString()}</Text>
 										</View>
 										<View style={styles.tableCell_3}>
 											<View style={[styles.badge, {

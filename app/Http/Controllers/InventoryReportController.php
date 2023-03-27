@@ -37,14 +37,10 @@ class InventoryReportController extends Controller
 		)->where("is_removed", 0)->get();
 
 		$inventories->transform(function($inventory) {
-			$bounds = InventoryBound::select(DB::raw("MAX(qty) as maxQty, MIN(qty) as minQty, SUM(qty) as totalQty, type"))->where("inventory_id", $inventory->inventory_id)->groupBy("type")->get();
+			$bounds = InventoryBound::select(DB::raw("SUM(qty) as totalQty, type"))->where("inventory_id", $inventory->inventory_id)->groupBy("type")->get();
 			foreach ($bounds as $bound) {
 				$propertyBound = $bound->type . "TotalQty";
-				$propertyMax = $bound->type . "MaxQty";
-				$propertyMin = $bound->type . "MinQty";
 				$inventory->$propertyBound = (int)$bound->totalQty;
-				$inventory->$propertyMax = $bound->maxQty;
-				$inventory->$propertyMin = $bound->minQty;
 			}
 			return $inventory;
 		});
@@ -123,11 +119,9 @@ class InventoryReportController extends Controller
 				"price" => $inventory["item_price"],
 				"currency" => $inventory["item_currency"],
 				"inbound_total_qty" => $inventory["inboundTotalQty"] ?? 0,
-				"inbound_max_qty" => $inventory["inboundMaxQty"] ?? 0,
-				"inbound_min_qty" => $inventory["inboundMinQty"] ?? 0,
 				"outbound_total_qty" => $inventory["outboundTotalQty"] ?? 0,
-				"outbound_max_qty" => $inventory["outboundMaxQty"] ?? 0,
-				"outbound_min_qty" => $inventory["outboundMinQty"] ?? 0,
+				"max_order" => $inventory["maxOrder"] ?? 0,
+				"min_order" => $inventory["minOrder"] ?? 0,
 				"status" => $inventory["status"],
 			);
 		}
