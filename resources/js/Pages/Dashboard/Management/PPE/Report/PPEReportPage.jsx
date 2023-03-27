@@ -424,10 +424,10 @@ const PPEReportPage = ({ inventories, employees, sequence_no }) => {
 }
 
 function getStatus (qty, minQty) {
+	if (qty <= 0) return "out_of_stock";
 	if (minQty > qty) return "low_stock"
 	if (qty === minQty || minQty + 10 >= qty) return "need_reorder";
-	if (qty <= 0) return "out_of_stock";
-	if (qty >= minQty) return "in_stock";
+	if (qty > minQty) return "in_stock";
 	return "in_stock";
 }
 

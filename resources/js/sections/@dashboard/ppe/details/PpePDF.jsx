@@ -28,13 +28,13 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 		}
 	}, [report]);
 
-	const overallTotal = report?.inventories ? report.inventories.reduce((acc, curr) => acc + ((curr?.outboundTotalQty || curr?.outbound_total_qty || 0) * (curr?.item_price || curr?.price)), 0) : 0;
+	const overallTotal = report?.inventories ? report.inventories.reduce((acc, curr) => acc + (curr?.max_order || 0) * (curr?.item_price || curr?.price), 0) : 0;
 
 	const forcastMonth = report.budget_forcast_date ? `${fDate(startOfMonth(new Date(report.budget_forcast_date)), 'dd')} - ${fDate(endOfMonth(new Date(report.budget_forcast_date)), 'dd MMM yyyy')}` : "_______";
 	return (
 		<Document title={title}>
 			{documents.map((doc, index) => {
-				const total = doc.reduce((acc, curr) => acc + ((curr?.outboundTotalQty || curr?.outbound_total_qty || 0) * (curr?.item_price || curr?.price)), 0);
+				const total = doc.reduce((acc, curr) => acc + (curr?.max_order || 0) * (curr?.item_price || curr?.price), 0);
 				const curr = doc.at(-1)?.item_currency || doc.at(-1)?.currency;
 				return (
 					<Page size="A4" style={styles.page} key={index}>
@@ -143,6 +143,10 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 									</View>
 
 									<View style={[styles.tableCell_2]}>
+										<Text style={styles.subtitle3}>Inventory Status</Text>
+									</View>
+
+									<View style={[styles.tableCell_2]}>
 										<Text style={styles.subtitle3}>Min Order</Text>
 									</View>
 
@@ -151,57 +155,70 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 									</View>
 
 									<View style={[styles.tableCell_3]}>
-										<Text style={styles.subtitle3}>Status</Text>
+										<Text style={styles.subtitle3}>Request Status</Text>
 									</View>
 								</View>
 							</View>
 
 							<View style={styles.tableBody}>
-								{doc?.map((row, idx) => (
-									<View style={styles.tableRow} key={idx}>
-										<View style={styles.tableCell_1}>
-											<Text style={{ fontSize: 6, paddingLeft: 8 }}>{(idx + 1) + (index * PER_PAGE)}</Text>
-										</View>
+								{doc?.map((row, idx) => {
+									const requestStatus = getRequestStatus((row?.max_order || 0), (row?.min_qty || row?.level || 0));
+									console.log(requestStatus)
+									return (
+										<View style={styles.tableRow} key={idx}>
+											<View style={styles.tableCell_1}>
+												<Text style={{ fontSize: 6, paddingLeft: 8 }}>{(idx + 1) + (index * PER_PAGE)}</Text>
+											</View>
 
-										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6, textTransform: 'capitalize', marginLeft: 8 }}>{row.item}</Text>
-										</View>
+											<View style={styles.tableCell_2}>
+												<Text style={{ fontSize: 6, textTransform: 'capitalize', marginLeft: 8 }}>{row.item}</Text>
+											</View>
 
-										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6, marginLeft: 16 }}>{(row?.inboundTotalQty || row?.inbound_total_qty || 0).toLocaleString()}</Text>
-										</View>
+											<View style={styles.tableCell_2}>
+												<Text style={{ fontSize: 6, marginLeft: 16 }}>{(row?.inboundTotalQty || row?.inbound_total_qty || 0).toLocaleString()}</Text>
+											</View>
 
-										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6 }}>{(row?.outboundTotalQty || row?.outbound_total_qty || 0).toLocaleString()}</Text>
-										</View>
+											<View style={styles.tableCell_2}>
+												<Text style={{ fontSize: 6 }}>{(row?.outboundTotalQty || row?.outbound_total_qty || 0).toLocaleString()}</Text>
+											</View>
 
-										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6 }}>{(row?.current_stock_qty || row?.qty || 0).toLocaleString()}</Text>
-										</View>
+											<View style={styles.tableCell_2}>
+												<Text style={{ fontSize: 6 }}>{(row?.current_stock_qty || row?.qty || 0).toLocaleString()}</Text>
+											</View>
 
-										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6 }}>{(row?.min_qty || row?.level || 0).toLocaleString()}</Text>
-										</View>
+											<View style={styles.tableCell_2}>
+												<Text style={{ fontSize: 6 }}>{(row?.min_qty || row?.level || 0).toLocaleString()}</Text>
+											</View>
 
-										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6 }}>{row?.item_currency || row?.currency} {(row?.item_price || row?.price || 0).toLocaleString()}</Text>
-										</View>
+											<View style={styles.tableCell_2}>
+												<Text style={{ fontSize: 6 }}>{row?.item_currency || row?.currency} {(row?.item_price || row?.price || 0).toLocaleString()}</Text>
+											</View>
 
-										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6 }}>{(row?.min_order || 0).toLocaleString()}</Text>
-										</View>
-										<View style={styles.tableCell_2}>
-											<Text style={{ fontSize: 6 }}>{(row?.max_order || 0).toLocaleString()}</Text>
-										</View>
-										<View style={styles.tableCell_3}>
-											<View style={[styles.badge, {
-												backgroundColor: (row.status === 'out_of_stock' && theme.palette.error.light) || (row.status === 'low_stock' && theme.palette.warning.light) || theme.palette.success.light
-											}]}>
-												<Text style={[styles.textDefault, { color: "#fff", textAlign: "center", fontSize: 6, lineHeight: 0, paddingRight: 1, paddingLeft: 1 }]}>{sentenceCase(row.status)}</Text>
+											<View style={styles.tableCell_2}>
+												<View style={[styles.badge, {
+													backgroundColor: (row.status === 'out_of_stock' && theme.palette.error.light) || (row.status === 'low_stock' && theme.palette.warning.light) || (row.status === 'need_reorder' && theme.palette.info.main) || theme.palette.success.light,
+													width: '80%'
+												}]}>
+													<Text style={[styles.textDefault, { color: "#fff", textAlign: "center", fontSize: 6, lineHeight: 0, paddingRight: 1, paddingLeft: 1 }]}>{sentenceCase(row.status)}</Text>
+												</View>
+											</View>
+
+											<View style={styles.tableCell_2}>
+												<Text style={{ fontSize: 6 }}>{(row?.min_order || 0).toLocaleString()}</Text>
+											</View>
+											<View style={styles.tableCell_2}>
+												<Text style={{ fontSize: 6 }}>{(row?.max_order || 0).toLocaleString()}</Text>
+											</View>
+											<View style={styles.tableCell_3}>
+												<View style={[styles.badge, {
+													backgroundColor: (requestStatus === 'out_of_stock' && theme.palette.error.light) || (requestStatus === 'low_stock' && theme.palette.warning.light) || (requestStatus === 'need_reorder' && theme.palette.info.main) || theme.palette.success.light
+												}]}>
+													<Text style={[styles.textDefault, { color: "#fff", textAlign: "center", fontSize: 6, lineHeight: 0, paddingRight: 1, paddingLeft: 1 }]}>{sentenceCase(requestStatus)}</Text>
+												</View>
 											</View>
 										</View>
-									</View>
-								))}
+									)
+								})}
 								{doc.length < PER_PAGE && (
 									Array.from(Array(PER_PAGE - doc.length).keys()).map((col, idx) => (
 										<View style={styles.tableRow} key={col}>
@@ -323,4 +340,13 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 			}
 		</Document >
 	);
+}
+
+
+function getRequestStatus (qty, minQty) {
+	if (qty <= 0) return "out_of_stock";
+	if (qty === minQty || minQty + 10 >= qty) return "need_reorder";
+	if (minQty > qty) return "low_stock"
+	if (qty > minQty) return "in_stock";
+	return "in_stock";
 }
