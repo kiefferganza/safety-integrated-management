@@ -6,6 +6,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FilePageController;
+use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionReportController;
 use App\Http\Controllers\InventoryController;
@@ -84,7 +85,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		// Route::post('/user/{user_id}/follow', [UsersController::class, 'followUser']);
 		Route::put('/update-socials', [UsersController::class, 'update_socials'])->name('update_socials');
 		Route::get('/profile', [UsersController::class, 'profile'])->name('profile');
-		Route::get('/settings', fn () => Inertia::render("Dashboard/Management/User/Account/index"))->name('settings');
+		Route::get('/settings', [UsersController::class, 'settings'])->name('settings');
 		Route::get('/profile/{user}', [UsersController::class, "show"])->name('show');
 
 		// CRUD
@@ -105,6 +106,12 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::post('/new', [UsersController::class, 'store'])->name('store');
 		});
 	});
+
+
+	Route::prefix('image')->as('image.')->group(function() {
+		Route::post('/new/slider', [ImagesController::class, "storeSlider"])->name("storeSlider");
+	});
+
 
 	/**
 	 * Management - Training

@@ -15,11 +15,12 @@ import {
 	AccountSocialLinks,
 	AccountNotifications,
 	AccountChangePassword,
+	AccountPublicImages
 } from '@/sections/@dashboard/user/account';
 
 // ----------------------------------------------------------------------
 
-export default function UserAccountPage ({ user }) {
+export default function UserAccountPage ({ user, images }) {
 	const { themeStretch } = useSettingsContext();
 
 	const [currentTab, setCurrentTab] = useState('general');
@@ -57,6 +58,12 @@ export default function UserAccountPage ({ user }) {
 			label: 'Change password',
 			icon: <Iconify icon="ic:round-vpn-key" />,
 			component: <AccountChangePassword />,
+		},
+		{
+			value: 'images',
+			label: 'Images',
+			icon: <Iconify icon="material-symbols:image" />,
+			component: <AccountPublicImages user={user} images={images} />,
 		},
 	];
 

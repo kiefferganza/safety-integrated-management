@@ -20,9 +20,9 @@ const {
 	AnalyticsTable
 } = await import('@/sections/@dashboard/general/analytics');
 const { AppWelcome } = await import('@/sections/@dashboard/general/app');
-const { EcommerceNewProducts } = await import('@/sections/@dashboard/general/e-commerce');
 const { WelcomeIllustration } = await import('@/assets/illustrations/WelcomeIllustration');
 import Iconify from '@/Components/iconify';
+import HseSlider from '@/sections/@dashboard/general/hse-dashboard/hseSlider';
 const {
 	FileGeneralDataActivity,
 	FileGeneralStorageOverview
@@ -92,7 +92,7 @@ const MONTH_NAMES = {
 }
 
 
-export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, trainings, tbtStatistics }) {
+export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, trainings, tbtStatistics, sliderImages = [] }) {
 	const [tbtData, setTbtData] = useState([]);
 	const [filteredTbtData, setFilteredTbtData] = useState([]);
 	const [startTbtDate, setStartTbtDate] = useState(null);
@@ -321,7 +321,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				</Grid>
 
 				<Grid item xs={12} md={4}>
-					<EcommerceNewProducts list={COVER_IMAGES} />
+					<HseSlider list={sliderImages} />
 				</Grid>
 
 				<Grid item md={12}>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Models\Employee;
+use App\Models\Images;
 // use App\Models\Follower;
 use App\Models\SocialAccount;
 use App\Models\TrainingType;
@@ -285,6 +286,21 @@ class UsersController extends Controller
 		}
 		
 		return redirect()->back()->withErrors(["oldPassword" => "Incorrect password please try again"]);
+	}
+
+
+	public function settings() {
+		$images = Images::where("type", "slider")->get()->transform(function ($img) {
+			$image = $img->getFirstMedia("slider");
+			$img->image = [
+				"name" => $image->name,
+				"url" => $image->getFullUrl()
+			];
+			return $img;
+		});
+		return Inertia::render("Dashboard/Management/User/Account/index", [
+			"images" => $images
+		]);
 	}
 
 

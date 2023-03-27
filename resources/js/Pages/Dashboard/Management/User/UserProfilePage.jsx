@@ -14,9 +14,9 @@ import { useSettingsContext } from '@/Components/settings';
 import {
 	Profile,
 	ProfileCover,
-	ProfileFriends,
+	// ProfileFriends,
 	ProfileGallery,
-	ProfileFollowers,
+	// ProfileFollowers,
 } from '@/sections/@dashboard/user/profile';
 import { getCurrentUserName } from '@/utils/formatName';
 import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTrainings';
@@ -26,7 +26,7 @@ import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTraini
 export default function UserProfilePage ({ user, employee }) {
 	const { themeStretch } = useSettingsContext();
 
-	const [searchFriends, setSearchFriends] = useState('');
+	// const [searchFriends, setSearchFriends] = useState('');
 
 	const [currentTab, setCurrentTab] = useState('profile');
 

@@ -4,7 +4,7 @@ import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
 const UserAccountPage = lazy(() => import("./UserAccountPage"));
 
-const index = ({ auth }) => {
+const index = ({ auth, images }) => {
 
 	return (
 		<>
@@ -13,7 +13,7 @@ const index = ({ auth }) => {
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
-					<UserAccountPage user={auth?.user || {}} />
+					<UserAccountPage user={auth?.user || {}} images={images || []} />
 				</DashboardLayout>
 			</Suspense>
 		</>
