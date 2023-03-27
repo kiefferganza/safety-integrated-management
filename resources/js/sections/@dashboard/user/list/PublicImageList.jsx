@@ -1,15 +1,20 @@
 import { useState } from 'react';
+import { Inertia } from '@inertiajs/inertia';
+import { useSwal } from '@/hooks/useSwal';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Box, Card, IconButton, Typography, Stack } from '@mui/material';
+import { Box, Card, IconButton, Typography, Stack, MenuItem, Button } from '@mui/material';
 // utils
 import { bgBlur } from '@/utils/cssStyles';
 // components
 import Image from '@/Components/image';
 import Iconify from '@/Components/iconify';
+import MenuPopover from '@/Components/menu-popover';
+import ConfirmDialog from '@/Components/confirm-dialog';
 import Lightbox from '@/Components/lightbox';
 
 const PublicImageList = ({ images = [] }) => {
+	const { load, stop } = useSwal();
 	const [openLightbox, setOpenLightbox] = useState(false);
 
 	const [selectedImage, setSelectedImage] = useState(0);
@@ -25,6 +30,18 @@ const PublicImageList = ({ images = [] }) => {
 	const handleCloseLightbox = () => {
 		setOpenLightbox(false);
 	};
+
+	const handleDeleteImage = (id) => {
+		Inertia.delete(route('image.destroy', id), {
+			preserveScroll: true,
+			onStart () {
+				load("Deleting image", 'please wait...');
+			},
+			onFinish () {
+				stop();
+			}
+		});
+	}
 
 	return (
 		<>
@@ -42,7 +59,12 @@ const PublicImageList = ({ images = [] }) => {
 				}}
 			>
 				{images.map((image) => (
-					<GalleryItem key={image.id} image={image.image} onOpenLightbox={handleOpenLightbox} />
+					<GalleryItem
+						key={image.id}
+						image={image.image}
+						onOpenLightbox={handleOpenLightbox}
+						onDeleteImage={() => handleDeleteImage(image.id)}
+					/>
 				))}
 			</Box>
 
@@ -58,10 +80,29 @@ const PublicImageList = ({ images = [] }) => {
 	)
 }
 
-function GalleryItem ({ image, onOpenLightbox }) {
+function GalleryItem ({ image, onOpenLightbox, onDeleteImage }) {
 	const theme = useTheme();
-
 	const { url, name } = image;
+
+	const [openConfirm, setOpenConfirm] = useState(false);
+
+	const [openPopover, setOpenPopover] = useState(null);
+
+	const handleOpenConfirm = () => {
+		setOpenConfirm(true);
+	};
+
+	const handleCloseConfirm = () => {
+		setOpenConfirm(false);
+	};
+
+	const handleOpenPopover = (event) => {
+		setOpenPopover(event.currentTarget);
+	};
+
+	const handleClosePopover = () => {
+		setOpenPopover(null);
+	};
 
 	return (
 		<>
@@ -88,11 +129,34 @@ function GalleryItem ({ image, onOpenLightbox }) {
 						<Typography variant="subtitle1">{name}</Typography>
 					</Stack>
 
-					<IconButton color="inherit">
+					<IconButton color={openPopover ? 'primary' : 'default'} onClick={handleOpenPopover}>
 						<Iconify icon="eva:more-vertical-fill" />
 					</IconButton>
 				</Stack>
 			</Card>
+			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="top-right" sx={{ width: 140 }}>
+				<MenuItem
+					onClick={() => {
+						handleOpenConfirm();
+						handleClosePopover();
+					}}
+					sx={{ color: 'error.main' }}
+				>
+					<Iconify icon="eva:trash-2-outline" />
+					Delete
+				</MenuItem>
+			</MenuPopover>
+			<ConfirmDialog
+				open={openConfirm}
+				onClose={handleCloseConfirm}
+				title="Delete"
+				content="Are you sure want to delete?"
+				action={
+					<Button variant="contained" color="error" onClick={onDeleteImage}>
+						Delete
+					</Button>
+				}
+			/>
 		</>
 	);
 }

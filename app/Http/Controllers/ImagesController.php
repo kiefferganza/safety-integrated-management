@@ -27,4 +27,13 @@ class ImagesController extends Controller
 	}
 
 
+	public function destroy(Images $image) {
+		$image->delete();
+		
+		return redirect()->back()
+		->with("message", "Images uploaded successfully!")
+		->with("type", "success");
+	}
+
+
 }

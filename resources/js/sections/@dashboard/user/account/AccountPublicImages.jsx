@@ -12,7 +12,6 @@ import PublicImageList from '../list/PublicImageList';
 
 export default function AccountPublicImages ({ user, images }) {
 	const [currentTab, setCurrentTab] = useState('images');
-	console.log(user)
 
 	const TABS = [
 		{

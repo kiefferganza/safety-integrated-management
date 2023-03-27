@@ -110,6 +110,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 	Route::prefix('image')->as('image.')->group(function() {
 		Route::post('/new/slider', [ImagesController::class, "storeSlider"])->name("storeSlider");
+		Route::delete('/delete/{image}', [ImagesController::class, "destroy"])->name("destroy");
 	});
 
 
