@@ -22,7 +22,7 @@ const {
 const { AppWelcome } = await import('@/sections/@dashboard/general/app');
 const { WelcomeIllustration } = await import('@/assets/illustrations/WelcomeIllustration');
 import Iconify from '@/Components/iconify';
-import HseSlider from '@/sections/@dashboard/general/hse-dashboard/hseSlider';
+const { HseSlider } = await import('@/sections/@dashboard/general/hse-dashboard');
 const {
 	FileGeneralDataActivity,
 	FileGeneralStorageOverview
