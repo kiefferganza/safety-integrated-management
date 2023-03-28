@@ -197,7 +197,6 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::get('/report', [InventoryReportController::class, "index"])->name('report');
 		Route::get('/report-list', [InventoryReportController::class, "reportList"])->name('report.list');
 		Route::post('/report/new', [InventoryReportController::class, "store"])->name('report.store');
-		Route::delete('/report/delete', [InventoryReportController::class, "destroy"])->name('report.destroy');
 
 		Route::post('/report/comment/{inventoryReport}', [InventoryReportController::class, "postComment"])->name('report.comment');
 		Route::delete('/report/comment/{reportComment}', [InventoryReportController::class, "destroyComment"])->name('report.destroyComment');
