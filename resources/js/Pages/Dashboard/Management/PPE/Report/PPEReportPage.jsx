@@ -167,7 +167,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no }) => {
 	const totals = dataFiltered.reduce((acc, curr) => ({
 		totalOrder: acc.totalOrder + (curr?.outboundTotalQty || 0),
 		totalReceived: acc.totalReceived + (curr?.inboundTotalQty || 0),
-		subtotal: acc.subtotal + (curr.item_price * curr?.outboundTotalQty || 0)
+		subtotal: acc.subtotal + (curr.item_price * curr?.min_qty || 0)
 	}), {
 		totalOrder: 0,
 		totalReceived: 0,
@@ -235,6 +235,14 @@ const PPEReportPage = ({ inventories, employees, sequence_no }) => {
 								total={getLengthByStatus("in_stock")}
 								percent={getPercentByStatus("in_stock")}
 								icon="bi:cart-check"
+								color={theme.palette.info.main}
+							/>
+
+							<PpeAnalytic
+								title="Need Reorder"
+								total={getLengthByStatus("need_reorder")}
+								percent={getPercentByStatus("need_reorder")}
+								icon="bi:cart3"
 								color={theme.palette.info.main}
 							/>
 

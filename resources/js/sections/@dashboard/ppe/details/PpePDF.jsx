@@ -28,13 +28,13 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 		}
 	}, [report]);
 
-	const overallTotal = report?.inventories ? report.inventories.reduce((acc, curr) => acc + (curr?.max_order || 0) * (curr?.item_price || curr?.price), 0) : 0;
+	const overallTotal = report?.inventories ? report.inventories.reduce((acc, curr) => acc + ((curr?.max_order || 0) + (curr?.min_order)) * (curr?.item_price || curr?.price), 0) : 0;
 
 	const forcastMonth = report.budget_forcast_date ? `${fDate(startOfMonth(new Date(report.budget_forcast_date)), 'dd')} - ${fDate(endOfMonth(new Date(report.budget_forcast_date)), 'dd MMM yyyy')}` : "_______";
 	return (
 		<Document title={title}>
 			{documents.map((doc, index) => {
-				const total = doc.reduce((acc, curr) => acc + (curr?.max_order || 0) * (curr?.item_price || curr?.price), 0);
+				const total = doc.reduce((acc, curr) => acc + ((curr?.max_order || 0) + (curr?.min_order)) * (curr?.item_price || curr?.price), 0);
 				const curr = doc.at(-1)?.item_currency || doc.at(-1)?.currency;
 				return (
 					<Page size="A4" style={styles.page} key={index}>
@@ -163,7 +163,6 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 							<View style={styles.tableBody}>
 								{doc?.map((row, idx) => {
 									const requestStatus = getRequestStatus((row?.max_order || 0), (row?.min_qty || row?.level || 0));
-									console.log(requestStatus)
 									return (
 										<View style={styles.tableRow} key={idx}>
 											<View style={styles.tableCell_1}>
