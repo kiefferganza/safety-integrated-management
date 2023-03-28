@@ -7,6 +7,9 @@ import Iconify from "@/Components/iconify";
 import Findings from '@/sections/@dashboard/inspection/details/Findings';
 import { Link, usePage } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from '@/routes/paths';
+import Edit from '@/sections/@dashboard/inspection/edit/Edit';
+import Review from '@/sections/@dashboard/inspection/edit/Review';
+import Verify from '@/sections/@dashboard/inspection/edit/Verify';
 
 const InspectionDetailPage = ({ inspection }) => {
 	const { auth: { user } } = usePage().props;
@@ -43,6 +46,25 @@ const InspectionDetailPage = ({ inspection }) => {
 		}
 	}, [inspection]);
 
+	const getInspectionType = ({ employee_id, reviewer_id, verifier_id, status }) => {
+		if (employee_id === user.emp_id) {
+			return <Edit inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
+		} else if (reviewer_id === user.emp_id && (status === 1 || status === 4)) {
+			return <Review inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
+		} else if (verifier_id === user.emp_id && status === 2) {
+			return <Verify inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
+		} else if (status !== 0) {
+			return <Findings inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
+		}
+		return <Findings inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
+	}
+	const InspectionType = getInspectionType({
+		employee_id: inspection.employee_id,
+		reviewer_id: inspection.reviewer_id,
+		verifier_id: inspection.verifier_id,
+		status: inspection.status,
+	});
+
 	const TABS = [
 		{
 			value: 'details',
@@ -54,35 +76,16 @@ const InspectionDetailPage = ({ inspection }) => {
 			value: 'findings',
 			label: 'Findings',
 			icon: <Iconify icon="heroicons:document-magnifying-glass" />,
-			component: <Findings inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />
+			component: InspectionType
 		}
 	];
-
-	const getInspectionType = ({ employee_id, reviewer_id, verifier_id, status }) => {
-		if (employee_id === user.emp_id) {
-			return 'submitted';
-		} else if (reviewer_id === user.emp_id && (status === 1 || status === 4)) {
-			return 'review';
-		} else if (verifier_id === user.emp_id && status === 2) {
-			return 'verify';
-		} else if (status !== 0) {
-			return 'closeout';
-		}
-		return 'closeout';
-	}
-	const inspectionType = getInspectionType({
-		employee_id: inspection.employee_id,
-		reviewer_id: inspection.reviewer_id,
-		verifier_id: inspection.verifier_id,
-		status: inspection.status,
-	});
 
 	return (
 		<Box>
 			<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.5 }}>
 				<Tabs
 					value={currentTab}
-					onChange={(event, newValue) => setCurrentTab(newValue)}
+					onChange={(_event, newValue) => setCurrentTab(newValue)}
 					sx={{
 						width: 1,
 						bgcolor: 'background.paper'
@@ -92,17 +95,17 @@ const InspectionDetailPage = ({ inspection }) => {
 						<Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
 					))}
 				</Tabs>
-				<Stack spacing={1} direction="row" alignItems="center">
+				{/* <Stack spacing={1} direction="row" alignItems="center">
 					{inspectionType === "submitted" && (inspection.status !== 3 || inspection.status !== 2) && (
 						<Button variant="contained" component={Link} href={PATH_DASHBOARD.inspection.edit(inspection.inspection_id)}>Edit</Button>
 					)}
 					{inspectionType === "review" && (inspection.status === 1 || inspection.status === 0) && (
 						<Button variant="contained" component={Link} href={PATH_DASHBOARD.inspection.review(inspection.inspection_id)}>Review</Button>
 					)}
-					{inspectionType === "review" && inspection.status === 2 && (
+					{inspectionType === "verify" && inspection.status === 2 && (
 						<Button variant="contained" component={Link} href={PATH_DASHBOARD.inspection.verify(inspection.inspection_id)}>Verify</Button>
 					)}
-				</Stack>
+				</Stack> */}
 			</Stack>
 			{TABS.map((tab) => tab.value === currentTab && <Box key={tab.value}> {tab.component} </Box>)}
 		</Box >

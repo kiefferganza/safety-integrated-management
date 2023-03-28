@@ -29,7 +29,7 @@ class CustomPathGenerator implements BasePathGenerator
      */
     public function getPathForConversions(Media $media): string
     {
-        return md5($media->id . config('app.key')) . '/conversions/';
+        return Str::kebab(substr(strrchr($media->model_type, '\\'), 1)).'/'. md5($media->id . config('app.key')). '/conversions/';
     }
 
     /**
@@ -41,6 +41,6 @@ class CustomPathGenerator implements BasePathGenerator
      */
     public function getPathForResponsiveImages(Media $media): string
     {
-        return md5($media->id . config('app.key')) . '/responsive-images/';
+        return Str::kebab(substr(strrchr($media->model_type, '\\'), 1)).'/'. md5($media->id . config('app.key')) . '/responsive-images/';
     }
 }

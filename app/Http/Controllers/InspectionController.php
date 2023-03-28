@@ -8,7 +8,6 @@ use App\Models\InspectionReportList;
 use App\Services\InspectionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-// use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 class InspectionController extends Controller
 {
@@ -37,6 +36,8 @@ class InspectionController extends Controller
 
 	public function index()
 	{
+		// $insReport = InspectionReportList::whereHas('media')->get();
+		// dd($insReport);
 		$inspections =	Inspection::select("inspection_id","employee_id", "reviewer_id", "verifier_id","accompanied_by", "form_number", "status", "revision_no", "location", "contract_no", "inspected_by", "inspected_date","inspected_time", "avg_score", "date_issued","date_due")
 		->where("is_deleted", 0)
 		->with([
@@ -93,10 +94,10 @@ class InspectionController extends Controller
 			$before = $item->getFirstMedia("before");
 			$after = $item->getFirstMedia("after");
 			if($before) {
-				$item->photo_before = $before->getFullUrl();
+				$item->photo_before = $item->getFirstMediaUrl("before", "small");
 			}
 			if($after) {
-				$item->photo_after = $after->getFullUrl();
+				$item->photo_after = $item->getFirstMediaUrl("after", "small");
 			}
 			return $item;
 		});

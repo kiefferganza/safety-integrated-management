@@ -4,8 +4,6 @@ import Image from '@/Components/image';
 import { format } from 'date-fns';
 // form
 import { Controller, useForm, useFormContext } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
 import FormProvider from '@/Components/hook-form/FormProvider';
 import { Upload } from '@/Components/upload';
 import { LoadingButton } from '@mui/lab';
@@ -222,7 +220,7 @@ const Edit = ({ inspection }) => {
 					onClick={handleSubmit(submitReview)}
 					disabled={!isDirty}
 				>
-					Submit
+					Save
 				</LoadingButton>
 			</Stack>
 		</FormProvider>
