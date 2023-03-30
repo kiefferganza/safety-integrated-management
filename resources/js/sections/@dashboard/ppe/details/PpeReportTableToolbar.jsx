@@ -38,6 +38,7 @@ const STATUS_OPTIONS = [
 	{ value: 'in_stock', label: 'In stock' },
 	{ value: 'low_stock', label: 'Low stock' },
 	{ value: 'out_of_stock', label: 'Out of stock' },
+	{ value: 'need_reorder', label: 'Need Reorder' },
 ];
 
 
@@ -87,7 +88,6 @@ export function PpeReportTableToolbar ({
 								my: 0.5,
 								borderRadius: 0.75,
 								typography: 'body2',
-								textTransform: 'capitalize',
 								'&:first-of-type': { mt: 0 },
 								'&:last-of-type': { mb: 0 },
 							}}

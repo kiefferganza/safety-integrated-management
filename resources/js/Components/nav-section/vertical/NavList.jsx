@@ -24,7 +24,7 @@ export default function NavList ({ data, depth, hasChild }) {
 	const { auth } = usePage().props;
 	const navItemRef = useRef();
 	const { active, isExternalLink } = useActiveLink(data.path, true, hasChild, data?.childList, data.title);
-	console.log(auth)
+
 	const [open, setOpen] = useState(active);
 
 	useEffect(() => {
@@ -41,8 +41,6 @@ export default function NavList ({ data, depth, hasChild }) {
 
 	if ((data.gate && auth?.permissions) && (auth?.role !== "Admin")) {
 		return data.gate in auth.permissions;
-		// const isAllowed = auth.permissions.some(permission => permission === data.gate);
-		// if (!isAllowed) return null;
 	}
 
 	return (

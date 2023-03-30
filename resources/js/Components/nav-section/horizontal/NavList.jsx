@@ -40,8 +40,7 @@ export default function NavList ({ data, depth, hasChild }) {
 	};
 
 	if ((data.gate && auth?.permissions) && (auth?.role !== "Admin")) {
-		const isAllowed = auth.permissions.some(permission => permission === data.gate);
-		if (!isAllowed) return null;
+		return data.gate in auth.permissions;
 	}
 
 
