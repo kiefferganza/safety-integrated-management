@@ -115,7 +115,7 @@ export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow }
 					<Label
 						variant="soft"
 						color={
-							(status === 'out_of_stock' && 'error') || (status === 'low_stock' && 'warning') || 'success'
+							(status === 'out_of_stock' && 'error') || (status === 'low_stock' && 'warning') || (status === 'need_reorder' && 'info') || 'success'
 						}
 						sx={{ textTransform: 'capitalize' }}
 					>

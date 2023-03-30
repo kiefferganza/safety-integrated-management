@@ -141,7 +141,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 		setValue(`inventories.${idx}.maxOrder`, val);
 		const inventory = values.inventories[idx];
 		const newStatus = getStatus(inventory.maxOrder, inventory.min_qty);
-		if (status !== inventory.inventoryStatus) {
+		if (newStatus !== inventory.inventoryStatus) {
 			setValue(`inventories.${idx}.inventoryStatus`, newStatus);
 		}
 	}
@@ -469,7 +469,7 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 function getStatus (qty, minQty) {
 	if (qty <= 0) return "out_of_stock";
 	if (minQty > qty) return "low_stock"
-	if (qty === minQty || minQty + 10 >= qty) return "need_reorder";
+	if (qty === minQty || minQty + 10 > qty) return "need_reorder";
 	if (qty > minQty) return "in_stock";
 	return "in_stock";
 }

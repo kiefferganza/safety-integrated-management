@@ -64,7 +64,8 @@ export function getDocumentReviewStatus (status) {
 
 export function getInventoryStatus (qty, minQty) {
 	if (qty <= 0) return "out_of_stock";
-	if (qty >= minQty) return "full";
-	if (minQty >= qty) return "low_stock"
+	if (minQty > qty) return "low_stock"
+	if (qty === minQty || minQty + 10 > qty) return "need_reorder";
+	if (qty > minQty) return "in_stock";
 	return "in_stock"
 }

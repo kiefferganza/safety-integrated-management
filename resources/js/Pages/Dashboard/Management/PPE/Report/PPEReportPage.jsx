@@ -366,7 +366,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no }) => {
 												<Label
 													variant="soft"
 													color={
-														(row.status === 'out_of_stock' && 'error') || (row.status === 'low_stock' && 'warning') || 'success'
+														(row.status === 'out_of_stock' && 'error') || (row.status === 'low_stock' && 'warning') || (row.status === 'need_reorder' && 'info') || 'success'
 													}
 													sx={{ textTransform: 'capitalize' }}
 												>
@@ -434,7 +434,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no }) => {
 function getStatus (qty, minQty) {
 	if (qty <= 0) return "out_of_stock";
 	if (minQty > qty) return "low_stock"
-	if (qty === minQty || minQty + 10 >= qty) return "need_reorder";
+	if (qty === minQty || minQty + 10 > qty) return "need_reorder";
 	if (qty > minQty) return "in_stock";
 	return "in_stock";
 }
