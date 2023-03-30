@@ -16,7 +16,7 @@ NavList.propTypes = {
 };
 
 export default function NavList ({ data, depth, hasChild }) {
-	const { can } = usePage().props;
+	const { auth } = usePage().props;
 	const navRef = useRef(null);
 
 	const { active, isExternalLink } = useActiveLink(data.path);
@@ -39,9 +39,11 @@ export default function NavList ({ data, depth, hasChild }) {
 		setOpen(false);
 	};
 
-	if (data.gate && !can[data.gate]) {
-		return null;
+	if ((data.gate && auth?.permissions) && (auth?.role !== "Admin")) {
+		const isAllowed = auth.permissions.some(permission => permission === data.gate);
+		if (!isAllowed) return null;
 	}
+
 
 	return (
 		<>
