@@ -76,7 +76,8 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 			...inv,
 			minOrder: inv.min_qty,
 			maxOrder: 0,
-			baseNum: 10
+			baseNum: 10,
+			inventoryStatus: inv.status
 		}))
 	};
 
@@ -138,6 +139,11 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 
 	const handleMaxOrderChange = (idx, val) => {
 		setValue(`inventories.${idx}.maxOrder`, val);
+		const inventory = values.inventories[idx];
+		const newStatus = getStatus(inventory.maxOrder, inventory.min_qty);
+		if (status !== inventory.inventoryStatus) {
+			setValue(`inventories.${idx}.inventoryStatus`, newStatus);
+		}
 	}
 
 
@@ -443,11 +449,11 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 										<Label
 											variant="soft"
 											color={
-												(inv.status === 'out_of_stock' && 'error') || (inv.status === 'low_stock' && 'warning') || 'success'
+												(inv.inventoryStatus === 'out_of_stock' && 'error') || (inv.inventoryStatus === 'low_stock' && 'warning') || 'success'
 											}
 											sx={{ textTransform: 'capitalize' }}
 										>
-											{inv.status ? sentenceCase(inv.status) : ''}
+											{inv.inventoryStatus ? sentenceCase(inv.inventoryStatus) : ''}
 										</Label>
 									</TableCell>
 								</TableRow>
@@ -458,6 +464,14 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 			</TableContainer>
 		</Stack>
 	)
+}
+
+function getStatus (qty, minQty) {
+	if (qty <= 0) return "out_of_stock";
+	if (minQty > qty) return "low_stock"
+	if (qty === minQty || minQty + 10 >= qty) return "need_reorder";
+	if (qty > minQty) return "in_stock";
+	return "in_stock";
 }
 
 function PersonelAutocomplete ({ value, onChange, options, label, error = "", ...others }) {
