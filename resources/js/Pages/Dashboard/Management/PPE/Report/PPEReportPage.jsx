@@ -45,6 +45,7 @@ import { sentenceCase } from "change-case";
 import Image from "@/Components/image/Image";
 import Iconify from "@/Components/iconify/Iconify";
 import PpePDF from "@/sections/@dashboard/ppe/details/PpePDF";
+import { getInventoryStatus } from "@/utils/formatStatuses";
 const { NewPpeReport } = await import("@/sections/@dashboard/ppe/portal/NewPpeReport");
 const { PpeAnalytic } = await import("@/sections/@dashboard/ppe/PpeAnalytic");
 const { PpeReportTableToolbar } = await import("@/sections/@dashboard/ppe/details/PpeReportTableToolbar");
@@ -121,7 +122,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no }) => {
 		if (inventories) {
 			const data = inventories.map((inv) => ({
 				...inv,
-				status: getStatus(inv.current_stock_qty, inv.min_qty)
+				status: getInventoryStatus(inv.current_stock_qty, inv.min_qty)
 			}))
 			setTableData(data || []);
 		}
@@ -429,14 +430,6 @@ const PPEReportPage = ({ inventories, employees, sequence_no }) => {
 			/>
 		</>
 	)
-}
-
-function getStatus (qty, minQty) {
-	if (qty <= 0) return "out_of_stock";
-	if (minQty > qty) return "low_stock"
-	if (qty === minQty || minQty + 10 > qty) return "need_reorder";
-	if (qty > minQty) return "in_stock";
-	return "in_stock";
 }
 
 function applyFilter ({ inputData, comparator, filterName, filterStatus, filterStartDate, filterEndDate }) {

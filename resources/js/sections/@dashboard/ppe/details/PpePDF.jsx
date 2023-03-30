@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 import { useTheme } from '@mui/material';
 import { sentenceCase } from 'change-case';
 import { fDate } from '@/utils/formatTime';
+import { getInventoryStatus } from '@/utils/formatStatuses';
 
 // ----------------------------------------------------------------------
 const PER_PAGE = 12;
@@ -162,7 +163,7 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 
 							<View style={styles.tableBody}>
 								{doc?.map((row, idx) => {
-									const requestStatus = getRequestStatus((row?.max_order || 0), (row?.min_qty || row?.level || 0));
+									const requestStatus = getInventoryStatus((row?.max_order || 0), (row?.min_qty || row?.level || 0));
 									return (
 										<View style={styles.tableRow} key={idx}>
 											<View style={styles.tableCell_1}>
@@ -339,13 +340,4 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 			}
 		</Document >
 	);
-}
-
-
-function getRequestStatus (qty, minQty) {
-	if (qty <= 0) return "out_of_stock";
-	if (qty === minQty || minQty + 10 >= qty) return "need_reorder";
-	if (minQty > qty) return "low_stock"
-	if (qty > minQty) return "in_stock";
-	return "in_stock";
 }

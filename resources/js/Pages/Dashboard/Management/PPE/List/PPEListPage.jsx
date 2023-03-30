@@ -27,6 +27,7 @@ import ConfirmDialog from '@/Components/confirm-dialog';
 import Label from '@/Components/label';
 // sections
 import { PpeTableRow, PpeTableToolbar } from '@/sections/@dashboard/ppe/list';
+import { getInventoryStatus } from '@/utils/formatStatuses';
 const { PpeAnalytic } = await import('@/sections/@dashboard/ppe/PpeAnalytic');
 
 // ----------------------------------------------------------------------
@@ -96,7 +97,7 @@ export default function PPEListPage ({ inventory }) {
 		if (inventory?.length) {
 			setTableData(inventory.map((inv) => ({
 				...inv,
-				status: getStatus(inv.current_stock_qty, inv.min_qty)
+				status: getInventoryStatus(inv.current_stock_qty, inv.min_qty)
 			})));
 		}
 	}, [inventory]);
@@ -408,13 +409,6 @@ export default function PPEListPage ({ inventory }) {
 	);
 }
 
-function getStatus (qty, minQty) {
-	if (qty <= 0) return "out_of_stock";
-	if (minQty > qty) return "low_stock"
-	if (qty === minQty || minQty + 10 > qty) return "need_reorder";
-	if (qty > minQty) return "in_stock";
-	return "in_stock"
-}
 
 // ----------------------------------------------------------------------
 
