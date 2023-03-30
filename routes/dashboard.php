@@ -123,64 +123,89 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 */
 	Route::prefix('training')->as('training.management.')->group(function() {
 		// Lists
-		Route::get('/client', [TrainingController::class, 'index'])->name('client');
-		Route::get('/in-house', [TrainingController::class, 'in_house'])->name('in_house');
-		Route::get('/induction', [TrainingController::class, 'induction'])->name('induction');
-		Route::get('/third-party', [TrainingController::class, 'external'])->name('external');
+		Route::middleware("permission:training_show")->group(function() {
+			Route::get('/client', [TrainingController::class, 'index'])->name('client');
+			Route::get('/in-house', [TrainingController::class, 'in_house'])->name('in_house');
+			Route::get('/induction', [TrainingController::class, 'induction'])->name('induction');
+			Route::get('/third-party', [TrainingController::class, 'external'])->name('external');
+			// Show
+			Route::get('/client/{training}', [TrainingController::class, 'show_client'])->name('client.show');
+			Route::get('/induction/{training}', [TrainingController::class, 'show_induction'])->name('induction.show');
+			Route::get('/in-house/{training}', [TrainingController::class, 'show_in_house'])->name('in_house.show');
+			Route::get('/third-party/{training}', [TrainingController::class, 'show_external'])->name('third_party.show');
+		});
 
-		Route::get('/new', [TrainingController::class, 'create'])->name('create');
-		Route::post('/create', [TrainingController::class, 'store'])->name('store');
-		Route::put('/{training}', [TrainingController::class, 'update'])->name('update');
-		Route::post('/delete', [TrainingController::class, 'destroy'])->name('destroy');
-		// Show
-		Route::get('/client/{training}', [TrainingController::class, 'show_client'])->name('client.show');
-		Route::get('/induction/{training}', [TrainingController::class, 'show_induction'])->name('induction.show');
-		Route::get('/in-house/{training}', [TrainingController::class, 'show_in_house'])->name('in_house.show');
-		Route::get('/third-party/{training}', [TrainingController::class, 'show_external'])->name('third_party.show');
+		// Create
+		Route::middleware("permission:training_create")->group(function() {
+			Route::get('/new', [TrainingController::class, 'create'])->name('create');
+			Route::post('/create', [TrainingController::class, 'store'])->name('store');
+		});
+
+		Route::post('/delete', [TrainingController::class, 'destroy'])
+			->middleware("permission:training_delete")
+			->name('destroy');
+		
 		// Update
-		Route::post('/{training}/edit', [TrainingController::class, 'update']);
-		Route::get('/{training}/edit', [TrainingController::class, 'edit']);
-
+		Route::middleware("permission:training_edit")->group(function() {
+			Route::post('/{training}/edit', [TrainingController::class, 'update']);
+			Route::get('/{training}/edit', [TrainingController::class, 'edit']);
+		});
+		
 	});
 
 	/**
 	 * Management - Inspection
 	 */
 	Route::prefix('inspection')->as('inspection.management.')->group(function() {
-		// Lists
-		Route::get('/site/list', [InspectionController::class, "index"])->name('list');
 		Route::get('/site/report', [InspectionController::class, "reportList"])->name('report');
-		Route::get('/new', [InspectionController::class, "create"])->name('new');
-		Route::post('/new', [InspectionController::class, "store"])->name('store');
-		Route::post('/delete', [InspectionController::class, "delete"])->name('delete');
 		// CRUD
-		Route::get('/{inspection}', [InspectionController::class, "view"])->name('view');
-		Route::get('/{inspection}/edit', [InspectionController::class, "edit"]);
-		Route::post('/{inspection}/edit', [InspectionReportController::class, "update"]);
-		Route::get('/{inspection}/review', [InspectionController::class, "review"]);
-		Route::post('/{inspection}/review', [InspectionReportController::class, "review_update"]);
-		Route::get('/{inspection}/verify', [InspectionController::class, "verify"]);
-		Route::post('/{inspection}/verify', [InspectionReportController::class, "verify_update"]);
+		Route::middleware("permission:inspection_create")->group(function() {
+			Route::get('/new', [InspectionController::class, "create"])->name('new');
+			Route::post('/new', [InspectionController::class, "store"])->name('store');
+		});
+		Route::post('/delete', [InspectionController::class, "delete"])
+			->middleware("permission:inspection_delete")
+			->name('delete');
+		Route::middleware("permission:inspection_show")->group(function () {
+			Route::get('/site/list', [InspectionController::class, "index"])->name('list');
+			Route::get('/{inspection}', [InspectionController::class, "view"])->name('view');
+		});
+		Route::middleware("permission:inspection_edit")->group(function() {
+			Route::get('/{inspection}/edit', [InspectionController::class, "edit"]);
+			Route::post('/{inspection}/edit', [InspectionReportController::class, "update"]);
+			Route::get('/{inspection}/review', [InspectionController::class, "review"]);
+			Route::post('/{inspection}/review', [InspectionReportController::class, "review_update"]);
+			Route::get('/{inspection}/verify', [InspectionController::class, "verify"]);
+			Route::post('/{inspection}/verify', [InspectionReportController::class, "verify_update"]);
+		});
 	});
 
 	/**
 	 * Management - ToolboxTalks
 	 */
 	Route::prefix('toolbox-talks')->as('toolboxtalk.management.')->group(function() {
-		Route::get('/all', [ToolboxTalkController::class, "index"])->name('all');
-		Route::get('/civil', [ToolboxTalkController::class, "civil_list"])->name('civil');
-		Route::get('/electrical', [ToolboxTalkController::class, "electrical_list"])->name('electrical');
-		Route::get('/mechanical', [ToolboxTalkController::class, "mechanical_list"])->name('mechanical');
-		Route::get('/workshop', [ToolboxTalkController::class, "camp_list"])->name('camp');
-		Route::get('/office', [ToolboxTalkController::class, "office_list"])->name('office');
-		Route::get('/report', [ToolboxTalkController::class, "reportList"])->name('report');
 		// CRUD
-		Route::get('/{tbt}/view', [ToolboxTalkController::class, "view"]);
-		Route::get('/new', [ToolboxTalkController::class, "create"])->name('new');
-		Route::post('/new', [ToolboxTalkController::class, "store"])->name('store');
-		Route::get('/{tbt}/edit', [ToolboxTalkController::class, "edit"]);
-		Route::post('/{tbt}/edit', [ToolboxTalkController::class, "update"]);
-		Route::post('/delete', [ToolboxTalkController::class, "soft_delete"])->name('delete');
+		Route::middleware("permission:talk_toolbox_show")->group(function() {
+			Route::get('/all', [ToolboxTalkController::class, "index"])->name('all');
+			Route::get('/civil', [ToolboxTalkController::class, "civil_list"])->name('civil');
+			Route::get('/electrical', [ToolboxTalkController::class, "electrical_list"])->name('electrical');
+			Route::get('/mechanical', [ToolboxTalkController::class, "mechanical_list"])->name('mechanical');
+			Route::get('/workshop', [ToolboxTalkController::class, "camp_list"])->name('camp');
+			Route::get('/office', [ToolboxTalkController::class, "office_list"])->name('office');
+			Route::get('/{tbt}/view', [ToolboxTalkController::class, "view"]);
+		});
+		Route::middleware("permission:talk_toolbox_create")->group(function() {
+			Route::get('/new', [ToolboxTalkController::class, "create"])->name('new');
+			Route::post('/new', [ToolboxTalkController::class, "store"])->name('store');
+		});
+		Route::middleware("permission:talk_toolbox_edit")->group(function() {
+			Route::get('/{tbt}/edit', [ToolboxTalkController::class, "edit"]);
+			Route::post('/{tbt}/edit', [ToolboxTalkController::class, "update"]);
+		});
+		Route::post('/delete', [ToolboxTalkController::class, "soft_delete"])
+			->middleware("permission:talk_toolbox_delete")
+			->name('delete');
+		Route::get('/report', [ToolboxTalkController::class, "reportList"])->name('report');
 		// Statistic
 		Route::get('/statistic', [ToolboxTalkController::class, "statistic"])->name('statistic');
 		Route::post('/statistic/new', [ToolboxTalkController::class, "storeStatistic"])->name('store_statistic');
@@ -192,10 +217,28 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 * Management - PPE
 	 */
 	Route::prefix('ppe')->as('ppe.management.')->group(function() {
-		Route::get('/list', [InventoryController::class, "index"])->name('index');
-		Route::get('/new', [InventoryController::class, "create"])->name('create');
-		Route::post('/new', [InventoryController::class, "store"])->name('store');
-		Route::post('/delete', [InventoryController::class, "destroy"])->name('destroy');
+		Route::get('/list', [InventoryController::class, "index"])
+			->middleware("permission:inventory_show")
+			->name('index');
+		Route::post('/delete', [InventoryController::class, "destroy"])
+			->middleware("permission:inventory_delete")
+			->name('destroy');
+		Route::middleware("permission:inventory_create")->group(function() {
+			Route::get('/new', [InventoryController::class, "create"])->name('create');
+			Route::post('/new', [InventoryController::class, "store"])->name('store');
+		});
+
+		// Products
+		Route::get('/product/{inventory}', [InventoryController::class, "show"])
+			->middleware("permission:stock_show")
+			->name('show');
+		Route::post('/product/add-remove-stock/{inventory}', [InventoryController::class, "add_remove_stock"])
+			->middleware("permission:stock_addOrRemove");
+
+		Route::middleware("permission:inventory_edit")->group(function() {
+			Route::get('/product/{inventory}/edit', [InventoryController::class, "edit"])->name('edit');
+			Route::post('/product/{inventory}/edit', [InventoryController::class, "update"])->name('update');
+		});
 
 		// Report
 		Route::get('/report', [InventoryReportController::class, "index"])->name('report');
@@ -210,32 +253,40 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/report/approve-review/{inventoryReport}', [InventoryReportController::class, "approveReview"])->name('report.approveReview');
 		Route::get('/report/{inventoryReport}', [InventoryReportController::class, "show"])->name('report.show');
 		Route::delete('/report/{inventoryReport}', [InventoryReportController::class, "destroy"])->name('report.destroy');
-
-		// Products
-		Route::post('/product/add-remove-stock/{inventory}', [InventoryController::class, "add_remove_stock"]);
-		Route::get('/product/{inventory}', [InventoryController::class, "show"])->name('show');
-		Route::get('/product/{inventory}/edit', [InventoryController::class, "edit"])->name('edit');
-		Route::post('/product/{inventory}/edit', [InventoryController::class, "update"])->name('update');
 	});
 
 	/**
 	 * Management - Folder
 	 */
 	Route::prefix('file-manager')->group(function() {
-		Route::get('/', [FilePageController::class, "index"])->name('files.management.index');
-		Route::post('/new', [FilePageController::class, "create_folder"])->name('files.management.create_folder');
-		Route::post('/delete', [FilePageController::class, "destroy"])->name('files.management.destroy');
-		Route::post('/{folder}/edit', [FilePageController::class, "update"])->name('files.management.update');
+		Route::get('/', [FilePageController::class, "index"])
+			->middleware("permission:folder_show")
+			->name('files.management.index');
+		Route::post('/new', [FilePageController::class, "create_folder"])
+			->middleware("permission:folder_create")
+			->name('files.management.create_folder');
+		Route::post('/delete', [FilePageController::class, "destroy"])
+			->middleware("permission:folder_delete")
+			->name('files.management.destroy');
+		Route::post('/{folder}/edit', [FilePageController::class, "update"])
+			->middleware("permission:folder_edit")
+			->name('files.management.update');
 		// Folder -> Documents
-		Route::get('/view', [DocumentController::class, "view"]);
-		Route::get('/{folder}', [DocumentController::class, "index"]);
-		Route::get('/{folder}/new', [DocumentController::class, "create"]);
-		Route::post('/{folder}/new', [DocumentController::class, "store"]);
-		Route::post('/document/delete', [DocumentController::class, "destroy"])->name('filemanager.document.delete');
-		Route::post('/document/{document}/action', [DocumentController::class, "approve_or_fail_document"]);
-		Route::post('/document/{document}/add-comment', [DocumentController::class, "add_comment"]);
-		Route::post('/document/{comment}/reply-comment', [DocumentController::class, "reply_comment"]);
-		Route::post('/document/{comment}/delete-comment', [DocumentController::class, "delete_comment"]);
+		Route::get('/view', [DocumentController::class, "view"])->middleware(["permission:file_show", "permission:folder_show"]);
+		Route::get('/{folder}', [DocumentController::class, "index"])->middleware("permission:folder_show");
+		Route::middleware("permission:file_create")->group(function() {
+			Route::get('/{folder}/new', [DocumentController::class, "create"]);
+			Route::post('/{folder}/new', [DocumentController::class, "store"]);
+		});
+		Route::post('/document/delete', [DocumentController::class, "destroy"])
+			->middleware("permission:file_delete")
+			->name('filemanager.document.delete');
+		Route::middleware("permission:file_edit")->group(function() {
+			Route::post('/document/{document}/action', [DocumentController::class, "approve_or_fail_document"]);
+			Route::post('/document/{document}/add-comment', [DocumentController::class, "add_comment"]);
+			Route::post('/document/{comment}/reply-comment', [DocumentController::class, "reply_comment"]);
+			Route::post('/document/{comment}/delete-comment', [DocumentController::class, "delete_comment"]);
+		});
 	});
 
 });

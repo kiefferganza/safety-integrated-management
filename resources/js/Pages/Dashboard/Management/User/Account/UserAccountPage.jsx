@@ -20,7 +20,8 @@ import {
 
 // ----------------------------------------------------------------------
 
-export default function UserAccountPage ({ user, images }) {
+export default function UserAccountPage ({ auth, images }) {
+	const { user, permissions, role } = auth;
 	const { themeStretch } = useSettingsContext();
 
 	const [currentTab, setCurrentTab] = useState('general');
@@ -58,14 +59,19 @@ export default function UserAccountPage ({ user, images }) {
 			label: 'Change password',
 			icon: <Iconify icon="ic:round-vpn-key" />,
 			component: <AccountChangePassword />,
-		},
-		{
+		}
+	];
+
+	const allowedImageUpload = permissions.some(permission => permission === "image_upload_slider");
+
+	if (allowedImageUpload || role === "Admin") {
+		TABS.push({
 			value: 'images',
 			label: 'Images',
 			icon: <Iconify icon="material-symbols:image" />,
 			component: <AccountPublicImages user={user} images={images} />,
-		},
-	];
+		});
+	}
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'lg'}>
@@ -78,7 +84,7 @@ export default function UserAccountPage ({ user, images }) {
 				]}
 			/>
 
-			<Tabs value={currentTab} onChange={(event, newValue) => setCurrentTab(newValue)}>
+			<Tabs value={currentTab} onChange={(_event, newValue) => setCurrentTab(newValue)}>
 				{TABS.map((tab) => (
 					<Tab disabled={tab.disabled} key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
 				))}

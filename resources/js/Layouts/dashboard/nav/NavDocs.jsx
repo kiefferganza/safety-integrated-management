@@ -25,7 +25,7 @@ export default function NavDocs () {
 		>
 			<Box component="img" src="/storage/assets/illustrations/illustration_docs.svg" />
 
-			<div>
+			{/* <div>
 				<Typography gutterBottom variant="subtitle1">
 					{translate('docs.hi')}, {user?.displayName}
 				</Typography>
@@ -37,7 +37,7 @@ export default function NavDocs () {
 
 			<Button href="/" target="_blank" rel="noopener" variant="contained">
 				{translate('docs.documentation')}
-			</Button>
+			</Button> */}
 		</Stack>
 	);
 }

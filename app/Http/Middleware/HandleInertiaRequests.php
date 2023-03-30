@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
 
@@ -37,10 +37,21 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request)
     {
 			$user = Auth::user();
-			
+
 			$authData = null;
 
 			if($user) {
+				$permissions = array();
+				// foreach ($user->permissions->pluck('name') as $permission) {
+				// 	$permissionArr = explode("_",$permission);
+				// 	$permissionDetail = end($permissionArr);
+				// 	array_pop($permissionArr);
+				// 	$permissionTitle = Str::title(join(" ", $permissionArr));
+				// 	$permissions[$permissionTitle][$permission] = Str::title(Str::replace("-", " ",Str::kebab($permissionDetail)));
+				// }
+				foreach ($user->permissions->pluck('name') as $permission) {
+					$permissions[$permission] = Str::title($permission);
+				}
 				$authData = [
 					"user" => $user->load([
 						"employee" => function($query) {
@@ -50,7 +61,7 @@ class HandleInertiaRequests extends Middleware
 						},
 						"social_accounts"
 					]),
-					"permissions" => $user->permissions->pluck('name'),
+					"permissions" => $permissions,
 					"role" => $user->roles->pluck('name')[0]
 				];
 			}

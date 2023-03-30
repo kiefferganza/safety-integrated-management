@@ -52,6 +52,7 @@ class UserAuthController extends Controller
 			$request->session()->invalidate();
 			
 			$request->session()->regenerateToken();
+			cache()->flush();
       return redirect()->route('login');
     }
 }

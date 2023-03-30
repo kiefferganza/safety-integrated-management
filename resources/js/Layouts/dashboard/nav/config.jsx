@@ -62,9 +62,9 @@ const navConfig = [
 				icon: ICONS.user,
 				children: [
 					{ title: 'profile', path: PATH_DASHBOARD.user.profile },
-					{ title: 'cards', gate: "view_any_user", path: PATH_DASHBOARD.user.cards },
-					{ title: 'list', gate: "view_any_user", path: PATH_DASHBOARD.user.list },
-					{ title: 'create', gate: "view_any_user", path: PATH_DASHBOARD.user.new },
+					{ title: 'cards', gate: "user_access", path: PATH_DASHBOARD.user.cards },
+					{ title: 'list', gate: "user_access", path: PATH_DASHBOARD.user.list },
+					{ title: 'create', gate: "user_create", path: PATH_DASHBOARD.user.new },
 					{ title: 'settings', path: PATH_DASHBOARD.user.account },
 				],
 			},

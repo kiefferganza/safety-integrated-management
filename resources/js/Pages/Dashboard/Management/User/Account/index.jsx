@@ -13,7 +13,7 @@ const index = ({ auth, images }) => {
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
-					<UserAccountPage user={auth?.user || {}} images={images || []} />
+					<UserAccountPage auth={auth} images={images || []} />
 				</DashboardLayout>
 			</Suspense>
 		</>
