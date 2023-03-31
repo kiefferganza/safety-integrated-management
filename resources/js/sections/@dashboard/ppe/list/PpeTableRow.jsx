@@ -28,7 +28,7 @@ PpeTableRow.propTypes = {
 	onDeleteRow: PropTypes.func,
 };
 
-export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow, canAddRemoveStock, canView, canEdit, canDelete }) {
 	const { item, img_src, date_created, date_updated, status, item_price, item_currency, current_stock_qty, min_qty, try: unit, slug } = row;
 
 	const [openStock, setOpenStock] = useState(false);
@@ -131,42 +131,54 @@ export default function PpeTableRow ({ row, selected, onSelectRow, onDeleteRow }
 			</TableRow>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 140 }}>
-				<MenuItem onClick={handleAddStock} sx={{ color: 'success.main' }}>
-					<Iconify icon="eva:plus-fill" />
-					Add
-				</MenuItem>
-				<MenuItem onClick={handleRemoveStock} sx={{ color: 'warning.main' }}>
-					<Iconify icon="eva:minus-fill" />
-					Remove
-				</MenuItem>
-				<Divider />
-				<MenuItem
-					href={PATH_DASHBOARD.ppe.view(slug)}
-					component={Link}
-					onClick={handleClosePopover}
-				>
-					<Iconify icon="eva:eye-fill" />
-					View
-				</MenuItem>
-				<MenuItem
-					href={PATH_DASHBOARD.ppe.edit(slug)}
-					component={Link}
-					onClick={handleClosePopover}
-				>
-					<Iconify icon="eva:edit-fill" />
-					Edit
-				</MenuItem>
-				<Divider />
-				<MenuItem
-					onClick={() => {
-						handleOpenConfirm();
-						handleClosePopover();
-					}}
-					sx={{ color: 'error.main' }}
-				>
-					<Iconify icon="eva:trash-2-outline" />
-					Delete
-				</MenuItem>
+				{canAddRemoveStock && (
+					<>
+						<MenuItem onClick={handleAddStock} sx={{ color: 'success.main' }}>
+							<Iconify icon="eva:plus-fill" />
+							Add
+						</MenuItem>
+						<MenuItem onClick={handleRemoveStock} sx={{ color: 'warning.main' }}>
+							<Iconify icon="eva:minus-fill" />
+							Remove
+						</MenuItem>
+						<Divider />
+					</>
+				)}
+				{canView && (
+					<MenuItem
+						href={PATH_DASHBOARD.ppe.view(slug)}
+						component={Link}
+						onClick={handleClosePopover}
+					>
+						<Iconify icon="eva:eye-fill" />
+						View
+					</MenuItem>
+				)}
+				{canEdit && (
+					<MenuItem
+						href={PATH_DASHBOARD.ppe.edit(slug)}
+						component={Link}
+						onClick={handleClosePopover}
+					>
+						<Iconify icon="eva:edit-fill" />
+						Edit
+					</MenuItem>
+				)}
+				{canDelete && (
+					<>
+						<Divider />
+						<MenuItem
+							onClick={() => {
+								handleOpenConfirm();
+								handleClosePopover();
+							}}
+							sx={{ color: 'error.main' }}
+						>
+							<Iconify icon="eva:trash-2-outline" />
+							Delete
+						</MenuItem>
+					</>
+				)}
 			</MenuPopover>
 
 			<ConfirmDialog

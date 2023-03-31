@@ -46,12 +46,12 @@ class RolesAndPermissionService {
 					'value' => 'training_create'
 				],
 				[
-					'detail' => "Access for editing submitted training.",
+					'detail' => "Access for editing existing training.",
 					'name' => 'Edit Training',
 					'value' => 'training_edit'
 				],
 				[
-					'detail' => "Access for deleting submitted training.",
+					'detail' => "Access for deleting existing training.",
 					'name' => 'Delete Training',
 					'value' => 'training_delete'
 				],
@@ -201,7 +201,7 @@ class RolesAndPermissionService {
 				# code...
 				break;
 		}
-		return collect($permissions);
+		return $permissions;
 	}
 
 

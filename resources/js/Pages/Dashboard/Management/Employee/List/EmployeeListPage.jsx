@@ -45,6 +45,7 @@ import { getFullName } from '@/utils/formatName';
 import { useSwal } from '@/hooks/useSwal';
 import { Inertia } from '@inertiajs/inertia';
 import EmployeeAssignment from '../EmployeeAssignment';
+import usePermission from '@/hooks/usePermission';
 
 // ----------------------------------------------------------------------
 
@@ -62,7 +63,8 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeListPage ({ employees, unassignedUsers, canWrite }) {
+export default function EmployeeListPage ({ employees, unassignedUsers }) {
+	const [hasPermission] = usePermission();
 	const theme = useTheme();
 
 	const { themeStretch } = useSettingsContext();
@@ -233,6 +235,8 @@ export default function EmployeeListPage ({ employees, unassignedUsers, canWrite
 		setOpenAssign(false);
 	}
 
+	const canCreate = hasPermission("employee_create");
+	const canDelete = hasPermission("employee_delete");
 	return (
 		<>
 			<Head>
@@ -256,7 +260,7 @@ export default function EmployeeListPage ({ employees, unassignedUsers, canWrite
 						},
 					]}
 					action={
-						canWrite ? (
+						canCreate ? (
 							<Button
 								href={PATH_DASHBOARD.employee.new}
 								component={Link}
@@ -409,7 +413,7 @@ export default function EmployeeListPage ({ employees, unassignedUsers, canWrite
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
 											onAssign={handleOpenAssignment}
-											canWrite={canWrite}
+											canDelete={canDelete}
 										/>
 									))}
 

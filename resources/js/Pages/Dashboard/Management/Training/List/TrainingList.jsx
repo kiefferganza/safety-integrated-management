@@ -30,6 +30,7 @@ import TrainingAnalitic from '@/sections/@dashboard/training/TrainingAnalitic';
 import { fTimestamp } from '@/utils/formatTime';
 import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
+import usePermission from '@/hooks/usePermission';
 
 // ----------------------------------------------------------------------
 
@@ -54,6 +55,7 @@ const STATUS_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function TrainingClientList ({ trainings, module, url, type }) {
+	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const {
 		dense,
@@ -227,6 +229,9 @@ export default function TrainingClientList ({ trainings, module, url, type }) {
 		setFilterEndDate(null);
 	};
 
+	const canCreate = hasPermission("training_create");
+	const canEdit = hasPermission("training_edit");
+	const canDelete = hasPermission("training_delete");
 	return (
 		<>
 			<Head>
@@ -245,15 +250,17 @@ export default function TrainingClientList ({ trainings, module, url, type }) {
 						{ name: 'List' },
 					]}
 					action={
-						<Button
-							href={PATH_DASHBOARD.training.new(type)}
-							component={Link}
-							preserveScroll
-							variant="contained"
-							startIcon={<Iconify icon="eva:plus-fill" />}
-						>
-							New Training
-						</Button>
+						canCreate && (
+							<Button
+								href={PATH_DASHBOARD.training.new(type)}
+								component={Link}
+								preserveScroll
+								variant="contained"
+								startIcon={<Iconify icon="eva:plus-fill" />}
+							>
+								New Training
+							</Button>
+						)
 					}
 				/>
 
@@ -387,6 +394,8 @@ export default function TrainingClientList ({ trainings, module, url, type }) {
 													onSelectRow={() => onSelectRow(row.id)}
 													onDeleteRow={() => handleDeleteRow(row.id)}
 													url={url}
+													canEdit={canEdit}
+													canDelete={canDelete}
 												/>
 											) : (
 												!isNotFound && <TableSkeleton key={index} sx={{ height: denseHeight }} />

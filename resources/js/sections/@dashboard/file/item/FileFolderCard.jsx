@@ -19,6 +19,7 @@ import FileDetailsDrawer from '../portal/FileDetailsDrawer';
 import FileNewFolderDialog from '../portal/FileNewFolderDialog';
 import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
+import usePermission from '@/hooks/usePermission';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +29,7 @@ FileFolderCard.propTypes = {
 };
 
 export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
+	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -96,6 +98,8 @@ export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
 		});
 	}
 
+	const canDelete = hasPermission("folder_delete");
+	const canEdit = hasPermission("folder_edit");
 	return (
 		<>
 			<Card
@@ -167,28 +171,34 @@ export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
 					Copy Link
 				</MenuItem>
 
-				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						handleOpenEditFolder();
-					}}
-				>
-					<Iconify icon="eva:edit-fill" />
-					Edit
-				</MenuItem>
+				{canEdit && (
+					<MenuItem
+						onClick={() => {
+							handleClosePopover();
+							handleOpenEditFolder();
+						}}
+					>
+						<Iconify icon="eva:edit-fill" />
+						Edit
+					</MenuItem>
+				)}
 
-				<Divider sx={{ borderStyle: 'dashed' }} />
+				{canDelete && (
+					<>
+						<Divider sx={{ borderStyle: 'dashed' }} />
 
-				<MenuItem
-					onClick={() => {
-						handleOpenConfirm();
-						handleClosePopover();
-					}}
-					sx={{ color: 'error.main' }}
-				>
-					<Iconify icon="eva:trash-2-outline" />
-					Delete
-				</MenuItem>
+						<MenuItem
+							onClick={() => {
+								handleOpenConfirm();
+								handleClosePopover();
+							}}
+							sx={{ color: 'error.main' }}
+						>
+							<Iconify icon="eva:trash-2-outline" />
+							Delete
+						</MenuItem>
+					</>
+				)}
 			</MenuPopover>
 
 			<FileDetailsDrawer

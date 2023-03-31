@@ -47,6 +47,7 @@ import { Link } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
 import { DocumentTableRow, DocumentTableToolbar } from '@/sections/@dashboard/document/list';
 import { capitalCase } from 'change-case';
+import usePermission from '@/hooks/usePermission';
 
 
 // ----------------------------------------------------------------------
@@ -64,6 +65,7 @@ const TABLE_HEAD = [
 
 
 const DocumentListPage = ({ folder, user }) => {
+	const [hasPermission] = usePermission();
 	const theme = useTheme();
 	const { themeStretch } = useSettingsContext();
 	const { load, stop } = useSwal();
@@ -271,6 +273,8 @@ const DocumentListPage = ({ folder, user }) => {
 	const open = Boolean(anchorLegendEl);
 
 	const folderName = capitalCase(folder.folder_name);
+	const canCreate = hasPermission("file_create");
+	const canView = hasPermission("file_show");
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'} sx={{ pb: 16 }}>
@@ -289,14 +293,16 @@ const DocumentListPage = ({ folder, user }) => {
 						},
 					]}
 					action={
-						<Button
-							href={PATH_DASHBOARD.fileManager.newDocument(folder.folder_id)}
-							component={Link}
-							variant="contained"
-							startIcon={<Iconify icon="eva:plus-fill" />}
-						>
-							New Document
-						</Button>
+						canCreate && (
+							<Button
+								href={PATH_DASHBOARD.fileManager.newDocument(folder.folder_id)}
+								component={Link}
+								variant="contained"
+								startIcon={<Iconify icon="eva:plus-fill" />}
+							>
+								New Document
+							</Button>
+						)
 					}
 				/>
 
@@ -477,6 +483,7 @@ const DocumentListPage = ({ folder, user }) => {
 											folder={folder}
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
+											canView={canView}
 										/>
 									))}
 

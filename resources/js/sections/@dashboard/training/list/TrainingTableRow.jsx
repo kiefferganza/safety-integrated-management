@@ -21,7 +21,7 @@ TrainingTableRow.propTypes = {
 	url: PropTypes.string
 };
 
-export default function TrainingTableRow ({ row, selected, onSelectRow, onDeleteRow, url }) {
+export default function TrainingTableRow ({ row, selected, onSelectRow, onDeleteRow, url, canEdit, canDelete }) {
 	const { cms, title, traninees_count, training_date, date_expired, status, completed } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
@@ -98,30 +98,36 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 					<Iconify icon="eva:eye-fill" />
 					View
 				</MenuItem>
-				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						Inertia.visit(`/dashboard/training/${row.id}/edit`, {
-							preserveScroll: true
-						});
-					}}
-				>
-					<Iconify icon="eva:edit-fill" />
-					Edit
-				</MenuItem>
+				{canEdit && (
+					<MenuItem
+						onClick={() => {
+							handleClosePopover();
+							Inertia.visit(`/dashboard/training/${row.id}/edit`, {
+								preserveScroll: true
+							});
+						}}
+					>
+						<Iconify icon="eva:edit-fill" />
+						Edit
+					</MenuItem>
 
-				<Divider sx={{ borderStyle: 'dashed' }} />
+				)}
 
-				<MenuItem
-					onClick={() => {
-						handleOpenConfirm();
-						handleClosePopover();
-					}}
-					sx={{ color: 'error.main' }}
-				>
-					<Iconify icon="eva:trash-2-outline" />
-					Delete
-				</MenuItem>
+				{canDelete && (
+					<>
+						<Divider sx={{ borderStyle: 'dashed' }} />
+						<MenuItem
+							onClick={() => {
+								handleOpenConfirm();
+								handleClosePopover();
+							}}
+							sx={{ color: 'error.main' }}
+						>
+							<Iconify icon="eva:trash-2-outline" />
+							Delete
+						</MenuItem>
+					</>
+				)}
 			</MenuPopover>
 
 			<ConfirmDialog

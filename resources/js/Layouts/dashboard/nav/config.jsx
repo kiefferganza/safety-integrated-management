@@ -75,14 +75,15 @@ const navConfig = [
 				icon: ICONS.employee,
 				childList: ["position", "department", "company", "employee"],
 				children: [
-					{ title: 'list', path: PATH_DASHBOARD.employee.root },
-					{ title: 'create', path: PATH_DASHBOARD.employee.new },
+					{ title: 'create', gate: 'employee_create', path: PATH_DASHBOARD.employee.new },
+					{ title: 'profile', path: PATH_DASHBOARD.employee.profile },
+					{ title: 'list', gate: 'employee_show', path: PATH_DASHBOARD.employee.root },
 					// Position
-					{ title: 'position', path: PATH_DASHBOARD.position.root },
+					{ title: 'position', gate: 'position_show', path: PATH_DASHBOARD.position.root },
 					// Department
-					{ title: 'department', path: PATH_DASHBOARD.department.root },
+					{ title: 'department', gate: 'department_show', path: PATH_DASHBOARD.department.root },
 					// Company
-					{ title: 'company', path: PATH_DASHBOARD.company.root },
+					{ title: 'company', gate: 'company_show', path: PATH_DASHBOARD.company.root },
 				],
 			},
 
@@ -92,11 +93,11 @@ const navConfig = [
 				path: PATH_DASHBOARD.training.root,
 				icon: ICONS.training,
 				children: [
-					{ title: 'create', path: PATH_DASHBOARD.training.new(2) },
-					{ title: 'client', path: PATH_DASHBOARD.training.client },
-					{ title: 'induction', path: PATH_DASHBOARD.training.induction },
-					{ title: 'in house', path: PATH_DASHBOARD.training.inHouse },
-					{ title: 'third party', path: PATH_DASHBOARD.training.thirdParty },
+					{ title: 'create', gate: 'training_create', path: PATH_DASHBOARD.training.new(2) },
+					{ title: 'client', gate: 'training_show', path: PATH_DASHBOARD.training.client },
+					{ title: 'induction', gate: 'training_show', path: PATH_DASHBOARD.training.induction },
+					{ title: 'in house', gate: 'training_show', path: PATH_DASHBOARD.training.inHouse },
+					{ title: 'third party', gate: 'training_show', path: PATH_DASHBOARD.training.thirdParty },
 					{ title: 'metrics report', path: "/#", disabled: true },
 				]
 			},
@@ -109,13 +110,14 @@ const navConfig = [
 				children: [
 					{
 						title: "Create",
+						gate: 'inspection_create',
 						path: PATH_DASHBOARD.inspection.new
 					},
 					{
 						title: "Site",
 						path: PATH_DASHBOARD.inspection.safetyObservation,
 						children: [
-							{ title: 'list', path: PATH_DASHBOARD.inspection.list },
+							{ title: 'list', gate: 'inspection_show', path: PATH_DASHBOARD.inspection.list },
 							{ title: 'report', path: PATH_DASHBOARD.inspection.report },
 						],
 					},
@@ -130,13 +132,13 @@ const navConfig = [
 				path: PATH_DASHBOARD.toolboxTalks.root,
 				icon: ICONS.toolboxTalks,
 				children: [
-					{ title: 'create', path: PATH_DASHBOARD.toolboxTalks.new("1") },
-					{ title: 'all', path: PATH_DASHBOARD.toolboxTalks.root },
-					{ title: 'civil', path: PATH_DASHBOARD.toolboxTalks.civil },
-					{ title: 'electrical', path: PATH_DASHBOARD.toolboxTalks.electrical },
-					{ title: 'mechanical', path: PATH_DASHBOARD.toolboxTalks.mechanical },
-					{ title: 'workshop', path: PATH_DASHBOARD.toolboxTalks.camp },
-					{ title: 'office', path: PATH_DASHBOARD.toolboxTalks.office },
+					{ title: 'create', gate: 'talk_toolbox_create', path: PATH_DASHBOARD.toolboxTalks.new("1") },
+					{ title: 'all', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.root },
+					{ title: 'civil', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.civil },
+					{ title: 'electrical', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.electrical },
+					{ title: 'mechanical', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.mechanical },
+					{ title: 'workshop', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.camp },
+					{ title: 'office', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.office },
 					{ title: 'report', path: PATH_DASHBOARD.toolboxTalks.report },
 					{ title: 'statistic', path: PATH_DASHBOARD.toolboxTalks.statistic },
 				]
@@ -148,8 +150,8 @@ const navConfig = [
 				path: PATH_DASHBOARD.ppe.root,
 				icon: ICONS.cart,
 				children: [
-					{ title: 'create', path: PATH_DASHBOARD.ppe.new },
-					{ title: 'list', path: PATH_DASHBOARD.ppe.root },
+					{ title: 'create', gate: 'inventory_create', path: PATH_DASHBOARD.ppe.new },
+					{ title: 'list', gate: 'inventory_show', path: PATH_DASHBOARD.ppe.root },
 					{ title: 'report', path: PATH_DASHBOARD.ppe.report },
 					{ title: 'report list', path: PATH_DASHBOARD.ppe.reportList }
 				],
@@ -168,6 +170,7 @@ const navConfig = [
 			},
 			{
 				title: 'File manager',
+				gate: 'folder_show',
 				path: PATH_DASHBOARD.fileManager.root,
 				childList: ['file-manager'],
 				icon: ICONS.folder

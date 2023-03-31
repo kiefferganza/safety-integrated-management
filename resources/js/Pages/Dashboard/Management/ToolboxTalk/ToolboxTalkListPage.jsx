@@ -44,6 +44,7 @@ const { ToolboxTalkTableRow, ToolboxTalkTableToolbar } = await import('@/section
 import ToolboxTalkAnalytic from '@/sections/@dashboard/toolboxtalks/ToolboxTalkAnalytic';
 import { formatCms } from '@/utils/tablesUtils';
 import { endOfMonth } from 'date-fns';
+import usePermission from '@/hooks/usePermission';
 
 // ----------------------------------------------------------------------
 
@@ -71,6 +72,7 @@ const TABLE_HEAD = [
 
 
 const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType = false, addTypeHeader = false }) => {
+	const [hasPermission] = usePermission();
 	const theme = useTheme();
 	const { themeStretch } = useSettingsContext();
 	const { load, stop } = useSwal();
@@ -252,6 +254,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 		setFilterType([]);
 	};
 
+	const canCreate = hasPermission("talk_toolbox_create");
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'}>
@@ -270,14 +273,16 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 						},
 					]}
 					action={
-						<Button
-							href={PATH_DASHBOARD.toolboxTalks.new(type)}
-							component={Link}
-							variant="contained"
-							startIcon={<Iconify icon="eva:plus-fill" />}
-						>
-							New ToolboxTalk
-						</Button>
+						canCreate && (
+							<Button
+								href={PATH_DASHBOARD.toolboxTalks.new(type)}
+								component={Link}
+								variant="contained"
+								startIcon={<Iconify icon="eva:plus-fill" />}
+							>
+								New ToolboxTalk
+							</Button>
+						)
 					}
 				/>
 

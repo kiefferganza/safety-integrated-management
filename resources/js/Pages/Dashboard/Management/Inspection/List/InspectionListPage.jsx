@@ -47,6 +47,7 @@ import {
 // sections
 import { InspectionTableRow, InspectionTableToolbar } from '@/sections/@dashboard/inspection/list';
 import InspectionAnalytic from '@/sections/@dashboard/inspection/InspectionAnalytic';
+import usePermission from '@/hooks/usePermission';
 
 
 // ----------------------------------------------------------------------
@@ -66,6 +67,7 @@ const TABLE_HEAD = [
 
 
 const InspectionListPage = ({ user, inspections }) => {
+	const [hasPermission] = usePermission();
 	const theme = useTheme();
 	const { themeStretch } = useSettingsContext();
 	const { load, stop } = useSwal();
@@ -258,6 +260,7 @@ const InspectionListPage = ({ user, inspections }) => {
 
 	const open = Boolean(anchorLegendEl);
 
+	const canCreate = hasPermission("inspection_create");
 	return (
 		<>
 			<Head>
@@ -280,14 +283,14 @@ const InspectionListPage = ({ user, inspections }) => {
 						},
 					]}
 					action={
-						<Button
+						canCreate && (<Button
 							href={PATH_DASHBOARD.inspection.new}
 							component={Link}
 							variant="contained"
 							startIcon={<Iconify icon="eva:plus-fill" />}
 						>
 							New Inspection
-						</Button>
+						</Button>)
 					}
 				/>
 

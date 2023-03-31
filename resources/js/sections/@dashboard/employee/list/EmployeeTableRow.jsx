@@ -24,6 +24,7 @@ import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
+import usePermission from '@/hooks/usePermission';
 // import { useSelector, useDispatch } from 'react-redux';
 // import { followUser } from '@/redux/slices/employee';
 
@@ -34,15 +35,17 @@ EmployeeTableRow.propTypes = {
 	selected: PropTypes.bool,
 	onDeleteRow: PropTypes.func,
 	onSelectRow: PropTypes.func,
+	canDelete: PropTypes.bool
 };
 
-export default function EmployeeTableRow ({ row, selected, onSelectRow, onDeleteRow, canWrite }) {
+export default function EmployeeTableRow ({ row, selected, onSelectRow, onDeleteRow, canDelete }) {
+	const [hasPermission] = usePermission();
 	// const dispatch = useDispatch();
 	// const { isLoading } = useSelector(state => state.employee);
 	// const { auth: { user } } = usePage().props;
 	const [openConfirm, setOpenConfirm] = useState(false);
 
-	const [loading, setLoading] = useState(false);
+	// const [loading, setLoading] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
 
 	const handleOpenConfirm = () => {
@@ -144,18 +147,18 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onDelete
 						Follow
 					</MenuItem>
 				)} */}
-				{canWrite && (
-					<>
-						<MenuItem
-							component={Link}
-							href={PATH_DASHBOARD.employee.edit(row.employee_id)}
-							preserveScroll
-							onClick={handleClosePopover}
-						>
-							<Iconify icon="eva:edit-fill" />
-							Edit
-						</MenuItem>
+				<MenuItem
+					component={Link}
+					href={PATH_DASHBOARD.employee.edit(row.employee_id)}
+					preserveScroll
+					onClick={handleClosePopover}
+				>
+					<Iconify icon="eva:edit-fill" />
+					Edit
+				</MenuItem>
 
+				{canDelete && (
+					<>
 						<Divider sx={{ borderStyle: 'dashed' }} />
 
 						<MenuItem

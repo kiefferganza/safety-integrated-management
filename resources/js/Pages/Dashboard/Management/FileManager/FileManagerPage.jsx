@@ -14,6 +14,7 @@ import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import { useSettingsContext } from '@/Components/settings';
 import { useTable, getComparator } from '@/Components/table';
 import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
+import usePermission from '@/hooks/usePermission';
 const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialog');
 // sections
 const {
@@ -31,6 +32,7 @@ const { capitalize } = await import('lodash');
 // ----------------------------------------------------------------------
 
 export default function FileManagerPage ({ folders }) {
+	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const table = useTable({
 		defaultRowsPerPage: 10,
@@ -180,7 +182,7 @@ export default function FileManagerPage ({ folders }) {
 			});
 		}
 	}
-
+	const canCreate = hasPermission("folder_create");
 	return (
 		<>
 			<Head>
@@ -198,13 +200,15 @@ export default function FileManagerPage ({ folders }) {
 						{ name: 'File Manager' },
 					]}
 					action={
-						<Button
-							variant="contained"
-							startIcon={<Iconify icon="eva:cloud-upload-fill" />}
-							onClick={handleOpenUploadFile}
-						>
-							New Folder
-						</Button>
+						canCreate && (
+							<Button
+								variant="contained"
+								startIcon={<Iconify icon="eva:cloud-upload-fill" />}
+								onClick={handleOpenUploadFile}
+							>
+								New Folder
+							</Button>
+						)
 					}
 				/>
 

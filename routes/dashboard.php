@@ -35,15 +35,22 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 * Management - Employee
 	 */
 	Route::prefix('employee')->as('management.employee.')->group(function() {
-		Route::get('/list', [EmployeeController::class, "index"])->name('list');
+		Route::get('/list', [EmployeeController::class, "index"])
+			->middleware("permission:employee_show")
+			->name('list');
 		// CRUD
-		Route::get('/new', [EmployeeController::class, "create"])->name('create');
-		Route::post('/new', [EmployeeController::class, "store"])->name('new');
+		Route::middleware("permission:employee_create")->group(function() {
+			Route::get('/new', [EmployeeController::class, "create"])->name('create');
+			Route::post('/new', [EmployeeController::class, "store"])->name('new');
+		});
+		Route::get('/profile', [EmployeeController::class, "profile"])->name('profile');
 		Route::get('/{employee}', [EmployeeController::class, "show"])->name('show');
 		Route::get('/{employee}/edit', [EmployeeController::class, "update"])->name('update');
 		Route::post('/{employee}/edit', [EmployeeController::class, "edit"])->name('edit');
-		Route::delete('/{employee}/delete', [EmployeeController ::class, 'destroy']);
-		Route::post('/delete/delete-multiple', [EmployeeController ::class, 'delete_multiple'])->name('delete-multiple');
+		Route::middleware("permission:employee_delete")->group(function() {
+			Route::delete('/{employee}/delete', [EmployeeController ::class, 'destroy']);
+			Route::post('/delete/delete-multiple', [EmployeeController ::class, 'delete_multiple'])->name('delete-multiple');
+		});
 	});
 	/**
 	 * Management - Employee/Position 

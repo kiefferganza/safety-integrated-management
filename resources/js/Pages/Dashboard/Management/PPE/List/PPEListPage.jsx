@@ -28,6 +28,7 @@ import Label from '@/Components/label';
 // sections
 import { PpeTableRow, PpeTableToolbar } from '@/sections/@dashboard/ppe/list';
 import { getInventoryStatus } from '@/utils/formatStatuses';
+import usePermission from '@/hooks/usePermission';
 const { PpeAnalytic } = await import('@/sections/@dashboard/ppe/PpeAnalytic');
 
 // ----------------------------------------------------------------------
@@ -53,6 +54,7 @@ const STATUS_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function PPEListPage ({ inventory }) {
+	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const {
 		dense,
@@ -191,6 +193,11 @@ export default function PPEListPage ({ inventory }) {
 		setFilterEndDate(null);
 	};
 
+	const canCreate = hasPermission("inventory_create");
+	const canEdit = hasPermission("inventory_edit");
+	const canDelete = hasPermission("inventory_delete");
+	const canAddRemoveStock = hasPermission("stock_addOrRemove");
+	const canViewStock = hasPermission("stock_show");
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'}>
@@ -205,15 +212,17 @@ export default function PPEListPage ({ inventory }) {
 						{ name: 'List' },
 					]}
 					action={
-						<Button
-							href={PATH_DASHBOARD.ppe.new}
-							component={Link}
-							preserveScroll
-							variant="contained"
-							startIcon={<Iconify icon="eva:plus-fill" />}
-						>
-							New Product
-						</Button>
+						canCreate && (
+							<Button
+								href={PATH_DASHBOARD.ppe.new}
+								component={Link}
+								preserveScroll
+								variant="contained"
+								startIcon={<Iconify icon="eva:plus-fill" />}
+							>
+								New Product
+							</Button>
+						)
 					}
 				/>
 
@@ -359,6 +368,10 @@ export default function PPEListPage ({ inventory }) {
 												selected={selected.includes(row.inventory_id)}
 												onSelectRow={() => onSelectRow(row.inventory_id)}
 												onDeleteRow={() => handleDeleteRow(row.inventory_id)}
+												canAddRemoveStock={canAddRemoveStock}
+												canView={canViewStock}
+												canEdit={canEdit}
+												canDelete={canDelete}
 											/>
 										)}
 

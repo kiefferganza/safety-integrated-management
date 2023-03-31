@@ -114,14 +114,16 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 			</TableRow>
 			<DocumentTableSubRow row={row} open={openCollapse} />
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
-				<MenuItem
-					component={Link}
-					href={PATH_DASHBOARD.fileManager.viewDocument(folder.folder_id, row.id)}
-					onClick={handleClosePopover}
-				>
-					<Iconify icon="eva:eye-fill" />
-					View
-				</MenuItem>
+				{canView && (
+					<MenuItem
+						component={Link}
+						href={PATH_DASHBOARD.fileManager.viewDocument(folder.folder_id, row.id)}
+						onClick={handleClosePopover}
+					>
+						<Iconify icon="eva:eye-fill" />
+						View
+					</MenuItem>
+				)}
 				<MenuItem
 					onClick={handleOpenFileList}
 				>

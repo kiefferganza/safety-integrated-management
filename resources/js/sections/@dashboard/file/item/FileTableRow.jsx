@@ -31,6 +31,7 @@ import FileThumbnail from '@/Components/file-thumbnail';
 import FileDetailsDrawer from '../portal/FileDetailsDrawer';
 import { FileNewFolderDialog } from '..';
 import { useSwal } from '@/hooks/useSwal';
+import usePermission from '@/hooks/usePermission';
 
 
 // ----------------------------------------------------------------------
@@ -43,6 +44,7 @@ FileTableRow.propTypes = {
 };
 
 export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const { id, name, size, type, dateCreated, totalDocs, revision_no } = row;
 
@@ -118,6 +120,8 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 		});
 	}
 
+	const canDelete = hasPermission("folder_delete");
+	const canEdit = hasPermission("folder_edit");
 	return (
 		<>
 			<TableRow
@@ -187,15 +191,17 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 					Visit
 				</MenuItem>
 
-				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						handleOpenEditFolder();
-					}}
-				>
-					<Iconify icon="material-symbols:edit-outline-rounded" />
-					Edit
-				</MenuItem>
+				{canEdit && (
+					<MenuItem
+						onClick={() => {
+							handleClosePopover();
+							handleOpenEditFolder();
+						}}
+					>
+						<Iconify icon="material-symbols:edit-outline-rounded" />
+						Edit
+					</MenuItem>
+				)}
 
 				<MenuItem
 					onClick={() => {
@@ -207,18 +213,22 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 					Copy Link
 				</MenuItem>
 
-				<Divider sx={{ borderStyle: 'dashed' }} />
 
-				<MenuItem
-					onClick={() => {
-						handleOpenConfirm();
-						handleClosePopover();
-					}}
-					sx={{ color: 'error.main' }}
-				>
-					<Iconify icon="eva:trash-2-outline" />
-					Delete
-				</MenuItem>
+				{canDelete && (
+					<>
+						<Divider sx={{ borderStyle: 'dashed' }} />
+						<MenuItem
+							onClick={() => {
+								handleOpenConfirm();
+								handleClosePopover();
+							}}
+							sx={{ color: 'error.main' }}
+						>
+							<Iconify icon="eva:trash-2-outline" />
+							Delete
+						</MenuItem>
+					</>
+				)}
 			</MenuPopover>
 
 			<FileNewFolderDialog

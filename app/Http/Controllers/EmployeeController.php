@@ -5,12 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EmployeeRequest;
 use Illuminate\Http\Request;
 use App\Models\Employee;
-use App\Models\Follower;
+// use App\Models\Follower;
 use App\Models\Position;
 use App\Models\TrainingType;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -18,7 +17,7 @@ use Inertia\Inertia;
 class EmployeeController extends Controller
 {
   public function index() {
-		$user = Auth::user();
+		$user = auth()->user();
 		$employees = Employee::select(DB::raw("
 		tbl_employees.user_id,
 		tbl_employees.employee_id,
@@ -51,7 +50,7 @@ class EmployeeController extends Controller
 
 
 	public function create() {
-		$user = Auth::user();
+		$user = auth()->user();
 
 		return Inertia::render("Dashboard/Management/Employee/Create/index", [
 			"companies" => DB::table("tbl_company")->where([["sub_id", $user->subscriber_id], ["is_deleted", 0]])->get(),
@@ -70,7 +69,7 @@ class EmployeeController extends Controller
 
 
 	public function store(EmployeeRequest $request) {
-		$user = Auth::user();
+		$user = auth()->user();
 
 		$employee = new Employee;
 		$employee->user_id = $user->user_id;
@@ -114,7 +113,11 @@ class EmployeeController extends Controller
 
 
 	public function update(Employee $employee) {
-		$user = Auth::user();
+		$user = auth()->user();
+
+		if($user->cannot("employee_edit") && $employee->employee_id !== $user->emp_id) {
+			abort(403);
+		}
 
 		return Inertia::render("Dashboard/Management/Employee/Edit/index", [
 			"currentEmployee" => $employee,
@@ -127,6 +130,11 @@ class EmployeeController extends Controller
 
 
 	public function edit(EmployeeRequest $request, Employee $employee) {
+		$user = auth()->user();
+		if($user->cannot("employee_edit") && $employee->employee_id !== $user->emp_id) {
+			abort(403);
+		}
+
 		$employee->firstname = $request->firstname;
 		$employee->middlename = $request->middlename ? $request->middlename : " ";
 		$employee->lastname = $request->lastname;
@@ -170,10 +178,33 @@ class EmployeeController extends Controller
 
 
 	public function show(Employee $employee) {
-		$user = Auth::user();
+		$user = auth()->user();
+
+		if($user->cannot("employee_show") && $employee->employee_id !== $user->emp_id) {
+			abort(403);
+		}
 
 		return Inertia::render('Dashboard/Management/Employee/View/index', [
 			"employee" => $employee->load([
+				"participated_trainings" => fn ($query) => 
+					$query->select("title", "type", "date_expired", "training_date", "training_hrs", "tbl_training_trainees.employee_id", "tbl_training_trainees.training_id")->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id"),
+				"company" => fn ($query) =>
+					$query->select("company_id", "company_name")->where("is_deleted", 0),
+				"position" => fn ($query) => 
+					$query->select("position_id", "position")->where("is_deleted", 0),
+				"department" => fn ($query) => 
+					$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
+				"social_accounts"
+			]),
+			"trainingTypes" => TrainingType::get()
+		]);
+	}
+
+	public function profile() {
+		$user = auth()->user();
+
+		return Inertia::render('Dashboard/Management/Employee/View/index', [
+			"employee" => $user->employee->load([
 				"participated_trainings" => fn ($query) => 
 					$query->select("title", "type", "date_expired", "training_date", "training_hrs", "tbl_training_trainees.employee_id", "tbl_training_trainees.training_id")->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id"),
 				"company" => fn ($query) =>
