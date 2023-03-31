@@ -9,12 +9,14 @@ use App\Models\Images;
 use App\Models\SocialAccount;
 use App\Models\TrainingType;
 use App\Models\User;
+use App\Services\RolesAndPermissionService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 
@@ -25,7 +27,7 @@ class UsersController extends Controller
 	{
 			$user = Auth::user();
 
-			$userslist = User::select(DB::raw("users.user_id, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id, tbl_employees.img_src"))
+			$userslist = User::select(DB::raw("users.user_id, users.username, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id, tbl_employees.img_src"))
 			->with("social_accounts")
 			->join("tbl_employees", "users.emp_id", "tbl_employees.employee_id")
 			->where([
@@ -47,21 +49,34 @@ class UsersController extends Controller
 	
 
 	public function store(UserRequest $request) {
-		$request->validate(["password" => "required|min:6|confirmed"]);
-
+		$request->validate([
+			"password" => "required|min:6|confirmed",
+			"firstname" => "string|required",
+			"lastname" => "string|required",
+			"user_type" => "integer|required",
+			"emp_id" => "integer|required",
+			"username" => [
+				"required",
+				"string",
+				Rule::unique('users')->where("deleted", 0)
+			],
+		]);
+		
 		$user = new User();
 		$user->username = $request->username;
 		$user->firstname = $request->firstname;
 		$user->lastname = $request->lastname;
 		$user->email = $request->email;
 		$user->user_type = $request->user_type;
-		// $user->about = $request->about;
 		$user->subscriber_id = Auth::user()->user_id;
 		$user->status = 1;
 		$user->deleted = 0;
 		$user->date_updated = Carbon::now();
 		$user->password = Hash::make($request->password);
 		$user->emp_id = $request->emp_id;
+
+		$requestRole = $request->user_type === 1 ? "User" : "Admin";
+		$user->assignRole($requestRole);
 
 		if($request->hasFile('profile_pic')){
 			$file = $request->file("profile_pic")->getClientOriginalName();
@@ -94,7 +109,7 @@ class UsersController extends Controller
 
 
 	public function profile() {
-		$user = Auth::user();
+		$user = auth()->user();
 		
 		$employee = Employee::where("employee_id", $user->emp_id)->with([
 			"participated_trainings" => fn ($q) =>
@@ -115,10 +130,10 @@ class UsersController extends Controller
 
 
 	public function show(User $user) {
-		if(Auth::user()->user_id === $user->user_id) {
+		if(auth()->user()->user_id === $user->user_id) {
 			return redirect()->route('management.user.profile');
 		}
-		
+
 		$users =  $user->load([
 			"employee" => fn ($query) => 
 				$query->with([
@@ -131,12 +146,16 @@ class UsersController extends Controller
 					"department" => fn ($query) => 
 						$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]])
 				]),
-			"social_accounts"
+			"social_accounts",
+			"createdEmployees" => fn($q) => $q->select("employee_id", "firstname", "lastname", "img_src", "email", "created_by", "is_active")
 		]);
+		$userRole = $user->roles->first()->name;
 
 		return Inertia::render("Dashboard/Management/User/Profile/index", [
 			"user" => $users,
-			"trainingTypes" => TrainingType::get()
+			"trainingTypes" => TrainingType::get(),
+			"permissions" => (New RolesAndPermissionService)->getAllPermissionByName($userRole, $user),
+			"userRole" => $userRole
 		]);
 	}
 
@@ -158,11 +177,16 @@ class UsersController extends Controller
 		}
 		$request->validate($validate);
 
+		$role = $user->getRoleNames()[0];
+		$requestRole = $request->user_type === 1 ? "User" : "Admin";
+		if($requestRole !== $role) {
+			$user->roles()->detach();
+			$user->assignRole($requestRole);
+		}
 		$user->firstname = $request->firstname;
 		$user->lastname = $request->lastname;
 		$user->username = $request->username;
 		$user->email = $request->email;
-		// $user->about = $request->about;
 		$user->user_type = $request->user_type;
 		$user->status = $request->status;
 
@@ -191,7 +215,7 @@ class UsersController extends Controller
 			Employee::find($user->emp_id)->update(["about" => $request->about]);
 		}
 		
-		return redirect()->back()
+		return redirect()->route("management.user.edit", $user->username)
 		->with("message", "User updated successfully!")
 		->with("type", "success");
 	}
@@ -301,6 +325,33 @@ class UsersController extends Controller
 		return Inertia::render("Dashboard/Management/User/Account/index", [
 			"images" => $images
 		]);
+	}
+
+
+
+	public function activate(User $user) {
+		if($user->status === 1) {
+			abort(500);
+		}
+		$user->status = 1;
+		$user->save();
+		
+		return redirect()->back()
+		->with("message", "User". $user->fullname ." activated successfully!")
+		->with("type", "success");
+	}
+
+	public function deactivate(User $user) {
+		if($user->status === 0) {
+			abort(500);
+		}
+
+		$user->status = 0;
+		$user->save();
+
+		return redirect()->back()
+		->with("message", "User". $user->fullname ." deactivated successfully!")
+		->with("type", "success");
 	}
 
 

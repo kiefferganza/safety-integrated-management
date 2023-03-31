@@ -3,8 +3,6 @@ import { paramCase } from 'change-case';
 import { Container } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
-// _mock_
-import { _userList } from '@/_mock/arrays';
 // components
 import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
@@ -16,8 +14,6 @@ import { getCurrentUserName } from '@/utils/formatName';
 
 export default function UserEditPage ({ user }) {
 	const { themeStretch } = useSettingsContext();
-
-	const currentUser = _userList.find((user) => paramCase(user.name) === "reece-chung");
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'lg'}>
@@ -36,7 +32,7 @@ export default function UserEditPage ({ user }) {
 				]}
 			/>
 
-			<UserNewEditForm isEdit currentUser={currentUser} user={user} />
+			<UserNewEditForm isEdit user={user} />
 		</Container>
 	);
 }

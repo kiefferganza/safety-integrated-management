@@ -11,6 +11,7 @@ use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionReportController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InventoryReportController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ToolboxTalkController;
 use App\Http\Controllers\TrainingController;
@@ -86,7 +87,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::middleware("permission:user_show")->group(function() {
 			Route::get('/profile', [UsersController::class, 'profile'])->name('profile');
 			Route::get('/settings', [UsersController::class, 'settings'])->name('settings');
-			Route::get('/profile/{user}', [UsersController::class, "show"])->name('show');
+			Route::get('/profile/{user:username}', [UsersController::class, "show"])->name('show');
 		});
 		
 		// CRUD
@@ -94,24 +95,31 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::middleware("permission:user_edit")->group(function() {
 			Route::put('/update-socials', [UsersController::class, 'update_socials'])->name('update_socials');
 			Route::post('/change-password', [UsersController::class, 'change_password'])->name('change_pass');
-			Route::get('/{user}/edit', [UsersController::class, 'edit_user']);
-			Route::post('/{user}/update', [UsersController::class, 'update']);
+			Route::get('/{user:username}/edit', [UsersController::class, 'edit_user'])->name("edit");
+			Route::post('/{user}/update', [UsersController::class, 'update'])->name("update");
 		});
 		// Can delete
 		Route::post('/delete', [UsersController::class, 'delete'])->middleware('permission:user_delete');
-		// Can view
-		Route::middleware("permission:user_access")->group(function() {
-			Route::get('/cards', [UsersController::class, 'cards'])->name('cards');
-			Route::get('/list', [UsersController::class, 'index'])->name('list');
-		});
 		// Can create
 		Route::middleware("permission:user_create")->group(function() {
 			Route::get('/new', [UsersController::class, 'create'])->name('new');
 			Route::post('/new', [UsersController::class, 'store'])->name('store');
 		});
+
+		Route::middleware("permission:user_access")->group(function() {
+			Route::get('/cards', [UsersController::class, 'cards'])->name('cards');
+			Route::get('/list', [UsersController::class, 'index'])->name('list');
+
+			Route::put('/{user}/activate',  [UsersController::class, 'activate'])->name("activate");
+			Route::put('/{user}/deactivate',  [UsersController::class, 'deactivate'])->name("deactivate");
+
+			// Update role or permissions
+			Route::put('/{user}/update-permission', [PermissionController::class, "updateUserPermission"])->name("updateUserPermission");
+		});
 	});
 
 
+	// IMAGES
 	Route::prefix('image')->as('image.')->group(function() {
 		Route::post('/new/slider', [ImagesController::class, "storeSlider"])->name("storeSlider")->middleware( "permission:image_upload_slider");
 		Route::delete('/delete/{image}', [ImagesController::class, "destroy"])->name("destroy")->middleware("permission:image_upload_delete");

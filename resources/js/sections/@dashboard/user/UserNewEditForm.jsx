@@ -18,39 +18,38 @@ import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
+const NewUserSchema = Yup.object().shape({
+	firstname: Yup.string().required('Please select an employee'),
+	emp_id: Yup.number().required('Please select an employee'),
+	lastname: Yup.string().required('Please select an employee'),
+	email: Yup.string().email("Must be a valid email address").required('Please select an employee'),
+	username: Yup.string().required('Username must not be empty'),
+	password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is must not be empty'),
+	password_confirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+	about: Yup.string().max(255, "About must not exceed 255 characters"),
+	user_type: Yup.number().required()
+});
+
+const UpdateUserSchema = Yup.object().shape({
+	firstname: Yup.string().required('Please select an employee'),
+	lastname: Yup.string().required('Please select an employee'),
+	email: Yup.string().email("Must be a valid email address").required('Please select an employee'),
+	username: Yup.string().required('Username must not be empty'),
+	password: Yup.string().matches(/^(|.{6,})$/, 'Password must be at least 6 characters'),
+	password_confirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+	user_type: Yup.number().required()
+});
+
+
 UserNewEditForm.propTypes = {
 	isEdit: PropTypes.bool,
-	currentUser: PropTypes.object,
+	user: PropTypes.object,
 };
 
-export default function UserNewEditForm ({ isEdit = false, currentUser, user, employees }) {
+export default function UserNewEditForm ({ isEdit = false, user, employees }) {
 	const { errors: resErrors } = usePage().props;
 	const [loading, setLoading] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
-
-	const NewUserSchema = Yup.object().shape({
-		firstname: Yup.string().required('Please select an employee'),
-		emp_id: Yup.string().required('Please select an employee'),
-		lastname: Yup.string().required('Please select an employee'),
-		email: Yup.string().email("Must be a valid email address").required('Please select an employee'),
-		username: Yup.string().required('Username must not be empty'),
-		password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is must not be empty'),
-		password_confirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
-		about: Yup.string().max(255, "About must not exceed 255 characters"),
-		user_type: Yup.number().required()
-	});
-
-	const UpdateUserSchema = Yup.object().shape({
-		firstname: Yup.string().required('Please select an employee'),
-		emp_id: Yup.string().required('Please select an employee'),
-		lastname: Yup.string().required('Please select an employee'),
-		email: Yup.string().email("Must be a valid email address").required('Please select an employee'),
-		username: Yup.string().required('Username must not be empty'),
-		about: Yup.string().max(255, "About must not exceed 255 characters"),
-		password: Yup.string().matches(/^(|.{6,})$/, 'Password must be at least 6 characters'),
-		password_confirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
-		user_type: Yup.number().required()
-	});
 
 	const defaultValues = useMemo(
 		() => ({
@@ -63,11 +62,10 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user, em
 			profile_pic: user?.profile_pic ? `/storage/media/photos/employee/${user?.profile_pic}` : null,
 			username: user?.username || '',
 			user_type: user?.user_type === 0 ? 0 : 1,
-			about: user?.about || '',
 			status: user?.status === 0 ? 0 : 1
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[currentUser]
+		[user]
 	);
 
 	const methods = useForm({
@@ -85,17 +83,17 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user, em
 		formState: { isDirty, errors },
 	} = methods;
 
-	const values = watch();
+	const values = watch()
 
 	useEffect(() => {
-		if (isEdit && currentUser) {
+		if (isEdit && user) {
 			reset(defaultValues);
 		}
 		if (!isEdit) {
 			reset(defaultValues);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isEdit, currentUser]);
+	}, [isEdit, user]);
 
 
 	useEffect(() => {
@@ -148,7 +146,7 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user, em
 
 	const onSubmit = async (data) => {
 		try {
-			Inertia.post(isEdit ? `/dashboard/user/${user.user_id}/update` : route('management.user.store'), data, {
+			Inertia.post(isEdit ? route("management.user.update", user.user_id) : route('management.user.store'), data, {
 				onStart () {
 					setLoading(true);
 				},
@@ -317,9 +315,15 @@ export default function UserNewEditForm ({ isEdit = false, currentUser, user, em
 
 							<RHFTextField name="email" label="Email Address" />
 
-							<RHFTextField name="firstname" label="First name" />
+							<RHFTextField
+								name="firstname"
+								label="First name"
+							/>
 
-							<RHFTextField name="lastname" label="Last name" />
+							<RHFTextField
+								name="lastname"
+								label="Last name"
+							/>
 
 							{isEdit ? (
 								<RHFTextField

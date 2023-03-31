@@ -18,16 +18,7 @@ const StyledIcon = styled(Iconify)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-ProfileAbout.propTypes = {
-	company: PropTypes.string,
-	country: PropTypes.string,
-	email: PropTypes.string,
-	quote: PropTypes.string,
-	role: PropTypes.string,
-	school: PropTypes.string,
-};
-
-export default function ProfileAbout ({ editLink, quote, country, email, role, company, department }) {
+export default function ProfileAbout ({ editLink, quote, country, email, role, company, department, name, action }) {
 	return (
 		<Card>
 			<CardHeader title="About" />
@@ -41,6 +32,18 @@ export default function ProfileAbout ({ editLink, quote, country, email, role, c
 							Add information
 						</Link>
 					)
+				)}
+
+				{name && (
+					<Stack direction="row">
+						<StyledIcon icon="mdi:account" />
+
+						<Typography variant="body2">
+							<Link component="span" variant="subtitle2" color="text.primary">
+								{name}
+							</Link>
+						</Typography>
+					</Stack>
 				)}
 
 				{country && (
@@ -61,27 +64,32 @@ export default function ProfileAbout ({ editLink, quote, country, email, role, c
 					<Typography variant="body2">{email}</Typography>
 				</Stack>
 
-				<Stack direction="row">
-					<StyledIcon icon="mdi:account-multiple" />
+				{company && (
+					<Stack direction="row">
+						<StyledIcon icon="mdi:account-multiple" />
 
-					<Typography variant="body2">
-						{role} at &nbsp;
-						<Link component="span" variant="subtitle2" color="text.primary">
-							{company}
-						</Link>
-					</Typography>
-				</Stack>
+						<Typography variant="body2">
+							{role} at &nbsp;
+							<Link component="span" variant="subtitle2" color="text.primary">
+								{company}
+							</Link>
+						</Typography>
+					</Stack>
+				)}
 
-				<Stack direction="row">
-					<StyledIcon icon="mdi:bank" />
+				{department && (
+					<Stack direction="row">
+						<StyledIcon icon="mdi:bank" />
 
-					<Typography variant="body2">
-						{/* Studied at &nbsp; */}
-						<Link component="span" variant="subtitle2" color="text.primary">
-							{department}
-						</Link>
-					</Typography>
-				</Stack>
+						<Typography variant="body2">
+							{/* Studied at &nbsp; */}
+							<Link component="span" variant="subtitle2" color="text.primary">
+								{department}
+							</Link>
+						</Typography>
+					</Stack>
+				)}
+				{action}
 			</Stack>
 		</Card>
 	);

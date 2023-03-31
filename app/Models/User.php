@@ -40,6 +40,8 @@ class User extends Authenticatable
 		'about'
 	];
 
+	protected $appends = ['fullname'];
+
 	/**
 	 * The attributes that should be hidden for serialization.
 	 *
@@ -73,6 +75,10 @@ class User extends Authenticatable
 	public function employee()
 	{
 		return $this->hasOne(Employee::class, "employee_id", "emp_id");
+	}
+
+	public function createdEmployees() {
+		return $this->hasMany(Employee::class, "created_by", "user_id");
 	}
 
 	public function position() {
@@ -109,5 +115,9 @@ class User extends Authenticatable
 
 	public function following() {
 		return $this->hasMany(Follower::class, 'user_id', 'user_id');
+	}
+
+	public function getFullnameAttribute() {
+		return trim($this->attributes['firstname']) . ' '  . trim($this->attributes['lastname']);
 	}
 }

@@ -64,6 +64,7 @@ export const PATH_DASHBOARD = {
 		list: path(ROOTS_DASHBOARD, '/user/list'),
 		cards: path(ROOTS_DASHBOARD, '/user/cards'),
 		profile: path(ROOTS_DASHBOARD, '/user/profile'),
+		userProfile: (userName) => path(ROOTS_DASHBOARD, `/user/profile/${userName}`),
 		account: path(ROOTS_DASHBOARD, '/user/settings'),
 		edit: (id) => path(ROOTS_DASHBOARD, `/user/${id}/edit`),
 	},

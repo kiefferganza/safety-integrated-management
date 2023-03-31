@@ -14,19 +14,20 @@ import { useSettingsContext } from '@/Components/settings';
 import {
 	Profile,
 	ProfileCover,
-	ProfileFriends,
+	// ProfileFriends,
 	ProfileGallery,
-	ProfileFollowers,
+	// ProfileFollowers,
+	EmployeeTrainings,
+	ProfilePermissions
 } from '@/sections/@dashboard/user/profile';
 import { getCurrentUserName } from '@/utils/formatName';
-import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTrainings';
 
 // ----------------------------------------------------------------------
 
 export default function UserProfilePage ({ user }) {
 	const { themeStretch } = useSettingsContext();
 
-	const [searchFriends, setSearchFriends] = useState('');
+	// const [searchFriends, setSearchFriends] = useState(''); 
 
 	const [currentTab, setCurrentTab] = useState('profile');
 
@@ -66,6 +67,12 @@ export default function UserProfilePage ({ user }) {
 			label: 'Gallery',
 			icon: <Iconify icon="ic:round-perm-media" />,
 			component: <ProfileGallery gallery={_userGallery.slice(0, 3)} />,
+		},
+		{
+			value: 'permissions',
+			label: 'Permissions',
+			icon: <Iconify icon="fluent-mdl2:permissions-solid" />,
+			component: <ProfilePermissions />,
 		},
 	];
 

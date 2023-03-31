@@ -10,7 +10,6 @@ import ConfirmDialog from '@/Components/confirm-dialog';
 import { fDate } from '@/utils/formatTime';
 import { Link } from '@inertiajs/inertia-react';
 import { PATH_DASHBOARD } from '@/routes/paths';
-import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +22,7 @@ UserTableRow.propTypes = {
 };
 
 export default function UserTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
-	const { name, img_src, user_type, email, date_created, status } = row;
+	const { user_id, username, name, img_src, user_type, email, date_created, status } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -91,19 +90,12 @@ export default function UserTableRow ({ row, selected, onSelectRow, onDeleteRow 
 			</TableRow>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 140 }}>
-				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						Inertia.visit(`/dashboard/user/profile/${row.user_id}`, {
-							preserveScroll: true
-						});
-					}}
-				>
+				<MenuItem component={Link} href={PATH_DASHBOARD.user.userProfile(username)}>
 					<Iconify icon="eva:eye-fill" />
 					View
 				</MenuItem>
 
-				<MenuItem component={Link} href={PATH_DASHBOARD.user.edit(row.user_id)}>
+				<MenuItem component={Link} href={PATH_DASHBOARD.user.edit(user_id)}>
 					<Iconify icon="eva:edit-fill" />
 					Edit
 				</MenuItem>

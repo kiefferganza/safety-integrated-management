@@ -10,3 +10,6 @@ export { default as ProfileCover } from './ProfileCover';
 export { default as ProfileFriends } from './ProfileFriends';
 export { default as ProfileGallery } from './ProfileGallery';
 export { default as ProfileFollowers } from './ProfileFollowers';
+export { default as ProfilePermissions } from './ProfilePermissions';
+
+export { default as EmployeeTrainings } from './EmployeeTrainings';

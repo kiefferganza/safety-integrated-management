@@ -17,9 +17,9 @@ import {
 	// ProfileFriends,
 	ProfileGallery,
 	// ProfileFollowers,
+	EmployeeTrainings
 } from '@/sections/@dashboard/user/profile';
 import { getCurrentUserName } from '@/utils/formatName';
-import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTrainings';
 
 // ----------------------------------------------------------------------
 
