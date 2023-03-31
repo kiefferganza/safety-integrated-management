@@ -6,6 +6,7 @@ import useActiveLink from '@/hooks/useActiveLink';
 import { StyledPopover } from './styles';
 import NavItem from './NavItem';
 import { usePage } from '@inertiajs/inertia-react';
+import usePermission from '@/hooks/usePermission';
 
 // ----------------------------------------------------------------------
 
@@ -16,7 +17,7 @@ NavList.propTypes = {
 };
 
 export default function NavList ({ data, depth, hasChild }) {
-	const { auth } = usePage().props;
+	const [hasPermission] = usePermission();
 	const navRef = useRef(null);
 
 	const { active, isExternalLink } = useActiveLink(data.path);
@@ -39,8 +40,8 @@ export default function NavList ({ data, depth, hasChild }) {
 		setOpen(false);
 	};
 
-	if ((data.gate && auth?.permissions) && (auth?.role !== "Admin")) {
-		return data.gate in auth.permissions;
+	if (data.gate && !hasPermission(data.gate)) {
+		return null;
 	}
 
 

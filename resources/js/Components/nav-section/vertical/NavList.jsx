@@ -6,7 +6,7 @@ import { Collapse } from '@mui/material';
 import useActiveLink from '@/hooks/useActiveLink';
 //
 import NavItem from './NavItem';
-import { usePage } from '@inertiajs/inertia-react';
+import usePermission from '@/hooks/usePermission';
 
 // ----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ function delay (time) {
 }
 
 export default function NavList ({ data, depth, hasChild }) {
-	const { auth } = usePage().props;
+	const [hasPermission] = usePermission();
 	const navItemRef = useRef();
 	const { active, isExternalLink } = useActiveLink(data.path, true, hasChild, data?.childList, data.title);
 
@@ -39,8 +39,8 @@ export default function NavList ({ data, depth, hasChild }) {
 		setOpen(!open);
 	};
 
-	if ((data.gate && auth?.permissions) && (auth?.role !== "Admin")) {
-		return data.gate in auth.permissions;
+	if (data.gate && !hasPermission(data?.gate)) {
+		return null;
 	}
 
 	return (
@@ -72,11 +72,6 @@ NavSubList.propTypes = {
 };
 
 function NavSubList ({ data, depth }) {
-	const { can } = usePage().props;
-	if (data.gate && !can[data.gate]) {
-		return null;
-	}
-
 	return (
 		<>
 			{data.map((list) => (
