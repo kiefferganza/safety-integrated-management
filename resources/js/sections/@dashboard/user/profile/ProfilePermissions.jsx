@@ -98,7 +98,6 @@ const ProfilePermissions = () => {
 	}
 
 	const hasUserAccessPermission = hasPermission("user_access");
-
 	return (
 		<>
 			<Stack direction="row" alignItems="center" justifyContent="space-between">
@@ -221,7 +220,7 @@ const ProfilePermissions = () => {
 							role={capitalize(user?.employee?.position?.position)}
 							company={capitalize(user?.employee?.company?.company_name)}
 							department={startCase(user?.employee?.department?.department?.toLowerCase())}
-							name={user?.fullname}
+							name={user?.fullname.trim() || user?.employee?.fullname}
 							action={
 								<Stack direction="row" spacing={2} sx={{ pt: 1.5 }}>
 									<Button
@@ -285,7 +284,7 @@ const ProfilePermissions = () => {
 													</TableCell>
 												</TableRow>
 											))}
-											<TableNoData />
+											<TableNoData isNotFound={user.created_employees.length <= 0} />
 										</TableBody>
 									</Table>
 								</Scrollbar>
