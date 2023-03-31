@@ -20,13 +20,16 @@ export default function useActiveLink (path, deep = true, hasChild = false, chil
 
 			if (urlParent.toLowerCase() === urlSplit[1]) return true;
 
-			if (pathSplit.length === 3) {
+			if (pathSplit.length === 3 && urlSplit.length === 3) {
 				return (urlSplit[1] === pathSplit[1] && urlSplit[2] === pathSplit[2]);
 			}
 
 			return pathSplit[2] ? (urlSplit[1] === pathSplit[1] || urlSplit[2] === pathSplit[2]) : (urlSplit[1] === pathSplit[1]);
 		} else {
 			if (childList) return childList.includes(urlSplit[1]);
+			if (pathSplit.length === 3 && urlSplit.length === 3) {
+				return (urlSplit[1] === pathSplit[1] && urlSplit[2] === pathSplit[2]);
+			}
 			return url === path;
 		}
 	}

@@ -17,11 +17,13 @@ import {
 	AccountChangePassword,
 	AccountPublicImages
 } from '@/sections/@dashboard/user/account';
+import usePermission from '@/hooks/usePermission';
 
 // ----------------------------------------------------------------------
 
 export default function UserAccountPage ({ auth, images }) {
-	const { user, permissions, role } = auth;
+	const { user } = auth;
+	const [hasPermission] = usePermission();
 	const { themeStretch } = useSettingsContext();
 
 	const [currentTab, setCurrentTab] = useState('general');
@@ -62,9 +64,8 @@ export default function UserAccountPage ({ auth, images }) {
 		}
 	];
 
-	const allowedImageUpload = permissions.some(permission => permission === "image_upload_slider");
-
-	if (allowedImageUpload || role === "Admin") {
+	const canUpload = hasPermission("image_upload_slider")
+	if (canUpload) {
 		TABS.push({
 			value: 'images',
 			label: 'Images',
