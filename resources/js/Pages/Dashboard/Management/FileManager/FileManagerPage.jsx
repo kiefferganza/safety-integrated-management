@@ -31,7 +31,7 @@ const { capitalize } = await import('lodash');
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerPage ({ folders }) {
+export default function FileManagerPage ({ folders, externalTraining }) {
 	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const table = useTable({
@@ -62,8 +62,7 @@ export default function FileManagerPage ({ folders }) {
 
 	const [filterName, setFilterName] = useState('');
 
-	const [tableData, setTableData] = useState(folders);
-
+	const [tableData, setTableData] = useState([]);
 	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [openUploadFile, setOpenUploadFile] = useState(false);
@@ -89,7 +88,21 @@ export default function FileManagerPage ({ folders }) {
 	const isFiltered = !!filterName || (!!startDate && !!endDate);
 
 	useEffect(() => {
-		setTableData(folders)
+		setTableData([
+			{
+				id: externalTraining.id,
+				revision_no: null,
+				name: "Third Party",
+				type: "folder",
+				fileType: "external",
+				dateCreated: null,
+				totalFiles: externalTraining.files,
+				totalDocs: externalTraining.count,
+				size: externalTraining.size,
+				url: route("files.management.external"),
+			},
+			...folders
+		])
 	}, [folders]);
 
 	const handleChangeView = (_event, newView) => {
@@ -321,7 +334,6 @@ export default function FileManagerPage ({ folders }) {
 
 function applyFilter ({ inputData, comparator, filterName, filterStartDate, filterEndDate, isError }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
-
 	stabilizedThis.sort((a, b) => {
 		const order = comparator(a[0], b[0]);
 		if (order !== 0) return order;
@@ -341,6 +353,5 @@ function applyFilter ({ inputData, comparator, filterName, filterStartDate, filt
 				fTimestamp(file.dateCreated) <= fTimestamp(filterEndDate)
 		);
 	}
-
 	return inputData;
 }

@@ -273,26 +273,27 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Folder
 	 */
-	Route::prefix('file-manager')->group(function() {
+	Route::prefix('file-manager')->as('files.management.')->group(function() {
 		Route::get('/', [FilePageController::class, "index"])
 			->middleware("permission:folder_show")
-			->name('files.management.index');
+			->name('index');
 		Route::post('/new', [FilePageController::class, "create_folder"])
 			->middleware("permission:folder_create")
-			->name('files.management.create_folder');
+			->name('create_folder');
 		Route::post('/delete', [FilePageController::class, "destroy"])
 			->middleware("permission:folder_delete")
-			->name('files.management.destroy');
+			->name('destroy');
 		Route::post('/{folder}/edit', [FilePageController::class, "update"])
 			->middleware("permission:folder_edit")
-			->name('files.management.update');
+			->name('update');
 		// Folder -> Documents
 		Route::get('/view', [DocumentController::class, "view"])->middleware(["permission:file_show", "permission:folder_show"]);
+		Route::get('/external', [FilePageController::class, "thirdParty"])->name("external")->middleware("permission:folder_show");
 		Route::get('/{folder}', [DocumentController::class, "index"])->middleware("permission:folder_show");
 		Route::middleware("permission:file_create")->group(function() {
 			Route::get('/{folder}/new', [DocumentController::class, "create"]);
 			Route::post('/{folder}/new', [DocumentController::class, "store"]);
-		});
+		}); 
 		Route::post('/document/delete', [DocumentController::class, "destroy"])
 			->middleware("permission:file_delete")
 			->name('filemanager.document.delete');

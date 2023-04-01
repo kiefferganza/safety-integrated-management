@@ -17,12 +17,10 @@ class TrainingController extends Controller
 {
 	public function index() {
 		$trainings = Training::where([["is_deleted", false], ["type", 2]])
-		->with([
-			"trainees" => fn ($query) => $query->with("position"),
-			"training_files"
-		])
+		->withCount(["training_files", "trainees"])
 		->orderByDesc("date_created")
 		->get();
+
 
 		return Inertia::render("Dashboard/Management/Training/List/index", [
 			"trainings" => $trainings,
@@ -35,10 +33,7 @@ class TrainingController extends Controller
 
 	public function in_house() {
 		$trainings = Training::where([["is_deleted", false], ["type", 1]])
-		->with([
-			"trainees" => fn ($query) => $query->with("position"),
-			"training_files"
-		])
+		->withCount(["training_files", "trainees"])
 		->orderByDesc("date_created")
 		->get();
 
@@ -52,10 +47,7 @@ class TrainingController extends Controller
 
 	public function external() {
 		$trainings = Training::where([["is_deleted", false], ["type", 3]])
-		->with([
-			"trainees" => fn ($query) => $query->with("position"),
-			"training_files"
-		])
+		->withCount(["training_files", "trainees"])
 		->orderByDesc("date_created")
 		->get();
 
@@ -69,10 +61,7 @@ class TrainingController extends Controller
 
 	public function induction() {
 		$trainings = Training::where([["is_deleted", false], ["type", 4]])
-		->with([
-			"trainees" => fn ($query) => $query->with("position"),
-			"training_files"
-		])
+		->withCount(["training_files", "trainees"])
 		->orderByDesc("date_created")
 		->get();
 
@@ -103,32 +92,10 @@ class TrainingController extends Controller
 
 	public function store(TrainingRequest $request) {
 		$user = Auth::user();
-
-		$sequence_no = $request->sequence_no;
-
-		$seq_exist = Training::select("training_id")->where([
-			["sequence_no", $request->sequence_no],
-			["type", (int)$request->type]
-		])->first();
-
-		if($seq_exist || !$sequence_no) {
-			$trainings = Training::where([["is_deleted", false], ["type", (int)$request->type]])->get();
-			$number_of_trainings = $trainings->count() + 1;
-
-			$number_of_zeroes = strlen((string) $number_of_trainings);
-			$sequence_no_zeros = '';
-			for ($i = 0; $i <= $number_of_zeroes; $i++)
-			{
-				$sequence_no_zeros = $sequence_no_zeros . "0";
-			}
-			$sequence_no =  $sequence_no_zeros . $number_of_trainings;
-		}
-
 		$training = new Training;
 
 		$training->user_id = $user->user_id;
 		$training->employee_id = $user->emp_id;
-		$training->sequence_no = $sequence_no;
 		$training->originator = $request->originator;
 		$training->project_code = $request->project_code;
 		$training->discipline = $request->discipline;
@@ -185,7 +152,7 @@ class TrainingController extends Controller
 					$extension = pathinfo($file, PATHINFO_EXTENSION);
 					$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
 					$trainee["src"]->storeAs('media/training', $file_name, 'public');
-		
+
 					$files[] = [
 						"src" => $file_name,
 						"training_id" => (int)$training_id,

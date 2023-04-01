@@ -3,7 +3,7 @@ import { useEffect, useState, Suspense, lazy } from "react";
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 const FileManagerPage = lazy(() => import("./FileManagerPage"));
 
-const index = ({ folders }) => {
+const index = ({ folders, externalTraining }) => {
 	const [data, setData] = useState([]);
 
 	useEffect(() => {
@@ -26,7 +26,7 @@ const index = ({ folders }) => {
 	return (
 		<Suspense fallback={<LoadingScreen />}>
 			<DashboardLayout>
-				<FileManagerPage folders={data} />
+				<FileManagerPage folders={data} externalTraining={externalTraining} />
 			</DashboardLayout>
 		</Suspense>
 	)

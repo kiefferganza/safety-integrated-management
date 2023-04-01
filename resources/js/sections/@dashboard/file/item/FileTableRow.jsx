@@ -46,7 +46,7 @@ FileTableRow.propTypes = {
 export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
 	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
-	const { id, name, size, type, dateCreated, totalDocs, revision_no } = row;
+	const { id, name, size, type, dateCreated, totalDocs, totalFiles, revision_no, url } = row;
 
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -160,19 +160,23 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 				</TableCell>
 
 				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-					{(totalDocs || 0).toLocaleString()}
+					{totalDocs && (totalDocs || 0).toLocaleString()}
 				</TableCell>
 
 				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-					{fData(size)}
+					{totalFiles && (totalFiles || 0).toLocaleString()}
 				</TableCell>
 
 				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-					{revision_no}
+					{size && fData(size)}
 				</TableCell>
 
 				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-					{fDate(dateCreated)}
+					{revision_no && revision_no}
+				</TableCell>
+
+				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
+					{dateCreated && fDate(dateCreated)}
 				</TableCell>
 
 				<TableCell align="right">
@@ -185,7 +189,7 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem
 					component={Link}
-					href={PATH_DASHBOARD.fileManager.view(id)}
+					href={url || PATH_DASHBOARD.fileManager.view(id)}
 				>
 					<Iconify icon="ic:outline-remove-red-eye" />
 					Visit
@@ -246,6 +250,7 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 				open={openDetails}
 				onClose={handleCloseDetails}
 				onDelete={onDeleteRow}
+				canDelete={canDelete}
 			/>
 
 			<ConfirmDialog

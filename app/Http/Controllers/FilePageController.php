@@ -2,28 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Document;
-use App\Models\DocumentApprovalSign;
-use App\Models\DocumentCommentReplies;
-use App\Models\DocumentResponseFile;
-use App\Models\DocumentReviewer;
-use App\Models\DocumentReviewerSign;
-use App\Models\FileModel;
 use App\Models\FolderModel;
-use App\Models\User;
+use App\Models\Training;
 use App\Services\FolderService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class FilePageController extends Controller
 {
 	public function index() {
+		$storage = Storage::disk("public");
+		$training = Training::select("training_id")
+		->with("training_files")
+		->where("type", 3)
+		->where("is_deleted", 0)
+		->get()
+		->map(fn($training) => $training->training_files);
+		$trainingCount = count($training);
+		$fileCount = 0;
+		$size = 0;
+		foreach ($training->flatten() as $file) {
+			$path = "media/training/" . $file->src;
+			if($storage->exists($path)) {
+				$fileCount++;
+				$size += $storage->size($path);
+			}
+		}
+
 		return Inertia::render("Dashboard/Management/FileManager/index", [
-			"folders" => (new FolderService)->getFolders()
+			"folders" => (new FolderService)->getFolders(),
+			"externalTraining" => [
+				"id" => random_int(10000,99999),
+				"count" => $trainingCount,
+				"files" => $fileCount,
+				"size" => $size
+			]
 		]);
 	}
 	
@@ -66,6 +82,19 @@ class FilePageController extends Controller
 		->with("type", "error");
 	}
 
+
+	public function thirdParty() {
+		$trainings = Training::where([["is_deleted", false], ["type", 3]])
+		->withCount(["training_files", "trainees"])
+		->orderByDesc("date_created")
+		->get();
+
+		return Inertia::render("Dashboard/Management/FileManager/Document/External/ThirdPartyTraining/index", [
+			"trainings" => $trainings,
+			"url" => "third-party",
+			"type" => 3
+		]);
+	}
 	
 
 }

@@ -9,7 +9,6 @@ use Inertia\Inertia;
 use App\Models\Inventory;
 use App\Models\InventoryBound;
 use App\Models\InventoryReportComments;
-use App\Models\InventoryReportList;
 use Illuminate\Support\Facades\DB;
 
 class InventoryReportController extends Controller

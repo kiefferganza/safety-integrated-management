@@ -38,6 +38,7 @@ export default function FileDetailsDrawer ({
 	onCopyLink,
 	onClose,
 	onDelete,
+	canDelete,
 	...other
 }) {
 	const { id, name, size, url, type, dateCreated, revision_no } = item;
@@ -65,7 +66,7 @@ export default function FileDetailsDrawer ({
 				<Scrollbar sx={{ height: 1, "& .simplebar-content": { height: 1 } }}>
 					<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 2.5, py: 2 }}>
 						<Typography variant="h6"> Info </Typography>
-						<IconButton component={Link} href={PATH_DASHBOARD.fileManager.view(id)}>
+						<IconButton component={Link} href={url || PATH_DASHBOARD.fileManager.view(id)}>
 							<Iconify icon="mdi:chevron-double-right" width={25} />
 						</IconButton>
 					</Stack>
@@ -73,7 +74,7 @@ export default function FileDetailsDrawer ({
 					<Stack spacing={2.5} sx={{ p: 2.5, bgcolor: 'background.neutral', height: 1 }}>
 						<FileThumbnail
 							imageView
-							file={type === 'folder' ? type : url}
+							file={type}
 							sx={{ width: 64, height: 64 }}
 							imgSx={{ borderRadius: 1 }}
 						/>
@@ -90,11 +91,11 @@ export default function FileDetailsDrawer ({
 							{toggleProperties && (
 								<>
 									<Stack spacing={1.5}>
-										<Row label="Size" value={fData(size)} />
+										{size && <Row label="Size" value={fData(size)} />}
 
-										<Row label="Revisions" value={revision_no + ""} />
+										{revision_no && <Row label="Revisions" value={revision_no + ""} />}
 
-										<Row label="Created" value={fDateTime(dateCreated)} />
+										{dateCreated && <Row label="Created" value={fDateTime(dateCreated)} />}
 
 										<Row label="Type" value={fileFormat(type)} />
 									</Stack>
@@ -104,18 +105,20 @@ export default function FileDetailsDrawer ({
 					</Stack>
 				</Scrollbar>
 
-				<Box sx={{ p: 2.5 }}>
-					<Button
-						fullWidth
-						variant="soft"
-						color="error"
-						size="large"
-						startIcon={<Iconify icon="eva:trash-2-outline" />}
-						onClick={onDelete}
-					>
-						Delete
-					</Button>
-				</Box>
+				{canDelete && (
+					<Box sx={{ p: 2.5 }}>
+						<Button
+							fullWidth
+							variant="soft"
+							color="error"
+							size="large"
+							startIcon={<Iconify icon="eva:trash-2-outline" />}
+							onClick={onDelete}
+						>
+							Delete
+						</Button>
+					</Box>
+				)}
 			</Drawer>
 		</>
 	);

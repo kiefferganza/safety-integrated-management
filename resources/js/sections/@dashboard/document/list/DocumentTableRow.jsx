@@ -33,7 +33,7 @@ DocumentTableRow.propTypes = {
 	onSelectRow: PropTypes.func,
 };
 
-export default function DocumentTableRow ({ row, selected, onSelectRow, onDeleteRow, folder }) {
+export default function DocumentTableRow ({ row, selected, onSelectRow, onDeleteRow, folder, canView }) {
 	const [openCollapse, setOpenCollapse] = useState(false);
 	const [openConfirm, setOpenConfirm] = useState(false);
 	const [openFileList, setOpenFileList] = useState(false);

@@ -124,14 +124,14 @@ export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
 				<Box
 					onClick={(e) => {
 						e.stopPropagation();
-						Inertia.visit(PATH_DASHBOARD.fileManager.view(folder.id));
+						Inertia.visit(folder.url || PATH_DASHBOARD.fileManager.view(folder.id));
 					}}
 					component="img"
 					src="/storage/assets/icons/files/ic_folder.svg"
 					sx={{ width: 40, height: 40, cursor: 'pointer' }}
 				/>
 
-				<TextMaxLine asLink href={PATH_DASHBOARD.fileManager.view(folder.id)} onClick={(e) => e.stopPropagation()} variant="h6" sx={{ mt: 1, mb: 0.5, cursor: 'pointer' }}>
+				<TextMaxLine asLink href={folder.url || PATH_DASHBOARD.fileManager.view(folder.id)} onClick={(e) => e.stopPropagation()} variant="h6" sx={{ mt: 1, mb: 0.5, cursor: 'pointer' }}>
 					{folder.name}
 				</TextMaxLine>
 
@@ -141,22 +141,22 @@ export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
 					spacing={0.75}
 					sx={{ typography: 'caption', color: 'text.disabled' }}
 				>
-					<Box> {fData(folder.size)} </Box>
+					<Box> {folder.size && fData(folder.size)} </Box>
 
 					<Box sx={{ width: 2, height: 2, borderRadius: '50%', bgcolor: 'currentColor' }} />
 
-					<Box> {folder.totalFiles} files </Box>
+					<Box> {folder.totalFiles && `${folder.totalFiles} files`} </Box>
 
 					<Box sx={{ width: 2, height: 2, borderRadius: '50%', bgcolor: 'currentColor' }} />
 
-					<Box> {folder.totalDocs} docs </Box>
+					<Box>{folder.totalDocs && `${folder.totalDocs} docs`}</Box>
 				</Stack>
 			</Card>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem
 					component={Link}
-					href={PATH_DASHBOARD.fileManager.view(folder.id)}
+					href={folder.url || PATH_DASHBOARD.fileManager.view(folder.id)}
 				>
 					<Iconify icon="ic:outline-remove-red-eye" />
 					Visit

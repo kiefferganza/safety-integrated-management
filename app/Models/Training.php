@@ -16,33 +16,16 @@ class Training extends Model
 	const CREATED_AT = 'date_created';
 	const UPDATED_AT = 'date_updated';
 
-	/**
-	 * The attributes that are mass assignable.
-	 *
-	 * @var array<int, string>
-	 */
-	protected $fillable = [
-		'originator',
-		'project_code',
-		'discipline',
-		'document_type',
-		'document_level',
-		'document_zone',
-		'sequence_no',
-		'title',
-		'location',
-		'contract_no',
-		'remarks',
-		'trainer',
-		'training_hrs',
-		'user_id',
-		'employee_id',
-		'status',
-		'type',
-		'training_date',
-		'date_expired',
-		'is_deleted'
-	];
+	protected $guarded = [];
+
+	protected static function boot() {
+		parent::boot();
+
+		static::creating(function ($training) {
+			$sequence = Training::where([["is_deleted", false], ["type", $training->type]])->count();
+			$training->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
+		});
+	}
 
 	public function trainees() {
 		return $this->belongsToMany(Employee::class, "tbl_training_trainees", "training_id", "employee_id", "training_id")->wherePivot("is_removed", false)->withPivot("trainee_id");

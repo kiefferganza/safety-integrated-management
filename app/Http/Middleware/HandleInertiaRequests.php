@@ -59,7 +59,7 @@ class HandleInertiaRequests extends Middleware
 							->leftJoin("tbl_department", "tbl_employees.department", "tbl_department.department_id")
 							->leftJoin("tbl_position", "tbl_employees.position", "tbl_position.position_id");
 						},
-						"social_accounts"
+						// "social_accounts"
 					]),
 					"permissions" => $permissions,
 					"role" => $user->roles->pluck('name')[0]

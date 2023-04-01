@@ -54,7 +54,7 @@ const STATUS_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function TrainingClientList ({ trainings, module, url, type }) {
+export default function ThirdPartyTrainingListPage ({ trainings, url, type }) {
 	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const {
@@ -222,16 +222,20 @@ export default function TrainingClientList ({ trainings, module, url, type }) {
 	return (
 		<>
 			<Head>
-				<title>{`${module} List`}</title>
+				<title>Third Party List</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading={`${module} List`}
+					heading="Third Party List"
 					links={[
 						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{
-							name: module,
+							name: "Folders",
+							href: PATH_DASHBOARD.fileManager.root,
+						},
+						{
+							name: "Third Party",
 							href: PATH_DASHBOARD.training.new(type),
 						},
 						{ name: 'List' },

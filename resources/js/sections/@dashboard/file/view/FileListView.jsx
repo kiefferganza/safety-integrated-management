@@ -19,6 +19,7 @@ import FileTableRow from '../item/FileTableRow';
 const TABLE_HEAD = [
 	{ id: 'name', label: 'Name', align: 'left' },
 	{ id: 'totalDocs', label: 'Documents', align: 'left' },
+	{ id: 'totalFiles', label: 'Files', align: 'left' },
 	{ id: 'size', label: 'Size', align: 'left' },
 	{ id: 'revision_no', label: 'Revisions', align: 'left' },
 	{ id: 'dateCreated', label: 'Created', align: 'left' },
