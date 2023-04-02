@@ -23,7 +23,8 @@ TrainingNewEditForm.propTypes = {
 };
 
 export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
-	const { trainings, type, errors: resErrors } = usePage().props;
+	const { type, sequences, errors: resErrors } = usePage().props;
+
 	const [loadingSend, setLoadingSend] = useState(false);
 
 	const newTrainingSchema = Yup.object().shape({
@@ -49,7 +50,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 	});
 
 	const defaultValues = useMemo(() => ({
-		sequence_no: currentTraining?.sequence_no || '',
+		sequence_no: currentTraining?.sequence_no || sequences[type] || '',
 		project_code: currentTraining?.project_code || '',
 		originator: currentTraining?.originator || '',
 		discipline: currentTraining?.discipline || '',
@@ -81,26 +82,16 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 	const {
 		reset,
 		handleSubmit,
-		setValue,
 		setError,
 		formState: { isDirty }
 	} = methods;
-	const setSequenceNumber = (trType) => {
-		if (!currentTraining?.sequence_no && trainings) {
-			const trs = trainings.filter(tr => tr.type === trType ? +trType : currentTraining?.type);
-			const numOfLen = trs.length.toString().length;
-			setValue("sequence_no", "0".repeat(numOfLen === 1 ? 2 : numOfLen) + ((trs.length + 1) + ""));
-		}
-	}
 
 	useEffect(() => {
 		if (isEdit && currentTraining) {
 			reset(defaultValues);
-			setSequenceNumber(type)
 		}
 		if (!isEdit) {
 			reset(defaultValues);
-			setSequenceNumber(type)
 		}
 		if (Object.keys(resErrors).length !== 0) {
 			for (const key in resErrors) {
@@ -108,7 +99,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isEdit, currentTraining, trainings, resErrors]);
+	}, [isEdit, currentTraining, resErrors]);
 
 	const handleCreateAndSend = async (data) => {
 		try {
@@ -150,7 +141,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		<FormProvider methods={methods}>
 			<Card>
 
-				<TrainingProjectDetails isEdit={isEdit} updateSequence={setSequenceNumber} />
+				<TrainingProjectDetails isEdit={isEdit} sequences={sequences} />
 
 				<TrainingNewEditDetails isEdit={isEdit} currentTraining={currentTraining} />
 

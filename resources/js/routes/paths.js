@@ -66,7 +66,7 @@ export const PATH_DASHBOARD = {
 		profile: path(ROOTS_DASHBOARD, '/user/profile'),
 		userProfile: (userName) => path(ROOTS_DASHBOARD, `/user/profile/${userName}`),
 		account: path(ROOTS_DASHBOARD, '/user/settings'),
-		edit: (id) => path(ROOTS_DASHBOARD, `/user/${id}/edit`),
+		edit: (userName) => path(ROOTS_DASHBOARD, `/user/${userName}/edit`),
 	},
 	employee: {
 		root: path(ROOTS_DASHBOARD, '/employee/list'),

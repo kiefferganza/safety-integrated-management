@@ -95,7 +95,7 @@ export default function UserTableRow ({ row, selected, onSelectRow, onDeleteRow 
 					View
 				</MenuItem>
 
-				<MenuItem component={Link} href={PATH_DASHBOARD.user.edit(user_id)}>
+				<MenuItem component={Link} href={PATH_DASHBOARD.user.edit(username)}>
 					<Iconify icon="eva:edit-fill" />
 					Edit
 				</MenuItem>

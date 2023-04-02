@@ -216,7 +216,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 													{excerpt(row?.filename)}
 												</Link>
 											) : (
-												"N/A"
+												row?.filename || "N/A"
 											)}
 										</TableCell>
 

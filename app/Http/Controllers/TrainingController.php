@@ -8,6 +8,7 @@ use App\Models\Training;
 use App\Models\TrainingExternal;
 use App\Models\TrainingFiles;
 use App\Models\TrainingTrainees;
+use App\Services\TrainingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -16,14 +17,9 @@ use Inertia\Inertia;
 class TrainingController extends Controller
 {
 	public function index() {
-		$trainings = Training::where([["is_deleted", false], ["type", 2]])
-		->withCount(["training_files", "trainees"])
-		->orderByDesc("date_created")
-		->get();
-
 
 		return Inertia::render("Dashboard/Management/Training/List/index", [
-			"trainings" => $trainings,
+			"trainings" => (new TrainingService)->getTrainingByType(2),
 			"module" => "Client",
 			"url" => "client",
 			"type" => 2
@@ -32,13 +28,9 @@ class TrainingController extends Controller
 
 
 	public function in_house() {
-		$trainings = Training::where([["is_deleted", false], ["type", 1]])
-		->withCount(["training_files", "trainees"])
-		->orderByDesc("date_created")
-		->get();
 
 		return Inertia::render("Dashboard/Management/Training/List/index", [
-			"trainings" => $trainings,
+			"trainings" => (new TrainingService)->getTrainingByType(1),
 			"module" => "In House",
 			"url" => "in-house",
 			"type" => 1
@@ -46,13 +38,9 @@ class TrainingController extends Controller
 	}
 
 	public function external() {
-		$trainings = Training::where([["is_deleted", false], ["type", 3]])
-		->withCount(["training_files", "trainees"])
-		->orderByDesc("date_created")
-		->get();
 
 		return Inertia::render("Dashboard/Management/Training/List/index", [
-			"trainings" => $trainings,
+			"trainings" => (new TrainingService)->getTrainingByType(3),
 			"module" => "Third Party",
 			"url" => "third-party",
 			"type" => 3
@@ -60,13 +48,9 @@ class TrainingController extends Controller
 	}
 
 	public function induction() {
-		$trainings = Training::where([["is_deleted", false], ["type", 4]])
-		->withCount(["training_files", "trainees"])
-		->orderByDesc("date_created")
-		->get();
 
 		return Inertia::render("Dashboard/Management/Training/List/index", [
-			"trainings" => $trainings,
+			"trainings" => (new TrainingService)->getTrainingByType(4),
 			"module" => "Induction",
 			"url" => "induction",
 			"type" => 4
@@ -75,10 +59,9 @@ class TrainingController extends Controller
 
 
 	public function create(Request $request) {
-		$trainings = Training::select("type")->where([["is_deleted", false]])->get();
-
+		$trainingService = new TrainingService();
+		
 		return Inertia::render("Dashboard/Management/Training/Create/index",[
-			"trainings" => $trainings,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 				->where([
 					["tbl_position.is_deleted", 0],
@@ -86,6 +69,12 @@ class TrainingController extends Controller
 				])
 				->get(),
 			"type" => $request->query('type') ? $request->query('type') : 2,
+			"sequences" => [
+				"1" => $trainingService->getSequenceNo(1),
+				"2" => $trainingService->getSequenceNo(2),
+				"3" => $trainingService->getSequenceNo(3),
+				"4" => $trainingService->getSequenceNo(4),
+			]
 		]);
 	}
 
@@ -170,51 +159,30 @@ class TrainingController extends Controller
 		
 
 		return redirect()->back()
-		->with("trainings", Training::select("type")->where([["is_deleted", false]])->get())
 		->with("message", "Training added successfully!")
 		->with("type", "success");
 	}
 
 	public function edit(Training $training) {
-		$loadedTraining = null;
+		$trainingService = new TrainingService();
+
+		$relation = [
+			"trainees" => fn ($query) => $query->with("position"),
+			"training_files"
+		];
 		if($training->type == 3) {
-			$loadedTraining = $training->load([
-				"trainees" => fn ($query) => $query->with("position"),
-				"training_files",
-				"external_details"
-			]);
-		}else {
-			$loadedTraining = $training->load([
-				"trainees" => fn ($query) => $query->with("position"),
-				"training_files"
-			]);
+			$relation[] = "external_details";
 		}
-
-		$details = $this->getTrainingType($training->type);
-
-		$trainings = Training::where([["is_deleted", false], ["type", $training->type]])->get();
-		$number_of_trainings = $trainings->count() + 1;
-
-		$number_of_zeroes = strlen((string) $number_of_trainings);
-		$sequence_no_zeros = '';
-		for ($i = 0; $i <= $number_of_zeroes; $i++)
-		{
-			$sequence_no_zeros = $sequence_no_zeros . "0";
-		}
-		$sequence =  $sequence_no_zeros . $number_of_trainings;
-
 
 		return Inertia::render("Dashboard/Management/Training/Edit/index", [
-			"training" => $loadedTraining,
+			"training" => $training->load($relation),
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
 				["tbl_employees.is_deleted", 0]
 			])
 			->get(),
-			"trainings" => Training::select("type", 'training_id')->where([["is_deleted", false]])->get(),
-			"details" => $details,
-			"sequence_no" => $sequence
+			"details" => $trainingService->getTrainingType($training->type)
 		]);
 	}
 
@@ -399,12 +367,14 @@ class TrainingController extends Controller
 			return redirect()->back();
 		}
 
+		$trainingService = new TrainingService();
+		
+		$training = $trainingService->loadTraining($training);
+
+		$training->training_files = $trainingService->transformFiles($training->training_files);
+
 		return Inertia::render("Dashboard/Management/Training/View/index", [
-			"training" => $training->load([
-				"trainees" => fn ($query) => $query->with("position"),
-				"training_files",
-				"user_employee" => fn($q) => $q->select("user_id", "firstname", "lastname")
-			]),
+			"training" => $training,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
@@ -421,12 +391,14 @@ class TrainingController extends Controller
 			return redirect()->back();
 		}
 
+		$trainingService = new TrainingService();
+		
+		$training = $trainingService->loadTraining($training);
+
+		$training->training_files = $trainingService->transformFiles($training->training_files);
+
 		return Inertia::render("Dashboard/Management/Training/View/index", [
-			"training" => $training->load([
-				"trainees" => fn ($query) => $query->with("position"),
-				"training_files",
-				"user_employee" => fn($q) => $q->select("user_id", "firstname", "lastname")
-			]),
+			"training" => $training,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
@@ -442,17 +414,14 @@ class TrainingController extends Controller
 		if($training->type !== 3) {
 			return redirect()->back();
 		}
+		$trainingService = new TrainingService();
+		
+		$training = $trainingService->loadTraining($training);
+
+		$training->training_files = $trainingService->transformFiles($training->training_files);
+
 		return Inertia::render("Dashboard/Management/Training/View/index", [
-			"training" => $training->load([
-				"trainees" => fn ($query) => $query->with("position"),
-				"training_files",
-				"external_details" => fn($q) => $q->with([
-					"approval" => fn($q) => $q->select("employee_id","firstname", "lastname"),
-					"reviewer" => fn($q) => $q->select("employee_id","firstname", "lastname"),
-					"requested" => fn($q) => $q->select("employee_id","firstname", "lastname")
-				]),
-				"user_employee" => fn($q) => $q->select("user_id", "firstname", "lastname")
-			]),
+			"training" => $training,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
@@ -468,12 +437,14 @@ class TrainingController extends Controller
 		if($training->type !== 4) {
 			return redirect()->back();
 		}
+		$trainingService = new TrainingService();
+		
+		$training = $trainingService->loadTraining($training);
+
+		$training->training_files = $trainingService->transformFiles($training->training_files);
+
 		return Inertia::render("Dashboard/Management/Training/View/index", [
-			"training" => $training->load([
-				"trainees" => fn ($query) => $query->with("position"),
-				"training_files",
-				"user_employee" => fn($q) => $q->select("user_id", "firstname", "lastname")
-			]),
+			"training" => $training,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
@@ -483,42 +454,6 @@ class TrainingController extends Controller
 			"module" => "Induction",
 			"url" => "induction"
 		]);
-	}
-
-
-	private function getTrainingType($type) {
-		switch ($type) {
-			case 1:
-				return [
-					"title" => "In House",
-					"url" => "inHouse"
-				];
-				break;
-			case 2:
-				return [
-					"title" => "Client",
-					"url" => "client"
-				];
-				break;
-			case 3:
-				return [
-					"title" => "External",
-					"url" => "thirdParty"
-				];
-				break;
-			case 4:
-				return [
-					"title" => "Induction",
-					"url" => "induction"
-				];
-				break;
-			default:
-				return [
-					"title" => "Client",
-					"url" => "client"
-				];
-				break;
-		}
 	}
 
 }

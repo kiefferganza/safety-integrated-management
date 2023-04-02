@@ -22,7 +22,7 @@ class Training extends Model
 		parent::boot();
 
 		static::creating(function ($training) {
-			$sequence = Training::where([["is_deleted", false], ["type", $training->type]])->count();
+			$sequence = Training::where([["is_deleted", false], ["type", $training->type]])->count() + 1;
 			$training->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
 		});
 	}
@@ -30,10 +30,7 @@ class Training extends Model
 	public function trainees() {
 		return $this->belongsToMany(Employee::class, "tbl_training_trainees", "training_id", "employee_id", "training_id")->wherePivot("is_removed", false)->withPivot("trainee_id");
 	}
-
-	// public function trainee_pivot() {
-	// 	return $this->hasMany(TrainingTrainees::class, "training_id");
-	// }
+	
 
 	public function training_files() {
 		return $this->hasMany(TrainingFiles::class, "training_id", "training_id");

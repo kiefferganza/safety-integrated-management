@@ -20,13 +20,14 @@ const index = ({ training, module, url }) => {
 	const joinTrainees = () => {
 		const newTrainees = training.trainees.map(tr => {
 			const file = training.training_files.find(f => f.training_id === tr.pivot.training_id && f.emp_id === tr.employee_id);
+
 			return {
 				...tr,
 				emp_id: tr.employee_id,
 				fullname: `${tr.firstname} ${tr.lastname}`,
 				position: tr?.position?.position,
-				src: file ? `/storage/media/training/${file.src}` : null,
-				filename: file?.src || null
+				src: file?.url,
+				filename: file?.src ? file?.src && file?.url ? file.src : "Not Found" : null
 			};
 		});
 		return newTrainees;

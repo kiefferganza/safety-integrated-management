@@ -46,7 +46,7 @@ export default function TrainingEditCreatePage ({ isEdit = false, details = null
 					]}
 				/>
 
-				<TrainingNewEditForm details={details} isEdit={isEdit} currentTraining={currentTraining} />
+				<TrainingNewEditForm isEdit={isEdit} currentTraining={currentTraining} />
 			</Container>
 		</>
 	);

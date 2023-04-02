@@ -10,6 +10,7 @@ import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
 import { Inertia } from '@inertiajs/inertia';
+import { Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -88,24 +89,16 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 140 }}>
 				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						Inertia.visit(`/dashboard/training/${url}/${row.id}`, {
-							preserveScroll: true
-						});
-					}}
+					component={Link}
+					href={`/dashboard/training/${url}/${row.id}`}
 				>
 					<Iconify icon="eva:eye-fill" />
 					View
 				</MenuItem>
 				{canEdit && (
 					<MenuItem
-						onClick={() => {
-							handleClosePopover();
-							Inertia.visit(`/dashboard/training/${row.id}/edit`, {
-								preserveScroll: true
-							});
-						}}
+						component={Link}
+						href={`/dashboard/training/${row.id}/edit`}
 					>
 						<Iconify icon="eva:edit-fill" />
 						Edit

@@ -13,7 +13,7 @@ const TYPE_OPTIONS = [
 	{ type: 4, label: 'Induction' },
 ];
 
-const TrainingProjectDetails = ({ isEdit, updateSequence }) => {
+const TrainingProjectDetails = ({ isEdit, sequences }) => {
 	const { setValue } = useFormContext();
 
 	return (
@@ -30,7 +30,7 @@ const TrainingProjectDetails = ({ isEdit, updateSequence }) => {
 					sx={{ width: { xs: '100%', md: 140 } }}
 					onChange={(e) => {
 						setValue("type", e.target.value, { shoudValidate: true });
-						updateSequence(e.target.value)
+						setValue("sequence_no", sequences[e.target.value]);
 					}}
 				>
 					<option value=""></option>
