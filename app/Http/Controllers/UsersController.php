@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
@@ -316,9 +317,11 @@ class UsersController extends Controller
 	public function settings() {
 		$images = Images::where("type", "slider")->get()->transform(function ($img) {
 			$image = $img->getFirstMedia("slider");
+			$path = "images/" . md5($image->id . config('app.key')). "/" .$image->file_name;
 			$img->image = [
 				"name" => $image->name,
-				"url" => $image->getFullUrl()
+				"url" => URL::route("image", [ "path" => $path, "w" => 400, "h" => 400 ]),
+				"urlBig" => URL::route("image", [ "path" => $path, "w" => 1280 , "h" => 720, "fit" => "crop" ])
 			];
 			return $img;
 		});

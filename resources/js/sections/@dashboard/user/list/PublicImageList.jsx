@@ -19,7 +19,7 @@ const PublicImageList = ({ images = [] }) => {
 
 	const [selectedImage, setSelectedImage] = useState(0);
 
-	const imagesLightbox = images.map((img) => img.image.url);
+	const imagesLightbox = images.map((img) => img.image.urlBig);
 
 	const handleOpenLightbox = (url) => {
 		const selectedImage = imagesLightbox.findIndex((index) => index === url);
@@ -82,7 +82,7 @@ const PublicImageList = ({ images = [] }) => {
 
 function GalleryItem ({ image, onOpenLightbox, onDeleteImage }) {
 	const theme = useTheme();
-	const { url, name } = image;
+	const { url, urlBig, name } = image;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -107,7 +107,7 @@ function GalleryItem ({ image, onOpenLightbox, onDeleteImage }) {
 	return (
 		<>
 			<Card sx={{ cursor: 'pointer', position: 'relative' }}>
-				<Image alt="gallery" ratio="1/1" src={url} onClick={() => onOpenLightbox(url)} />
+				<Image alt="gallery" ratio="1/1" src={url} onClick={() => onOpenLightbox(urlBig)} />
 
 				<Stack
 					spacing={2}
