@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { persistReducer } from 'redux-persist';
+// import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 // slices
 // import mailReducer from './slices/mail';
@@ -7,7 +7,6 @@ import storage from 'redux-persist/lib/storage';
 // import productReducer from './slices/product';
 import calendarReducer from './slices/calendar';
 // import kanbanReducer from './slices/kanban';
-import employeeReducer from './slices/employee';
 import toolboxtalkReducer from './slices/toolboxtalk';
 
 // ----------------------------------------------------------------------
@@ -26,13 +25,6 @@ const rootPersistConfig = {
 // 	whitelist: ['sortBy', 'checkout'],
 // };
 
-const employeePersistConfig = {
-	key: 'employee',
-	storage,
-	keyPrefix: 'redux-',
-	whitelist: ["employees"],
-};
-
 
 const rootReducer = combineReducers({
 	// mail: mailReducer,
@@ -40,7 +32,6 @@ const rootReducer = combineReducers({
 	calendar: calendarReducer,
 	// kanban: kanbanReducer,
 	// product: persistReducer(productPersistConfig, productReducer),
-	employee: persistReducer(employeePersistConfig, employeeReducer),
 	toolboxtalk: toolboxtalkReducer
 });
 

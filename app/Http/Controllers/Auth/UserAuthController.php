@@ -21,6 +21,7 @@ class UserAuthController extends Controller
 			if(Auth::check()) {
 				return redirect()->route('dashboard');
 			}
+			cache()->flush();
 			return Inertia::render('Auth/LoginPage', [
 					'canResetPassword' => Route::has('password.request'),
 					'status' => session('status'),

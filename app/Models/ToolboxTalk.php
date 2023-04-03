@@ -17,6 +17,22 @@ class ToolboxTalk extends Model
 
 	protected $guarded = [];
 
+	protected static function boot() {
+		parent::boot();
+		
+		static::creating(function(ToolboxTalk $toolboxTalk) {
+			cache()->forget("tbtList");
+			$sequence = ToolboxTalk::where('is_deleted', 0)->where("tbt_type", $toolboxTalk->tbt_type)->count() + 1;
+			$toolboxTalk->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
+		});
+		static::updated(function() {
+			cache()->forget("tbtList");
+		});
+		static::deleted(function() {
+			cache()->forget("tbtList");
+		});
+	}
+
 
 	public function owner() {
 		return $this->belongsTo(Employee::class, "employee_id", "employee_id");

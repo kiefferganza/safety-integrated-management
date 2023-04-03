@@ -23,6 +23,22 @@ class Employee extends Model
 
 	protected $appends = ['fullname'];
 
+	// protected static function boot() {
+	// 	static::created(function() {
+	// 		cache()->forget("employees");
+	// 	});
+	// 	static::updated(function() {
+	// 		cache()->forget("employees");
+	// 	});
+	// 	static::deleted(function() {
+	// 		cache()->forget("employees");
+	// 	});
+	// }
+
+	public function user() {
+		return $this->belongsTo(User::class, "user_id", "user_id");
+	}
+
 	public function position() {
 		return $this->hasOne(Position::class, "position_id", "position");
 	}

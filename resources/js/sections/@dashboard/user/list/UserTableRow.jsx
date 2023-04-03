@@ -22,7 +22,7 @@ UserTableRow.propTypes = {
 };
 
 export default function UserTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
-	const { user_id, username, name, img_src, user_type, email, date_created, status } = row;
+	const { username, name, profile, user_type, email, date_created, status } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -53,7 +53,7 @@ export default function UserTableRow ({ row, selected, onSelectRow, onDeleteRow 
 
 				<TableCell>
 					<Stack direction="row" alignItems="center" spacing={2}>
-						<Avatar alt={name} src={img_src ? `/storage/media/photos/employee/${img_src}` : null} />
+						<Avatar alt={name} src={profile ? profile.thumbnail : null} />
 
 						<Typography variant="subtitle2" noWrap>
 							{name}

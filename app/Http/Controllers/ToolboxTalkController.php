@@ -14,14 +14,18 @@ use Inertia\Inertia;
 class ToolboxTalkController extends Controller
 {
   public function index() {
+		$positions = cache()->rememberForever("positions", fn() => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get());
+
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/All", [
 			"tbt" => ToolboxTalkService::getList(),
-			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get()
+			"positions" => $positions
 		]);
 	}
 
 
 	public function reportList() {
+		$positions = cache()->rememberForever("positions", fn() => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get());
+
 		return Inertia::render("Dashboard/Management/ToolboxTalk/Report/index", [
 			// "tbt" => ToolboxTalk::select("tbt_id", "tbt_type", "date_conducted")->where("is_deleted", 0)
 			// 					->with([
@@ -29,7 +33,7 @@ class ToolboxTalkController extends Controller
 			// 					])
 			// 					->orderBy('date_conducted')
 			// 					->get(),
-			"positions" => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get()
+			"positions" => $positions
 		]);
 	}
 

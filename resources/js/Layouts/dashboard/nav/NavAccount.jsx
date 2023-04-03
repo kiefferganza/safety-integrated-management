@@ -24,7 +24,7 @@ export default function NavAccount () {
 	return (
 		<MuiLink href="/dashboard/user/profile" component={Link} preserveScroll underline="none" color="inherit">
 			<StyledRoot>
-				<CustomAvatar src={getCurrentUserImage(user) || null} alt={getCurrentUserName(user)} />
+				<CustomAvatar src={user?.profile?.thumbnail || route("image", { path: "assets/images/default-profile.jpg", w: 128, h: 128, fit: "crop" })} alt={getCurrentUserName(user)} />
 
 				<Box sx={{ ml: 2, minWidth: 0 }}>
 					<Typography variant="subtitle2" noWrap>

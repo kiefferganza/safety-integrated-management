@@ -64,7 +64,7 @@ export default function AccountGeneral ({ user }) {
 				user_type: user?.user_type === 0 ? 0 : 1,
 				status: user?.status === 0 ? 0 : 1,
 			};
-			Inertia.post(`/dashboard/user/${user.user_id}/update`, updated, {
+			Inertia.post(route("management.user.update", user.user_id), updated, {
 				preserveScroll: true,
 				onStart () {
 					setLoading(true);

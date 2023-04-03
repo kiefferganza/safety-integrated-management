@@ -2,13 +2,9 @@ import PropTypes from 'prop-types';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
-// utils
-import { bgBlur } from '@/utils/cssStyles';
 // components
 import Image from '@/Components/image';
 import { CustomAvatar } from '@/Components/custom-avatar';
-import { usePage } from '@inertiajs/inertia-react';
-import { getCurrentUserImage } from '@/utils/formatName';
 
 // ----------------------------------------------------------------------
 
@@ -57,7 +53,7 @@ export default function ProfileCover ({ name, role, cover, user }) {
 		<StyledRoot>
 			<StyledInfo>
 				<CustomAvatar
-					src={getCurrentUserImage(user)}
+					src={user?.profile?.small || route("image", { path: "assets/images/default-profile.jpg", w: 128, h: 128, fit: "crop" })}
 					alt={`${user?.firstname || user?.employee?.firstname} ${user?.lastname || user?.employee?.lastname}`}
 					name={`${user?.firstname || user?.employee?.firstname} ${user?.lastname || user?.employee?.lastname}`}
 					sx={{

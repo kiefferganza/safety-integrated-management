@@ -41,7 +41,6 @@ import {
 import EmployeeAnalytic from '@/sections/@dashboard/employee/EmployeeAnalytic';
 import { EmployeeTableRow, EmployeeTableToolbar } from '@/sections/@dashboard/employee/list';
 import { Head, Link } from '@inertiajs/inertia-react';
-import { getFullName } from '@/utils/formatName';
 import { useSwal } from '@/hooks/useSwal';
 import { Inertia } from '@inertiajs/inertia';
 import EmployeeAssignment from '../EmployeeAssignment';
@@ -124,7 +123,6 @@ export default function EmployeeListPage ({ employees, unassignedUsers }) {
 		const data = employees?.map(employee => ({
 			...employee,
 			id: employee.employee_id,
-			name: getFullName(employee),
 			status: employee.is_active === 0 ? "active" : "inactive",
 			phone_no: employee.phone_no == 0 ? "N/A" : employee.phone_no
 		}));

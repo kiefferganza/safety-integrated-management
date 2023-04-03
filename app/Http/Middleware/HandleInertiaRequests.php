@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
@@ -36,34 +37,59 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request)
     {
-			$user = Auth::user();
+			$user = auth()->user();
 
-			$authData = null;
+			$authData = [];
 
 			if($user) {
-				$permissions = array();
-				// foreach ($user->permissions->pluck('name') as $permission) {
-				// 	$permissionArr = explode("_",$permission);
-				// 	$permissionDetail = end($permissionArr);
-				// 	array_pop($permissionArr);
-				// 	$permissionTitle = Str::title(join(" ", $permissionArr));
-				// 	$permissions[$permissionTitle][$permission] = Str::title(Str::replace("-", " ",Str::kebab($permissionDetail)));
-				// }
-				foreach ($user->permissions->pluck('name') as $permission) {
-					$permissions[$permission] = Str::title($permission);
+				$cachedUser = cache()->get("authUser");
+				if($cachedUser && $cachedUser["user"]) {
+					if($cachedUser["user"]["user_id"] !== $user->user_id) {
+						cache()->forget("authUser");
+					}
 				}
-				$authData = [
-					"user" => $user->load([
+				$authData = cache()->rememberForever("authUser", function() {
+					$user = auth()->user();
+					$user->load([
 						"employee" => function($query) {
 							$query->leftJoin("tbl_company", "tbl_employees.company", "tbl_company.company_id")
 							->leftJoin("tbl_department", "tbl_employees.department", "tbl_department.department_id")
 							->leftJoin("tbl_position", "tbl_employees.position", "tbl_position.position_id");
-						},
-						// "social_accounts"
-					]),
-					"permissions" => $permissions,
-					"role" => $user->roles->pluck('name')[0]
-				];
+						}
+					]);
+					$userData = [
+						"user_id" => $user->user_id,
+						"firstname" => $user->firstname,
+						"lastname" => $user->lastname,
+						"username" => $user->username,
+						"email" => $user->email,
+						"password" => $user->password,
+						"date_created" => $user->date_created,
+						"user_type" => $user->user_type,
+						"subscriber_id" => $user->subscriber_id,
+						"deleted" => $user->deleted,
+						"status" => $user->status,
+						"date_updated" => $user->date_updated,
+						"profile" => null,
+						"position" => $user->position,
+						"emp_id" => $user->emp_id,
+						"employee" => $user->employee
+					];
+					$profile = $user->getFirstMedia("profile", ["primary" => true]);
+					if($profile) {
+						$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
+						$userData["profile"] = [
+							"url" => URL::route("image", [ "path" => $path ]),
+							"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+							"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
+						];
+					}
+					return [
+						"user" => $userData
+					];
+				});
+				$authData["permissions"] = $user->permissions->pluck('name')->mapWithKeys(fn($item) => [$item => Str::title($item)]);
+				$authData["role"] = $user->roles->first()->name;
 			}
 
 			return array_merge(parent::share($request), [

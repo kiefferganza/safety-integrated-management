@@ -66,7 +66,7 @@ export default function AccountPopover () {
 					}),
 				}}
 			>
-				<CustomAvatar src={getCurrentUserImage(user)} alt={getCurrentUserName(user)} />
+				<CustomAvatar src={user?.profile?.thumbnail || route("image", { path: "assets/images/default-profile.jpg", w: 128, h: 128, fit: "crop" })} alt={getCurrentUserName(user)} />
 			</IconButtonAnimate>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} sx={{ width: 200, p: 0 }}>

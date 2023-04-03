@@ -20,6 +20,19 @@ class Position extends Model
 
 	public $timestamps = false;
 
+	protected static function boot() {
+		parent::boot();
+		static::created(function() {
+			cache()->forget("positions");
+		});
+		static::updated(function() {
+			cache()->forget("positions");
+		});
+		static::deleted(function() {
+			cache()->forget("positions");
+		});
+	}
+
 	function user() {
 		return $this->belongsTo(User::class, "user_id");
 	}

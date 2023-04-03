@@ -12,12 +12,10 @@ use App\Models\User;
 use App\Services\RolesAndPermissionService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 
@@ -26,15 +24,29 @@ class UsersController extends Controller
 
 	public function index()
 	{
-			$user = Auth::user();
+			$user = auth()->user();
 
-			$userslist = User::select(DB::raw("users.user_id, users.username, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id, tbl_employees.img_src"))
+			$userslist = User::select(DB::raw("users.user_id, users.username, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id"))
 			->with("social_accounts")
 			->join("tbl_employees", "users.emp_id", "tbl_employees.employee_id")
 			->where([
 					["users.subscriber_id", $user->subscriber_id],
 					["users.deleted", 0]
-			])->get();
+			])->get()
+			->transform(function ($user) {
+				$profile = $user->getFirstMedia("profile", ["primary" => true]);
+				if($profile) {
+					$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
+					$user->profile = [
+						"url" => URL::route("image", [ "path" => $path ]),
+						"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+						"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
+					];
+					return $user;
+				}
+				$user->profile = null;
+				return $user;
+			});
 
 		return Inertia::render("Dashboard/Management/User/List/index", ["users" => $userslist]);
 	}
@@ -69,7 +81,7 @@ class UsersController extends Controller
 		$user->lastname = $request->lastname;
 		$user->email = $request->email;
 		$user->user_type = $request->user_type;
-		$user->subscriber_id = Auth::user()->user_id;
+		$user->subscriber_id = auth()->user()->user_id;
 		$user->status = 1;
 		$user->deleted = 0;
 		$user->date_updated = Carbon::now();
@@ -80,18 +92,10 @@ class UsersController extends Controller
 		$user->assignRole($requestRole);
 
 		if($request->hasFile('profile_pic')){
-			$file = $request->file("profile_pic")->getClientOriginalName();
-			$extension = pathinfo($file, PATHINFO_EXTENSION);
-			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
-			$request->file("profile_pic")->storeAs('media/photos/employee/', $file_name, 'public');
-
-			$user->profile_pic = $file_name;
-
-		}else if($request->profile_pic) {
-			$profile_pic = explode("/employee/", $request->profile_pic)[1];
-			if(Storage::exists("public/media/photos/employee/" . $profile_pic)) {
-				$user->profile_pic = $profile_pic;
-			}
+			$user
+			->addMediaFromRequest("profile_pic")
+			->withCustomProperties(['primary' => true])
+			->toMediaCollection("profile");
 		}
 
 		$user->save();
@@ -111,7 +115,7 @@ class UsersController extends Controller
 
 	public function profile() {
 		$user = auth()->user();
-		
+
 		$employee = Employee::where("employee_id", $user->emp_id)->with([
 			"participated_trainings" => fn ($q) =>
 					$q->select("title", "type", "date_expired", "training_date", "training_hrs", "tbl_training_trainees.employee_id", "tbl_training_trainees.training_id")->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id")->where("tbl_trainings.is_deleted", 0),
@@ -150,6 +154,17 @@ class UsersController extends Controller
 			"social_accounts",
 			"createdEmployees" => fn($q) => $q->select("employee_id", "firstname", "lastname", "img_src", "email", "created_by", "is_active")
 		]);
+		$user->profile = null;
+		$profile = $user->getFirstMedia("profile", ["primary" => true]);
+		if($profile) {
+			$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
+			$user->profile = [
+				"url" => URL::route("image", [ "path" => $path ]),
+				"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+				"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
+			];
+		}
+
 		$userRole = $user->roles->first()->name;
 
 		return Inertia::render("Dashboard/Management/User/Profile/index", [
@@ -178,7 +193,7 @@ class UsersController extends Controller
 		}
 		$request->validate($validate);
 
-		$role = $user->getRoleNames()[0];
+		$role = $user->roles->first()->name;;
 		$requestRole = $request->user_type === 1 ? "User" : "Admin";
 		if($requestRole !== $role) {
 			$user->roles()->detach();
@@ -195,25 +210,31 @@ class UsersController extends Controller
 			$user->password = Hash::make($request->password);
 		}
 
-		if($request->hasFile('profile_pic')){
-			$file = $request->file("profile_pic")->getClientOriginalName();
-			$extension = pathinfo($file, PATHINFO_EXTENSION);
-			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
-			$request->file("profile_pic")->storeAs('media/photos/employee/', $file_name, 'public');
-
-			$user->profile_pic = $file_name;
-
-		}else if($request->profile_pic) {
-			$profile_pic = explode("/employee/", $request->profile_pic)[1];
-			if(Storage::exists("public/media/photos/employee/" . $profile_pic)) {
-				$user->profile_pic = $profile_pic;
+		if($request->hasFile("profile_pic")){
+			$prevProfile = $user->getFirstMedia("profile", ["primary" => true]);
+			if($prevProfile) {
+				$prevProfile->setCustomProperty("primary", false);
+				$prevProfile->save();
 			}
+			$user
+			->addMediaFromRequest("profile_pic")
+			->withCustomProperties(['primary' => true])
+			->toMediaCollection("profile");
 		}
 
 		$user->save();
 
 		if($request->about && $user->emp_id) {
 			Employee::find($user->emp_id)->update(["about" => $request->about]);
+		}
+
+		$url = url()->previous();
+		$route = app('router')->getRoutes($url)->match(app('request')->create($url))->getName();
+
+		if($route === "management.user.settings") {
+			return redirect()->back()
+			->with("message", "User updated successfully!")
+			->with("type", "success");
 		}
 		
 		return redirect()->route("management.user.edit", $user->username)
@@ -228,7 +249,7 @@ class UsersController extends Controller
 
 
 	public function edit_user(User $user) {
-		$user->employee = $user->employee()->first();
+		$user->employee = $user->employee;
 		return Inertia::render("Dashboard/Management/User/Edit/index", ["user" => $user]);
 	}
 
@@ -247,7 +268,7 @@ class UsersController extends Controller
 
 
 	public function update_socials(Request $request) {
-		$user = Auth::user();
+		$user = auth()->user();
 
 		if($request->facebook) {
 			SocialAccount::firstOrCreate(
@@ -284,7 +305,7 @@ class UsersController extends Controller
 
 
 	// public function followUser($user_id) {
-	// 	$user = Auth::user();
+	// 	$user = auth()->user();
 	// 	Follower::firstOrCreate([
 	// 		"user_id" => $user->user_id,
 	// 		"following_id" => $user_id,
@@ -299,7 +320,7 @@ class UsersController extends Controller
 			"newPassword" => "required|min:6|confirmed",
 		]);
 
-		$user = Auth::user();
+		$user = auth()->user();
 
 		if(Hash::check($request->oldPassword, $user->password)) {
 			$user->password = Hash::make($request->newPassword);
@@ -315,16 +336,17 @@ class UsersController extends Controller
 
 
 	public function settings() {
-		$images = Images::where("type", "slider")->get()->transform(function ($img) {
-			$image = $img->getFirstMedia("slider");
-			$path = "images/" . md5($image->id . config('app.key')). "/" .$image->file_name;
-			$img->image = [
-				"name" => $image->name,
-				"url" => URL::route("image", [ "path" => $path, "w" => 400, "h" => 400 ]),
-				"urlBig" => URL::route("image", [ "path" => $path, "w" => 1280 , "h" => 720, "fit" => "crop" ])
-			];
-			return $img;
-		});
+		$images = auth()->user()->can("image_upload_slider") ?
+			Images::where("type", "slider")->get()->transform(function ($img) {
+				$image = $img->getFirstMedia("slider");
+				$path = "images/" . md5($image->id . config('app.key')). "/" .$image->file_name;
+				$img->image = [
+					"name" => $image->name,
+					"url" => URL::route("image", [ "path" => $path, "w" => 400, "h" => 400 ]),
+					"urlBig" => URL::route("image", [ "path" => $path, "w" => 1280 , "h" => 720, "fit" => "crop" ])
+				];
+				return $img;
+			}) : [];
 		return Inertia::render("Dashboard/Management/User/Account/index", [
 			"images" => $images
 		]);

@@ -86,10 +86,10 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onDelete
 
 				<TableCell>
 					<Stack direction="row" alignItems="center" spacing={2}>
-						<Avatar alt={row.name} src={row?.img_src ? `/storage/media/photos/employee/${row.img_src}` : null} />
+						<Avatar alt={row.fullname} src={row?.profile?.thumbnail || route("image", { path: "assets/images/default-profile.jpg", w: 128, h: 128, fit: "crop" })} />
 
 						<Typography variant="subtitle2" noWrap>
-							{row.name}
+							{row.fullname}
 						</Typography>
 					</Stack>
 				</TableCell>

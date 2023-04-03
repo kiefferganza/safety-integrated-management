@@ -52,13 +52,14 @@ class ToolboxTalkService {
 	}
 
 	public static function getList() {
-		$toolbox_talks = ToolboxTalk::where("is_deleted", 0)
+		$toolbox_talks = cache()->rememberForever("tbtList", fn() => ToolboxTalk::where("is_deleted", 0)
 		->with([
 			"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct(),
 			"file" => fn ($q) => $q->select("tbt_id","img_src"),
 			"conducted"
 		])
-		->get();
+		->orderBy('date_conducted')
+		->get());
 
 		return $toolbox_talks;
 	}
@@ -117,24 +118,26 @@ class ToolboxTalkService {
 		}
 
 		return [
-			"1" => str_repeat("0", strlen((string) $sequences["civil"])) . $sequences["civil"],
-			"2" => str_repeat("0", strlen((string) $sequences["electrical"])) . $sequences["electrical"],
-			"3" => str_repeat("0", strlen((string) $sequences["mechanical"])) . $sequences["mechanical"],
-			"4" => str_repeat("0", strlen((string) $sequences["camp"])) . $sequences["camp"],
-			"5" => str_repeat("0", strlen((string) $sequences["office"])) . $sequences["office"],
+			"1" => str_pad((string) $sequences["civil"], 6, '0', STR_PAD_LEFT),
+			"2" => str_pad((string) $sequences["electrical"], 6, '0', STR_PAD_LEFT),
+			"3" => str_pad((string) $sequences["mechanical"], 6, '0', STR_PAD_LEFT),
+			"4" => str_pad((string) $sequences["camp"], 6, '0', STR_PAD_LEFT),
+			"5" => str_pad((string) $sequences["office"], 6, '0', STR_PAD_LEFT),
+			// "1" => str_repeat("0", strlen((string) $sequences["civil"])) . $sequences["civil"],
+			// "2" => str_repeat("0", strlen((string) $sequences["electrical"])) . $sequences["electrical"],
+			// "3" => str_repeat("0", strlen((string) $sequences["mechanical"])) . $sequences["mechanical"],
+			// "4" => str_repeat("0", strlen((string) $sequences["camp"])) . $sequences["camp"],
+			// "5" => str_repeat("0", strlen((string) $sequences["office"])) . $sequences["office"],
 		];
 	}
 
 
 	public function insertGetID($input) {
-		$user = \auth()->user();
-		
-		$sequence = ToolboxTalk::where('is_deleted', 0)->where("tbt_type", $input["tbt_type"])->count() + 1;
+		$user = auth()->user();
 		
 		$tbt = new ToolboxTalk();
 
 		$tbt->employee_id = $user->emp_id;
-		$tbt->sequence_no = str_repeat("0", strlen((string) $sequence)) . $sequence;
 		$tbt->originator = $input["originator"];
 		$tbt->project_code = $input["project_code"];
 		$tbt->discipline = $input["discipline"];

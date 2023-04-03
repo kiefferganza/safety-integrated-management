@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmployeeRequest;
+use App\Models\CompanyModel;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 // use App\Models\Follower;
@@ -12,6 +14,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 
 class EmployeeController extends Controller
@@ -40,7 +43,25 @@ class EmployeeController extends Controller
 			["tbl_employees.sub_id", $user->subscriber_id],
 			["tbl_employees.is_deleted", 0]
 		])
-		->get();
+		->with([
+			"user" => fn($q) => $q->select("user_id")
+		])
+		->get()
+		->transform(function ($employee) {
+			$employee->profile = null;
+			if($employee->user) {
+				$profile = $employee->user->getFirstMedia("profile", ["primary" => true]);
+				if($profile) {
+					$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
+					$employee->profile = [
+						"url" => URL::route("image", [ "path" => $path ]),
+						"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+						"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
+					];
+				}
+			}
+			return $employee;
+		});
 
 		return Inertia::render("Dashboard/Management/Employee/List/index", [
 			"employees" => $employees,
@@ -95,12 +116,7 @@ class EmployeeController extends Controller
 		$employee->date_updated = Carbon::now();
 
 		if($request->hasFile("img_src")) {
-			$file = $request->file("img_src")->getClientOriginalName();
-			$extension = pathinfo($file, PATHINFO_EXTENSION);
-			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
-			$request->file("img_src")->storeAs('media/photos/employee', $file_name, 'public');
-
-			$employee->img_src = $file_name;
+			// $employee->user->addMediaFromRequest("profile_pic")->toMediaCollection("profile");
 		}
 
 		$employee->save();
@@ -114,17 +130,19 @@ class EmployeeController extends Controller
 
 	public function update(Employee $employee) {
 		$user = auth()->user();
-
+		
 		if($user->cannot("employee_edit") && $employee->employee_id !== $user->emp_id) {
 			abort(403);
 		}
 
+		$positions = cache()->rememberForever("positions", fn() => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get());
+
 		return Inertia::render("Dashboard/Management/Employee/Edit/index", [
 			"currentEmployee" => $employee,
-			"companies" => DB::table("tbl_company")->where([["sub_id", $user->subscriber_id], ["is_deleted", 0]])->get(),
-			"departments" => DB::table("tbl_department")->where("is_deleted", 0)->get(),
+			"companies" => CompanyModel::where("sub_id", $user->subscriber_id)->get(),
+			"departments" => Department::where("sub_id", $user->subscriber_id)->get(),
 			// "nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
-			"positions" => Position::where("is_deleted", 0)->get(),
+			"positions" => $positions,
 		]);
 	}
 
@@ -145,7 +163,6 @@ class EmployeeController extends Controller
 		$employee->company_type = $request->company_type;
 		$employee->position = (int)$request->position;
 		$employee->department = (int)$request->department;
-		// $employee->nationality = (int)$request->nationality;
 		$employee->country = $request->country;
 		$employee->birth_date = $request->birth_date;
 		$employee->is_active = $request->is_active;
@@ -154,18 +171,15 @@ class EmployeeController extends Controller
 		$employee->date_updated = Carbon::now();
 
 		if($request->hasFile("img_src")) {
-			$file = $request->file("img_src")->getClientOriginalName();
-			$extension = pathinfo($file, PATHINFO_EXTENSION);
-			$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
-			$request->file("img_src")->storeAs('media/photos/employee/', $file_name, 'public');
-
-			if($employee->img_src && $employee->img_src !== "photo-camera-neon-icon-vector-35706296.png" || $employee->img_src !== "Picture21.jpg" || $employee->img_src !== "Crystal_personal.svg") {
-				if(Storage::exists("public/media/photos/employee/" . $employee->img_src)) {
-					Storage::delete("public/media/photos/employee/" . $employee->img_src);
-				}
+			$prevProfile = $employee->user->getFirstMedia("profile", ["primary" => true]);
+			if($prevProfile) {
+				$prevProfile->setCustomProperty("primary", false);
+				$prevProfile->save();
 			}
-			
-			$employee->img_src = $file_name;
+			$employee->user
+			->addMediaFromRequest("profile_pic")
+			->withCustomProperties(['primary' => true])
+			->toMediaCollection("profile");
 		}
 
 		$employee->save();
@@ -182,6 +196,19 @@ class EmployeeController extends Controller
 
 		if($user->cannot("employee_show") && $employee->employee_id !== $user->emp_id) {
 			abort(403);
+		}
+
+		$employee->profile = null;
+		if($employee->user) {
+			$profile = $employee->user->getFirstMedia("profile", ["primary" => true]);
+			if($profile) {
+				$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
+				$employee->profile = [
+					"url" => URL::route("image", [ "path" => $path ]),
+					"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+					"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
+				];
+			}
 		}
 
 		return Inertia::render('Dashboard/Management/Employee/View/index', [

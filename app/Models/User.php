@@ -8,10 +8,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-	use HasApiTokens, HasFactory, Notifiable, HasRoles;
+	use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia;
 
 	protected $table = 'users';
 
@@ -40,7 +42,7 @@ class User extends Authenticatable
 		'about'
 	];
 
-	protected $appends = ['fullname'];
+	// protected $appends = ['fullname'];
 
 	/**
 	 * The attributes that should be hidden for serialization.
@@ -61,6 +63,48 @@ class User extends Authenticatable
 		'email_verified_at' => 'datetime',
 	];
 
+	protected static function boot() {
+		parent::boot();
+		
+		static::updated(function(User $user) {
+			$authUser = auth()->user();
+			if($authUser->user_id === $user->user_id) {
+				cache()->forget("authUser");
+
+				cache()->rememberForever("authUser", function() use($user) {
+					$user->load([
+						"employee" => function($query) {
+							$query->leftJoin("tbl_company", "tbl_employees.company", "tbl_company.company_id")
+							->leftJoin("tbl_department", "tbl_employees.department", "tbl_department.department_id")
+							->leftJoin("tbl_position", "tbl_employees.position", "tbl_position.position_id");
+						}
+					]);
+					
+					return [
+						"user" => [
+							"user_id" => $user->user_id,
+							"firstname" => $user->firstname,
+							"lastname" => $user->lastname,
+							"username" => $user->username,
+							"email" => $user->email,
+							"password" => $user->password,
+							"date_created" => $user->date_created,
+							"user_type" => $user->user_type,
+							"subscriber_id" => $user->subscriber_id,
+							"deleted" => $user->deleted,
+							"status" => $user->status,
+							"date_updated" => $user->date_updated,
+							"profile_pic" => $user->profile_pic,
+							"position" => $user->position,
+							"emp_id" => $user->emp_id,
+							"employee" => $user->employee
+						]
+					];
+				});
+			}
+		});
+	}
+
 	public function scopePersonel($query, $user) {
 		return $query->select("tbl_employees.user_id","tbl_employees.firstname", "tbl_employees.lastname", "tbl_employees.email", "emp_id", "tbl_employees.position")
 		->join("tbl_employees", "users.emp_id", "tbl_employees.employee_id")
@@ -71,6 +115,8 @@ class User extends Authenticatable
 		])
 		->orderBy("tbl_employees.firstname");
 	}
+
+
 
 	public function employee()
 	{
@@ -117,7 +163,8 @@ class User extends Authenticatable
 		return $this->hasMany(Follower::class, 'user_id', 'user_id');
 	}
 
-	public function getFullnameAttribute() {
-		return trim($this->attributes['firstname']) . ' '  . trim($this->attributes['lastname']);
-	}
+	// public function getFullnameAttribute() {
+	// 	$firstname = $this->attributes['firstname'] && "";
+	// 	return  trim($firstname). ' '  . trim($this->attributes['lastname']);
+	// }
 }

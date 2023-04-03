@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import capitalize from 'lodash/capitalize';
 // @mui
 import { Tab, Card, Tabs, Container, Box } from '@mui/material';
@@ -14,21 +14,15 @@ import { useSettingsContext } from '@/Components/settings';
 import {
 	EmployeeProfile,
 	ProfileCover,
-	ProfileFriends,
+	// ProfileFriends,
 	ProfileGallery,
 } from '@/sections/@dashboard/user/profile';
-import { getCurrentUserName } from '@/utils/formatName';
 import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTrainings';
-// Redux
-import { useSelector, useDispatch } from 'react-redux';
-import { getEmployees } from '@/redux/slices/employee';
-import EmployeeFollowers from '@/sections/@dashboard/user/profile/EmployeeFollowers';
+// import EmployeeFollowers from '@/sections/@dashboard/user/profile/EmployeeFollowers';
 
 // ----------------------------------------------------------------------
 
 export default function EmployeeProfilePage ({ employee }) {
-	const dispatch = useDispatch();
-
 	const { themeStretch } = useSettingsContext();
 
 	const [searchFriends, setSearchFriends] = useState('');
@@ -36,22 +30,17 @@ export default function EmployeeProfilePage ({ employee }) {
 
 	const [currentTab, setCurrentTab] = useState('profile');
 
-	const { employees, currentUser } = useSelector((state) => state.employee);
-
-	useEffect(() => {
-		if (employees.length === 0) {
-			dispatch(getEmployees());
-		}
-		if (employees.length > 0 && employee?.followers?.length > 0) {
-			const tmpFollowers = employee.followers.map((follower) => {
-				const emp = employees.find(e => e.user_id === follower.user_id)
-				if (emp) {
-					return emp;
-				}
-			});
-			setFollowers(tmpFollowers);
-		}
-	}, [dispatch]);
+	// useEffect(() => {
+	// 	if (employees.length > 0 && employee?.followers?.length > 0) {
+	// 		const tmpFollowers = employee.followers.map((follower) => {
+	// 			const emp = employees.find(e => e.user_id === follower.user_id)
+	// 			if (emp) {
+	// 				return emp;
+	// 			}
+	// 		});
+	// 		setFollowers(tmpFollowers);
+	// 	}
+	// }, []);
 
 	const TABS = [
 		{
@@ -99,7 +88,7 @@ export default function EmployeeProfilePage ({ employee }) {
 				links={[
 					{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 					{ name: 'Employees', href: PATH_DASHBOARD.employee.root },
-					{ name: getCurrentUserName(employee) },
+					{ name: employee.fullname },
 				]}
 			/>
 			<Card
@@ -109,7 +98,7 @@ export default function EmployeeProfilePage ({ employee }) {
 					position: 'relative',
 				}}
 			>
-				<ProfileCover user={employee} name={getCurrentUserName(employee)} role={capitalize(employee?.position?.position || "")} cover="/storage/assets/images/home/cover.jpg" />
+				<ProfileCover user={employee} name={employee.fullname} role={capitalize(employee?.position?.position || "")} cover="/storage/assets/images/home/cover.jpg" />
 
 				<Tabs
 					value={currentTab}
