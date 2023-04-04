@@ -261,8 +261,20 @@ class UsersController extends Controller
 			->where("deleted", 0)
 			->with([
 				"employee" => fn($query) => $query->withCount("trainings"),
-				"social_accounts"
-			])->get();
+				// "social_accounts"
+			])->get()
+			->transform(function ($user) {
+				$profile = $user->getFirstMedia("profile", ["primary" => true]);
+				if($profile) {
+					$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
+					$user->profile = [
+						"thumbnailLarge" => URL::route("image", [ "path" => $path, "w" => 64, "h" => 64, "fit" => "crop" ])
+					];
+					return $user;
+				}
+				$user->profile = null;
+				return $user;
+			});
 		return Inertia::render("Dashboard/Management/User/Cards/index", ["users" => $users]);
 	}
 

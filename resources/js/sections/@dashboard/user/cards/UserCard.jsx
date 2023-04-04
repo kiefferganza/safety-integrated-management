@@ -32,7 +32,7 @@ UserCard.propTypes = {
 };
 
 export function UserCard ({ user }) {
-	const { user_type, email, social_accounts, employee } = user;
+	const { user_type, email, social_accounts, employee, profile } = user;
 
 	return (
 		<Card sx={{ textAlign: 'center' }}>
@@ -54,7 +54,7 @@ export function UserCard ({ user }) {
 
 				<Avatar
 					alt={employee?.fullname}
-					src={getCurrentUserImage(user)}
+					src={profile?.thumbnailLarge}
 					sx={{
 						width: 64,
 						height: 64,
