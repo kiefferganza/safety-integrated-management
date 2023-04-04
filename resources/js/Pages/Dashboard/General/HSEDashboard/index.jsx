@@ -15,6 +15,7 @@ const index = ({ auth: { user }, trainings, tbtStatistics, sliderImages }) => {
 		}
 	}, [totalTbtByYear]);
 
+
 	if (isLoading || !totalTbtByYear || !tbtByYear) {
 		return <LoadingScreen />;
 	}

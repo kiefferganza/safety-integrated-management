@@ -86,8 +86,8 @@ export function getTbts () {
 	return async () => {
 		dispatch(slice.actions.startLoading());
 		try {
-			const { data: { tbt, positions } } = await axios.get('/api/toolbox-talks');
-			convertTbtByYear({ tbt, positions });
+			const { data: { tbt } } = await axios.get('/api/toolbox-talks');
+			convertTbtByYear({ tbt });
 			dispatch(slice.actions.setToolboxTalk(tbt));
 		} catch (error) {
 			dispatch(slice.actions.hasError(error));
@@ -95,7 +95,7 @@ export function getTbts () {
 	};
 }
 
-export function convertTbtByYear ({ tbt = [], positions = [] }) {
+export function convertTbtByYear ({ tbt = [] }) {
 	dispatch(slice.actions.startLoading());
 	const tbtByDate = tbt.reduce((acc, toolbox) => {
 		const dateConducted = new Date(toolbox.date_conducted);
@@ -157,12 +157,12 @@ export function convertTbtByYear ({ tbt = [], positions = [] }) {
 		if (year in acc) {
 			if (acc[year][month][day] !== null) {
 				acc[year][month][day].manpower += toolbox.participants.length;
-				acc[year][month][day].positions = getPositionParticipant(positions, toolbox.participants, acc[year][month][day].positions);
+				acc[year][month][day].positions = getPositionParticipant(toolbox.participants, acc[year][month][day].positions);
 				acc[year][month][day].tbt.push(toolbox);
 			} else {
 				acc[year][month][day] = {
 					manpower: toolbox.participants.length,
-					positions: getPositionParticipant(positions, toolbox.participants),
+					positions: getPositionParticipant(toolbox.participants),
 					tbt: [toolbox]
 				};
 			}
@@ -171,7 +171,7 @@ export function convertTbtByYear ({ tbt = [], positions = [] }) {
 
 			acc[year][month][day] = {
 				manpower: toolbox.participants.length,
-				positions: getPositionParticipant(positions, toolbox.participants),
+				positions: getPositionParticipant(toolbox.participants),
 				tbt: [toolbox]
 			};
 		}
@@ -181,10 +181,9 @@ export function convertTbtByYear ({ tbt = [], positions = [] }) {
 	dispatch(slice.actions.setTbtByYear(tbtByDate));
 }
 
-function getPositionParticipant (positions, participants = [], defaultValue = {}) {
+function getPositionParticipant (participants = [], defaultValue = {}) {
 	return participants.reduce((participantObj, currParticipant) => {
-		const pos = positions.find(pos => pos.position_id === currParticipant.position);
-		const position = pos.position.trim();
+		const position = currParticipant?.raw_position?.trim();
 		if (position in participantObj) {
 			participantObj[position] += 1;
 		} else {

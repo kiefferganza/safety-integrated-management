@@ -4,7 +4,7 @@ import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from '@inertiajs/inertia-react';
 const TBTReportPage = lazy(() => import("./TBTReportPage"));
 
-const index = ({ positions }) => {
+const index = () => {
 	return (
 		<>
 			<Head>
@@ -12,7 +12,7 @@ const index = ({ positions }) => {
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
-					<TBTReportPage positions={positions} />
+					<TBTReportPage />
 				</DashboardLayout>
 			</Suspense>
 		</>

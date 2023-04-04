@@ -24,17 +24,7 @@ class ToolboxTalkController extends Controller
 
 
 	public function reportList() {
-		$positions = cache()->rememberForever("positions", fn() => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get());
-
-		return Inertia::render("Dashboard/Management/ToolboxTalk/Report/index", [
-			// "tbt" => ToolboxTalk::select("tbt_id", "tbt_type", "date_conducted")->where("is_deleted", 0)
-			// 					->with([
-			// 						"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct()
-			// 					])
-			// 					->orderBy('date_conducted')
-			// 					->get(),
-			"positions" => $positions
-		]);
+		return Inertia::render("Dashboard/Management/ToolboxTalk/Report/index");
 	}
 
 

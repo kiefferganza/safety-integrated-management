@@ -17,8 +17,8 @@ class RemoveDeletedData extends Seeder
 	 */
 	public function run()
 	{
-		Position::where("is_deleted", 0)->delete();
-		CompanyModel::where("is_deleted", 0)->delete();
-		Department::where("is_deleted", 0)->delete();
+		Position::where("is_deleted", 1)->delete();
+		CompanyModel::where("is_deleted", 1)->delete();
+		Department::where("is_deleted", 1)->delete();
 	}
 }

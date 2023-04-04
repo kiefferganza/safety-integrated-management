@@ -23,21 +23,18 @@ Route::middleware('auth')->group(function ()
 	Route::get('toolbox-talks', function() {
 		$tbt = cache()->rememberForever("tbtList", fn() => ToolboxTalk::where("is_deleted", 0)
 		->with([
-			"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct(),
+			"participants" => fn ($q) => $q->select("firstname", "lastname", "position", "raw_position")->distinct(),
 			"file" => fn ($q) => $q->select("tbt_id","img_src"),
 			"conducted"
 		])
 		->orderBy('date_conducted')
 		->get());
 
-		$positions = cache()->rememberForever("positions", fn() => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get());
-
 		return [
-			"tbt" => $tbt,
-			"positions" => $positions
+			"tbt" => $tbt
 		];
 	});
-	
+
 	Route::post('/user/follow/{user_id}', [UsersController::class, "followUser"]);
 
 });

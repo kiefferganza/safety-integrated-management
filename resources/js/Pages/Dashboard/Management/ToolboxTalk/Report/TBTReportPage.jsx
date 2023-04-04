@@ -45,7 +45,7 @@ const TYPES = {
 	'Office': 5,
 };
 
-const TBTReportPage = ({ positions }) => {
+const TBTReportPage = () => {
 	const { toolboxTalks, tbtByYear, tbtYearTotalByPosition, totalTbtByYear, isLoading } = useSelector(state => state.toolboxtalk);
 	const { themeStretch } = useSettingsContext();
 	const theme = useTheme();
@@ -138,9 +138,9 @@ const TBTReportPage = ({ positions }) => {
 		if (newVal.length > 0) {
 			const types = newVal.map(ft => TYPES[ft]);
 			const filteredTbt = toolboxTalks.filter((toolbox) => types.indexOf(+toolbox.tbt_type) !== -1);
-			convertTbtByYear({ tbt: filteredTbt, positions });
+			convertTbtByYear({ tbt: filteredTbt });
 		} else {
-			convertTbtByYear({ tbt: toolboxTalks, positions });
+			convertTbtByYear({ tbt: toolboxTalks });
 		}
 		setFilterType(newVal);
 	};
