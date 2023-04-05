@@ -5,7 +5,7 @@ import { getCurrentUserName } from "@/utils/formatName";
 import { Head } from "@inertiajs/inertia-react";
 const EmployeeProfilePage = lazy(() => import("./EmployeeProfilePage"));
 
-const index = ({ employee }) => {
+const index = ({ employee, trainings = [], gallery = [], currentTab }) => {
 
 	return (
 		<>
@@ -14,7 +14,7 @@ const index = ({ employee }) => {
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
-					<EmployeeProfilePage employee={employee} />
+					<EmployeeProfilePage employee={employee} gallery={gallery} trainings={trainings} currentTab={currentTab} />
 				</DashboardLayout>
 			</Suspense>
 		</>

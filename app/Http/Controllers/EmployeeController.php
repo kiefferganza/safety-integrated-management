@@ -9,8 +9,11 @@ use Illuminate\Http\Request;
 use App\Models\Employee;
 // use App\Models\Follower;
 use App\Models\Position;
+use App\Models\Training;
+use App\Models\TrainingTrainees;
 use App\Models\TrainingType;
 use App\Models\User;
+use App\Services\EmployeeService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -73,11 +76,13 @@ class EmployeeController extends Controller
 	public function create() {
 		$user = auth()->user();
 
+		$positions = cache()->rememberForever("positions:".$user->subscriber_id, fn() => Position::where("user_id", $user->subscriber_id)->get());
+
 		return Inertia::render("Dashboard/Management/Employee/Create/index", [
 			"companies" => DB::table("tbl_company")->where([["sub_id", $user->subscriber_id], ["is_deleted", 0]])->get(),
 			"departments" => DB::table("tbl_department")->where("is_deleted", 0)->get(),
 			// "nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
-			"positions" => Position::where("is_deleted", 0)->get(),
+			"positions" => $positions->filter(fn($pos) => $pos->is_deleted === 0)->values(),
 			"users" => User::select("firstname", "lastname", "email", "position")
 				->where([
 					["deleted", 0],
@@ -135,14 +140,14 @@ class EmployeeController extends Controller
 			abort(403);
 		}
 
-		$positions = cache()->rememberForever("positions", fn() => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get());
+		$positions = cache()->rememberForever("positions:".$user->subscriber_id, fn() => Position::where("user_id", $user->subscriber_id)->get());
 
 		return Inertia::render("Dashboard/Management/Employee/Edit/index", [
 			"currentEmployee" => $employee,
 			"companies" => CompanyModel::where("sub_id", $user->subscriber_id)->get(),
 			"departments" => Department::where("sub_id", $user->subscriber_id)->get(),
 			// "nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
-			"positions" => $positions,
+			"positions" => $positions->filter(fn($pos) => $pos->is_deleted === 0)->values(),
 		]);
 	}
 
@@ -153,36 +158,7 @@ class EmployeeController extends Controller
 			abort(403);
 		}
 
-		$employee->firstname = $request->firstname;
-		$employee->middlename = $request->middlename ? $request->middlename : " ";
-		$employee->lastname = $request->lastname;
-		$employee->sex = $request->sex;
-		$employee->phone_no = $request->phone_no;
-		$employee->email = $request->email;
-		$employee->company = (int)$request->company;
-		$employee->company_type = $request->company_type;
-		$employee->position = (int)$request->position;
-		$employee->department = (int)$request->department;
-		$employee->country = $request->country;
-		$employee->birth_date = $request->birth_date;
-		$employee->is_active = $request->is_active;
-		$employee->sex = $request->sex;
-		$employee->about = $request->about;
-		$employee->date_updated = Carbon::now();
-
-		if($request->hasFile("img_src")) {
-			$prevProfile = $employee->user->getFirstMedia("profile", ["primary" => true]);
-			if($prevProfile) {
-				$prevProfile->setCustomProperty("primary", false);
-				$prevProfile->save();
-			}
-			$employee->user
-			->addMediaFromRequest("profile_pic")
-			->withCustomProperties(['primary' => true])
-			->toMediaCollection("profile");
-		}
-
-		$employee->save();
+		(new EmployeeService)->edit($request, $employee);
 		
 		return redirect()->back()
 		->with("message", "Employee updated successfully!")
@@ -193,11 +169,12 @@ class EmployeeController extends Controller
 
 	public function show(Employee $employee) {
 		$user = auth()->user();
-
+		
 		if($user->cannot("employee_show") && $employee->employee_id !== $user->emp_id) {
 			abort(403);
 		}
 
+		$employee->social_accounts = [];
 		$employee->profile = null;
 		if($employee->user) {
 			$profile = $employee->user->getFirstMedia("profile", ["primary" => true]);
@@ -211,39 +188,72 @@ class EmployeeController extends Controller
 			}
 		}
 
+		$trainings = TrainingTrainees::select("tbl_trainings.training_id", "training_date", "date_expired")
+		->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id")
+		->where("tbl_training_trainees.employee_id", $employee->employee_id)
+		->where("tbl_trainings.is_deleted", 0)
+		->get();
+		
 		return Inertia::render('Dashboard/Management/Employee/View/index', [
-			"employee" => $employee->load([
-				"participated_trainings" => fn ($query) => 
-					$query->select("title", "type", "date_expired", "training_date", "training_hrs", "tbl_training_trainees.employee_id", "tbl_training_trainees.training_id")->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id"),
-				"company" => fn ($query) =>
-					$query->select("company_id", "company_name")->where("is_deleted", 0),
-				"position" => fn ($query) => 
-					$query->select("position_id", "position")->where("is_deleted", 0),
-				"department" => fn ($query) => 
-					$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
-				"social_accounts"
-			]),
+			"employee" => $employee,
+			"trainings" => $trainings,
+			"currentTab" => "profile"
+		]);
+	}
+
+	
+	public function profileTrainings(Employee $employee) {
+		
+		$trainings = TrainingTrainees::select("tbl_trainings.training_id", "title", "type", "training_hrs", "training_date", "date_expired")
+		->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id")
+		->where("tbl_training_trainees.employee_id", $employee->employee_id)
+		->where("tbl_trainings.is_deleted", 0)
+		->get();
+
+		return Inertia::render('Dashboard/Management/Employee/View/index', [
+			"employee" => $employee,
+			"trainings" => $trainings,
+			"currentTab" => "trainings",
 			"trainingTypes" => TrainingType::get()
 		]);
 	}
 
-	public function profile() {
+
+	public function profileGallery(Employee $employee) {
 		$user = auth()->user();
+		if($user->cannot("employee_show") && $employee->employee_id !== $user->emp_id) {
+			abort(403);
+		}
+		
+
+		$employee->social_accounts = [];
+		$employee->profile = null;
+		$gallery = [];
+		
+		if($employee->user) {
+			$profile = $employee->user->getFirstMedia("profile", ["primary" => true]);
+			if($profile) {
+				$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
+				$employee->profile = [
+					"url" => URL::route("image", [ "path" => $path ]),
+					"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+					"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
+				];
+			}
+			
+			$gallery = $employee->user->getMedia("profile")->transform(fn($media) => [
+				"url" => URL::route("image", [ "path" => "user/". md5($media->id . config('app.key')). "/" .$media->file_name ]),
+				"name" => $media->name,
+				"id" => $media->uuid
+			]);
+		}
 
 		return Inertia::render('Dashboard/Management/Employee/View/index', [
-			"employee" => $user->employee->load([
-				"participated_trainings" => fn ($query) => 
-					$query->select("title", "type", "date_expired", "training_date", "training_hrs", "tbl_training_trainees.employee_id", "tbl_training_trainees.training_id")->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id"),
-				"company" => fn ($query) =>
-					$query->select("company_id", "company_name")->where("is_deleted", 0),
-				"position" => fn ($query) => 
-					$query->select("position_id", "position")->where("is_deleted", 0),
-				"department" => fn ($query) => 
-					$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
-				"social_accounts"
-			]),
-			"trainingTypes" => TrainingType::get()
+			"employee" => $employee,
+			"gallery" => $gallery,
+			"currentTab" => "gallery"
 		]);
+
 	}
 
 

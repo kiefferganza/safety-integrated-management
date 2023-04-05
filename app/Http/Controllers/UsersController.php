@@ -14,7 +14,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
@@ -124,8 +123,10 @@ class UsersController extends Controller
 			"position" => fn ($query) => 
 				$query->select("position_id", "position")->where("is_deleted", 0),
 			"department" => fn ($query) => 
-				$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]])
+				$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
 		])->first();
+
+		// $employee->profiles = $user->getMedia('profile')->transform(function($profile) {});
 
 		return Inertia::render("Dashboard/Management/User/index", [
 			"employee" => $employee,
@@ -151,8 +152,8 @@ class UsersController extends Controller
 					"department" => fn ($query) => 
 						$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]])
 				]),
-			"social_accounts",
-			"createdEmployees" => fn($q) => $q->select("employee_id", "firstname", "lastname", "img_src", "email", "created_by", "is_active")
+				"createdEmployees" => fn($q) => $q->select("employee_id", "firstname", "lastname", "img_src", "email", "created_by", "is_active")
+				// "social_accounts",
 		]);
 		$user->profile = null;
 		$profile = $user->getFirstMedia("profile", ["primary" => true]);

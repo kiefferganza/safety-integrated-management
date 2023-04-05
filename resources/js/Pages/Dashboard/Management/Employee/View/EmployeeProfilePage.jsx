@@ -18,17 +18,16 @@ import {
 	ProfileGallery,
 } from '@/sections/@dashboard/user/profile';
 import EmployeeTrainings from '@/sections/@dashboard/user/profile/EmployeeTrainings';
+import { Link } from '@inertiajs/inertia-react';
 // import EmployeeFollowers from '@/sections/@dashboard/user/profile/EmployeeFollowers';
 
 // ----------------------------------------------------------------------
 
-export default function EmployeeProfilePage ({ employee }) {
+export default function EmployeeProfilePage ({ employee, trainings, currentTab = 'profile', gallery = [] }) {
 	const { themeStretch } = useSettingsContext();
 
-	const [searchFriends, setSearchFriends] = useState('');
-	const [followers, setFollowers] = useState([]);
-
-	const [currentTab, setCurrentTab] = useState('profile');
+	// const [searchFriends, setSearchFriends] = useState('');
+	// const [followers, setFollowers] = useState([]);
 
 	// useEffect(() => {
 	// 	if (employees.length > 0 && employee?.followers?.length > 0) {
@@ -47,13 +46,15 @@ export default function EmployeeProfilePage ({ employee }) {
 			value: 'profile',
 			label: 'Profile',
 			icon: <Iconify icon="ic:round-account-box" />,
-			component: <EmployeeProfile posts={_userFeeds} employee={employee} />,
+			component: <EmployeeProfile posts={_userFeeds} employee={employee} trainings={trainings} />,
+			href: "management.employee.show"
 		},
 		{
 			value: 'trainings',
 			label: 'Trainings',
 			icon: <Iconify icon="mingcute:certificate-2-fill" />,
-			component: <EmployeeTrainings trainings={employee?.participated_trainings || []} />,
+			component: <EmployeeTrainings trainings={trainings} />,
+			href: "management.employee.profileTrainings"
 		},
 		// {
 		// 	value: 'followers',
@@ -77,7 +78,8 @@ export default function EmployeeProfilePage ({ employee }) {
 			value: 'gallery',
 			label: 'Gallery',
 			icon: <Iconify icon="ic:round-perm-media" />,
-			component: <ProfileGallery gallery={_userGallery.slice(0, 3)} />,
+			component: <ProfileGallery gallery={gallery} />,
+			href: "management.employee.profileGallery"
 		},
 	];
 
@@ -98,11 +100,14 @@ export default function EmployeeProfilePage ({ employee }) {
 					position: 'relative',
 				}}
 			>
-				<ProfileCover user={employee} name={employee.fullname} role={capitalize(employee?.position?.position || "")} cover="/storage/assets/images/home/cover.jpg" />
+				<ProfileCover
+					user={employee}
+					name={employee.fullname}
+					role={capitalize(employee?.raw_position || "")}
+					cover={route("image", { path: "assets/images/home/cover.jpg" })} />
 
 				<Tabs
 					value={currentTab}
-					onChange={(event, newValue) => setCurrentTab(newValue)}
 					sx={{
 						width: 1,
 						bottom: 0,
@@ -119,7 +124,7 @@ export default function EmployeeProfilePage ({ employee }) {
 					}}
 				>
 					{TABS.map((tab) => (
-						<Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
+						<Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} component={Link} href={route(tab.href, employee.employee_id)} preserveScroll />
 					))}
 				</Tabs>
 			</Card>

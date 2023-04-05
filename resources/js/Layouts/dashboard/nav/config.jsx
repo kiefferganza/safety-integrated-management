@@ -85,8 +85,9 @@ const navConfig = [
 				routeNames: [
 					"management.employee.list",
 					"management.employee.create",
-					"management.employee.profile",
 					"management.employee.show",
+					"management.employee.profileGallery",
+					"management.employee.profileTrainings",
 					"management.employee.update",
 					"management.position.list",
 					"management.department.list",
@@ -94,8 +95,7 @@ const navConfig = [
 				],
 				children: [
 					{ title: 'create', gate: 'employee_create', path: PATH_DASHBOARD.employee.new, routeNames: ["management.employee.create"] },
-					{ title: 'profile', path: PATH_DASHBOARD.employee.profile, routeNames: ["management.employee.profile"] },
-					{ title: 'list', gate: 'employee_show', path: PATH_DASHBOARD.employee.root, routeNames: ["management.employee.list", "management.employee.show"] },
+					{ title: 'list', gate: 'employee_show', path: PATH_DASHBOARD.employee.root, routeNames: ["management.employee.list", "management.employee.show", "management.employee.profileGallery", "management.employee.profileTrainings"] },
 					// Position
 					{ title: 'position', gate: 'position_show', path: PATH_DASHBOARD.position.root, routeNames: ["management.position.list"] },
 					// Department

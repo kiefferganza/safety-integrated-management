@@ -14,7 +14,8 @@ use Inertia\Inertia;
 class ToolboxTalkController extends Controller
 {
   public function index() {
-		$positions = cache()->rememberForever("positions", fn() => Position::select("position_id", "position")->where("user_id", auth()->user()->subscriber_id)->get());
+		$user = auth()->user();
+		$positions = cache()->rememberForever("positions".$user->subscriber_id, fn() => Position::where("user_id", $user->subscriber_id)->get());
 
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/All", [
 			"tbt" => ToolboxTalkService::getList(),

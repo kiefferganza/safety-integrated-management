@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { usePage } from '@inertiajs/inertia-react';
+import { Link, usePage } from '@inertiajs/inertia-react';
 // @mui
 import { Box, Card, Typography, Stack, useTheme, Divider, ButtonBase } from '@mui/material';
 // components
@@ -104,8 +104,25 @@ function TrainingCard ({ training, trainingTypes }) {
 	const { title, training_hrs, date_expired, type, training_id } = training;
 
 	const status = getTrainingStatus(date_expired);
+
+	function getRouteNameByType () {
+		switch (type) {
+			case 1:
+				return 'training.management.in_house.show';
+			case 2:
+				return 'training.management.client.show';
+			case 3:
+				return 'training.management.external.show';
+			case 4:
+				return 'training.management.induction.show';
+			default:
+				break;
+		}
+	}
+
+	const routeName = getRouteNameByType();
 	return (
-		<ButtonBase sx={{ display: 'block', textAlign: 'initial' }} onClick={() => Inertia.visit(`/dashboard/training/${TRAINING_TYPE[type]}/${training_id}`)}>
+		<ButtonBase sx={{ display: 'block', textAlign: 'initial' }} component={Link} href={route(routeName, training_id)}>
 			<Card
 				sx={{
 					p: 3,

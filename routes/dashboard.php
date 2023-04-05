@@ -43,9 +43,9 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/new', [EmployeeController::class, "create"])->name('create');
 			Route::post('/new', [EmployeeController::class, "store"])->name('new');
 		});
-		Route::get('/profile', [EmployeeController::class, "profile"])->name('profile');
-		Route::get('/profile/gallery', [EmployeeController::class, "profileGallery"])->name('profileGallery');
 		Route::get('/{employee}/profile', [EmployeeController::class, "show"])->name('show');
+		Route::get('/{employee}/profile/gallery', [EmployeeController::class, "profileGallery"])->name('profileGallery');
+		Route::get('/{employee}/profile/trainings', [EmployeeController::class, "profileTrainings"])->name('profileTrainings');
 		Route::get('/{employee}/edit', [EmployeeController::class, "update"])->name('update');
 		Route::post('/{employee}/edit', [EmployeeController::class, "edit"])->name('edit');
 		Route::middleware("permission:employee_delete")->group(function() {

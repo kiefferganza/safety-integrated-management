@@ -42,13 +42,7 @@ class HandleInertiaRequests extends Middleware
 			$authData = [];
 
 			if($user) {
-				$cachedUser = cache()->get("authUser");
-				if($cachedUser && $cachedUser["user"]) {
-					if($cachedUser["user"]["user_id"] !== $user->user_id) {
-						cache()->forget("authUser");
-					}
-				}
-				$authData = cache()->rememberForever("authUser", function() {
+				$authData = cache()->rememberForever("authUser:".$user->user_id, function() {
 					$user = auth()->user();
 					$user->load([
 						"employee" => function($query) {

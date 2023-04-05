@@ -69,9 +69,9 @@ class User extends Authenticatable implements HasMedia
 		static::updated(function(User $user) {
 			$authUser = auth()->user();
 			if($authUser->user_id === $user->user_id) {
-				cache()->forget("authUser");
+				cache()->forget("authUser:" . $user->user_id);
 
-				cache()->rememberForever("authUser", function() use($user) {
+				cache()->rememberForever("authUser:".$user->user_id, function() use($user) {
 					$user->load([
 						"employee" => function($query) {
 							$query->leftJoin("tbl_company", "tbl_employees.company", "tbl_company.company_id")

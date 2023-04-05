@@ -17,9 +17,9 @@ EmployeeProfile.propTypes = {
 };
 
 
-export default function EmployeeProfile ({ employee }) {
+export default function EmployeeProfile ({ employee, trainings = [] }) {
 
-	const trainingSummary = employee?.participated_trainings?.reduce((acc, curr) => {
+	const trainingSummary = trainings.reduce((acc, curr) => {
 		if (isAfter(new Date(curr.training_date), new Date(curr.date_expired))) {
 			acc.expired++;
 		} else {
@@ -39,10 +39,10 @@ export default function EmployeeProfile ({ employee }) {
 						quote={employee?.about || ""}
 						country={_.capitalize(employee?.country)}
 						email={employee.email}
-						role={_.capitalize(employee?.position?.position)}
-						company={_.capitalize(employee?.company?.company_name)}
-						department={_.startCase(employee?.department?.department?.toLowerCase())}
-						editLink={`/dashboard/employee/${employee.employee_id}/edit`}
+						role={_.capitalize(employee?.raw_position)}
+						company={_.capitalize(employee?.raw_company)}
+						department={_.startCase(employee?.raw_department?.toLowerCase())}
+						editLink={route("management.employee.update", employee.employee_id)}
 					/>
 
 					{employee?.social_accounts.length > 0 && (

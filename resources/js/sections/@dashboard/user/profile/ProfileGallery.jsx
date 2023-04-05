@@ -2,13 +2,11 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Box, Card, IconButton, Typography, Stack } from '@mui/material';
+import { Box, Card, Typography, Stack } from '@mui/material';
 // utils
-import { fDate } from '@/utils/formatTime';
 import { bgBlur } from '@/utils/cssStyles';
 // components
 import Image from '@/Components/image';
-import Iconify from '@/Components/iconify';
 import Lightbox from '@/Components/lightbox';
 
 // ----------------------------------------------------------------------
@@ -17,28 +15,12 @@ ProfileGallery.propTypes = {
 	gallery: PropTypes.array,
 };
 
-const COVER_IMAGES = [
-	{
-		id: 1,
-		imageUrl: "/storage/assets/covers/card-cover-1.jpg"
-	},
-	{
-		id: 2,
-		imageUrl: "/storage/assets/covers/card-cover-2.jpg"
-	},
-	{
-		id: 3,
-		imageUrl: "/storage/assets/covers/card-cover-3.jpg"
-	},
-];
-
 export default function ProfileGallery ({ gallery }) {
 	const [openLightbox, setOpenLightbox] = useState(false);
 
 	const [selectedImage, setSelectedImage] = useState(0);
 
-	// const imagesLightbox = gallery.map((img) => img.imageUrl);
-	const imagesLightbox = COVER_IMAGES.map((img) => img.imageUrl);
+	const imagesLightbox = gallery.map((img) => img.url);
 
 	const handleOpenLightbox = (url) => {
 		const selectedImage = imagesLightbox.findIndex((index) => index === url);
@@ -62,13 +44,12 @@ export default function ProfileGallery ({ gallery }) {
 				gridTemplateColumns={{
 					xs: 'repeat(1, 1fr)',
 					sm: 'repeat(2, 1fr)',
-					md: 'repeat(3, 1fr)',
+					md: 'repeat(4, 1fr)',
 				}}
 			>
-				{COVER_IMAGES.map((image) => (
+				{gallery.map((image) => (
 					<GalleryItem key={image.id} image={image} onOpenLightbox={handleOpenLightbox} />
 				))}
-				{/* <GalleryItem image={} onOpenLightbox={handleOpenLightbox} /> */}
 			</Box>
 
 			<Lightbox
@@ -88,22 +69,20 @@ export default function ProfileGallery ({ gallery }) {
 GalleryItem.propTypes = {
 	onOpenLightbox: PropTypes.func,
 	image: PropTypes.shape({
-		title: PropTypes.string,
-		imageUrl: PropTypes.string,
-		postAt: PropTypes.instanceOf(Date),
+		url: PropTypes.string,
+		name: PropTypes.string,
 	}),
 };
 
 function GalleryItem ({ image, onOpenLightbox }) {
 	const theme = useTheme();
-
-	const { imageUrl, title, postAt } = image;
+	const { url, name } = image;
 
 	return (
 		<Card sx={{ cursor: 'pointer', position: 'relative' }}>
-			<Image alt="gallery" ratio="1/1" src={imageUrl} onClick={() => onOpenLightbox(imageUrl)} />
+			<Image alt={name} ratio="1/1" src={url} onClick={() => onOpenLightbox(url)} />
 
-			{/* <Stack
+			<Stack
 				spacing={2}
 				direction="row"
 				alignItems="center"
@@ -120,17 +99,9 @@ function GalleryItem ({ image, onOpenLightbox }) {
 				}}
 			>
 				<Stack flexGrow={1} spacing={1}>
-					<Typography variant="subtitle1">{title}</Typography>
-
-					<Typography variant="body2" sx={{ opacity: 0.72 }}>
-						{fDate(postAt)}
-					</Typography>
+					<Typography variant="subtitle1">{name}</Typography>
 				</Stack>
-
-				<IconButton color="inherit">
-					<Iconify icon="eva:more-vertical-fill" />
-				</IconButton>
-			</Stack> */}
+			</Stack>
 		</Card>
 	);
 }

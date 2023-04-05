@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { Inertia } from '@inertiajs/inertia';
-import { Link, usePage, } from '@inertiajs/inertia-react';
-import { PATH_DASHBOARD } from '@/routes/paths';
+import { Link } from '@inertiajs/inertia-react';
 // @mui
 import {
 	// Link,
@@ -24,7 +22,7 @@ import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
-import usePermission from '@/hooks/usePermission';
+// import usePermission from '@/hooks/usePermission';
 // import { useSelector, useDispatch } from 'react-redux';
 // import { followUser } from '@/redux/slices/employee';
 
@@ -39,7 +37,7 @@ EmployeeTableRow.propTypes = {
 };
 
 export default function EmployeeTableRow ({ row, selected, onSelectRow, onDeleteRow, canDelete }) {
-	const [hasPermission] = usePermission();
+	// const [hasPermission] = usePermission();
 	// const dispatch = useDispatch();
 	// const { isLoading } = useSelector(state => state.employee);
 	// const { auth: { user } } = usePage().props;
@@ -126,13 +124,8 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onDelete
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						Inertia.visit(`/dashboard/employee/${row.id}`, {
-							only: ['employee'],
-							preserveScroll: true
-						});
-					}}
+					component={Link}
+					href={route('management.employee.show', row.id)}
 				>
 					<Iconify icon="eva:eye-fill" />
 					View
@@ -149,7 +142,7 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onDelete
 				)} */}
 				<MenuItem
 					component={Link}
-					href={PATH_DASHBOARD.employee.edit(row.employee_id)}
+					href={route('management.employee.edit', row.id)}
 					preserveScroll
 					onClick={handleClosePopover}
 				>
