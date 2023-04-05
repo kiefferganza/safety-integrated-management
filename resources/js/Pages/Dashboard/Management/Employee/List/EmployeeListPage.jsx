@@ -492,7 +492,7 @@ function applyFilter ({
 
 	if (filterName) {
 		inputData = inputData.filter(
-			(employee) => employee.name.toLowerCase().includes(filterName.toLowerCase()));
+			(employee) => employee.fullname.toLowerCase().includes(filterName.toLowerCase()));
 	}
 
 	if (filterStatus !== 'all') {
@@ -504,7 +504,6 @@ function applyFilter ({
 	}
 
 	if (filterDepartment !== 'all') {
-		console.log(inputData);
 		inputData = inputData.filter((employee) => employee.department === filterDepartment);
 	}
 
