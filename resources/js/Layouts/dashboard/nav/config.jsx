@@ -43,8 +43,8 @@ const navConfig = [
 	{
 		subheader: 'general',
 		items: [
-			{ title: 'HSE-dashboard', path: PATH_DASHBOARD.general.hse_dashboard, icon: ICONS.analytics },
-			{ title: 'file', path: PATH_DASHBOARD.general.file, icon: ICONS.file },
+			{ title: 'HSE-dashboard', path: PATH_DASHBOARD.general.hse_dashboard, icon: ICONS.analytics, routeNames: ["dashboard"] },
+			{ title: 'file', path: PATH_DASHBOARD.general.file, icon: ICONS.file, routeNames: ["general.file"] },
 			{ title: 'employee', path: PATH_DASHBOARD.general.employee, icon: ICONS.employee, disabled: true },
 			{ title: 'inventory', path: PATH_DASHBOARD.general.inventory, icon: ICONS.ecommerce, disabled: true }
 		],
@@ -60,12 +60,21 @@ const navConfig = [
 				title: 'user',
 				path: PATH_DASHBOARD.user.root,
 				icon: ICONS.user,
+				routeNames: [
+					"management.user.profile",
+					"management.user.show",
+					"management.user.settings",
+					"management.user.edit",
+					"management.user.new",
+					"management.user.cards",
+					"management.user.list",
+				],
 				children: [
-					{ title: 'profile', path: PATH_DASHBOARD.user.profile },
-					{ title: 'cards', gate: "user_access", path: PATH_DASHBOARD.user.cards },
-					{ title: 'list', gate: "user_access", path: PATH_DASHBOARD.user.list },
-					{ title: 'create', gate: "user_create", path: PATH_DASHBOARD.user.new },
-					{ title: 'settings', path: PATH_DASHBOARD.user.account },
+					{ title: 'profile', path: PATH_DASHBOARD.user.profile, routeNames: ["management.user.profile"] },
+					{ title: 'cards', gate: "user_access", path: PATH_DASHBOARD.user.cards, routeNames: ["management.user.cards"] },
+					{ title: 'list', gate: "user_access", path: PATH_DASHBOARD.user.list, routeNames: ["management.user.list", "management.user.show"] },
+					{ title: 'create', gate: "user_create", path: PATH_DASHBOARD.user.new, routeNames: ["management.user.new"] },
+					{ title: 'settings', path: PATH_DASHBOARD.user.account, routeNames: ["management.user.settings"] },
 				],
 			},
 			// Employees
@@ -73,17 +82,26 @@ const navConfig = [
 				title: 'employee',
 				path: PATH_DASHBOARD.employee.root,
 				icon: ICONS.employee,
-				childList: ["position", "department", "company", "employee"],
+				routeNames: [
+					"management.employee.list",
+					"management.employee.create",
+					"management.employee.profile",
+					"management.employee.show",
+					"management.employee.update",
+					"management.position.list",
+					"management.department.list",
+					"management.company.list",
+				],
 				children: [
-					{ title: 'create', gate: 'employee_create', path: PATH_DASHBOARD.employee.new },
-					{ title: 'profile', path: PATH_DASHBOARD.employee.profile },
-					{ title: 'list', gate: 'employee_show', path: PATH_DASHBOARD.employee.root },
+					{ title: 'create', gate: 'employee_create', path: PATH_DASHBOARD.employee.new, routeNames: ["management.employee.create"] },
+					{ title: 'profile', path: PATH_DASHBOARD.employee.profile, routeNames: ["management.employee.profile"] },
+					{ title: 'list', gate: 'employee_show', path: PATH_DASHBOARD.employee.root, routeNames: ["management.employee.list", "management.employee.show"] },
 					// Position
-					{ title: 'position', gate: 'position_show', path: PATH_DASHBOARD.position.root },
+					{ title: 'position', gate: 'position_show', path: PATH_DASHBOARD.position.root, routeNames: ["management.position.list"] },
 					// Department
-					{ title: 'department', gate: 'department_show', path: PATH_DASHBOARD.department.root },
+					{ title: 'department', gate: 'department_show', path: PATH_DASHBOARD.department.root, routeNames: ["management.department.list"] },
 					// Company
-					{ title: 'company', gate: 'company_show', path: PATH_DASHBOARD.company.root },
+					{ title: 'company', gate: 'company_show', path: PATH_DASHBOARD.company.root, routeNames: ["management.company.list"] },
 				],
 			},
 
@@ -92,12 +110,24 @@ const navConfig = [
 				title: 'Training',
 				path: PATH_DASHBOARD.training.root,
 				icon: ICONS.training,
+				routeNames: [
+					"training.management.client",
+					"training.management.client.show",
+					"training.management.in_house",
+					"training.management.in_house.show",
+					"training.management.induction",
+					"training.management.induction.show",
+					"training.management.external",
+					"training.management.external.show",
+					"training.management.create",
+					"training.management.edit",
+				],
 				children: [
-					{ title: 'create', gate: 'training_create', path: PATH_DASHBOARD.training.new(2) },
-					{ title: 'client', gate: 'training_show', path: PATH_DASHBOARD.training.client },
-					{ title: 'induction', gate: 'training_show', path: PATH_DASHBOARD.training.induction },
-					{ title: 'in house', gate: 'training_show', path: PATH_DASHBOARD.training.inHouse },
-					{ title: 'third party', gate: 'training_show', path: PATH_DASHBOARD.training.thirdParty },
+					{ title: 'create', gate: 'training_create', path: PATH_DASHBOARD.training.new(2), routeNames: ["training.management.create"] },
+					{ title: 'client', gate: 'training_show', path: PATH_DASHBOARD.training.client, routeNames: ["training.management.client", "training.management.client.show"] },
+					{ title: 'induction', gate: 'training_show', path: PATH_DASHBOARD.training.induction, routeNames: ["training.management.induction", "training.management.induction.show"] },
+					{ title: 'in house', gate: 'training_show', path: PATH_DASHBOARD.training.inHouse, routeNames: ["training.management.in_house", "training.management.in_house.show"] },
+					{ title: 'third party', gate: 'training_show', path: PATH_DASHBOARD.training.thirdParty, routeNames: ["training.management.external", "training.management.external.show"] },
 					{ title: 'metrics report', path: "/#", disabled: true },
 				]
 			},
@@ -107,6 +137,15 @@ const navConfig = [
 				title: 'Inspection',
 				path: PATH_DASHBOARD.inspection.root,
 				icon: ICONS.inspection,
+				routeNames: [
+					"inspection.management.report",
+					"inspection.management.new",
+					"inspection.management.list",
+					"inspection.management.view",
+					"inspection.management.edit",
+					"inspection.management.review",
+					"inspection.management.verify"
+				],
 				children: [
 					{
 						title: "Create",
@@ -117,8 +156,8 @@ const navConfig = [
 						title: "Site",
 						path: PATH_DASHBOARD.inspection.safetyObservation,
 						children: [
-							{ title: 'list', gate: 'inspection_show', path: PATH_DASHBOARD.inspection.list },
-							{ title: 'report', path: PATH_DASHBOARD.inspection.report },
+							{ title: 'list', gate: 'inspection_show', path: PATH_DASHBOARD.inspection.list, routeNames: ["inspection.management.new", "inspection.management.list", "inspection.management.view", "inspection.management.edit", "inspection.management.review", "inspection.management.verify"] },
+							{ title: 'report', path: PATH_DASHBOARD.inspection.report, routeNames: ["inspection.management.report"] },
 						],
 					},
 					{ title: 'machineries', path: PATH_DASHBOARD.inspection.machineries, disabled: true },
@@ -131,16 +170,28 @@ const navConfig = [
 				title: 'Toolbox Talks',
 				path: PATH_DASHBOARD.toolboxTalks.root,
 				icon: ICONS.toolboxTalks,
+				routeNames: [
+					"inspection.management.all",
+					"inspection.management.civil",
+					"inspection.management.electrical",
+					"inspection.management.mechanical",
+					"inspection.management.camp",
+					"inspection.management.office",
+					"inspection.management.new",
+					"inspection.management.edit",
+					"inspection.management.report",
+					"inspection.management.statistic",
+				],
 				children: [
-					{ title: 'create', gate: 'talk_toolbox_create', path: PATH_DASHBOARD.toolboxTalks.new("1") },
-					{ title: 'all', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.root },
-					{ title: 'civil', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.civil },
-					{ title: 'electrical', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.electrical },
-					{ title: 'mechanical', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.mechanical },
-					{ title: 'workshop', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.camp },
-					{ title: 'office', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.office },
-					{ title: 'report', path: PATH_DASHBOARD.toolboxTalks.report },
-					{ title: 'statistic', path: PATH_DASHBOARD.toolboxTalks.statistic },
+					{ title: 'create', gate: 'talk_toolbox_create', path: PATH_DASHBOARD.toolboxTalks.new("1"), routeNames: ["inspection.management.new"] },
+					{ title: 'all', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.root, routeNames: ["inspection.management.all"] },
+					{ title: 'civil', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.civil, routeNames: ["inspection.management.civil"] },
+					{ title: 'electrical', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.electrical, routeNames: ["inspection.management.electirical"] },
+					{ title: 'mechanical', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.mechanical, routeNames: ["inspection.management.mechanical"] },
+					{ title: 'workshop', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.camp, routeNames: ["inspection.management.camp"] },
+					{ title: 'office', gate: 'talk_toolbox_show', path: PATH_DASHBOARD.toolboxTalks.office, routeNames: ["inspection.management.office"] },
+					{ title: 'report', path: PATH_DASHBOARD.toolboxTalks.report, routeNames: ["inspection.management.report"] },
+					{ title: 'statistic', path: PATH_DASHBOARD.toolboxTalks.statistic, routeNames: ["inspection.management.statistic"] },
 				]
 			},
 
@@ -149,11 +200,20 @@ const navConfig = [
 				title: 'PPE',
 				path: PATH_DASHBOARD.ppe.root,
 				icon: ICONS.cart,
+				routeNames: [
+					"ppe.management.index",
+					"ppe.management.create",
+					"ppe.management.show",
+					"ppe.management.edit",
+					"ppe.management.report",
+					"ppe.management.report.list",
+					"ppe.management.report.show"
+				],
 				children: [
-					{ title: 'create', gate: 'inventory_create', path: PATH_DASHBOARD.ppe.new },
-					{ title: 'list', gate: 'inventory_show', path: PATH_DASHBOARD.ppe.root },
-					{ title: 'report', path: PATH_DASHBOARD.ppe.report },
-					{ title: 'report list', path: PATH_DASHBOARD.ppe.reportList }
+					{ title: 'create', gate: 'inventory_create', path: PATH_DASHBOARD.ppe.new, routeNames: ["ppe.management.create"] },
+					{ title: 'list', gate: 'inventory_show', path: PATH_DASHBOARD.ppe.root, routeNames: ["ppe.management.index", "ppe.management.show", "ppe.management.edit"] },
+					{ title: 'report', path: PATH_DASHBOARD.ppe.report, routeNames: ["ppe.management.report"] },
+					{ title: 'report list', path: PATH_DASHBOARD.ppe.reportList, routeNames: ["ppe.management.report.list", "ppe.management.report.show"] }
 				],
 			},
 
@@ -172,7 +232,13 @@ const navConfig = [
 				title: 'File manager',
 				gate: 'folder_show',
 				path: PATH_DASHBOARD.fileManager.root,
-				childList: ['file-manager'],
+				routeNames: [
+					"files.management.index",
+					"files.management.show",
+					"files.management.external",
+					"files.management.document.show",
+					"files.management.create"
+				],
 				icon: ICONS.folder
 			},
 		],

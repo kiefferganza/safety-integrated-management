@@ -44,7 +44,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::post('/new', [EmployeeController::class, "store"])->name('new');
 		});
 		Route::get('/profile', [EmployeeController::class, "profile"])->name('profile');
-		Route::get('/{employee}', [EmployeeController::class, "show"])->name('show');
+		Route::get('/profile/gallery', [EmployeeController::class, "profileGallery"])->name('profileGallery');
+		Route::get('/{employee}/profile', [EmployeeController::class, "show"])->name('show');
 		Route::get('/{employee}/edit', [EmployeeController::class, "update"])->name('update');
 		Route::post('/{employee}/edit', [EmployeeController::class, "edit"])->name('edit');
 		Route::middleware("permission:employee_delete")->group(function() {
@@ -147,7 +148,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/client/{training}', [TrainingController::class, 'show_client'])->name('client.show');
 			Route::get('/induction/{training}', [TrainingController::class, 'show_induction'])->name('induction.show');
 			Route::get('/in-house/{training}', [TrainingController::class, 'show_in_house'])->name('in_house.show');
-			Route::get('/third-party/{training}', [TrainingController::class, 'show_external'])->name('third_party.show');
+			Route::get('/third-party/{training}', [TrainingController::class, 'show_external'])->name('external.show');
 		});
 
 		// Create
@@ -287,11 +288,11 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			->middleware("permission:folder_edit")
 			->name('update');
 		// Folder -> Documents
-		Route::get('/view', [DocumentController::class, "view"])->middleware(["permission:file_show", "permission:folder_show"]);
+		Route::get('/view', [DocumentController::class, "view"])->name("show")->middleware(["permission:file_show", "permission:folder_show"]);
 		Route::get('/external', [FilePageController::class, "thirdParty"])->name("external")->middleware("permission:folder_show");
-		Route::get('/{folder}', [DocumentController::class, "index"])->middleware("permission:folder_show");
+		Route::get('/{folder}', [DocumentController::class, "index"])->name("document.show")->middleware("permission:folder_show");
 		Route::middleware("permission:file_create")->group(function() {
-			Route::get('/{folder}/new', [DocumentController::class, "create"]);
+			Route::get('/{folder}/new', [DocumentController::class, "create"])->name("create");
 			Route::post('/{folder}/new', [DocumentController::class, "store"]);
 		}); 
 		Route::post('/document/delete', [DocumentController::class, "destroy"])

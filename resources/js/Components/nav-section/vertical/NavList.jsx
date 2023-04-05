@@ -23,7 +23,7 @@ function delay (time) {
 export default function NavList ({ data, depth, hasChild }) {
 	const [hasPermission] = usePermission();
 	const navItemRef = useRef();
-	const { active, isExternalLink } = useActiveLink(data.path, true, hasChild, data?.childList, data.title);
+	const { active, isExternalLink } = useActiveLink(data.routeNames);
 
 	const [open, setOpen] = useState(active);
 

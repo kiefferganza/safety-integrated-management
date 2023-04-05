@@ -72,7 +72,8 @@ export const PATH_DASHBOARD = {
 		root: path(ROOTS_DASHBOARD, '/employee/list'),
 		new: path(ROOTS_DASHBOARD, '/employee/new'),
 		edit: (id) => path(ROOTS_DASHBOARD, `/employee/${id}/edit`),
-		view: (id) => path(ROOTS_DASHBOARD, `/employee/${id}`),
+		view: (id) => path(ROOTS_DASHBOARD, `/employee/${id}/profile`),
+		// view: (id) => path(ROOTS_DASHBOARD, `/employee/${id}`),
 		profile: path(ROOTS_DASHBOARD, '/employee/profile'),
 	},
 	position: {

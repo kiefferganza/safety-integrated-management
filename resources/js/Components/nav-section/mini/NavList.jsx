@@ -20,7 +20,7 @@ export default function NavList ({ data, depth, hasChild }) {
 	const [hasPermission] = usePermission();
 	const navRef = useRef(null);
 
-	const { active, isExternalLink } = useActiveLink(data.path);
+	const { active, isExternalLink } = useActiveLink(data.routeNames);
 
 	const [open, setOpen] = useState(false);
 

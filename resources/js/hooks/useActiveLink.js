@@ -2,40 +2,10 @@
 
 // ----------------------------------------------------------------------
 
-import { usePage } from "@inertiajs/inertia-react";
-
-export default function useActiveLink (path, deep = true, hasChild = false, childList, title) {
-	const { url } = usePage();
-	const urlSplit = url.split("/").filter(u => u.trim()).map(u => u.split("?")[0]);
-	const pathSplit = path?.split("/").filter(u => u.trim()).map(u => u.split("?")[0]);
-	const normalActive = (url === path);
-
-	const getDeepActive = () => {
-		if (hasChild) {
-			const urlParent = title.toLowerCase().replace(" ", "-");
-
-			if (childList) return childList.includes(urlSplit[1]);
-
-			if (url === path) return true;
-
-			if (urlParent.toLowerCase() === urlSplit[1]) return true;
-
-			if (pathSplit.length === 3 && urlSplit.length === 3) {
-				return (urlSplit[1] === pathSplit[1] && urlSplit[2] === pathSplit[2]);
-			}
-
-			return pathSplit[2] ? (urlSplit[1] === pathSplit[1] || urlSplit[2] === pathSplit[2]) : (urlSplit[1] === pathSplit[1]);
-		} else {
-			if (childList) return childList.includes(urlSplit[1]);
-			if (pathSplit.length === 3) {
-				return (urlSplit[1] === pathSplit[1] && urlSplit[2] === pathSplit[2]);
-			}
-			return url === path;
-		}
-	}
+export default function useActiveLink (routeNames = []) {
 
 	return {
-		active: deep ? getDeepActive() : normalActive,
-		isExternalLink: path?.includes('http'),
+		active: routeNames.includes(route().current()),
+		isExternalLink: false,
 	};
 }
