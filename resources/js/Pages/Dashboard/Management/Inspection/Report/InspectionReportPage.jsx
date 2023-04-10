@@ -21,12 +21,14 @@ import Iconify from '@/Components/iconify';
 // sections
 import { InspectionReportTableToolbar } from '@/sections/@dashboard/inspection/list';
 import InspectionAnalytic from '@/sections/@dashboard/inspection/InspectionAnalytic';
+import { Inertia } from '@inertiajs/inertia';
+import { format } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-	{ id: 'section_title', label: 'Description', align: 'left', width: 480 },
-	{ id: 'table_name', label: 'Section Title', align: 'left' },
+	{ id: 'title', label: 'Description', align: 'left', width: 480 },
+	{ id: 'table', label: 'Section Title', align: 'left' },
 	{ id: 'negative', label: 'Negative', align: 'right' },
 	{ id: 'positive', label: 'Positive', align: 'right' },
 	{ id: 'closed', label: 'Closed', align: 'right' }
@@ -34,7 +36,7 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
-const PPEReportListPage = ({ inspectionReport = [] }) => {
+const PPEReportListPage = ({ inspectionReport = {}, from = null, to = null }) => {
 	const {
 		dense,
 		page,
@@ -44,7 +46,7 @@ const PPEReportListPage = ({ inspectionReport = [] }) => {
 		setPage,
 		//
 		selected,
-		setSelected,
+		// setSelected,
 		onSelectRow,
 		onSelectAllRows,
 		//
@@ -61,12 +63,15 @@ const PPEReportListPage = ({ inspectionReport = [] }) => {
 	const { themeStretch } = useSettingsContext();
 	const theme = useTheme();
 
+	const [filterStartDate, setFilterStartDate] = useState(from ? new Date(from) : null);
+	const [filterEndDate, setFilterEndDate] = useState(to ? new Date(to) : null);
+
 	const [filterName, setFilterName] = useState('');
 
 	const [filterType, setFilterType] = useState([]);
 
 	const dataFiltered = applyFilter({
-		inputData: inspectionReport,
+		inputData: Object.values(inspectionReport),
 		comparator: getComparator(order, orderBy),
 		filterName,
 		filterType
@@ -74,7 +79,7 @@ const PPEReportListPage = ({ inspectionReport = [] }) => {
 
 	const denseHeight = dense ? 60 : 80;
 
-	const isFiltered = filterName !== '' || filterType.length > 0;
+	const isFiltered = filterName !== '' || filterType.length > 0 || (filterStartDate && filterEndDate);
 
 	const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
 
@@ -91,7 +96,36 @@ const PPEReportListPage = ({ inspectionReport = [] }) => {
 	const handleResetFilter = () => {
 		setFilterName('');
 		setFilterType([]);
+		setFilterEndDate(null);
+		setFilterStartDate(null);
+		if (filterStartDate && filterEndDate) {
+			Inertia.get(route('inspection.management.report'), {}, {
+				preserveScroll: true,
+				preserveState: true
+			});
+		}
 	};
+
+	const handleStartDateChange = (newDate) => {
+		setFilterStartDate(newDate);
+	}
+
+	const handleEndDateChange = (newDate) => {
+		setFilterEndDate(newDate);
+	}
+
+	const handleAcceptDate = () => {
+		if (filterStartDate && filterEndDate) {
+			const dates = {
+				from: format(filterStartDate, 'yyyy-MM-dd'),
+				to: format(filterEndDate, 'yyyy-MM-dd'),
+			}
+			Inertia.get(route('inspection.management.report'), dates, {
+				preserveScroll: true,
+				preserveState: true
+			});
+		}
+	}
 
 	const totals = dataFiltered.reduce((acc, curr) => ({
 		closed: acc.closed + curr.closed,
@@ -159,6 +193,11 @@ const PPEReportListPage = ({ inspectionReport = [] }) => {
 					<InspectionReportTableToolbar
 						filterName={filterName}
 						onFilterName={handleFilterName}
+						filterStartDate={filterStartDate}
+						filterEndDate={filterEndDate}
+						onStartDateChange={handleStartDateChange}
+						onEndDateChange={handleEndDateChange}
+						onAcceptDate={handleAcceptDate}
 						isFiltered={isFiltered}
 						filterType={filterType}
 						onFilterType={handleFilterType}
@@ -173,7 +212,7 @@ const PPEReportListPage = ({ inspectionReport = [] }) => {
 							onSelectAllRows={(checked) =>
 								onSelectAllRows(
 									checked,
-									dataFiltered.map((row) => row.list_id)
+									dataFiltered.map((row) => row.id)
 								)
 							}
 							action={
@@ -193,12 +232,12 @@ const PPEReportListPage = ({ inspectionReport = [] }) => {
 									order={order}
 									orderBy={orderBy}
 									headLabel={TABLE_HEAD}
-									rowCount={inspectionReport.length}
+									rowCount={Object.values(inspectionReport).length}
 									onSort={onSort}
 									onSelectAllRows={(checked) =>
 										onSelectAllRows(
 											checked,
-											dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.list_id)
+											dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.id)
 										)
 									}
 									sx={{
@@ -209,22 +248,22 @@ const PPEReportListPage = ({ inspectionReport = [] }) => {
 								<TableBody>
 									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 										.map((row) => {
-											const isSelected = selected.includes(row.list_id);
+											const isSelected = selected.includes(row.id);
 											return (
-												<TableRow key={row.list_id} hover selected={isSelected} sx={{ width: 1, borderBottom: 1, borderColor: "background.neutral" }}>
+												<TableRow key={row.title} hover selected={isSelected} sx={{ width: 1, borderBottom: 1, borderColor: "background.neutral" }}>
 													<TableCell padding="checkbox">
-														<Checkbox checked={isSelected} onClick={() => onSelectRow(row.list_id)} />
+														<Checkbox checked={isSelected} onClick={() => onSelectRow(row.id)} />
 													</TableCell>
-													<TableCell onClick={() => onSelectRow(row.list_id)} align="left">{row.section_title}</TableCell>
-													<TableCell onClick={() => onSelectRow(row.list_id)} align="left">{row.table_name}</TableCell>
-													<TableCell onClick={() => onSelectRow(row.list_id)} align="right">{row.negative}</TableCell>
-													<TableCell onClick={() => onSelectRow(row.list_id)} align="right">{row.negative === 0 ? 0 : row.positive}</TableCell>
-													<TableCell onClick={() => onSelectRow(row.list_id)} align="right">{row.closed}</TableCell>
+													<TableCell onClick={() => onSelectRow(row.id)} align="left">{row.title}</TableCell>
+													<TableCell onClick={() => onSelectRow(row.id)} align="left">{row.table}</TableCell>
+													<TableCell onClick={() => onSelectRow(row.id)} align="right">{row.negative}</TableCell>
+													<TableCell onClick={() => onSelectRow(row.id)} align="right">{row.positive}</TableCell>
+													<TableCell onClick={() => onSelectRow(row.id)} align="right">{row.closed}</TableCell>
 												</TableRow>
 											)
 										})}
 
-									<TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, inspectionReport.length)} />
+									<TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, Object.values(inspectionReport).length)} />
 
 									<TableNoData isNotFound={isNotFound} />
 								</TableBody>
@@ -264,13 +303,13 @@ function applyFilter ({ inputData, comparator, filterName, filterType }) {
 
 	if (filterName) {
 		inputData = inputData.filter((ins) =>
-			ins.section_title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
-			ins.table_name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+			ins.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
+			ins.table.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
 		);
 	}
 
 	if (filterType.length > 0) {
-		inputData = inputData.filter((ins) => filterType.indexOf(ins.table_name) !== -1);
+		inputData = inputData.filter((ins) => filterType.indexOf(ins.table) !== -1);
 	}
 
 	return inputData;

@@ -87,4 +87,12 @@ class InspectionService {
 		return $inspection;
 	}
 
+	public static function getTableName($ref) {
+		if($ref <= 6) return "Offices/Welfare Facilities";
+		if($ref >= 7 && $ref <= 13) return "Monitoring/Control";
+		if($ref >= 14 && $ref <= 31) return "Site Operations";
+		if($ref >= 32 && $ref <= 34) return "Environmental";
+		return "Others";
+	}
+
 }

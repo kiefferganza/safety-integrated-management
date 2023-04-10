@@ -24,4 +24,8 @@ class InspectionReportList extends Model implements HasMedia
 		$this->addMediaConversion('small')->width(300);
 	}
 
+	public function report() {
+		return $this->belongsTo(Inspection::class, "inspection_id", "inspection_id");
+	}
+
 }

@@ -13,6 +13,7 @@ const {
 	InputAdornment,
 	ListItemText
 } = await import('@mui/material');
+import { DatePicker } from '@mui/x-date-pickers';
 // components
 import Iconify from '@/Components/iconify';
 
@@ -53,6 +54,11 @@ export default function InspectionReportTableToolbar ({
 	onResetFilter,
 	filterType = [],
 	onFilterType,
+	filterStartDate,
+	filterEndDate,
+	onStartDateChange,
+	onEndDateChange,
+	onAcceptDate
 }) {
 	return (
 		<Stack
@@ -64,7 +70,47 @@ export default function InspectionReportTableToolbar ({
 			}}
 			sx={{ px: 2.5, py: 3 }}
 		>
-			<FormControl sx={{ width: 1, maxWidth: 240 }}>
+			<DatePicker
+				label="Start Date"
+				value={filterStartDate}
+				onChange={onStartDateChange}
+				onAccept={onAcceptDate}
+				inputFormat="dd MMM yyyy"
+				openTo="year"
+				views={['year', 'month', 'day']}
+				disableMaskedInput
+				renderInput={(params) => (
+					<TextField
+						{...params}
+						fullWidth
+						sx={{
+							maxWidth: { md: 160 },
+						}}
+					/>
+				)}
+			/>
+
+			<DatePicker
+				label="End Date"
+				value={filterEndDate}
+				onChange={onEndDateChange}
+				onAccept={onAcceptDate}
+				inputFormat="dd MMM yyyy"
+				openTo="year"
+				views={['year', 'month', 'day']}
+				minDate={filterStartDate || new Date}
+				disableMaskedInput
+				renderInput={(params) => (
+					<TextField
+						{...params}
+						fullWidth
+						sx={{
+							maxWidth: { md: 160 },
+						}}
+					/>
+				)}
+			/>
+			<FormControl sx={{ width: 1, maxWidth: 160 }}>
 				<InputLabel id="tbt-type-label">Section Title</InputLabel>
 				<Select
 					labelId="tbt-type-label"

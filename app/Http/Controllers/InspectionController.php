@@ -145,46 +145,56 @@ class InspectionController extends Controller
 
 
 
-	public function reportList() {
-		$inspections = InspectionReportList::select(
-			"section_title",
-			"table_name",
-			"ref_num",
-			"list_id",
-			"tbl_inspection_reports.is_deleted",
-			DB::raw("COUNT(CASE WHEN item_status='1' THEN 1 ELSE NULL END) as 'closed',
-				COUNT(CASE WHEN ref_score>1 AND ref_score!=4 THEN 1 ELSE NULL END) as 'negative',
-				COUNT(CASE WHEN ref_score=1 THEN 1 ELSE NULL END) as 'positive'"
-			)
-		)
-		->join("tbl_inspection_reports", "tbl_inspection_reports.inspection_id", "tbl_inspection_reports_list.inspection_id")
-		->where("item_status", "!=", NULL)
+	public function reportList(Request $request) {
+		// dd($request->all());
+		$q = InspectionReportList::
+		select("list_id", "ref_num", "table_name", "tbl_inspection_reports_list.inspection_id", "ref_score", "section_title", "tbl_inspection_reports.status")
+		->where("ref_score", "!=", 4)
+		->where("section_title", "!=", null)
 		->where("tbl_inspection_reports.is_deleted", 0)
-		->where("ref_num", "<", 35)
-		->groupBy("ref_num")
+		->join("tbl_inspection_reports", "tbl_inspection_reports.inspection_id", "tbl_inspection_reports_list.inspection_id");
+		
+		if($request->from && $request->to) {
+			$q->whereBetween("tbl_inspection_reports.date_issued", [$request->from, $request->to]);
+		}
+
+		$inspections = $q
+		->orderBy("ref_num")
 		->get()
-		->toArray();
-		$others = InspectionReportList::select(
-			"section_title",
-			"tbl_inspection_reports.is_deleted",
-			"list_id",
-			DB::raw("COUNT(CASE WHEN item_status='1' THEN 1 ELSE NULL END) as 'closed',
-				COUNT(CASE WHEN ref_score>1 AND ref_score!=4 THEN 1 ELSE NULL END) as 'negative',
-				COUNT(CASE WHEN ref_score=1 THEN 1 ELSE NULL END) as 'positive'"
-			)
-		)
-		->join("tbl_inspection_reports", "tbl_inspection_reports.inspection_id", "tbl_inspection_reports_list.inspection_id")
-		->where("item_status", "!=", NULL)
-		->where("ref_num", ">", 35)
-		->where("section_title", "!=", "")
-		->where("section_title", "!=", NULL)
-		->where("tbl_inspection_reports.is_deleted", 0)
-		->groupBy("section_title")
-		->get()
-		->toArray();
+		->reduce(function ($arr, $item){
+			$ref = $item->ref_num;
+			$title = $item->section_title;
+			$score = $item->ref_score;
+			// && $item->status !== null
+			if($title) {
+				$tableName = InspectionService::getTableName($ref);
+				$arr[$title] ??= [
+					"negative" => 0,
+					"closed" => 0,
+					"positive" => 0,
+					"title" => $title,
+					"id" => $ref,
+					"table" => $tableName
+				];
+				if($item->status === 3) {
+					$arr[$title]["closed"] += 1;
+				}else {
+					if($score === 1) {
+						$arr[$title]["positive"] += 1;
+					}else {
+						$arr[$title]["ins_id"] ??= [$item->inspection_id];
+						$arr[$title]["ins_id"][] = $item->inspection_id;
+						$arr[$title]["negative"] += 1;
+					}
+				}
+			}
+			return $arr;
+		}, []);
 		
 		return Inertia::render("Dashboard/Management/Inspection/Report/index", [
-			"inspectionReport" => array_merge($inspections, $others),
+			"inspectionReport" => $inspections,
+			"from" => $request->from,
+			"to" => $request->to
 		]);
 	}
 

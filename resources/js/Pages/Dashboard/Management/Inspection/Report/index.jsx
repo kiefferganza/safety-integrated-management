@@ -4,7 +4,7 @@ import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from '@inertiajs/inertia-react';
 const InspectionReportPage = lazy(() => import("./InspectionReportPage"));
 
-const index = ({ inspectionReport }) => {
+const index = ({ inspectionReport, from, to }) => {
 	return (
 		<>
 			<Head>
@@ -12,7 +12,7 @@ const index = ({ inspectionReport }) => {
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
-					<InspectionReportPage inspectionReport={inspectionReport} />
+					<InspectionReportPage inspectionReport={inspectionReport} from={from} to={to} />
 				</DashboardLayout>
 			</Suspense>
 		</>
