@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
 			Schema::table('tbl_employees', function (Blueprint $table) {
+				$table->unsignedBigInteger("employee_id")->change();
 				$table->index("employee_id");
 			});
 
