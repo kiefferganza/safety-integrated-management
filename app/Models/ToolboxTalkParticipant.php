@@ -22,4 +22,8 @@ class ToolboxTalkParticipant extends Model
 		return $this->belongsTo(Employee::class, "employee_id");
 	}
 
+	public function toolboxtalk() {
+		return $this->belongsTo(ToolboxTalk::class, "tbt_id");
+	}
+
 }

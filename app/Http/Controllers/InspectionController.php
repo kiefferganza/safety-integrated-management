@@ -7,7 +7,6 @@ use App\Models\Inspection;
 use App\Models\InspectionReportList;
 use App\Services\InspectionService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 class InspectionController extends Controller
 {
@@ -182,8 +181,8 @@ class InspectionController extends Controller
 					if($score === 1) {
 						$arr[$title]["positive"] += 1;
 					}else {
-						$arr[$title]["ins_id"] ??= [$item->inspection_id];
-						$arr[$title]["ins_id"][] = $item->inspection_id;
+						// $arr[$title]["ins_id"] ??= [$item->inspection_id];
+						// $arr[$title]["ins_id"][] = $item->inspection_id;
 						$arr[$title]["negative"] += 1;
 					}
 				}

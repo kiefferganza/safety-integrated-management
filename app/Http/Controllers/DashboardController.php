@@ -2,26 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Images;
+use Illuminate\Http\Request;
 use App\Models\TbtStatistic;
+use App\Models\ToolboxTalk;
+use App\Models\ToolboxTalkParticipant;
 use App\Models\Training;
+use App\Services\DashboardService;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    public function index(): \Inertia\Response
+    public function index(Request $request): \Inertia\Response
     {
-        $sliderImages = Images::where("type", "slider")->get()->transform(function ($img) {
-            $image = $img->getFirstMedia("slider");
-            $img->url = $image->getFullUrl();
-            $img->name = $image->name;
-            return $img;
-        });
-
-        return Inertia::render("Dashboard/General/HSEDashboard/index", [
-            "trainings" => Training::select("type", "training_hrs", "training_date")->where("is_deleted", 0)->withCount("training_files")->get(),
-            "tbtStatistics" => TbtStatistic::select("id", "year")->with("months:id,tbt_statistic_id,manhours,manpower,month_code")->get(),
-            "sliderImages" => $sliderImages
-        ]);
+			$dashboardService = new DashboardService;
+			
+			if($request->from && $request->to) {
+				$from = new Carbon($request->from);
+				$to = (new Carbon($request->to))->endOfDay();
+			}else {
+				$fromTbt = ToolboxTalk::select("date_created")->orderByDesc("date_created")->first();
+				$fromTbtStat = TbtStatistic::select("year")->orderByDesc("year")->first();
+				$toTbt = ToolboxTalk::select("date_created")->orderBy("date_created")->first();
+				$toTbtStat = TbtStatistic::select("year")->orderBy("year")->first();
+				$fromToArr = [
+					$fromTbt->date_created,
+					$toTbt->date_created,
+					$fromTbtStat->year ? new Carbon((string) $fromTbtStat->year . '-1-1') : null,
+					$toTbtStat->year ? new Carbon((string) $toTbtStat->year . '-1-1') : null
+				];
+				$from = min($fromToArr);
+				$to = max($fromToArr)->hour(11)->minutes(59)->second(59);
+			}
+			
+			return Inertia::render("Dashboard/General/HSEDashboard/index", [
+				"toolboxtalks" => $dashboardService->getTbtByDate($from, $to),
+				"trainings" => Training::select("type", "training_hrs", "training_date")->where("is_deleted", 0)->withCount("training_files")->get(),
+				"tbtStatistics" => $dashboardService->getTbtStatisticByDate($from, $to),
+				"inspections" => $dashboardService->getInspectionByDate($from, $to),
+				"sliderImages" => $dashboardService->getSliderImages($from, $to),
+				"from" => $from,
+				"to" => $to
+			]);
     }
 }

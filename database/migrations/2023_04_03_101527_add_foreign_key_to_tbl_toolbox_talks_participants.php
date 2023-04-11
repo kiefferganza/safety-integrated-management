@@ -13,12 +13,19 @@ return new class extends Migration
      */
     public function up()
     {
-			Schema::disableForeignKeyConstraints();
-			Schema::table('tbl_toolbox_talks_participants', function (Blueprint $table) {
-				$table->foreign('tbt_id')->references('tbt_id')->on('tbl_toolbox_talks')->cascadeOnDelete();
-				$table->index(['employee_id', 'tbt_id']);
+			Schema::table('tbl_employees', function (Blueprint $table) {
+				$table->index("employee_id");
 			});
-			Schema::enableForeignKeyConstraints();
+
+			Schema::table('tbl_toolbox_talks', function (Blueprint $table) {
+				$table->unsignedBigInteger("tbt_id")->change();
+			});
+
+			Schema::table('tbl_toolbox_talks_participants', function (Blueprint $table) {
+				$table->unsignedBigInteger("tbtp_id")->change();
+				$table->unsignedBigInteger("tbt_id")->nullable()->change();
+				$table->foreign("tbt_id")->references('tbt_id')->on('tbl_toolbox_talks')->onDelete('cascade');
+			});
     }
 
     /**

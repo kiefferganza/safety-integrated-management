@@ -18,7 +18,6 @@ return new class extends Migration
         });
 
         Schema::table('tbl_inspection_reports_list', function (Blueprint $table) {
-					$table->dropForeign("tbl_inspection_reports_list_inspection_id_foreign");
 					$table->unsignedBigInteger("list_id")->change();
 					$table->unsignedBigInteger('inspection_id')->index()->nullable()->change();
 					$table->foreign('inspection_id')->references('inspection_id')->on('tbl_inspection_reports')->onDelete('cascade');
