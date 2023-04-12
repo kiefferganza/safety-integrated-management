@@ -86,15 +86,6 @@ export function ToolboxTalkTableRow ({ row, selected, onSelectRow, onDeleteRow, 
 					<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{TYPES[row.tbt_type]}</TableCell>
 				)}
 
-				<TableCell align="left">
-					<Label
-						variant="soft"
-						color={row.status.statusClass}
-					>
-						{row.status.text}
-					</Label>
-				</TableCell>
-
 				<TableCell align="right">
 					<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
 						<Iconify icon="eva:more-vertical-fill" />

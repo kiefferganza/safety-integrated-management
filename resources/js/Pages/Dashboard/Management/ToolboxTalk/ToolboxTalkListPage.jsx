@@ -66,7 +66,19 @@ const TABLE_HEAD = [
 	{ id: 'participants_count', label: 'Participants', align: 'left' },
 	{ id: 'date_conducted', label: 'Date Conducted', align: 'left' },
 	{ id: 'attachment', label: 'Attachment', align: 'left' },
-	{ id: 'status', label: 'Status', align: 'left' },
+	{ id: '' },
+];
+
+const TABLE_HEAD_ALL = [
+	{ id: 'form_number', label: 'CMS Number', align: 'left' },
+	{ id: 'title', label: 'Title', align: 'left' },
+	{ id: 'description', label: 'Job', align: 'left' },
+	{ id: 'conducted_by', label: 'Conducted By', align: 'left' },
+	{ id: 'location', label: 'Location', align: 'left' },
+	{ id: 'participants_count', label: 'Participants', align: 'left' },
+	{ id: 'date_conducted', label: 'Date Conducted', align: 'left' },
+	{ id: 'attachment', label: 'Attachment', align: 'left' },
+	{ id: 'tbt_type', label: 'TBT Type', align: 'left' },
 	{ id: '' },
 ];
 
@@ -104,8 +116,6 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 
 	const [filterName, setFilterName] = useState('');
 
-	const [filterStatus, setFilterStatus] = useState('all');
-
 	const [filterStartDate, setFilterStartDate] = useState(null);
 
 	const [filterEndDate, setFilterEndDate] = useState(null);
@@ -116,7 +126,6 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 		inputData: tableData,
 		comparator: getComparator(order, orderBy),
 		filterName,
-		filterStatus,
 		filterType,
 		filterStartDate,
 		filterEndDate
@@ -128,52 +137,20 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 			id: toolbox.tbt_id,
 			cms: formatCms(toolbox),
 			attachment: toolbox.file.length > 0 ? "Y" : "N",
-			participants_count: toolbox.participants?.length,
-			status: getStatus(toolbox?.status)
+			participants_count: toolbox.participants?.length
 		}));
 		setTableData(data);
 	}, [tbt]);
 
 
-	const getStatus = (status) => {
-		switch (status) {
-			case "0":
-				return {
-					text: "Incomplete",
-					code: "0",
-					statusClass: "warning"
-				}
-			case "1":
-				return {
-					text: "Completed",
-					code: "1",
-					statusClass: "success"
-				}
-			default:
-				return {
-					text: "Pending",
-					statusClass: "default"
-				}
-		}
-	}
-
-
 	const denseHeight = dense ? 56 : 76;
 
-	const isFiltered = filterName !== '' || !!filterStartDate || filterEndDate || filterStatus !== 'all';
+	const isFiltered = filterName !== '' || !!filterStartDate || filterEndDate;
 
 	const isNotFound =
 		(!dataFiltered.length && !!filterName) ||
-		(!dataFiltered.length && !!filterStatus) ||
 		(!dataFiltered.length && !!filterStartDate);
 
-	const getLengthByStatus = (status) => dataFiltered.filter((item) => item.status.code === status).length;
-
-	const TABS = [
-		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
-		{ value: '1', label: 'Completed', color: 'success', count: getLengthByStatus('1') },
-		{ value: '0', label: 'Incomplete', color: 'error', count: getLengthByStatus('0') },
-	];
 
 	const handleOpenConfirm = () => {
 		setOpenConfirm(true);
@@ -182,11 +159,6 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 	const handleCloseConfirm = () => {
 		setOpenConfirm(false);
 	};
-
-	const handleFilterStatus = (_event, newValue) => {
-		setPage(0);
-		setFilterStatus(newValue);
-	}
 
 	const handleFilterName = (event) => {
 		setPage(0);
@@ -250,7 +222,6 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 		setFilterName('');
 		setFilterStartDate(null);
 		setFilterEndDate(null);
-		setFilterStatus('all');
 		setFilterType([]);
 	};
 
@@ -337,30 +308,6 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 				</Card>
 
 				<Card>
-					<Tabs
-						value={filterStatus}
-						onChange={handleFilterStatus}
-						sx={{
-							px: 2,
-							bgcolor: 'background.neutral',
-						}}
-					>
-						{TABS.map((tab) => (
-							<Tab
-								key={tab.value}
-								value={tab.value}
-								label={tab.label}
-								icon={
-									<Label color={tab.color} sx={{ mr: 1 }}>
-										{tab.count}
-									</Label>
-								}
-							/>
-						))}
-					</Tabs>
-
-					<Divider />
-
 					<ToolboxTalkTableToolbar
 						filterName={filterName}
 						isFiltered={isFiltered}
@@ -409,7 +356,7 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 								<TableHeadCustom
 									order={order}
 									orderBy={orderBy}
-									headLabel={addTypeHeader ? [...TABLE_HEAD.slice(0, 7), TABLE_HEAD.at(7), { id: "tbt_type", label: "TBT Type", align: "left" }, TABLE_HEAD.at(8), TABLE_HEAD.at(9)] : TABLE_HEAD}
+									headLabel={addTypeHeader ? TABLE_HEAD_ALL : TABLE_HEAD}
 									rowCount={tableData.length}
 									numSelected={selected.length}
 									onSort={onSort}
@@ -490,7 +437,6 @@ function applyFilter ({
 	inputData,
 	comparator,
 	filterName,
-	filterStatus,
 	filterType,
 	filterStartDate,
 	filterEndDate,
@@ -511,10 +457,6 @@ function applyFilter ({
 			toolbox.cms.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
 			toolbox.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
 		);
-	}
-
-	if (filterStatus !== 'all') {
-		inputData = inputData.filter((toolbox) => toolbox.status.code === filterStatus);
 	}
 
 	if (filterStartDate && !filterEndDate) {
