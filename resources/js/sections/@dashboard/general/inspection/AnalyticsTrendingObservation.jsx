@@ -14,9 +14,6 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, ...othe
 	const chartOptions = useChart({
 		colors,
 		series,
-		dataLabels: {
-			enabled: false
-		},
 		tooltip: {
 			shared: false,
 			y: {
@@ -31,6 +28,8 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, ...othe
 				horizontal: true,
 				barHeight: '48%',
 				borderRadius: 2,
+				stacked: true,
+				stackType: '100%'
 			},
 		},
 		xaxis: {

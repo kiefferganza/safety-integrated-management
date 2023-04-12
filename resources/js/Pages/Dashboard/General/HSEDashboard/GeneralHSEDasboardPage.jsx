@@ -533,7 +533,10 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 								<AnalyticsTrendingObservation
 									height={900}
 									title="Trending Observation"
-									chart={inspectionData}
+									chart={{
+										...inspectionData,
+										colors: [theme.palette.error.main, theme.palette.success.main, theme.palette.info.main]
+									}}
 								/>
 							</Scrollbar>
 						</Box>

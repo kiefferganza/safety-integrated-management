@@ -20,11 +20,11 @@ class RemoveDeletedData extends Seeder
 	 */
 	public function run()
 	{
-		Position::where("is_deleted", 1)->delete();
-		CompanyModel::where("is_deleted", 1)->delete();
-		Department::where("is_deleted", 1)->delete();
-		InspectionReportList::doesnthave("report")->delete();
-		InspectionReportList::where("section_title", "Ø§Ù„ØªØ­ÙƒÙ… Ø¨Ø§Ù„Ù…Ø±ÙˆØ±")->delete();
-		ToolboxTalkParticipant::doesnthave("toolboxtalk")->delete();
+		// Position::where("is_deleted", 1)->delete();
+		// CompanyModel::where("is_deleted", 1)->delete();
+		// Department::where("is_deleted", 1)->delete();
+		// InspectionReportList::doesnthave("report")->delete();
+		// InspectionReportList::where("section_title", "Ø§Ù„ØªØ­ÙƒÙ… Ø¨Ø§Ù„Ù…Ø±ÙˆØ±")->delete();
+		// ToolboxTalkParticipant::doesnthave("toolboxtalk")->delete();
 	}
 }
