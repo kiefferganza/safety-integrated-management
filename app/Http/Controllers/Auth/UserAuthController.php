@@ -21,7 +21,7 @@ class UserAuthController extends Controller
 			if(Auth::check()) {
 				return redirect()->route('dashboard');
 			}
-			cache()->flush();
+			
 			return Inertia::render('Auth/LoginPage', [
 					'canResetPassword' => Route::has('password.request'),
 					'status' => session('status'),
@@ -53,7 +53,7 @@ class UserAuthController extends Controller
 			$request->session()->invalidate();
 			
 			$request->session()->regenerateToken();
-			cache()->flush();
+			
       return redirect()->route('login');
     }
 }

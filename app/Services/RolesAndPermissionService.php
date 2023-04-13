@@ -105,6 +105,33 @@ class RolesAndPermissionService {
 					'value' => 'talk_toolbox_show'
 				]
 			],
+			"Incident" => [
+				[
+					'detail' => "Access for submitting new incident.",
+					'name' => 'Submit Incident',
+					'value' => 'incident_create'
+				],
+				[
+					'detail' => "Access for editing submitted incident.",
+					'name' => 'Edit Incident',
+					'value' => 'incident_edit'
+				],
+				[
+					'detail' => "Access for deleting incident.",
+					'name' => 'Delete Incident',
+					'value' => 'incident_delete'
+				],
+				[
+					'detail' => "Access for viewing toolbox talks list.",
+					'name' => "View Incident",
+					'value' => 'incident_show'
+				],
+				[
+					'detail' => "Managing incident types on the module.",
+					'name' => "Manage Incident Module",
+					'value' => 'incident_access'
+				]
+			],
 			"Folder" => [
 				[
 					'detail' => null,

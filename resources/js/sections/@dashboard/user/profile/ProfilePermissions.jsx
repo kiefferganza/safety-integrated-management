@@ -220,7 +220,7 @@ const ProfilePermissions = () => {
 							role={capitalize(user?.employee?.position?.position)}
 							company={capitalize(user?.employee?.company?.company_name)}
 							department={startCase(user?.employee?.department?.department?.toLowerCase())}
-							name={user?.fullname.trim() || user?.employee?.fullname}
+							name={(user?.fullname || user?.employee?.fullname).trim()}
 							action={
 								<Stack direction="row" spacing={2} sx={{ pt: 1.5 }}>
 									<Button
