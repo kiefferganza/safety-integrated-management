@@ -282,6 +282,10 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/create', [IncidentController::class, "create"])->name('create');
 			Route::post('/create', [IncidentController::class, "store"])->name('store');
 		});
+
+		Route::middleware("permission:incident_delete")->group(function() {
+			Route::post('/delete', [IncidentController::class, "destroy"])->name('destroy');
+		});
 	});
 
 
