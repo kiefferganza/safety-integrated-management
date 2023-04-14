@@ -3,9 +3,12 @@
 namespace App\Services;
 
 use App\Models\Images;
+use App\Models\Incident;
 use App\Models\InspectionReportList;
 use App\Models\TbtStatistic;
 use App\Models\ToolboxTalk;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DashboardService {
 
@@ -71,6 +74,38 @@ class DashboardService {
 		}, ["data" => [], "total" => [ "open" => 0, "closed" => 0 ]]);
 	}
 
+
+	public function getIncidents() {
+		$now = Carbon::now();
+		$month = Incident::select("severity", DB::raw("count(*) as total"))
+			->whereNull("deleted_at")
+			->whereMonth("incident_date", $now->month)
+			->groupBy("severity")
+			->get()
+			->reduce(function($incident, $item) {
+				$incident[$item->severity] = $item->total;
+				return $incident;
+			}, [
+				"Minor" => 0,
+				"Significant" => 0,
+				"Major" => 0,
+				"Fatality" => 0,
+			]);
+		$itd = Incident::select("severity", DB::raw("count(*) as total"))->whereNull("deleted_at")->groupBy("severity")->get()->reduce(function($incident, $item) {
+			$incident[$item->severity] = $item->total;
+			return $incident;
+		}, [
+			"Minor" => 0,
+			"Significant" => 0,
+			"Major" => 0,
+			"Fatality" => 0,
+		]);
+
+		return [
+			"month" => $month,
+			"itd" => $itd
+		];
+	}
 
 
 	public function getSliderImages() {

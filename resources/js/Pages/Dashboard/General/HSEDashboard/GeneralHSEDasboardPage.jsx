@@ -55,7 +55,7 @@ const MONTH_NAMES = {
 }
 
 
-export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, trainings, tbtStatistics, inspections, sliderImages = [], from, to, setLoading }) {
+export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, trainings, tbtStatistics, inspections, incidents, sliderImages = [], from, to, setLoading }) {
 	const [tbtData, setTbtData] = useState([]);
 	const [startTbtDate, setStartTbtDate] = useState(from ? new Date(from) : null);
 	const [endTbtDate, setEndTbtDate] = useState(to ? new Date(to) : null);
@@ -512,10 +512,10 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 						<AnalyticsTable
 							headTitles={[{ title: "Accidents and Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 							data={[
-								{ title: "Fatality", month: 0, itd: 0 },
-								{ title: "Major", month: 0, itd: 0 },
-								{ title: "Significant", month: 0, itd: 0 },
-								{ title: "Minor", month: 0, itd: 0 },
+								{ title: "Fatality", month: incidents.month.Fatality, itd: incidents.itd.Fatality },
+								{ title: "Major", month: incidents.month.Major, itd: incidents.itd.Major },
+								{ title: "Significant", month: incidents.month.Significant, itd: incidents.itd.Significant },
+								{ title: "Minor", month: incidents.month.Minor, itd: incidents.itd.Minor },
 								{ title: "Number of Near Miss Reports Received", month: 0, itd: 0 },
 								{ title: "Total Recordable Injuries (TRIs)", month: 0, itd: 0 },
 								{ title: "Lost Time Injury Frequency Rate (LTIFR)", month: 0, itd: 0 },

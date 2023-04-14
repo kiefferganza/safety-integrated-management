@@ -40,6 +40,7 @@ class DashboardController extends Controller
 				"trainings" => Training::select("type", "training_hrs", "training_date")->where("is_deleted", 0)->withCount("training_files")->get(),
 				"tbtStatistics" => $dashboardService->getTbtStatisticByDate($from, $to),
 				"inspections" => $dashboardService->getInspectionByDate($from, $to),
+				"incidents" => $dashboardService->getIncidents(),
 				"sliderImages" => $dashboardService->getSliderImages($from, $to),
 				"from" => $from,
 				"to" => $to

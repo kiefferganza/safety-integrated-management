@@ -9,31 +9,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 // import { dispatch, useSelector } from '@/redux/store';
 // import { getTbts } from '@/redux/slices/toolboxtalk';
 
-const index = ({ auth: { user }, inspections, toolboxtalks, trainings, tbtStatistics, sliderImages, from, to }) => {
+const index = ({ auth: { user }, inspections, toolboxtalks, trainings, tbtStatistics, incidents, sliderImages, from, to }) => {
 	const [loading, setLoading] = useState(false);
 	const [totalTbtByYear, setTotalTbtByYear] = useState({});
-	// const { isLoading, tbtByYear, totalTbtByYear } = useSelector(state => state.toolboxtalk);
-
-	// useEffect(() => {
-	// 	if (!totalTbtByYear || !tbtByYear) {
-	// 		dispatch(getTbts());
-	// 	}
-	// }, [totalTbtByYear]);
-
-
-	// if (isLoading || !totalTbtByYear || !tbtByYear) {
-	// 	return <LoadingScreen />;
-	// }
 
 	useEffect(() => {
 		setLoading(true);
 		setTotalTbtByYear(convertTbtByYear({ tbt: toolboxtalks }).totalTbtByYear);
 		setLoading(false);
 	}, [from, to, toolboxtalks]);
-
-	// if (loading) {
-	// 	return <LoadingScreen />;
-	// }
 
 	return (
 		<>
@@ -52,6 +36,7 @@ const index = ({ auth: { user }, inspections, toolboxtalks, trainings, tbtStatis
 						trainings={trainings}
 						tbtStatistics={tbtStatistics}
 						inspections={inspections}
+						incidents={incidents}
 						from={from}
 						to={to}
 						setLoading={setLoading}
