@@ -15,6 +15,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
 import GeneralIncident from './GeneralIncident';
 import IncidentInformation from './IncidentInformation';
+import { format } from 'date-fns';
 
 const steps = ['General Info', 'Incident Information'];
 
@@ -37,6 +38,7 @@ const newIncidentSchema = Yup.object().shape({
 	equipment: Yup.string().required('Please select the equipment that involved in the incident'),
 	severity: Yup.string().required('Please select the severity of the incident'),
 	body_part: Yup.string().required('Please select the affected body part of the injured personel'),
+	incident_date: Yup.date("Please enter a valid date.").required("Please enter the date of the incident"),
 });
 
 const IncidentNewForm = ({ currentIncident }) => {
@@ -73,7 +75,8 @@ const IncidentNewForm = ({ currentIncident }) => {
 		equipment: currentIncident?.equipment || '',
 		severity: currentIncident?.severity || '',
 		body_part: currentIncident?.body_part || '',
-		remarks: currentIncident?.remarks || ''
+		remarks: currentIncident?.remarks || '',
+		incident_date: currentIncident?.incident_date ? new Date(currentIncident?.incident_date) : new Date()
 	};
 	const methods = useForm({
 		resolver: yupResolver(newIncidentSchema),
@@ -81,7 +84,6 @@ const IncidentNewForm = ({ currentIncident }) => {
 	});
 
 	const { trigger, handleSubmit, setError, reset } = methods;
-	// console.log(errors)
 
 	useEffect(() => {
 		if (Object.keys(resErrors).length !== 0) {
@@ -106,7 +108,7 @@ const IncidentNewForm = ({ currentIncident }) => {
 
 	const handleNext = async () => {
 		if (activeStep === 1) {
-			const result = await trigger(["project_code", "originator", "discipline", "document_type", "location", "site", "injured_id", "engineer_id", "first_aider_id"]);
+			const result = await trigger(["project_code", "originator", "discipline", "document_type", "location", "site", "injured_id", "engineer_id", "first_aider_id", "incident_date"]);
 			if (result) {
 				const newCompleted = completed;
 				newCompleted[activeStep] = true;
@@ -126,9 +128,11 @@ const IncidentNewForm = ({ currentIncident }) => {
 		cleanData.engineer_id = Number(cleanData.engineer_id);
 		cleanData.injured_id = Number(cleanData.injured_id);
 		cleanData.first_aider_id = Number(cleanData.first_aider_id);
+		cleanData.incident_date = format(cleanData.incident_date, "yyyy-MM-dd").toString();
+
 		const result = await warning("Are you sure you want to save this form?", "Press cancel to undo this action.", "Yes");
 		if (result.isConfirmed) {
-			Inertia.post(route('incident.management.store'), data, {
+			Inertia.post(route('incident.management.store'), cleanData, {
 				preserveState: true,
 				onStart () {
 					setLoading(true);

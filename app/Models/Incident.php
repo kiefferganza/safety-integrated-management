@@ -34,4 +34,20 @@ class Incident extends Model
 			$inventoryReport->uuid = (string)Str::uuid();
 		});
 	}
+
+
+
+	public function firstAider() {
+		return $this->hasOne(Employee::class, "employee_id", "first_aider_id");
+	}
+
+	public function engineer() {
+		return $this->hasOne(Employee::class, "employee_id", "engineer_id");
+	}
+
+	public function injured() {
+		return $this->hasOne(Employee::class, "employee_id", "injured_id");
+	}
+
+
 }

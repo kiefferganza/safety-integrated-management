@@ -1,5 +1,6 @@
-import { RHFTextField } from '@/Components/hook-form'
-import { Autocomplete, Box, Divider, Stack, TextField, Typography } from '@mui/material'
+import { RHFTextField } from '@/Components/hook-form';
+import { Autocomplete, Box, Divider, Stack, TextField, Typography } from '@mui/material';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { useFormContext } from 'react-hook-form';
 
 
@@ -153,7 +154,17 @@ const GeneralIncident = ({ personel }) => {
 						}}
 					/>
 
-					<Box width={1} />
+					<MobileDatePicker
+						label="Incident Date"
+						inputFormat="d-MMM-yyyy"
+						value={values?.incident_date}
+						onChange={(date) => {
+							setValue("incident_date", date, { shouldValidate: true });
+						}}
+						renderInput={(params) =>
+							<TextField {...params} fullWidth error={!!errors?.incident_date?.message} helperText={errors?.incident_date?.message} />
+						}
+					/>
 
 				</Stack>
 

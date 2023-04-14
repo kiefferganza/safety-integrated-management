@@ -10,7 +10,31 @@ use Inertia\Inertia;
 class IncidentController extends Controller
 {
 	public function index() {
-		return Inertia::render('Incident/Firstaid');
+		$incidentSelect = ["form_number", "id", "uuid", "first_aider_id", "engineer_id", "injured_id", "location", "site", "lti", "incident_date", "severity"];
+
+		return Inertia::render("Dashboard/Management/Incident/List/index", [
+			"incidents" => Incident::select($incidentSelect)
+				->with([
+					"firstAider" => fn($q) => $q->select("employee_id", "firstname", "middlename", "lastname", "raw_position"),
+					"engineer" => fn($q) => $q->select("employee_id", "firstname", "middlename", "lastname", "raw_position"),
+					"injured" => fn($q) => $q->select("employee_id", "firstname", "middlename", "lastname", "raw_position"),
+				])
+				->whereNull("deleted_at")
+				->get()
+				->transform(fn($incident) => [
+					"id" => $incident->id,
+					"uuid" => $incident->uuid,
+					"form_number" => $incident->form_number,
+					"location" => $incident->location,
+					"site" => $incident->site,
+					"lti" => $incident->lti,
+					"severity" => $incident->severity,
+					"firstAider" => $incident->firstAider,
+					"engineer" => $incident->engineer,
+					"injured" => $incident->injured,
+					"incident_date" => $incident->incident_date,
+				])
+		]);
 	}
 
 
@@ -52,9 +76,15 @@ class IncidentController extends Controller
 			"findings" => ["string", "nullable"],
 			"first_aid" => ["string", "nullable"],
 			"remarks" => ["string", "nullable"],
+			"incident_date" => ["string", "required"],
 		]);
+		$user = auth()->user();
+		
+		$fields = $request->all();
+		$fields["employee_id"] = $user->emp_id;
+		$fields["user_id"] = $user->user_id;
 
-		Incident::create($request->all());
+		Incident::create($fields);
 		
 		return redirect()->back()
 		->with("message", "Incident submitted successfully!")
