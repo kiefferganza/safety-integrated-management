@@ -24,6 +24,8 @@ return new class extends Migration
 
 		Schema::create('incidents', function (Blueprint $table) {
 			$table->id();
+			$table->uuid('uuid')->unique();
+			$table->string("form_number");
 			$table->string("sequence_no");
 			$table->string("project_code");
 			$table->string("originator");
@@ -39,16 +41,16 @@ return new class extends Migration
 			$table->string("incident");
 			$table->string("nature");
 			$table->string("indicator");
-			$table->string("mechanisms");
+			$table->string("mechanism");
 			$table->string("severity");
 			$table->string("root_cause");
-			$table->string("equipment_involved");
+			$table->string("equipment");
 			$table->string("body_part");
 			$table->integer("lti")->nullable();
 			$table->text("first_aid")->nullable();
 			$table->text("findings")->nullable();
 			$table->text("remarks")->nullable();
-			$table->string("revision_no");
+			$table->integer("revision_no")->default(0);
 			$table->timestamps();
 			$table->softDeletes();
 		});

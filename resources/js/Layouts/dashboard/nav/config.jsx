@@ -226,10 +226,16 @@ const navConfig = [
 				title: 'Incident',
 				path: PATH_DASHBOARD.incident.root,
 				icon: ICONS.incident,
+				routeNames: [
+					"incident.management.index",
+					"incident.management.create",
+					"incident.management.edit",
+					"incident.management.show",
+				],
 				children: [
-					{ title: 'first aid', path: PATH_DASHBOARD.incident.firstAid, disabled: true },
-					{ title: 'investigation', path: PATH_DASHBOARD.incident.investigation, disabled: true },
-					{ title: 'incident report', path: PATH_DASHBOARD.incident.incidentReport, disabled: true },
+					{ title: 'create', path: PATH_DASHBOARD.incident.new },
+					{ title: 'list', path: PATH_DASHBOARD.incident.root },
+					// { title: 'report', path: PATH_DASHBOARD.incident.incidentReport, disabled: true },
 				]
 			},
 			{

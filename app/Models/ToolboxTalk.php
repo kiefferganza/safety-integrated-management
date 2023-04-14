@@ -21,15 +21,15 @@ class ToolboxTalk extends Model
 		parent::boot();
 		
 		static::creating(function(ToolboxTalk $toolboxTalk) {
-			cache()->forget("tbtList");
+			cache()->forget("tbtList:" . auth()->user()->subscriber_id);
 			$sequence = ToolboxTalk::where('is_deleted', 0)->where("tbt_type", $toolboxTalk->tbt_type)->count() + 1;
 			$toolboxTalk->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
 		});
 		static::updated(function() {
-			cache()->forget("tbtList");
+			cache()->forget("tbtList:" . auth()->user()->subscriber_id);
 		});
 		static::deleted(function() {
-			cache()->forget("tbtList");
+			cache()->forget("tbtList:" . auth()->user()->subscriber_id);
 		});
 	}
 

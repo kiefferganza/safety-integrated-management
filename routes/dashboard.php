@@ -7,6 +7,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FilePageController;
 use App\Http\Controllers\ImagesController;
+use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionReportController;
 use App\Http\Controllers\InventoryController;
@@ -270,6 +271,20 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::get('/report/{inventoryReport}', [InventoryReportController::class, "show"])->name('report.show');
 		Route::delete('/report/{inventoryReport}', [InventoryReportController::class, "destroy"])->name('report.destroy');
 	});
+
+
+
+	Route::prefix('incident')->as('incident.management.')->group(function() {
+		Route::middleware("permission:incident_show")->group(function() {
+			Route::get('/list', [IncidentController::class, "index"])->name('index');
+		});
+		Route::middleware("permission:incident_create")->group(function() {
+			Route::get('/create', [IncidentController::class, "create"])->name('create');
+			Route::post('/create', [IncidentController::class, "store"])->name('store');
+		});
+	});
+
+
 
 	/**
 	 * Management - Folder

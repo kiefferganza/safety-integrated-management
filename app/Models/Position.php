@@ -23,13 +23,13 @@ class Position extends Model
 	protected static function boot() {
 		parent::boot();
 		static::created(function() {
-			cache()->forget("positions");
+			cache()->forget("positions:". auth()->user()->subscriber_id);
 		});
 		static::updated(function() {
-			cache()->forget("positions");
+			cache()->forget("positions:". auth()->user()->subscriber_id);
 		});
 		static::deleted(function() {
-			cache()->forget("positions");
+			cache()->forget("positions:". auth()->user()->subscriber_id);
 		});
 	}
 

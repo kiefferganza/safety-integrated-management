@@ -22,17 +22,18 @@ class Employee extends Model
 
     protected $appends = ['fullname'];
 
-    // protected static function boot() {
-    // 	static::created(function() {
-    // 		cache()->forget("employees");
-    // 	});
-    // 	static::updated(function() {
-    // 		cache()->forget("employees");
-    // 	});
-    // 	static::deleted(function() {
-    // 		cache()->forget("employees");
-    // 	});
-    // }
+    protected static function boot() {
+			parent::boot();
+    	static::created(function() {
+    		cache()->forget("employees:".auth()->user()->subscriber_id);
+    	});
+    	static::updated(function() {
+    		cache()->forget("employees:".auth()->user()->subscriber_id);
+    	});
+    	static::deleted(function() {
+    		cache()->forget("employees:".auth()->user()->subscriber_id);
+    	});
+    }
 
     public function user()
     {

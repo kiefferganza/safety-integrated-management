@@ -52,7 +52,7 @@ class ToolboxTalkService {
 	}
 
 	public static function getList() {
-		$toolbox_talks = cache()->rememberForever("tbtList", fn() => ToolboxTalk::where("is_deleted", 0)
+		$toolbox_talks = cache()->rememberForever("tbtList:".auth()->user()->subscriber_id, fn() => ToolboxTalk::where("is_deleted", 0)
 		->with([
 			"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct(),
 			"file" => fn ($q) => $q->select("tbt_id","img_src"),

@@ -131,10 +131,10 @@ export const PATH_DASHBOARD = {
 
 	// Incident
 	incident: {
-		root: path(ROOTS_DASHBOARD, '/incident'),
-		firstAid: path(ROOTS_DASHBOARD, '/incident/first-aid'),
-		investigation: path(ROOTS_DASHBOARD, '/incident/investigation'),
-		incidentReport: path(ROOTS_DASHBOARD, '/incident/incident-report'),
+		root: path(ROOTS_DASHBOARD, '/incident/list'),
+		show: (id) => path(ROOTS_DASHBOARD, `/incident/view/${id}`),
+		new: path(ROOTS_DASHBOARD, '/incident/create'),
+		edit: (id) => path(ROOTS_DASHBOARD, `/incident/edit/${id}`),
 	},
 
 

@@ -2,45 +2,64 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Incident;
+use App\Services\IncidentService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class IncidentController extends Controller
 {
 	public function index() {
-		$user = Auth::user();
-		$employee_id = $user->employee->employee_id;
-		$incidents = DB::table('tbl_first_aid')
-		->join("tbl_incident", "tbl_first_aid.incident_type", "tbl_incident.incident_id")
-		->join("tbl_root_causes", "tbl_first_aid.root_causes", "tbl_root_causes.cause_id")
-		->join("tbl_employees", "tbl_first_aid.emp_id", "tbl_employees.employee_id")
-		->select(DB::raw("`fa_id`,
-		`location`,
-		`nature`,
-		`injured_id`,
-		`engineer_id`,
-		`severity`,
-		`age`,
-		`treatment`,
-		`nurse_findings`,
-		`lti_injured`,
-		`incident_type`,
-		`incident`,
-		`root_causes`,
-		tbl_first_aid.date_created,
-		`first_aider_id`,
-		`cause`,
-		(SELECT CONCAT(firstname,' ',lastname) FROM tbl_employees WHERE employee_id = engineer_id) as engineer_name,
-		(SELECT CONCAT(firstname,' ',lastname) FROM tbl_employees WHERE employee_id = injured_id) as injured_name,
-		(SELECT CONCAT(firstname,' ',lastname) FROM tbl_employees WHERE employee_id = first_aider_id) as first_aider_name"))
-		->where([
-			["tbl_first_aid.is_deleted", 0],
-			["emp_id", $employee_id],
-			["sub_id", $user->subscriber_id]
-		])
-		->get();
-		return Inertia::render('Incident/Firstaid', ["incidents" => $incidents]);
+		return Inertia::render('Incident/Firstaid');
 	}
+
+
+	public function create() {
+		$user = auth()->user();
+
+		$incidentService = new IncidentService;
+
+		return Inertia::render("Dashboard/Management/Incident/Create/index", [
+			"employees" => $incidentService->employees($user),
+			"sequence_no" => $incidentService->sequence_no(),
+			"types" => $incidentService->types($user)
+		]);
+	}
+
+
+	public function store(Request $request) {
+		$request->validate([
+			"project_code" => ["required", "string"],
+			"originator" => ["required", "string"],
+			"discipline" => ["required", "string"],
+			"document_type" => ["required", "string"],
+			"document_zone" => ["string", "nullable"],
+			"document_level" => ["string", "nullable"],
+			"location" => ["required", "string"],
+			"lti" => ["required", "integer"],
+			"site" => ["required", "string"],
+			"injured_id" => ["required", "integer"],
+			"engineer_id" => ["required", "integer"],
+			"first_aider_id" => ["required", "integer"],
+			"incident" => ["required", "string"],
+			"nature" => ["required", "string"],
+			"indicator" => ["required", "string"],
+			"root_cause" => ["required", "string"],
+			"mechanism" => ["required", "string"],
+			"equipment" => ["required", "string"],
+			"severity" => ["required", "string"],
+			"body_part" => ["required", "string"],
+			"findings" => ["string", "nullable"],
+			"first_aid" => ["string", "nullable"],
+			"remarks" => ["string", "nullable"],
+		]);
+
+		Incident::create($request->all());
+		
+		return redirect()->back()
+		->with("message", "Incident submitted successfully!")
+		->with("type", "success");
+	}
+
+
 }
