@@ -233,8 +233,8 @@ const navConfig = [
 					"incident.management.show",
 				],
 				children: [
-					{ title: 'create', path: PATH_DASHBOARD.incident.new },
-					{ title: 'list', path: PATH_DASHBOARD.incident.root },
+					{ title: 'create', path: PATH_DASHBOARD.incident.new, routeNames: ["incident.management.create"] },
+					{ title: 'list', path: PATH_DASHBOARD.incident.root, routeNames: ["incident.management.show"] },
 					// { title: 'report', path: PATH_DASHBOARD.incident.incidentReport, disabled: true },
 				]
 			},
