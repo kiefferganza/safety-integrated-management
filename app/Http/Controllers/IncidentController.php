@@ -81,4 +81,15 @@ class IncidentController extends Controller
 		->with("type", "success");
 	}
 
+
+	public function reportList(Request $request) {
+		$incidentService = new IncidentService;
+
+		$year = $request->year ?? now()->year;
+
+		$results = $incidentService->getReportList($year);
+		
+		return Inertia::render("Dashboard/Management/Incident/Report/index", $results->all());
+	}
+
 }

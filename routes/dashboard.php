@@ -275,6 +275,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 
 	Route::prefix('incident')->as('incident.management.')->group(function() {
+		Route::get('/report', [IncidentController::class, "reportList"])->name('report');
 		Route::middleware("permission:incident_show")->group(function() {
 			Route::get('/list', [IncidentController::class, "index"])->name('index');
 		});

@@ -42,7 +42,7 @@ const newIncidentSchema = Yup.object().shape({
 });
 
 const IncidentNewForm = ({ currentIncident }) => {
-	const { warning } = useSwal();
+	const { warning, load, stop } = useSwal();
 	const { sequence_no, employees, types, errors: resErrors } = usePage().props;
 	const [loading, setLoading] = useState(false);
 	const [activeStep, setActiveStep] = useState(1);
@@ -135,9 +135,11 @@ const IncidentNewForm = ({ currentIncident }) => {
 			Inertia.post(route('incident.management.store'), cleanData, {
 				preserveState: true,
 				onStart () {
+					load("Submitting form", "please wait...");
 					setLoading(true);
 				},
 				onFinish () {
+					stop();
 					setLoading(false);
 				}
 			});

@@ -132,6 +132,7 @@ export const PATH_DASHBOARD = {
 	// Incident
 	incident: {
 		root: path(ROOTS_DASHBOARD, '/incident/list'),
+		report: path(ROOTS_DASHBOARD, '/incident/report'),
 		show: (id) => path(ROOTS_DASHBOARD, `/incident/view/${id}`),
 		new: path(ROOTS_DASHBOARD, '/incident/create'),
 		edit: (id) => path(ROOTS_DASHBOARD, `/incident/edit/${id}`),

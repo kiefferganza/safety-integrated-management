@@ -33,6 +33,7 @@ class Incident extends Model
 			$inventoryReport->form_number = $form_number;
 			$inventoryReport->uuid = (string)Str::uuid();
 		});
+
 	}
 
 
