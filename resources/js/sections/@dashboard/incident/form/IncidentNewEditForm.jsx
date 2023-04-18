@@ -25,7 +25,7 @@ const newIncidentSchema = Yup.object().shape({
 	discipline: Yup.string().required('Discipline is required'),
 	document_type: Yup.string().required('Project Type is required'),
 	location: Yup.string().required('Location is required'),
-	lti: Yup.number('LTI must be an number'),
+	lti: Yup.number('LTI must be an number').min(1, "At least 1 day of days loss is required"),
 	site: Yup.string().required('Site name is required'),
 	injured_id: Yup.string().required('Please select the injured personel'),
 	engineer_id: Yup.string().required('Please select an engineer'),
@@ -41,7 +41,7 @@ const newIncidentSchema = Yup.object().shape({
 	incident_date: Yup.date("Please enter a valid date.").required("Please enter the date of the incident"),
 });
 
-const IncidentNewForm = ({ currentIncident }) => {
+const IncidentNewForm = ({ currentIncident, isEdit = false }) => {
 	const { warning, load, stop } = useSwal();
 	const { sequence_no, employees, types, errors: resErrors } = usePage().props;
 	const [loading, setLoading] = useState(false);
@@ -78,12 +78,13 @@ const IncidentNewForm = ({ currentIncident }) => {
 		remarks: currentIncident?.remarks || '',
 		incident_date: currentIncident?.incident_date ? new Date(currentIncident?.incident_date) : new Date()
 	};
+
 	const methods = useForm({
 		resolver: yupResolver(newIncidentSchema),
 		defaultValues,
 	});
 
-	const { trigger, handleSubmit, setError, reset } = methods;
+	const { trigger, handleSubmit, setError, reset, formState: { isDirty } } = methods;
 
 	useEffect(() => {
 		if (Object.keys(resErrors).length !== 0) {
@@ -94,8 +95,8 @@ const IncidentNewForm = ({ currentIncident }) => {
 			reset(defaultValues);
 			setActiveStep(1);
 			setCompleted({
-				1: false,
-				2: false
+				1: isEdit,
+				2: isEdit
 			});
 		}
 	}, [resErrors]);
@@ -146,6 +147,24 @@ const IncidentNewForm = ({ currentIncident }) => {
 		}
 	}
 
+	const onUpdate = async (data) => {
+		const result = await warning("Are you sure you want to update this form?", "Press cancel to undo this action.", "Yes");
+		if (result.isConfirmed) {
+			data.incident_date = format(data.incident_date, "yyyy-MM-dd").toString();
+			Inertia.put(route('incident.management.update', currentIncident?.id), data, {
+				preserveState: true,
+				onStart () {
+					load("Updating form", "please wait...");
+					setLoading(true);
+				},
+				onFinish () {
+					stop();
+					setLoading(false);
+				}
+			});
+		}
+	}
+
 	return (
 		<FormProvider methods={methods}>
 			<Card sx={{ p: 3 }}>
@@ -170,9 +189,26 @@ const IncidentNewForm = ({ currentIncident }) => {
 						Back
 					</Button>
 					<Box sx={{ flex: '1 1 auto' }} />
-					<LoadingButton loading={loading} variant="contained" size="large" onClick={activeStep === steps.length ? handleSubmit(onSubmit) : handleNext}>
-						{activeStep === steps.length ? 'Create' : 'Next'}
-					</LoadingButton>
+					{!isEdit ? (
+						<LoadingButton
+							loading={loading}
+							variant="contained"
+							size="large"
+							onClick={activeStep === steps.length ? handleSubmit(onSubmit) : handleNext}
+						>
+							{activeStep === steps.length ? 'Create' : 'Next'}
+						</LoadingButton>
+					) : (
+						<LoadingButton
+							loading={loading}
+							variant="contained"
+							size="large"
+							onClick={activeStep === steps.length ? handleSubmit(onUpdate) : handleNext}
+							disabled={activeStep === steps.length ? !isDirty : false}
+						>
+							{activeStep === steps.length ? 'Update' : 'Next'}
+						</LoadingButton>
+					)}
 				</Box>
 			</Card>
 		</FormProvider>

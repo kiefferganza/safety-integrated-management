@@ -158,6 +158,7 @@ const GeneralIncident = ({ personel }) => {
 						label="Incident Date"
 						inputFormat="d-MMM-yyyy"
 						value={values?.incident_date}
+						maxDate={new Date()}
 						onChange={(date) => {
 							setValue("incident_date", date, { shouldValidate: true });
 						}}

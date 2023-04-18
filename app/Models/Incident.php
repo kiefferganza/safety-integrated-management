@@ -17,21 +17,33 @@ class Incident extends Model
 	protected static function boot() {
 		parent::boot();
 
-		static::creating(function ($inventoryReport) {
+		static::creating(function ($incident) {
 			$latest = Incident::select("sequence_no")->latest()->first();
 			$sequence = $latest ? (int)ltrim($latest->sequence_no) + 1 : 1;
-			$inventoryReport->sequence_no = str_pad(ltrim($sequence), 6, '0', STR_PAD_LEFT);
+			$incident->sequence_no = str_pad(ltrim($sequence), 6, '0', STR_PAD_LEFT);
 
-			$form_number = sprintf("%s-%s-%s-%s", $inventoryReport->project_code, $inventoryReport->originator,$inventoryReport->discipline,$inventoryReport->document_type);
-			if($inventoryReport->document_zone) {
-				$form_number .= "-". $inventoryReport->document_zone;
+			$form_number = sprintf("%s-%s-%s-%s", $incident->project_code, $incident->originator,$incident->discipline,$incident->document_type);
+			if($incident->document_zone) {
+				$form_number .= "-". $incident->document_zone;
 			}
-			if($inventoryReport->document_level) {
-				$form_number .= "-". $inventoryReport->document_level;
+			if($incident->document_level) {
+				$form_number .= "-". $incident->document_level;
 			}
-			$form_number .= "-" . $inventoryReport->sequence_no;
-			$inventoryReport->form_number = $form_number;
-			$inventoryReport->uuid = (string)Str::uuid();
+			$form_number .= "-" . $incident->sequence_no;
+			$incident->form_number = $form_number;
+			$incident->uuid = (string)Str::uuid();
+		});
+
+		static::updating(function ($incident) {
+			$form_number = sprintf("%s-%s-%s-%s", $incident->project_code, $incident->originator,$incident->discipline,$incident->document_type);
+			if($incident->document_zone) {
+				$form_number .= "-". $incident->document_zone;
+			}
+			if($incident->document_level) {
+				$form_number .= "-". $incident->document_level;
+			}
+			$form_number .= "-" . $incident->sequence_no;
+			$incident->form_number = $form_number;
 		});
 
 	}

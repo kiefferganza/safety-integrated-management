@@ -103,17 +103,17 @@ export function IncidentTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
 				>
 					<Iconify icon="eva:eye-fill" />
 					View
-				</MenuItem>
+				</MenuItem> */}
 
 				<MenuItem
-					href={PATH_DASHBOARD.toolboxTalks.edit(row.id)}
+					href={PATH_DASHBOARD.incident.edit(row.uuid)}
 					component={Link}
 				>
 					<Iconify icon="eva:edit-fill" />
 					Edit
 				</MenuItem>
 
-				<Divider sx={{ borderStyle: 'dashed' }} /> */}
+				<Divider sx={{ borderStyle: 'dashed' }} />
 
 				<MenuItem
 					onClick={() => {

@@ -73,6 +73,55 @@ class IncidentController extends Controller
 	}
 
 
+	public function edit(Incident $incident) {
+		$user = auth()->user();
+
+		$incidentService = new IncidentService;
+
+		return Inertia::render("Dashboard/Management/Incident/Edit/index", [
+			"incident" => $incident,
+			"employees" => $incidentService->employees($user),
+			"types" => $incidentService->types($user)
+		]);
+	}
+
+
+	public function update(Request $request, Incident $incident) {
+		$incident->incident_date = $request->incident_date;
+		$incident->body_part = $request->body_part;
+		$incident->severity = $request->severity;
+		$incident->equipment = $request->equipment;
+		$incident->mechanism = $request->mechanism;
+		$incident->root_cause = $request->root_cause;
+		$incident->indicator = $request->indicator;
+		$incident->nature = $request->nature;
+		$incident->incident = $request->incident;
+		$incident->first_aider_id = $request->first_aider_id;
+		$incident->engineer_id = $request->engineer_id;
+		$incident->injured_id = $request->injured_id;
+		$incident->site = $request->site;
+		$incident->lti = $request->lti;
+		$incident->location = $request->location;
+		$incident->document_type = $request->document_type;
+		$incident->discipline = $request->discipline;
+		$incident->originator = $request->originator;
+		$incident->project_code = $request->project_code;
+		$incident->sequence_no = $request->sequence_no;
+		$incident->document_zone = $request->document_zone;
+		$incident->document_level = $request->document_level;
+		$incident->findings = $request->findings;
+		$incident->first_aid = $request->first_aid;
+		$incident->remarks = $request->remarks;
+		$incident->increment("revision_no");
+		$incident->save();
+
+		return redirect()->back()
+		->with("message", "Incident updated successfully!")
+		->with("type", "success");
+	}
+
+
+
 	public function destroy(Request $request) {
 		Incident::whereIn("id", $request->ids)->update(["deleted_at" => now()]);
 

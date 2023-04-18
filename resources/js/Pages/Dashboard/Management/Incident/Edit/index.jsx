@@ -8,6 +8,7 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 // components
 import { useSettingsContext } from '@/Components/settings';
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
+const IncidentNewForm = lazy(() => import('@/sections/@dashboard/incident/form/IncidentNewEditForm'));
 const CustomBreadcrumbs = lazy(() => import('@/Components/custom-breadcrumbs'));
 
 const index = ({ incident }) => {
@@ -37,6 +38,7 @@ const index = ({ incident }) => {
 								},
 							]}
 						/>
+						<IncidentNewForm currentIncident={incident} isEdit />
 					</Container>
 				</DashboardLayout>
 			</Suspense>

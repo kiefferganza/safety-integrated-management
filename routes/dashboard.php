@@ -284,6 +284,11 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::post('/create', [IncidentController::class, "store"])->name('store');
 		});
 
+		Route::middleware("permission:incident_edit")->group(function() {
+			Route::get('/edit/{incident:uuid}', [IncidentController::class, "edit"])->name('edit');
+			Route::put('/edit/{incident}', [IncidentController::class, "update"])->name('update');
+		});
+
 		Route::middleware("permission:incident_delete")->group(function() {
 			Route::post('/delete', [IncidentController::class, "destroy"])->name('destroy');
 		});
