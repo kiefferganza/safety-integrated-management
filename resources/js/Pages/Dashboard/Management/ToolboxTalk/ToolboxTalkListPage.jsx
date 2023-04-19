@@ -20,7 +20,6 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 // utils
 import { fTimestamp } from '@/utils/formatTime';
 // components
-import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';
 import ConfirmDialog from '@/Components/confirm-dialog';
@@ -461,7 +460,7 @@ function applyFilter ({
 
 	if (filterStartDate && !filterEndDate) {
 		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
-		inputData = inputData.filter(toolbox => fTimestamp(new Date(toolbox.date_conducted)) >= startDateTimestamp);
+		inputData = inputData.filter(toolbox => (new Date(toolbox.date_conducted).setHours(0, 0, 0, 0)) >= startDateTimestamp);
 	}
 
 	if (filterType.length !== 0 && !filterType.includes("All")) {
@@ -472,11 +471,10 @@ function applyFilter ({
 	if (filterStartDate && filterEndDate) {
 		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
 		const endDateTimestamp = filterEndDate.setHours(0, 0, 0, 0);
-		inputData = inputData.filter(
-			(toolbox) =>
-				fTimestamp(toolbox.date_conducted) >= startDateTimestamp &&
-				fTimestamp(toolbox.date_conducted) <= endDateTimestamp
-		);
+		inputData = inputData.filter((toolbox) => {
+			const dateConducted = new Date(toolbox.date_conducted).setHours(0, 0, 0, 0);
+			return (dateConducted >= startDateTimestamp && dateConducted <= endDateTimestamp)
+		});
 		analytic = getAverage(inputData, filterStartDate, filterEndDate);
 	} else {
 		analytic = getAverage(inputData);

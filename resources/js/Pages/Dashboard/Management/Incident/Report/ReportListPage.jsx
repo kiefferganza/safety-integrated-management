@@ -38,7 +38,6 @@ const ReportListPage = ({ incidents }) => {
 
 	const now = new Date().getUTCFullYear();
 	const years = Array(now - (now - 10)).fill('').map((_v, idx) => now - idx).reverse();
-	console.log(incidents);
 	return (
 		<>
 			<Backdrop open={loading} sx={{ overflow: "hidden" }}>

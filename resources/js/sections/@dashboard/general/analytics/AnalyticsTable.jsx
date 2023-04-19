@@ -26,10 +26,10 @@ const AnalyticsTable = ({ headTitles = [], data = [], color = 'primary', ...othe
 							<TableRow key={idx} hover sx={{ width: 1 }}>
 								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} component="th" scope="row">{d?.title}</TableCell>
 								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} width={80} align="right">
-									{d.month}
+									{d.month.toLocaleString()}
 								</TableCell>
 								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} width={80} align="right">
-									{d.itd}
+									{d.itd.toLocaleString()}
 								</TableCell>
 							</TableRow>
 						))}

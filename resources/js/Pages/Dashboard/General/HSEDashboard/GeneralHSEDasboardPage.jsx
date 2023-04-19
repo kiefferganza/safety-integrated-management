@@ -110,7 +110,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 		}
 	}, [totalTbtByYear, tbtStatistics]);
 
-
+	console.log(incidents)
 
 	const handleStartTbtDateChange = (newDate) => {
 		setStartTbtDate(newDate);
@@ -512,16 +512,16 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 						<AnalyticsTable
 							headTitles={[{ title: "Accidents and Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 							data={[
-								{ title: "Fatality", month: incidents.month.Fatality, itd: incidents.itd.Fatality },
-								{ title: "Major", month: incidents.month.Major, itd: incidents.itd.Major },
-								{ title: "Significant", month: incidents.month.Significant, itd: incidents.itd.Significant },
-								{ title: "Minor", month: incidents.month.Minor, itd: incidents.itd.Minor },
+								{ title: "Fatality", month: incidents.severity.month.Fatality, itd: incidents.severity.itd.Fatality },
+								{ title: "Major", month: incidents.severity.month.Major, itd: incidents.severity.itd.Major },
+								{ title: "Significant", month: incidents.severity.month.Significant, itd: incidents.severity.itd.Significant },
+								{ title: "Minor", month: incidents.severity.month.Minor, itd: incidents.severity.itd.Minor },
 								{ title: "Number of Near Miss Reports Received", month: 0, itd: 0 },
 								{ title: "Total Recordable Injuries (TRIs)", month: 0, itd: 0 },
-								{ title: "Lost Time Injury Frequency Rate (LTIFR)", month: 0, itd: 0 },
-								{ title: "Lost Time Injury Severity Rate (LTISR)", month: 0, itd: 0 },
-								{ title: "Total Reportable Case Frequency (TRCF)", month: 0, itd: 0 },
-								{ title: "Fatal Accident Frequency Rate (FAFR)", month: 0, itd: 0 },
+								{ title: "Lost Time Injury Frequency Rate (LTIFR)", month: incidents.ltifr.month, itd: incidents.ltifr.itd },
+								{ title: "Lost Time Injury Severity Rate (LTISR)", month: incidents.ltisr.month, itd: incidents.ltisr.itd },
+								{ title: "Total Reportable Case Frequency (TRCF)", month: incidents.trcf.month, itd: incidents.trcf.itd },
+								{ title: "Fatal Accident Frequency Rate (FAFR)", month: incidents.fafr.month, itd: incidents.fafr.itd },
 							]}
 							color="error"
 						/>

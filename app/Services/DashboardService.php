@@ -7,8 +7,11 @@ use App\Models\Incident;
 use App\Models\InspectionReportList;
 use App\Models\TbtStatistic;
 use App\Models\ToolboxTalk;
+use App\Models\ToolboxTalkParticipant;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+
+// use Illuminate\Support\Str;
 
 class DashboardService {
 
@@ -77,34 +80,75 @@ class DashboardService {
 
 	public function getIncidents() {
 		$now = Carbon::now();
-		$month = Incident::select("severity", DB::raw("count(*) as total"))
+		
+		$incidents = Incident::select("severity", "incident_date", "lti", "injured_id", "body_part")
 			->whereNull("deleted_at")
-			->whereMonth("incident_date", $now->month)
-			->groupBy("severity")
 			->get()
-			->reduce(function($incident, $item) {
-				$incident[$item->severity] = $item->total;
-				return $incident;
-			}, [
-				"Minor" => 0,
-				"Significant" => 0,
-				"Major" => 0,
-				"Fatality" => 0,
-			]);
-		$itd = Incident::select("severity", DB::raw("count(*) as total"))->whereNull("deleted_at")->groupBy("severity")->get()->reduce(function($incident, $item) {
-			$incident[$item->severity] = $item->total;
-			return $incident;
-		}, [
-			"Minor" => 0,
-			"Significant" => 0,
-			"Major" => 0,
-			"Fatality" => 0,
-		]);
+			->reduce(function($item, $incident) use($now) {
+				$incidentDate = Carbon::parse($incident->incident_date);
+				
+				$tbt = ToolboxTalkParticipant::select(DB::raw("tbl_toolbox_talks.tbt_id, SUM(time) as totalHours"), "date_conducted")
+					->join("tbl_toolbox_talks", "tbl_toolbox_talks.tbt_id", "tbl_toolbox_talks_participants.tbt_id")
+					->where("is_removed", 0)
+					->where("is_deleted", 0)
+					->whereDate("date_conducted", $incidentDate->format("Y-m-d"))
+					->first();
 
-		return [
-			"month" => $month,
-			"itd" => $itd
-		];
+					if($tbt->totalHours !== null) {
+					// LTIFR = (Number of lost time injuries / Total hours worked) x 1,000,000
+					$item["ltifr"]["itd"] += round(($incident->lti / (int)$tbt->totalHours) * 1000000);
+					if($incidentDate->month === $now->month && $incidentDate->year === $now->year) {
+						$item["ltifr"]["month"] += round(($incident->lti / (int)$tbt->totalHours) * 1000000);
+					}
+
+					// FAFR = (Number of fatal accidents / Total hours worked) x 1,000,000
+					if($incident->severity === "Fatality") {
+						$item["fafr"]["itd"] += round((1 / (int)$tbt->totalHours) * 1000000);
+						if($incidentDate->month === $now->month && $incidentDate->year === $now->year) {
+							$item["fafr"]["itd"] += round((1 / (int)$tbt->totalHours) * 1000000);
+						}
+					}
+
+					// LTISR = (Number of days lost due to lost time injuries / Total hours worked) x 1,000
+					
+
+					// TRI = (Number of recordable injuries and illnesses / Total number of hours worked) x 200,000
+
+				}
+
+
+				// SEVERITY
+				if($incidentDate->month === $now->month && $incidentDate->year === $now->year) {
+					$item["severity"]["month"][$incident->severity] += 1;
+				}
+				$item["severity"]["itd"][$incident->severity] += 1;
+
+
+				return $item;
+			}, [
+				"tris" => ["month" => 0, "itd" => 0],
+				"ltifr" => ["month" => 0, "itd" => 0],
+				"ltisr" => ["month" => 0, "itd" => 0],
+				"trcf" => ["month" => 0, "itd" => 0],
+				"fafr" => ["month" => 0, "itd" => 0],
+				"severity" => [
+					"itd" => [
+						"Minor" => 0,
+						"Significant" => 0,
+						"Major" => 0,
+						"Fatality" => 0,
+					],
+					"month" => [
+						"Minor" => 0,
+						"Significant" => 0,
+						"Major" => 0,
+						"Fatality" => 0,
+					]
+				]
+			]);
+			
+		dd($incidents);
+		return $incidents;
 	}
 
 
