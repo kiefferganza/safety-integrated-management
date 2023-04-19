@@ -147,7 +147,6 @@ class DashboardService {
 				]
 			]);
 			
-		dd($incidents);
 		return $incidents;
 	}
 
