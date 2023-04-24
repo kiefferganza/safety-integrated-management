@@ -36,12 +36,10 @@ import usePermission from '@/hooks/usePermission';
 const TABLE_HEAD = [
 	{ id: 'form_number', label: 'CMS Number', align: 'left' },
 	{ id: 'injured', label: 'Injured', align: 'left' },
-	{ id: 'site', label: 'Site', align: 'center' },
 	{ id: 'location', label: 'Location', align: 'center' },
-	{ id: 'engineer', label: 'Engineer', align: 'left' },
-	{ id: 'firstAider', label: 'firstAider', align: 'left' },
+	{ id: 'supervisor', label: 'Supervisor', align: 'left' },
 	{ id: 'incident_date', label: 'Date Occured', align: 'left' },
-	{ id: 'lti', label: 'LTI', align: 'left' },
+	{ id: 'day_loss', label: 'Day Loss', align: 'left' },
 	{ id: 'severity', label: 'Severity', align: 'left' },
 	{ id: '' },
 ];

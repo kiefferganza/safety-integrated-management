@@ -2,21 +2,22 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Request;
 use App\Models\Employee;
 use App\Models\Incident;
 use App\Models\IncidentType;
+use App\Models\User;
 use Carbon\Carbon;
 
 class IncidentService {
 
 	
 	public function getList() {
-		$incidentSelect = ["form_number", "id", "uuid", "first_aider_id", "engineer_id", "injured_id", "location", "site", "lti", "incident_date", "severity", "root_cause"];
+		$incidentSelect = ["form_number", "id", "uuid", "supervisor_id", "injured_id", "location", "day_loss", "incident_date", "severity", "root_cause"];
 
 		return Incident::select($incidentSelect)
 		->with([
-			"firstAider" => fn($q) => $q->select("employee_id", "firstname", "middlename", "lastname", "raw_position"),
-			"engineer" => fn($q) => $q->select("employee_id", "firstname", "middlename", "lastname", "raw_position"),
+			"supervisor" => fn($q) => $q->select("employee_id", "firstname", "middlename", "lastname", "raw_position"),
 			"injured" => fn($q) => $q->select("employee_id", "firstname", "middlename", "lastname", "raw_position"),
 		])
 		->whereNull("deleted_at")
@@ -26,11 +27,9 @@ class IncidentService {
 			"uuid" => $incident->uuid,
 			"form_number" => $incident->form_number,
 			"location" => $incident->location,
-			"site" => $incident->site,
-			"lti" => $incident->lti,
+			"day_loss" => $incident->day_loss,
 			"severity" => $incident->severity,
-			"firstAider" => $incident->firstAider,
-			"engineer" => $incident->engineer,
+			"supervisor" => $incident->supervisor,
 			"injured" => $incident->injured,
 			"root_cause" => $incident->root_cause,
 			"incident_date" => $incident->incident_date,
@@ -81,7 +80,7 @@ class IncidentService {
 		$types = $this->types($user);
 
 		$reportByTypes = $types->reduce(function($carry, $type, $key) use ($months) {
-			$carry[$key] = $type->reduce(function($acc, $t) use($months, $carry) {
+			$carry[$key] = $type->reduce(function($acc, $t) use($months) {
 				if($t->type === "indicator") {
 					$acc[$t->name] = [
 						"months" => $months,
@@ -98,7 +97,7 @@ class IncidentService {
 			"lti" => $months
 		]);
 
-		$incidentSelect = ["lti", "incident_date", "severity", "root_cause", "incident", "nature", "indicator", "mechanism", "equipment", "body_part"];
+		$incidentSelect = ["day_loss", "incident_date", "severity", "root_cause", "incident", "nature", "indicator", "mechanism", "equipment", "body_part"];
 
 		$incidents = Incident::select($incidentSelect)
 		->whereYear("incident_date", $year)
@@ -159,7 +158,62 @@ class IncidentService {
 	}
 
 	public function types($user) {
-		return cache()->rememberForever("incidentTypes:". $user->subscriber_id, fn() => IncidentType::select("id", "name", "type")->whereNull('deleted_at')->get())->groupBy("type");
+		return cache()->rememberForever("incidentTypes:". $user->subscriber_id, fn() => IncidentType::select("id", "name", "description", "type")->whereNull('deleted_at')->get())->groupBy("type");
+	}
+
+	public function insert(Request $request, User $user) {
+		$incident = Incident::create([
+			"project_code" => $request->project_code,
+			"originator" => $request->originator,
+			"discipline" => $request->discipline,
+			"document_type" => $request->document_type,
+			"document_zone" => $request->document_zone,
+			"document_level" => $request->document_level,
+			"injured_id" => $request->injured_id,
+			"location" => $request->location,
+			"incident" => $request->incident,
+			"nature" => $request->nature,
+			"indicator" => $request->indicator,
+			"mechanism" => $request->mechanism,
+			"severity" => $request->severity,
+			"root_cause" => $request->root_cause,
+			"equipment" => $request->equipment,
+			"body_part" => $request->body_part,
+			"remarks" => $request->remarks,
+			"incident_date" => $request->incident_date,
+			"supervisor_id" => $request->supervisor_id,
+			"day_loss" => $request->day_loss,
+			"root_cause_other" => $request->root_cause_other,
+			"mechanism_other" => $request->mechanism_other,
+			"nature_other" => $request->nature_other,
+			"employee_id" => $user->emp_id,
+			"user_id" => $user->user_id,
+		]);
+
+		if($request->hasFile("employee_signiture")) {
+			$incident->addMediaFromRequest("employee_signiture")->toMediaCollection("employee_signiture");
+		}
+
+		if($request->hasFile("supervisor_signiture")) {
+			$incident->addMediaFromRequest("supervisor_signiture")->toMediaCollection("supervisor_signiture");
+		}
+
+		$incident->detail()->create([
+			"incident_id" => $incident->id,
+			"dr_name" => $request->dr_name,
+			"dr_phone" => $request->dr_phone,
+			"workday" => $request->workday,
+			"unsafe_workplace" => $request->unsafe_workplace,
+			"unsafe_workplace_reason" => $request->unsafe_workplace_reason,
+			"unsafe_workplace_other" => $request->unsafe_workplace_other,
+			"unsafe_act" => $request->unsafe_act,
+			"unsafe_act_reason" => $request->unsafe_act_reason,
+			"unsafe_act_other" => $request->unsafe_act_other,
+			"prevention" => $request->prevention,
+			"witnesses" => $request->witnesses,
+			"similar_incident" => $request->similar_incident,
+			"step_by_step" => $request->step_by_step,
+		]);
 	}
 
 

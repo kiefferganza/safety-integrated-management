@@ -66,17 +66,13 @@ export function IncidentTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
 
 				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.injured.fullname}</TableCell>
 
-				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.site}</TableCell>
-
 				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.location}</TableCell>
 
-				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.engineer.fullname}</TableCell>
-
-				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.firstAider.fullname}</TableCell>
+				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.supervisor.fullname}</TableCell>
 
 				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{fDate(row.incident_date)}</TableCell>
 
-				<TableCell align="left" sx={{ whiteSpace: "nowrap", fontWeight: 600 }}>{row.lti}</TableCell>
+				<TableCell align="left" sx={{ whiteSpace: "nowrap", fontWeight: 600 }}>{row.day_loss}</TableCell>
 
 				<TableCell align="center">
 					<Label

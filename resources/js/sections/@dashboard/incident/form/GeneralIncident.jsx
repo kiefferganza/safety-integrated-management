@@ -1,12 +1,26 @@
-import { RHFTextField } from '@/Components/hook-form';
-import { Autocomplete, Box, Divider, Stack, TextField, Typography } from '@mui/material';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import { useRef, useState } from 'react';
+import { RHFTextField, RHFUpload } from '@/Components/hook-form';
+import { Autocomplete, Box, Button, Divider, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack, Switch, TextField, Typography } from '@mui/material';
+import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import { useFormContext } from 'react-hook-form';
+import SignaturePad from 'react-signature-canvas';
 
+const DR_OPTIONS = [
+	{ label: 'Yes', value: 1 },
+	{ label: 'No', value: 0 }
+];
+
+const canvasStyles = {
+	width: "280px",
+	height: "240px"
+};
 
 const GeneralIncident = ({ personel }) => {
+	const [seeDr, setSeeDr] = useState(false);
+	const [imageSign, setImageSign] = useState(false);
 	const { setValue, watch, formState: { errors } } = useFormContext();
 	const values = watch();
+	const sigPadRef = useRef();
 
 	const getAutocompleteValue = (id) => {
 		const findPerson = personel.find(per => per.employee_id == id);
@@ -14,6 +28,43 @@ const GeneralIncident = ({ personel }) => {
 			return `${findPerson.firstname} ${findPerson.lastname}`
 		}
 		return null;
+	}
+
+	const handleDrChange = (e) => {
+		const value = Number(e.target.value);
+		setSeeDr(value);
+		if (value === 0) {
+			setValue("dr_name", null)
+			setValue("dr_phone", null)
+		}
+	}
+
+	const handleSignitureChange = () => {
+		setValue("employee_signiture", null);
+		setImageSign(currState => !currState);
+	}
+
+	const handleClearSign = () => {
+		sigPadRef.current.clear();
+		setValue("employee_signiture", null);
+	}
+
+	const handleEndSign = () => {
+		const canvas = sigPadRef.current.getTrimmedCanvas();
+		if (canvas) {
+			canvas.toBlob((blob) => {
+				let file = new File([blob], "signature.png", { type: "image/png" });
+				setValue("employee_signiture", file);
+			}, 'image/png');
+		}
+	}
+
+	const handleDrop = (acceptedFiles) => {
+		if (acceptedFiles[0]) {
+			setValue("employee_signiture", Object.assign(acceptedFiles[0], {
+				preview: URL.createObjectURL(acceptedFiles[0]),
+			}));
+		}
 	}
 
 
@@ -85,7 +136,7 @@ const GeneralIncident = ({ personel }) => {
 
 			<Stack spacing={3}>
 				<Typography variant="h6" sx={{ color: 'text.disabled' }}>
-					First Aid Information
+					Report of Injury
 				</Typography>
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
@@ -106,57 +157,23 @@ const GeneralIncident = ({ personel }) => {
 					/>
 
 					<PersonelAutocomplete
-						value={getAutocompleteValue(values.engineer_id)}
+						value={getAutocompleteValue(values.supervisor_id)}
 						onChange={(_event, newValue) => {
 							if (newValue) {
-								setValue('engineer_id', newValue.id, { shouldValidate: true, shouldDirty: true });
+								setValue('supervisor_id', newValue.id, { shouldValidate: true, shouldDirty: true });
 							} else {
-								setValue('engineer_id', '', { shouldValidate: true, shouldDirty: true });
+								setValue('supervisor_id', '', { shouldValidate: true, shouldDirty: true });
 							}
 						}}
 						isOptionEqualToValue={(option, value) => option.label === value}
 						options={options}
-						label="Site Engineer"
-						error={errors?.engineer_id?.message}
+						label="Supervisor"
+						error={errors?.supervisor_id?.message}
 					/>
 
-					<PersonelAutocomplete
-						value={getAutocompleteValue(values.first_aider_id)}
-						isOptionEqualToValue={(option, value) => option.label === value}
-						onChange={(_event, newValue) => {
-							if (newValue) {
-								setValue('first_aider_id', newValue.id, { shouldValidate: true, shouldDirty: true });
-							} else {
-								setValue('first_aider_id', '', { shouldValidate: true, shouldDirty: true });
-							}
-						}}
-						options={options}
-						label="First Aider"
-						error={errors?.first_aider_id?.message}
-					/>
-				</Stack>
-
-				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-
-					<RHFTextField
-						name="site"
-						label="Site Name"
-						onChange={(event) => {
-							setValue("site", event.target.value, { shouldValidate: true });
-						}}
-					/>
-
-					<RHFTextField
-						name="location"
-						label="Location"
-						onChange={(event) => {
-							setValue("location", event.target.value, { shouldValidate: true });
-						}}
-					/>
-
-					<MobileDatePicker
-						label="Incident Date"
-						inputFormat="d-MMM-yyyy"
+					<MobileDateTimePicker
+						label="Incident Date & Time"
+						inputFormat="d-MMM-yyyy hh:mmaaa"
 						value={values?.incident_date}
 						maxDate={new Date()}
 						onChange={(date) => {
@@ -167,14 +184,86 @@ const GeneralIncident = ({ personel }) => {
 						}
 					/>
 
+
 				</Stack>
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-					<RHFTextField label="Nurse Findings (Optional)" fullWidth multiline name="findings" rows={3} />
+					<RHFTextField
+						name="location"
+						label="Location"
+						onChange={(event) => {
+							setValue("location", event.target.value, { shouldValidate: true });
+						}}
+					/>
+					<Box width={1} />
+					<Box width={1} />
+				</Stack>
+				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
+					<FormControl fullWidth>
+						<FormLabel id="dr-radio-label">Did you see a doctor about this injury/illness?</FormLabel>
+						<RadioGroup aria-labelledby="dr-radio-label" onChange={handleDrChange} row>
+							{DR_OPTIONS.map((option, idx) => (
+								<FormControlLabel key={idx} value={option.value} control={<Radio />} label={option.label} />
+							))}
+						</RadioGroup>
+					</FormControl>
+					{seeDr === 1 && (
+						<>
+							<RHFTextField
+								label="Dr. Name"
+								name="dr_name"
+								onChange={(event) => {
+									setValue("dr_phone", event.target.value, { shouldDirty: true });
+								}}
+							/>
+							<RHFTextField
+								label="Doctor's phone number:"
+								name="dr_phone"
+								onChange={(event) => {
+									setValue("dr_phone", event.target.value, { shouldDirty: true });
+								}}
+							/>
+						</>
+					)}
 				</Stack>
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-					<RHFTextField label="First Aid Given" fullWidth multiline name="first_aid" rows={3} />
+					<RHFTextField label="Names of witnesses (if any)" fullWidth multiline name="witnesses" rows={3} />
+				</Stack>
+
+				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
+					<RHFTextField label="Describe step by step what led up to the injury/near miss" fullWidth multiline name="step_by_step" rows={3} />
+				</Stack>
+				<Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems="center">
+					<Typography variant="h6" sx={{ color: 'text.disabled' }}>
+						Injured Signiture
+					</Typography>
+					<FormControlLabel
+						control={<Switch color="primary" checked={imageSign} onChange={handleSignitureChange} />}
+						label="Image Signiture"
+						labelPlacement="start"
+					/>
+				</Stack>
+				<Stack spacing={3} sx={{ width: 1 }} alignItems="center">
+					{imageSign ? (
+						<RHFUpload
+							name="employee_signiture"
+							maxSize={3145728}
+							onDrop={handleDrop}
+							onDelete={() => {
+								setValue("employee_signiture", null);
+							}}
+						/>
+					) : (
+						<Stack>
+							<Box width={280} height={240} sx={{ borderWidth: 4, borderStyle: "solid", borderColor: "primary.main", borderRadius: 2 }}>
+								<SignaturePad ref={sigPadRef} canvasProps={canvasStyles} onEnd={handleEndSign} />
+							</Box>
+							<Stack direction="row" justifyContent="flex-end">
+								<Button onClick={handleClearSign}>Clear</Button>
+							</Stack>
+						</Stack>
+					)}
 				</Stack>
 			</Stack>
 

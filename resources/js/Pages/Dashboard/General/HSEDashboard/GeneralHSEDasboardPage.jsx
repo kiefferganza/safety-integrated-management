@@ -110,7 +110,6 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 		}
 	}, [totalTbtByYear, tbtStatistics]);
 
-	console.log(incidents)
 
 	const handleStartTbtDateChange = (newDate) => {
 		setStartTbtDate(newDate);
@@ -137,7 +136,14 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				},
 				onFinish () {
 					setLoading(false);
-				}
+				},
+				only: [
+					"toolboxtalks",
+					"tbtStatistics",
+					"inspections",
+					"from",
+					"to",
+				]
 			});
 		}
 	}
@@ -571,11 +577,11 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 							<AnalyticsTable
 								headTitles={[{ title: "Recordable Cases" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 								data={[
-									{ title: "No of Restricted Work Cases", month: 0, itd: 0 },
-									{ title: "No of Occupational Illnesses", month: 0, itd: 0 },
-									{ title: "No of Occupational Fatalities", month: 0, itd: 0 },
-									{ title: "No of Medical Treatment Cases", month: 0, itd: 0 },
-									{ title: "No of Loss Consciousness Cases", month: 0, itd: 0 },
+									{ title: "No of Restricted Work Cases", month: incidents?.recordable?.rwc.month, itd: incidents?.recordable?.rwc.itd },
+									{ title: "No of Occupational Illnesses", month: incidents?.recordable?.ol.month, itd: incidents?.recordable?.ol.itd, },
+									{ title: "No of Occupational Fatalities", month: incidents?.recordable?.fat.month, itd: incidents?.recordable?.fat.itd },
+									{ title: "No of Medical Treatment Cases", month: incidents?.recordable?.mtc.month, itd: incidents?.recordable?.mtc.itd },
+									{ title: "No of Loss Consciousness Cases", month: incidents?.recordable?.lcc.month, itd: incidents?.recordable?.lcc.itd },
 								]}
 								color="warning"
 								sx={{ mb: 1 }}
@@ -583,8 +589,8 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 							<AnalyticsTable
 								headTitles={[{ title: "Non Recordable" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 								data={[
-									{ title: "No of First Aid Cases", month: 0, itd: 0 },
-									{ title: "No of Near Misses", month: 0, itd: 0 }
+									{ title: "No of First Aid Cases", month: incidents?.nonrecordable?.fac.month, itd: incidents?.nonrecordable?.fac.itd },
+									{ title: "No of Near Misses", month: incidents?.nonrecordable?.nm.month, itd: incidents?.nonrecordable?.nm.itd }
 								]}
 							/>
 						</Stack>
@@ -647,11 +653,11 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 							<AnalyticsTable
 								headTitles={[{ title: "Other Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 								data={[
-									{ title: "No of Property Damage", month: 0, itd: 0 },
+									{ title: "No of Property Damage", month: incidents?.pd.month, itd: incidents?.pd.itd },
 									{ title: "No of Spill & Leaks", month: 0, itd: 0 },
-									{ title: "No of Other Environ. incidents", month: 0, itd: 0 },
-									{ title: "No of Fires", month: 0, itd: 0 },
-									{ title: "No of Vehicle Accidents", month: 0, itd: 0 },
+									{ title: "No of Other Environ. incidents", month: incidents?.env.month, itd: incidents?.env.itd },
+									{ title: "No of Fires", month: incidents?.fire.month, itd: incidents?.fire.itd },
+									{ title: "No of Vehicle Accidents", month: incidents?.traf.month, itd: incidents?.traf.itd },
 								]}
 								color="error"
 								sx={{ mb: 1 }}

@@ -5,9 +5,10 @@ import { identity, pickBy } from "lodash";
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { format } from 'date-fns';
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Button, Card, Step, StepLabel, Stepper } from '@mui/material';
+import { Button, Card, Stack, Step, StepLabel, Stepper } from '@mui/material';
 // components
 import FormProvider from '@/Components/hook-form';
 import { Box } from '@mui/system';
@@ -15,9 +16,9 @@ import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
 import GeneralIncident from './GeneralIncident';
 import IncidentInformation from './IncidentInformation';
-import { format } from 'date-fns';
+import Iconify from '@/Components/iconify/Iconify';
 
-const steps = ['General Info', 'Incident Information'];
+const steps = ['General Info', 'Incident Investigation Report '];
 
 const newIncidentSchema = Yup.object().shape({
 	project_code: Yup.string().required('Project Code is required'),
@@ -25,20 +26,22 @@ const newIncidentSchema = Yup.object().shape({
 	discipline: Yup.string().required('Discipline is required'),
 	document_type: Yup.string().required('Project Type is required'),
 	location: Yup.string().required('Location is required'),
-	lti: Yup.number('LTI must be an number').min(1, "At least 1 day of days loss is required"),
-	site: Yup.string().required('Site name is required'),
+	day_loss: Yup.number('Days loss must be an number').min(1, "At least 1 day of days loss is required"),
 	injured_id: Yup.string().required('Please select the injured personel'),
-	engineer_id: Yup.string().required('Please select an engineer'),
-	first_aider_id: Yup.string().required('Please select the first aider personel'),
+	supervisor_id: Yup.string().required('Please select an engineer'),
 	incident: Yup.string().required('Please select incident classification'),
-	nature: Yup.string().required('Please select the nature of injury'),
+	nature_other: Yup.string(),
+	nature: Yup.string().when("nature_other", (nature_other, schema) => nature_other === "" ? schema.required('Please select the nature of injury') : schema.notRequired()),
 	indicator: Yup.string().required('Please select the leading indicator'),
-	root_cause: Yup.string().required('Please select the root cause of the incident'),
-	mechanism: Yup.string().required('Please select the mechanism of injury'),
+	root_cause_other: Yup.string(),
+	root_cause: Yup.string().when("root_cause_other", (root_cause_other, schema) => root_cause_other === "" ? schema.required('Please select the root cause of the incident') : schema.notRequired()),
+	mechanism_other: Yup.string(),
+	mechanism: Yup.string().when("mechanism_other", (mechanism_other, schema) => mechanism_other === "" ? schema.required('Please select the mechanism of injury') : schema.notRequired()),
 	equipment: Yup.string().required('Please select the equipment that involved in the incident'),
-	severity: Yup.string().required('Please select the severity of the incident'),
+	severity: Yup.string().nullable().required('Please select the severity of the incident'),
 	body_part: Yup.string().required('Please select the affected body part of the injured personel'),
 	incident_date: Yup.date("Please enter a valid date.").required("Please enter the date of the incident"),
+	workday: Yup.string().required(),
 });
 
 const IncidentNewForm = ({ currentIncident, isEdit = false }) => {
@@ -60,23 +63,34 @@ const IncidentNewForm = ({ currentIncident, isEdit = false }) => {
 		document_zone: currentIncident?.document_zone || '',
 		document_level: currentIncident?.document_level || '',
 		location: currentIncident?.location || '',
-		site: currentIncident?.site || '',
 		injured_id: currentIncident?.injured_id || '',
-		engineer_id: currentIncident?.engineer_id || '',
-		first_aider_id: currentIncident?.first_aider_id || '',
-		findings: currentIncident?.findings || '',
-		first_aid: currentIncident?.first_aid || '',
-		lti: currentIncident?.lti || 0,
+		supervisor_id: currentIncident?.supervisor_id || '',
+		day_loss: currentIncident?.day_loss || 0,
 		incident: currentIncident?.incident || '',
 		nature: currentIncident?.nature || '',
+		nature_other: currentIncident?.nature_other || '',
 		mechanism: currentIncident?.mechanism || '',
+		mechanism_other: currentIncident?.mechanism_other || '',
 		indicator: currentIncident?.indicator || '',
 		root_cause: currentIncident?.root_cause || '',
+		root_cause_other: currentIncident?.root_cause_other || '',
 		equipment: currentIncident?.equipment || '',
 		severity: currentIncident?.severity || '',
 		body_part: currentIncident?.body_part || '',
 		remarks: currentIncident?.remarks || '',
-		incident_date: currentIncident?.incident_date ? new Date(currentIncident?.incident_date) : new Date()
+		incident_date: currentIncident?.incident_date ? new Date(currentIncident?.incident_date) : new Date(),
+		similar_incident: currentIncident?.similar_incident || 'No',
+		prevention: currentIncident?.prevention || '',
+		workday: currentIncident?.workday || '',
+		witnesses: currentIncident?.witnesses || '',
+		step_by_step: currentIncident?.step_by_step || '',
+		unsafe_workplace: currentIncident?.unsafe_workplace || '',
+		unsafe_workplace_reason: currentIncident?.unsafe_workplace_reason || '',
+		unsafe_workplace_other: currentIncident?.unsafe_workplace_other || '',
+		unsafe_act: currentIncident?.unsafe_act || '',
+		unsafe_act_reason: currentIncident?.unsafe_act_reason || '',
+		unsafe_act_other: currentIncident?.unsafe_act_other || '',
+		employee_signiture: currentIncident?.employee_signiture || '',
 	};
 
 	const methods = useForm({
@@ -84,7 +98,7 @@ const IncidentNewForm = ({ currentIncident, isEdit = false }) => {
 		defaultValues,
 	});
 
-	const { trigger, handleSubmit, setError, reset, formState: { isDirty } } = methods;
+	const { trigger, handleSubmit, setError, reset, formState: { isDirty, errors } } = methods;
 
 	useEffect(() => {
 		if (Object.keys(resErrors).length !== 0) {
@@ -109,7 +123,7 @@ const IncidentNewForm = ({ currentIncident, isEdit = false }) => {
 
 	const handleNext = async () => {
 		if (activeStep === 1) {
-			const result = await trigger(["project_code", "originator", "discipline", "document_type", "location", "site", "injured_id", "engineer_id", "first_aider_id", "incident_date"]);
+			const result = await trigger(["project_code", "originator", "discipline", "document_type", "location", "injured_id", "supervisor_id", "incident_date"]);
 			if (result) {
 				const newCompleted = completed;
 				newCompleted[activeStep] = true;
@@ -122,18 +136,19 @@ const IncidentNewForm = ({ currentIncident, isEdit = false }) => {
 	const handleBack = () => {
 		setActiveStep((prevActiveStep) => prevActiveStep - 1);
 	};
-
+	console.log(errors)
 	const onSubmit = async (data) => {
-		const cleanData = pickBy(data, identity);
-		cleanData.lti = cleanData?.lti || 0;
-		cleanData.engineer_id = Number(cleanData.engineer_id);
-		cleanData.injured_id = Number(cleanData.injured_id);
-		cleanData.first_aider_id = Number(cleanData.first_aider_id);
-		cleanData.incident_date = format(cleanData.incident_date, "yyyy-MM-dd").toString();
+		data.incident_date = format(data.incident_date, "yyyy-MM-dd hh:mm:ss").toString();
+		console.log(data);
+		// const cleanData = pickBy(data, identity);
+		// cleanData.lti = cleanData?.lti || 0;
+		// cleanData.engineer_id = Number(cleanData.engineer_id);
+		// cleanData.injured_id = Number(cleanData.injured_id);
+		// cleanData.incident_date = format(cleanData.incident_date, "yyyy-MM-dd").toString();
 
 		const result = await warning("Are you sure you want to save this form?", "Press cancel to undo this action.", "Yes");
 		if (result.isConfirmed) {
-			Inertia.post(route('incident.management.store'), cleanData, {
+			Inertia.post(route('incident.management.store'), data, {
 				preserveState: true,
 				onStart () {
 					load("Submitting form", "please wait...");
@@ -168,48 +183,91 @@ const IncidentNewForm = ({ currentIncident, isEdit = false }) => {
 	return (
 		<FormProvider methods={methods}>
 			<Card sx={{ p: 3 }}>
-				<Stepper activeStep={activeStep - 1} sx={{ mb: 3, maxWidth: 600, mr: "auto", ml: "auto" }}>
-					{steps.map((label, index) => {
-						return (
-							<Step key={label} completed={completed[index + 1]}>
-								<StepLabel>{label}</StepLabel>
-							</Step>
-						);
-					})}
-				</Stepper>
+				<Stack direction={{ xs: 'column', md: 'row' }} sx={{ mb: 5 }}>
+					<Box flex={.3}>
+						<Button
+							color="inherit"
+							disabled={activeStep === 1 || loading}
+							onClick={handleBack}
+							sx={{ mr: 1 }}
+						>
+							Back
+						</Button>
+					</Box>
+					<Stepper activeStep={activeStep - 1} sx={{ flex: 1 }}>
+						{steps.map((label, index) => {
+							return (
+								<Step key={label} completed={completed[index + 1]}>
+									<StepLabel>{label}</StepLabel>
+								</Step>
+							);
+						})}
+					</Stepper>
+					<Box flex={.3} display="flex" justifyContent="flex-end">
+						{!isEdit ? (
+							<LoadingButton
+								loading={loading}
+								onClick={activeStep === steps.length ? handleSubmit(onSubmit) : handleNext}
+								endIcon={<Iconify icon="material-symbols:chevron-right" />}
+							>
+								{activeStep === steps.length ? 'Create' : 'Next'}
+							</LoadingButton>
+						) : (
+							<LoadingButton
+								loading={loading}
+								onClick={activeStep === steps.length ? handleSubmit(onUpdate) : handleNext}
+								disabled={activeStep === steps.length ? !isDirty : false}
+								endIcon={activeStep === steps.length ? null : <Iconify icon="material-symbols:chevron-right" />}
+							>
+								{activeStep === steps.length ? 'Update' : 'Next'}
+							</LoadingButton>
+						)}
+					</Box>
+				</Stack>
 				{STEPS.map((s) => s.id === activeStep && <Box key={s.id}>{s.component}</Box>)}
-
-				<Box sx={{ display: 'flex', flexDirection: 'row', mt: 3 }}>
-					<Button
-						color="inherit"
-						disabled={activeStep === 0 || loading}
-						onClick={handleBack}
-						sx={{ mr: 1 }}
-					>
-						Back
-					</Button>
-					<Box sx={{ flex: '1 1 auto' }} />
-					{!isEdit ? (
-						<LoadingButton
-							loading={loading}
-							variant="contained"
-							size="large"
-							onClick={activeStep === steps.length ? handleSubmit(onSubmit) : handleNext}
+				<Stack direction={{ xs: 'column', md: 'row' }} sx={{ mt: 5 }}>
+					<Box flex={.3}>
+						<Button
+							color="inherit"
+							disabled={activeStep === 1 || loading}
+							onClick={handleBack}
+							sx={{ mr: 1 }}
 						>
-							{activeStep === steps.length ? 'Create' : 'Next'}
-						</LoadingButton>
-					) : (
-						<LoadingButton
-							loading={loading}
-							variant="contained"
-							size="large"
-							onClick={activeStep === steps.length ? handleSubmit(onUpdate) : handleNext}
-							disabled={activeStep === steps.length ? !isDirty : false}
-						>
-							{activeStep === steps.length ? 'Update' : 'Next'}
-						</LoadingButton>
-					)}
-				</Box>
+							Back
+						</Button>
+					</Box>
+					<Stepper activeStep={activeStep - 1} sx={{ flex: 1 }}>
+						{steps.map((label, index) => {
+							return (
+								<Step key={label} completed={completed[index + 1]}>
+									<StepLabel>{label}</StepLabel>
+								</Step>
+							);
+						})}
+					</Stepper>
+					<Box flex={.3} display="flex" justifyContent="flex-end">
+						<Box>
+							{!isEdit ? (
+								<LoadingButton
+									loading={loading}
+									onClick={activeStep === steps.length ? handleSubmit(onSubmit) : handleNext}
+									endIcon={<Iconify icon="material-symbols:chevron-right" />}
+								>
+									{activeStep === steps.length ? 'Create' : 'Next'}
+								</LoadingButton>
+							) : (
+								<LoadingButton
+									loading={loading}
+									onClick={activeStep === steps.length ? handleSubmit(onUpdate) : handleNext}
+									disabled={activeStep === steps.length ? !isDirty : false}
+									endIcon={activeStep === steps.length ? null : <Iconify icon="material-symbols:chevron-right" />}
+								>
+									{activeStep === steps.length ? 'Update' : 'Next'}
+								</LoadingButton>
+							)}
+						</Box>
+					</Box>
+				</Stack>
 			</Card>
 		</FormProvider>
 	)

@@ -41,11 +41,9 @@ class IncidentController extends Controller
 			"document_zone" => ["string", "nullable"],
 			"document_level" => ["string", "nullable"],
 			"location" => ["required", "string"],
-			"lti" => ["required", "integer"],
-			"site" => ["required", "string"],
+			"day_loss" => ["required", "integer"],
 			"injured_id" => ["required", "integer"],
-			"engineer_id" => ["required", "integer"],
-			"first_aider_id" => ["required", "integer"],
+			"supervisor_id" => ["required", "integer"],
 			"incident" => ["required", "string"],
 			"nature" => ["required", "string"],
 			"indicator" => ["required", "string"],
@@ -54,18 +52,20 @@ class IncidentController extends Controller
 			"equipment" => ["required", "string"],
 			"severity" => ["required", "string"],
 			"body_part" => ["required", "string"],
-			"findings" => ["string", "nullable"],
-			"first_aid" => ["string", "nullable"],
 			"remarks" => ["string", "nullable"],
 			"incident_date" => ["string", "required"],
 		]);
-		$user = auth()->user();
-		
-		$fields = $request->all();
-		$fields["employee_id"] = $user->emp_id;
-		$fields["user_id"] = $user->user_id;
 
-		Incident::create($fields);
+		$user = auth()->user();
+		$incidentService = new IncidentService;
+
+		$incidentService->insert($request, $user);
+		
+		// $fields = $request->all();
+		// $fields["employee_id"] = $user->emp_id;
+		// $fields["user_id"] = $user->user_id;
+
+		// Incident::create($fields);
 		
 		return redirect()->back()
 		->with("message", "Incident submitted successfully!")

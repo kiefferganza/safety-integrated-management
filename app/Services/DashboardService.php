@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Images;
 use App\Models\Incident;
+use App\Models\IncidentType;
 use App\Models\InspectionReportList;
 use App\Models\TbtStatistic;
 use App\Models\ToolboxTalk;
@@ -80,11 +81,12 @@ class DashboardService {
 
 	public function getIncidents() {
 		$now = Carbon::now();
-		
-		$incidents = Incident::select("severity", "incident_date", "lti", "injured_id", "body_part")
+		$recordableCases = array("Amputation", "Asphyxia", "Fracture", "Hearing Loss", "Poisoning");
+		$nonRecordableCases = array("Abrasion", "Bites/Stings", "Bruise/Contusion", "Burn/Chemical", "Burn/Thermal", "Cold Related", "Concussion", "Cut/Laceration", "Electrical Shock", "Heat Related", "Skin Disorder");
+		$incidents = Incident::select("severity", "incident_date", "day_loss", "incident", "indicator", "injured_id", "body_part")
 			->whereNull("deleted_at")
 			->get()
-			->reduce(function($item, $incident) use($now) {
+			->reduce(function($item, $incident) use($now, $recordableCases, $nonRecordableCases) {
 				$incidentDate = Carbon::parse($incident->incident_date);
 				
 				$tbt = ToolboxTalkParticipant::select(DB::raw("tbl_toolbox_talks.tbt_id, SUM(time) as totalHours"), "date_conducted")
@@ -93,32 +95,111 @@ class DashboardService {
 					->where("is_deleted", 0)
 					->whereDate("date_conducted", $incidentDate->format("Y-m-d"))
 					->first();
+				$inMonth = $incidentDate->month === $now->month && $incidentDate->year === $now->year;
+				if($tbt->totalHours !== null) {
+					
+					if($incident->incident === "LTC") {
+						$item["ltifr"]["totalHours"] += (int)$tbt->totalHours;
+						$item["ltifr"]["lti"] += 1;
+						if($inMonth) {
+							$item["ltifr"]["monthTotalhours"] += (int)$tbt->totalHours;
+							$item["ltifr"]["monthLti"] += 1;
+						}
 
-					if($tbt->totalHours !== null) {
-					// LTIFR = (Number of lost time injuries / Total hours worked) x 1,000,000
-					$item["ltifr"]["itd"] += round(($incident->lti / (int)$tbt->totalHours) * 1000000);
-					if($incidentDate->month === $now->month && $incidentDate->year === $now->year) {
-						$item["ltifr"]["month"] += round(($incident->lti / (int)$tbt->totalHours) * 1000000);
+						$item["ltisr"]["totalHours"] += (int)$tbt->totalHours;
+						$item["ltisr"]["dayloss"] += $incident->day_loss;
+						if($inMonth) {
+							$item["ltisr"]["monthTotalhours"] += (int)$tbt->totalHours;
+							$item["ltisr"]["monthDayloss"] += $incident->day_loss;
+						}
+
 					}
-
+					
 					// FAFR = (Number of fatal accidents / Total hours worked) x 1,000,000
-					if($incident->severity === "Fatality") {
-						$item["fafr"]["itd"] += round((1 / (int)$tbt->totalHours) * 1000000);
-						if($incidentDate->month === $now->month && $incidentDate->year === $now->year) {
-							$item["fafr"]["itd"] += round((1 / (int)$tbt->totalHours) * 1000000);
+					if($incident->incident === "FAT") {
+						$item["fafr"]["total"] += 1;
+						$item["fafr"]["totalHours"] += (int)$tbt->totalHours;
+						if($inMonth) {
+							$item["fafr"]["monthTotal"] += 1;
+							$item["fafr"]["monthTotalHours"] += (int)$tbt->totalHours;
 						}
 					}
+					// Recordable
+					if(in_array($incident->nature, $recordableCases)) {
+						$item["trcf"]["total"] += 1;
+						$item["trcf"]["totalHours"] += (int)$tbt->totalHours;
 
-					// LTISR = (Number of days lost due to lost time injuries / Total hours worked) x 1,000
-					
-
-					// TRI = (Number of recordable injuries and illnesses / Total number of hours worked) x 200,000
-
+						$item["tris"]["total"] += 1;
+						$item["tris"]["totalHours"] += (int)$tbt->totalHours;
+						if($inMonth) {
+							$item["tris"]["monthTotal"] += 1;
+							$item["tris"]["monthTotalHours"] += (int)$tbt->totalHours;
+							$item["trcf"]["monthTotal"] += 1;
+							$item["trcf"]["monthTotalHours"] += (int)$tbt->totalHours;
+						}
+					}
 				}
 
-
+				switch ($incident->incident) {
+					case 'FAT':
+						$item["recordable"]["itd"]["fat"] += 1;
+						if($inMonth) {
+							$item["recordable"]["month"]["fat"] += 1;
+						}
+						break;
+					case 'MTC':
+						$item["recordable"]["itd"]["mtc"] += 1;
+						if($inMonth) {
+							$item["recordable"]["month"]["mtc"] += 1;
+						}
+						break;
+					case 'RWC':
+						$item["recordable"]["itd"]["rwc"] += 1;
+						if($inMonth) {
+							$item["recordable"]["month"]["rwc"] += 1;
+						}
+						break;
+					case 'NM':
+						$item["nonrecordable"]["nm"] += 1;
+						if($inMonth) {
+							$item["nonrecordable"]["month"]["nm"] += 1;
+						}
+						break;
+					case 'FAC':
+						$item["nonrecordable"]["fac"] += 1;
+						if($inMonth) {
+							$item["nonrecordable"]["month"]["fac"] += 1;
+						}
+						break;
+					case 'PD':
+						$item["itd"]["pd"] += 1;
+						if($inMonth) {
+							$item["month"]["pd"] += 1;
+						}
+						break;
+					case 'ENV':
+						$item["itd"]["env"] += 1;
+						if($inMonth) {
+							$item["month"]["env"] += 1;
+						}
+						break;
+					case 'FIRE':
+						$item["itd"]["fire"] += 1;
+						if($inMonth) {
+							$item["month"]["fire"] += 1;
+						}
+						break;
+					case 'TRAF':
+						$item["itd"]["traf"] += 1;
+						if($inMonth) {
+							$item["month"]["traf"] += 1;
+						}
+						break;
+					default:
+						break;
+				}
 				// SEVERITY
-				if($incidentDate->month === $now->month && $incidentDate->year === $now->year) {
+				if($inMonth) {
 					$item["severity"]["month"][$incident->severity] += 1;
 				}
 				$item["severity"]["itd"][$incident->severity] += 1;
@@ -126,11 +207,26 @@ class DashboardService {
 
 				return $item;
 			}, [
-				"tris" => ["month" => 0, "itd" => 0],
-				"ltifr" => ["month" => 0, "itd" => 0],
-				"ltisr" => ["month" => 0, "itd" => 0],
-				"trcf" => ["month" => 0, "itd" => 0],
-				"fafr" => ["month" => 0, "itd" => 0],
+				"tris" => ["monthTotalhours" => 0, "monthTotal" => 0, "totalHours" => 0, "total" => 0],
+				"ltifr" => ["monthTotalhours" => 0, "monthLti" => 0, "totalHours" => 0, "lti" => 0],
+				"ltisr" => ["monthTotalhours" => 0, "monthDayloss" => 0, "totalHours" => 0, "dayloss" => 0],
+				"trcf" => ["total" => 0, "totalHours" => 0, "monthTotal" => 0, "monthTotalHours" => 0],
+				"fafr" => ["total" => 0, "totalHours" => 0, "monthTotal" => 0, "monthTotalHours" => 0],
+				"pd" => ["itd" => 0, "month" => 0],
+				"env" => ["itd" => 0, "month" => 0],
+				"fire" => ["itd" => 0, "month" => 0],
+				"traf" => ["itd" => 0, "month" => 0],
+				"recordable" => [
+					"rwc" => ["itd" => 0, "month" => 0],
+					"ol" => ["itd" => 0, "month" => 0],
+					"fat" => ["itd" => 0, "month" => 0],
+					"mtc" => ["itd" => 0, "month" => 0],
+					"lcc" => ["itd" => 0, "month" => 0]
+				],
+				"nonrecordable" => [
+					"fac" => ["itd" => 0, "month" => 0],
+					"nm" => ["itd" => 0, "month" => 0]
+				],
 				"severity" => [
 					"itd" => [
 						"Minor" => 0,
@@ -146,8 +242,67 @@ class DashboardService {
 					]
 				]
 			]);
+
+		$incidentReport = [
+			"tris" => ["month" => 0, "itd" => 0],
+			"ltifr" => ["month" => 0, "itd" => 0],
+			"ltisr" => ["month" => 0, "itd" => 0],
+			"trcf" => ["month" => 0, "itd" => 0],
+			"fafr" => ["month" => 0, "itd" => 0],
+			"severity" => $incidents["severity"],
+			"pd" => $incidents["pd"],
+			"env" => $incidents["env"],
+			"fire" => $incidents["fire"],
+			"traf" => $incidents["traf"],
+			"recordable" => $incidents["recordable"],
+			"nonrecordable" => $incidents["nonrecordable"],
+		];
+
+		// dd($incidentReport);
+		
+		// LTIFR = (Number of lost time injuries / Total hours worked) x 1,000,000
+		if($incidents["ltifr"]["lti"] > 0) {
+			$incidentReport["ltifr"]["itd"] = round(($incidents["ltifr"]["lti"] / $incidents["ltifr"]["totalHours"]) * 1000000);
+		}
+		if($incidents["ltifr"]["monthLti"] > 0) {
+			$incidentReport["ltifr"]["month"] = round(($incidents["ltifr"]["monthLti"] / $incidents["ltifr"]["monthTotalhours"]) * 1000000);
+		}
+
+		// LTISR = (Number of days lost due to lost time injuries / Total hours worked) x 1,000
+		if($incidents["ltisr"]["dayloss"] > 0) {
+			$incidentReport["ltisr"]["itd"] = round(($incidents["ltisr"]["dayloss"] / $incidents["ltisr"]["totalHours"]) * 1000);
+		}
+		if($incidents["ltisr"]["monthDayloss"] > 0) {
+			$incidentReport["ltisr"]["month"] = round(($incidents["ltisr"]["monthDayloss"] / $incidents["ltisr"]["monthTotalhours"]) * 1000);
+		}
+		
+		// FAFR = (Number of fatal accidents / Total hours worked) x 1,000,000
+		if($incidents["fafr"]["total"] > 0) {
+			$incidentReport["fafr"]["itd"] = round(($incidents["fafr"]["total"] / $incidents["fafr"]["totalHours"]) * 1000000);
+		}
+		if($incidents["fafr"]["monthTotal"] > 0) {
+			$incidentReport["fafr"]["month"] = round(($incidents["fafr"]["monthTotal"] / $incidents["fafr"]["monthTotalhours"]) * 1000000);
+		}
+		
+		// TRI (Total Recordable Incidents ) = (Number of recordable injuries and illnesses / Total number of hours worked) x 200,000
+		if($incidents["tris"]["total"] > 0) {
+			$incidentReport["tris"]["itd"] = round(($incidents["tris"]["total"] / $incidents["tris"]["totalHours"]) * 200000);
+		}
+		if($incidents["tris"]["monthTotal"] > 0) {
+			$incidentReport["tris"]["month"] = round(($incidents["tris"]["monthTotal"] / $incidents["tris"]["monthTotalhours"]) * 200000);
+		}
+
+		// TRCF (Total Recordable Case Frequency) = (Number of Recordable Cases x 200,000) / Total Hours Worked
+		if($incidents["trcf"]["total"] > 0) {
+			$incidentReport["trcf"]["itd"] = round(($incidents["trcf"]["total"] * 200000) / $incidents["trcf"]["totalHours"]);
+		}
+		if($incidents["trcf"]["monthTotal"] > 0) {
+			$incidentReport["trcf"]["month"] = round(($incidents["trcf"]["monthTotal"] * 200000) / $incidents["trcf"]["monthTotalhours"]);
+		}
+		
+		// dd($incidentReport, $incidents);
 			
-		return $incidents;
+		return $incidentReport;
 	}
 
 

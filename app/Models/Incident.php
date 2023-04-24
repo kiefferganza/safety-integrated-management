@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Incident extends Model
+class Incident extends Model implements HasMedia
 {
-	use HasFactory;
+	use HasFactory, InteractsWithMedia;
 
 	protected $table = 'incidents';
 
@@ -49,17 +51,16 @@ class Incident extends Model
 	}
 
 
-
-	public function firstAider() {
-		return $this->hasOne(Employee::class, "employee_id", "first_aider_id");
-	}
-
-	public function engineer() {
-		return $this->hasOne(Employee::class, "employee_id", "engineer_id");
+	public function supervisor() {
+		return $this->hasOne(Employee::class, "employee_id", "supervisor_id");
 	}
 
 	public function injured() {
 		return $this->hasOne(Employee::class, "employee_id", "injured_id");
+	}
+
+	public function detail() {
+		return $this->hasOne(IncidentDetail::class, "id", "incident_id");
 	}
 
 

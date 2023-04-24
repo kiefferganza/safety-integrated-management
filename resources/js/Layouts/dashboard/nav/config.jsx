@@ -150,6 +150,7 @@ const navConfig = [
 					{
 						title: "Create",
 						gate: 'inspection_create',
+						routeNames: ["inspection.management.new"],
 						path: PATH_DASHBOARD.inspection.new
 					},
 					{
@@ -160,7 +161,7 @@ const navConfig = [
 							"inspection.management.list",
 						],
 						children: [
-							{ title: 'list', gate: 'inspection_show', path: PATH_DASHBOARD.inspection.list, routeNames: ["inspection.management.new", "inspection.management.list", "inspection.management.view", "inspection.management.edit", "inspection.management.review", "inspection.management.verify"] },
+							{ title: 'list', gate: 'inspection_show', path: PATH_DASHBOARD.inspection.list, routeNames: ["inspection.management.list", "inspection.management.view", "inspection.management.edit", "inspection.management.review", "inspection.management.verify"] },
 							{ title: 'report', path: PATH_DASHBOARD.inspection.report, routeNames: ["inspection.management.report"] },
 						],
 					},
