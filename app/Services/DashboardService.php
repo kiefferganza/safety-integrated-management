@@ -142,57 +142,57 @@ class DashboardService {
 
 				switch ($incident->incident) {
 					case 'FAT':
-						$item["recordable"]["itd"]["fat"] += 1;
+						$item["recordable"]["fat"]["itd"] += 1;
 						if($inMonth) {
-							$item["recordable"]["month"]["fat"] += 1;
+							$item["recordable"]["fat"]["month"] += 1;
 						}
 						break;
 					case 'MTC':
-						$item["recordable"]["itd"]["mtc"] += 1;
+						$item["recordable"]["mtc"]["itd"] += 1;
 						if($inMonth) {
-							$item["recordable"]["month"]["mtc"] += 1;
+							$item["recordable"]["mtc"]["month"] += 1;
 						}
 						break;
 					case 'RWC':
-						$item["recordable"]["itd"]["rwc"] += 1;
+						$item["recordable"]["rwc"]["itd"] += 1;
 						if($inMonth) {
-							$item["recordable"]["month"]["rwc"] += 1;
+							$item["recordable"]["rwc"]["month"] += 1;
 						}
 						break;
 					case 'NM':
-						$item["nonrecordable"]["nm"] += 1;
+						$item["nonrecordable"]["nm"]["itd"] += 1;
 						if($inMonth) {
-							$item["nonrecordable"]["month"]["nm"] += 1;
+							$item["nonrecordable"]["nm"]["month"] += 1;
 						}
 						break;
 					case 'FAC':
-						$item["nonrecordable"]["fac"] += 1;
+						$item["nonrecordable"]["fac"]["itd"] += 1;
 						if($inMonth) {
-							$item["nonrecordable"]["month"]["fac"] += 1;
+							$item["nonrecordable"]["fac"]["month"] += 1;
 						}
 						break;
 					case 'PD':
-						$item["itd"]["pd"] += 1;
+						$item["pd"]["itd"] += 1;
 						if($inMonth) {
-							$item["month"]["pd"] += 1;
+							$item["pd"]["month"] += 1;
 						}
 						break;
 					case 'ENV':
-						$item["itd"]["env"] += 1;
+						$item["env"]["itd"] += 1;
 						if($inMonth) {
-							$item["month"]["env"] += 1;
+							$item["env"]["month"] += 1;
 						}
 						break;
 					case 'FIRE':
-						$item["itd"]["fire"] += 1;
+						$item["fire"]["itd"] += 1;
 						if($inMonth) {
-							$item["month"]["fire"] += 1;
+							$item["fire"]["month"] += 1;
 						}
 						break;
 					case 'TRAF':
-						$item["itd"]["traf"] += 1;
+						$item["traf"]["itd"] += 1;
 						if($inMonth) {
-							$item["month"]["traf"] += 1;
+							$item["traf"]["month"] += 1;
 						}
 						break;
 					default:
