@@ -82,11 +82,14 @@ class DashboardService {
 	public function getIncidents() {
 		$now = Carbon::now();
 		$recordableCases = array("Amputation", "Asphyxia", "Fracture", "Hearing Loss", "Poisoning");
-		$nonRecordableCases = array("Abrasion", "Bites/Stings", "Bruise/Contusion", "Burn/Chemical", "Burn/Thermal", "Cold Related", "Concussion", "Cut/Laceration", "Electrical Shock", "Heat Related", "Skin Disorder");
+		// $nonRecordableCases = array("Abrasion", "Bites/Stings", "Bruise/Contusion", "Burn/Chemical", "Burn/Thermal", "Cold Related", "Concussion", "Cut/Laceration", "Electrical Shock", "Heat Related", "Skin Disorder");
+
+
+		
 		$incidents = Incident::select("severity", "incident_date", "day_loss", "incident", "indicator", "injured_id", "body_part")
 			->whereNull("deleted_at")
 			->get()
-			->reduce(function($item, $incident) use($now, $recordableCases, $nonRecordableCases) {
+			->reduce(function($item, $incident) use($now, $recordableCases) {
 				$incidentDate = Carbon::parse($incident->incident_date);
 				
 				$tbt = ToolboxTalkParticipant::select(DB::raw("tbl_toolbox_talks.tbt_id, SUM(time) as totalHours"), "date_conducted")
@@ -98,32 +101,31 @@ class DashboardService {
 				$inMonth = $incidentDate->month === $now->month && $incidentDate->year === $now->year;
 				if($tbt->totalHours !== null) {
 					
-					if($incident->incident === "LTC") {
-						$item["ltifr"]["totalHours"] += (int)$tbt->totalHours;
-						$item["ltifr"]["lti"] += 1;
-						if($inMonth) {
-							$item["ltifr"]["monthTotalhours"] += (int)$tbt->totalHours;
-							$item["ltifr"]["monthLti"] += 1;
-						}
+					// if($incident->incident === "LTC") {
+					// 	$item["ltifr"]["totalHours"] += (int)$tbt->totalHours;
+					// 	$item["ltifr"]["lti"] += 1;
+					// 	if($inMonth) {
+					// 		$item["ltifr"]["monthTotalhours"] += (int)$tbt->totalHours;
+					// 		$item["ltifr"]["monthLti"] += 1;
+					// 	}
 
-						$item["ltisr"]["totalHours"] += (int)$tbt->totalHours;
-						$item["ltisr"]["dayloss"] += $incident->day_loss;
-						if($inMonth) {
-							$item["ltisr"]["monthTotalhours"] += (int)$tbt->totalHours;
-							$item["ltisr"]["monthDayloss"] += $incident->day_loss;
-						}
-
-					}
+					// 	$item["ltisr"]["totalHours"] += (int)$tbt->totalHours;
+					// 	$item["ltisr"]["dayloss"] += $incident->day_loss;
+					// 	if($inMonth) {
+					// 		$item["ltisr"]["monthTotalhours"] += (int)$tbt->totalHours;
+					// 		$item["ltisr"]["monthDayloss"] += $incident->day_loss;
+					// 	}
+					// }
 					
 					// FAFR = (Number of fatal accidents / Total hours worked) x 1,000,000
-					if($incident->incident === "FAT") {
-						$item["fafr"]["total"] += 1;
-						$item["fafr"]["totalHours"] += (int)$tbt->totalHours;
-						if($inMonth) {
-							$item["fafr"]["monthTotal"] += 1;
-							$item["fafr"]["monthTotalHours"] += (int)$tbt->totalHours;
-						}
-					}
+					// if($incident->incident === "FAT") {
+					// 	$item["fafr"]["total"] += 1;
+					// 	$item["fafr"]["totalHours"] += (int)$tbt->totalHours;
+					// 	if($inMonth) {
+					// 		$item["fafr"]["monthTotal"] += 1;
+					// 		$item["fafr"]["monthTotalHours"] += (int)$tbt->totalHours;
+					// 	}
+					// }
 					// Recordable
 					if(in_array($incident->nature, $recordableCases)) {
 						$item["trcf"]["total"] += 1;
@@ -140,8 +142,32 @@ class DashboardService {
 					}
 				}
 
+				$hasTbt = $tbt->totalHours !== null;
+
 				switch ($incident->incident) {
+					case 'LTC':
+						$item["ltifr"]["totalHours"] = $hasTbt ? $item["ltifr"]["totalHours"] + (int)$tbt->totalHours : $item["ltifr"]["totalHours"];
+						$item["ltifr"]["lti"] += 1;
+						if($inMonth) {
+							$item["ltifr"]["monthTotalhours"] = $hasTbt ? (int)$tbt->totalHours + $item["ltifr"]["monthTotalhours"] : $item["ltifr"]["monthTotalhours"];
+							$item["ltifr"]["monthLti"] += 1;
+						}
+
+						$item["ltisr"]["totalHours"] = $hasTbt ? (int)$tbt->totalHours + $item["ltisr"]["totalHours"] : $item["ltisr"]["totalHours"];
+						$item["ltisr"]["dayloss"] += $incident->day_loss;
+						if($inMonth) {
+							$item["ltisr"]["monthTotalhours"] = $hasTbt ? (int)$tbt->totalHours + $item["ltisr"]["monthTotalhours"] : $item["ltisr"]["monthTotalhours"];
+							$item["ltisr"]["monthDayloss"] += $incident->day_loss;
+						}
+						break;
 					case 'FAT':
+						$item["fafr"]["total"] += 1;
+						$item["fafr"]["totalHours"] = $hasTbt ? (int)$tbt->totalHours + $item["fafr"]["totalHours"] : $item["fafr"]["totalHours"];
+						if($inMonth) {
+							$item["fafr"]["monthTotal"] += 1;
+							$item["fafr"]["monthTotalHours"] = $hasTbt ? (int)$tbt->totalHours + $item["fafr"]["monthTotalHours"] : $item["fafr"]["monthTotalHours"];
+						}
+
 						$item["recordable"]["fat"]["itd"] += 1;
 						if($inMonth) {
 							$item["recordable"]["fat"]["month"] += 1;
@@ -164,6 +190,7 @@ class DashboardService {
 						if($inMonth) {
 							$item["nonrecordable"]["nm"]["month"] += 1;
 						}
+						$item["indicator"]["leading"] += 1;
 						break;
 					case 'FAC':
 						$item["nonrecordable"]["fac"]["itd"] += 1;
@@ -216,6 +243,10 @@ class DashboardService {
 				"env" => ["itd" => 0, "month" => 0],
 				"fire" => ["itd" => 0, "month" => 0],
 				"traf" => ["itd" => 0, "month" => 0],
+				"indicator" => [
+					"lagging" => 0,
+					"leading" => 0
+				],
 				"recordable" => [
 					"rwc" => ["itd" => 0, "month" => 0],
 					"ol" => ["itd" => 0, "month" => 0],

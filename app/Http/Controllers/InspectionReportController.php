@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Inspection;
 use App\Models\InspectionReportList;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class InspectionReportController extends Controller
 {

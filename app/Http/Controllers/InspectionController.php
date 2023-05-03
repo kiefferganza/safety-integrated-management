@@ -145,17 +145,24 @@ class InspectionController extends Controller
 
 
 	public function reportList(Request $request) {
-		// dd($request->all());
+		// dump($request->from, $request->to);
+		$from = "2023-04-01";
+		$to = "2023-04-30";
 		$q = InspectionReportList::
-		select("list_id", "ref_num", "table_name", "tbl_inspection_reports_list.inspection_id", "ref_score", "section_title", "tbl_inspection_reports.status")
+		select("list_id", "ref_num", "table_name", "tbl_inspection_reports_list.inspection_id", "ref_score", "section_title", "tbl_inspection_reports.status", "tbl_inspection_reports.date_issued")
 		->where("ref_score", "!=", 4)
 		->where("section_title", "!=", null)
 		->where("tbl_inspection_reports.is_deleted", 0)
 		->join("tbl_inspection_reports", "tbl_inspection_reports.inspection_id", "tbl_inspection_reports_list.inspection_id");
 		
+		// $q->whereBetween("tbl_inspection_reports.date_issued", [$from, $to]);
 		if($request->from && $request->to) {
 			$q->whereBetween("tbl_inspection_reports.date_issued", [$request->from, $request->to]);
 		}
+
+		// dd($q->orderBy("ref_num")
+		// ->limit(40)
+		// ->get());
 
 		$inspections = $q
 		->orderBy("ref_num")

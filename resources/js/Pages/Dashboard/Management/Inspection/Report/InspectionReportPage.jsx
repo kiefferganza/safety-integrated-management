@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 const { Divider, Card, Table, TableBody, Container, TableContainer, Checkbox, TableCell, TableRow, Stack, Tooltip, IconButton, useTheme } = await import('@mui/material');
 // routes
@@ -17,7 +17,6 @@ import {
 } from '@/Components/table';
 import Scrollbar from '@/Components/scrollbar';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
-import Iconify from '@/Components/iconify';
 // sections
 import { InspectionReportTableToolbar } from '@/sections/@dashboard/inspection/list';
 import InspectionAnalytic from '@/sections/@dashboard/inspection/InspectionAnalytic';
@@ -27,6 +26,7 @@ import { format } from 'date-fns';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+	{ id: 'id', label: "Ref", align: "left" },
 	{ id: 'title', label: 'Description', align: 'left', width: 480 },
 	{ id: 'table', label: 'Section Title', align: 'left' },
 	{ id: 'negative', label: 'Negative', align: 'right' },
@@ -45,10 +45,10 @@ const PPEReportListPage = ({ inspectionReport = {}, from = null, to = null }) =>
 		rowsPerPage,
 		setPage,
 		//
-		selected,
+		// selected,
 		// setSelected,
-		onSelectRow,
-		onSelectAllRows,
+		// onSelectRow,
+		// onSelectAllRows,
 		//
 		//
 		onSort,
@@ -77,9 +77,16 @@ const PPEReportListPage = ({ inspectionReport = {}, from = null, to = null }) =>
 		filterType
 	});
 
+	useEffect(() => {
+		if (from && to) {
+			setFilterStartDate(new Date(from));
+			setFilterEndDate(new Date(to));
+		}
+	}, [from, to]);
+
 	const denseHeight = dense ? 60 : 80;
 
-	const isFiltered = filterName !== '' || filterType.length > 0 || (filterStartDate && filterEndDate);
+	const isFiltered = filterName !== '' || filterType.length > 0 || (filterStartDate !== null && filterEndDate !== null);
 
 	const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
 
@@ -108,22 +115,38 @@ const PPEReportListPage = ({ inspectionReport = {}, from = null, to = null }) =>
 
 	const handleStartDateChange = (newDate) => {
 		setFilterStartDate(newDate);
+		if (filterEndDate) {
+			filterDate(newDate, filterEndDate);
+		}
 	}
 
 	const handleEndDateChange = (newDate) => {
 		setFilterEndDate(newDate);
+		if (filterStartDate) {
+			filterDate(filterStartDate, newDate);
+		}
 	}
 
-	const handleAcceptDate = () => {
-		if (filterStartDate && filterEndDate) {
-			const dates = {
-				from: format(filterStartDate, 'yyyy-MM-dd'),
-				to: format(filterEndDate, 'yyyy-MM-dd'),
-			}
-			Inertia.get(route('inspection.management.report'), dates, {
-				preserveScroll: true,
-				preserveState: true
-			});
+	const filterDate = (start, end) => {
+		const dates = {
+			from: format(start, 'yyyy-MM-dd'),
+			to: format(end, 'yyyy-MM-dd'),
+		}
+		Inertia.get(route('inspection.management.report'), dates, {
+			preserveScroll: true,
+			preserveState: true
+		});
+	}
+
+	const handleAcceptEndDate = (newDate) => {
+		if (filterStartDate) {
+			filterDate(filterStartDate, newDate);
+		}
+	}
+
+	const handleAcceptStartDate = (newDate) => {
+		if (filterEndDate) {
+			filterDate(newDate, filterEndDate);
 		}
 	}
 
@@ -197,33 +220,34 @@ const PPEReportListPage = ({ inspectionReport = {}, from = null, to = null }) =>
 						filterEndDate={filterEndDate}
 						onStartDateChange={handleStartDateChange}
 						onEndDateChange={handleEndDateChange}
-						onAcceptDate={handleAcceptDate}
 						isFiltered={isFiltered}
 						filterType={filterType}
 						onFilterType={handleFilterType}
 						onResetFilter={handleResetFilter}
+						onAcceptStartDate={handleAcceptStartDate}
+						onAcceptEndDate={handleAcceptEndDate}
 					/>
 
 					<TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
 						<TableSelectedAction
 							dense={dense}
-							numSelected={selected.length}
+							// numSelected={selected.length}
 							rowCount={dataFiltered.length}
-							onSelectAllRows={(checked) =>
-								onSelectAllRows(
-									checked,
-									dataFiltered.map((row) => row.id)
-								)
-							}
-							action={
-								<Stack direction="row">
-									<Tooltip title="Print">
-										<IconButton color="primary">
-											<Iconify icon="eva:printer-fill" />
-										</IconButton>
-									</Tooltip>
-								</Stack>
-							}
+						// onSelectAllRows={(checked) =>
+						// 	onSelectAllRows(
+						// 		checked,
+						// 		dataFiltered.map((row) => row.id)
+						// 	)
+						// }
+						// action={
+						// 	<Stack direction="row">
+						// 		<Tooltip title="Print">
+						// 			<IconButton color="primary">
+						// 				<Iconify icon="eva:printer-fill" />
+						// 			</IconButton>
+						// 		</Tooltip>
+						// 	</Stack>
+						// }
 						/>
 
 						<Scrollbar>
@@ -234,12 +258,12 @@ const PPEReportListPage = ({ inspectionReport = {}, from = null, to = null }) =>
 									headLabel={TABLE_HEAD}
 									rowCount={Object.values(inspectionReport).length}
 									onSort={onSort}
-									onSelectAllRows={(checked) =>
-										onSelectAllRows(
-											checked,
-											dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.id)
-										)
-									}
+									// onSelectAllRows={(checked) =>
+									// 	onSelectAllRows(
+									// 		checked,
+									// 		dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.id)
+									// 	)
+									// }
 									sx={{
 										"&>tr th": { whiteSpace: "nowrap" }
 									}}
@@ -248,17 +272,23 @@ const PPEReportListPage = ({ inspectionReport = {}, from = null, to = null }) =>
 								<TableBody>
 									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 										.map((row) => {
-											const isSelected = selected.includes(row.id);
+											// const isSelected = selected.includes(row.id);
 											return (
-												<TableRow key={row.title} hover selected={isSelected} sx={{ width: 1, borderBottom: 1, borderColor: "background.neutral" }}>
-													<TableCell padding="checkbox">
-														<Checkbox checked={isSelected} onClick={() => onSelectRow(row.id)} />
-													</TableCell>
-													<TableCell onClick={() => onSelectRow(row.id)} align="left">{row.title}</TableCell>
-													<TableCell onClick={() => onSelectRow(row.id)} align="left">{row.table}</TableCell>
-													<TableCell onClick={() => onSelectRow(row.id)} align="right">{row.negative}</TableCell>
-													<TableCell onClick={() => onSelectRow(row.id)} align="right">{row.positive}</TableCell>
-													<TableCell onClick={() => onSelectRow(row.id)} align="right">{row.closed}</TableCell>
+												<TableRow
+													key={row.title}
+													hover
+													// selected={isSelected}
+													sx={{ width: 1, borderBottom: 1, borderColor: "background.neutral" }}
+												>
+													<TableCell align="left">{row.id > 34 ? "" : "" + row.id}</TableCell>
+													{/* <TableCell padding="checkbox">
+														<Checkbox checked={isSelected} />
+													</TableCell> */}
+													<TableCell align="left">{row.title}</TableCell>
+													<TableCell align="left">{row.table}</TableCell>
+													<TableCell align="right">{row.negative}</TableCell>
+													<TableCell align="right">{row.positive}</TableCell>
+													<TableCell align="right">{row.closed}</TableCell>
 												</TableRow>
 											)
 										})}

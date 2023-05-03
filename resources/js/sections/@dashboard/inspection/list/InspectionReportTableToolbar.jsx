@@ -58,7 +58,8 @@ export default function InspectionReportTableToolbar ({
 	filterEndDate,
 	onStartDateChange,
 	onEndDateChange,
-	onAcceptDate
+	onAcceptStartDate,
+	onAcceptEndDate
 }) {
 	return (
 		<Stack
@@ -74,7 +75,7 @@ export default function InspectionReportTableToolbar ({
 				label="Start Date"
 				value={filterStartDate}
 				onChange={onStartDateChange}
-				onAccept={onAcceptDate}
+				onAccept={onAcceptStartDate}
 				inputFormat="dd MMM yyyy"
 				openTo="year"
 				views={['year', 'month', 'day']}
@@ -94,7 +95,7 @@ export default function InspectionReportTableToolbar ({
 				label="End Date"
 				value={filterEndDate}
 				onChange={onEndDateChange}
-				onAccept={onAcceptDate}
+				onAccept={onAcceptEndDate}
 				inputFormat="dd MMM yyyy"
 				openTo="year"
 				views={['year', 'month', 'day']}
