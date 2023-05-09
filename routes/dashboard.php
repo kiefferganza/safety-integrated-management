@@ -154,6 +154,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 		// Create
 		Route::middleware("permission:training_create")->group(function() {
+			Route::post('/testemail', [TrainingController::class, 'sendEmail'])->name('testEmail');
 			Route::get('/new', [TrainingController::class, 'create'])->name('create');
 			Route::post('/create', [TrainingController::class, 'store'])->name('store');
 		});

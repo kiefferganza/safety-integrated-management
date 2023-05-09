@@ -6,13 +6,15 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Button, Card, Box, Stack, Typography, Divider, TextField, Autocomplete, Chip } from '@mui/material';
+import { Card, Box, Stack, Typography, Divider, TextField, Autocomplete, Chip, createFilterOptions } from '@mui/material';
 // components
 import FormProvider, { RHFTextField } from '@/Components/hook-form';
 import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
 import { MultiFilePreview, Upload } from '@/Components/upload';
 import { PATH_DASHBOARD } from '@/routes/paths';
+
+const filter = createFilterOptions();
 
 const DocumentNewForm = () => {
 	const { load, stop } = useSwal();
@@ -87,17 +89,33 @@ const DocumentNewForm = () => {
 	const onSubmit = (data) => {
 		if (file.length === 1) {
 			data.src = file[0];
-			Inertia.post(PATH_DASHBOARD.fileManager.newDocument(folder.folder_id), data, {
-				preserveScroll: true,
-				onStart () {
-					load("Creating new document.", "please wait...");
-				},
-				onFinish () {
-					reset();
-					setFile([]);
-					stop();
-				}
-			});
+
+			if (cc.length > 0) {
+				const newCC = cc.reduce((acc, curr) => {
+					if (typeof curr === "string") {
+						acc.manualCC.push(curr);
+					} else {
+						acc.cc.push(curr);
+					}
+					return acc;
+				}, {
+					cc: [],
+					manualCC: []
+				});
+				console.log(newCC);
+			}
+
+			// Inertia.post(PATH_DASHBOARD.fileManager.newDocument(folder.folder_id), data, {
+			// 	preserveScroll: true,
+			// 	onStart () {
+			// 		load("Creating new document.", "please wait...");
+			// 	},
+			// 	onFinish () {
+			// 		reset();
+			// 		setFile([]);
+			// 		stop();
+			// 	}
+			// });
 		}
 	}
 
@@ -109,8 +127,9 @@ const DocumentNewForm = () => {
 		return null;
 	}
 
+	// console.log(cc)
 
-	const options = personel.map((option) => ({ id: option.employee_id, label: option.fullname, user_id: option.user_id }));
+	const options = personel.map((option) => ({ id: option.employee_id, label: option.fullname, user_id: option.user_id, email: option?.email, type: 'cc' }));
 	return (
 		<FormProvider methods={methods}>
 			<Card sx={{ p: 3 }}>
@@ -204,9 +223,16 @@ const DocumentNewForm = () => {
 								fullWidth
 								value={cc}
 								onChange={(_event, newValue) => {
-									setCC(newValue);
+									console.log({ newValue }, newValue.at(-1))
+									if (newValue && newValue.at(-1)?.inputValue) {
+										const inputValue = newValue.at(-1)?.inputValue;
+										// Create a new value from the user input
+										setCC((curr) => ([...curr, { label: inputValue, type: 'custom' }]));
+									} else {
+										setCC(newValue);
+									}
 								}}
-								options={options}
+								options={options.filter(per => !cc.some(c => c?.id === per.id))}
 								renderOption={(props, option) => {
 									return (
 										<li {...props} key={props.id}>
@@ -219,6 +245,34 @@ const DocumentNewForm = () => {
 										<Chip {...getTagProps({ index })} key={index} size="small" label={option?.label || option} />
 									))
 								}
+								filterOptions={(options, params) => {
+									const filtered = filter(options, params);
+
+									const { inputValue } = params;
+									// Suggest the creation of a new value
+									const isExisting = options.some((option) => inputValue === option.label);
+									if (inputValue !== '' && !isExisting) {
+										filtered.push({
+											inputValue,
+											label: `Add "${inputValue}"`,
+											isValid: false
+										});
+									}
+									return filtered;
+								}}
+								getOptionLabel={(option) => {
+									// Value selected with enter, right from the input
+									if (typeof option === 'string') {
+										return option;
+									}
+									// Add "xxx" option created dynamically
+									if (option.inputValue) {
+										return option.inputValue;
+									}
+									// Regular option
+									return option.label;
+								}}
+								clearOnBlur
 								renderInput={(params) => <TextField label="Add CC" {...params} fullWidth />}
 							/>
 						</Stack>

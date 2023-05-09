@@ -35,7 +35,7 @@ class DocumentController extends Controller
 		return Inertia::render("Dashboard/Management/FileManager/Document/Create/index", [
 			"folder" => $folder,
 			"sequence_no" => (new DocumentService)->sequence_no($folder->folder_id),
-			"personel" => Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id", "user_id")
+			"personel" => Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id", "user_id", "email")
 				->where("is_deleted", 0)
 				->where("user_id", "!=", NULL)
 				->where("sub_id", $user->subscriber_id)
