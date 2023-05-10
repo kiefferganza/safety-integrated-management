@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Images;
 use App\Models\Incident;
-use App\Models\IncidentType;
 use App\Models\InspectionReportList;
 use App\Models\TbtStatistic;
 use App\Models\ToolboxTalk;
@@ -38,7 +37,7 @@ class DashboardService {
 
 
 	public function getInspectionByDate($from, $to) {
-		return InspectionReportList::select("list_id", "ref_num", "table_name", "tbl_inspection_reports_list.inspection_id", "ref_score", "section_title", "tbl_inspection_reports.status")
+		$inspections =  InspectionReportList::select("list_id", "ref_num", "table_name", "tbl_inspection_reports_list.inspection_id", "ref_score", "section_title", "tbl_inspection_reports.status")
 		->whereBetween("tbl_inspection_reports.date_issued", [$from, $to])
 		->where("ref_score", "!=", 4)
 		->where("section_title", "!=", null)
@@ -76,6 +75,9 @@ class DashboardService {
 			}
 			return $arr;
 		}, ["data" => [], "total" => [ "open" => 0, "closed" => 0 ]]);
+
+
+		return $inspections;
 	}
 
 
