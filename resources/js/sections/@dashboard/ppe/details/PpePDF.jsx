@@ -163,7 +163,8 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 
 							<View style={styles.tableBody}>
 								{doc?.map((row, idx) => {
-									const requestStatus = getInventoryStatus((row?.max_order || 0), (row?.min_qty || row?.level || 0));
+									console.log({ row })
+									const requestStatus = getInventoryStatus((row?.max_order || 0), (row?.level || 0));
 									return (
 										<View style={styles.tableRow} key={idx}>
 											<View style={styles.tableCell_1}>

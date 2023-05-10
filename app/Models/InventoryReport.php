@@ -50,15 +50,20 @@ class InventoryReport extends Model
 
 
 	public function getFormNumberAttribute() {
-		$form_number = sprintf("%s-%s-%s-%s", $this->attributes["project_code"], $this->attributes["originator"],$this->attributes["discipline"],$this->attributes["document_type"]);
-		if($this->attributes["document_zone"]) {
-			$form_number .= "-". $this->attributes["document_zone"];
+		$attr = $this->attributes;
+		// dd($attr);
+		if(array_key_exists("project_code", $attr) &&  array_key_exists("originator", $attr) && array_key_exists("discipline", $attr) && array_key_exists("document_type", $attr)) {
+			$form_number = sprintf("%s-%s-%s-%s", $attr["project_code"], $attr["originator"],$attr["discipline"],$attr["document_type"]);
+			if($attr["document_zone"]) {
+				$form_number .= "-". $attr["document_zone"];
+			}
+			if($attr["document_level"]) {
+				$form_number .= "-". $attr["document_level"];
+			}
+			$form_number .= "-" . $attr["sequence_no"];
+			return strtoupper($form_number);
 		}
-		if($this->attributes["document_level"]) {
-			$form_number .= "-". $this->attributes["document_level"];
-		}
-		$form_number .= "-" . $this->attributes["sequence_no"];
-		return strtoupper($form_number);
+		return "";
 	}
 	
 

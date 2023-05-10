@@ -15,7 +15,6 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, width, 
 	const chartOptions = useChart({
 		colors: [function ({ value }) {
 			const percentage = (value / maxNegative) * 100;
-			console.log(percentage, value, maxNegative)
 			if (percentage > 50) {
 				return red[700];
 			} else if (percentage < 50) {

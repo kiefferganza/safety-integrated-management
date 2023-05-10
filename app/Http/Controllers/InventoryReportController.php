@@ -45,10 +45,12 @@ class InventoryReportController extends Controller
 		});
 
 		$latestReport = InventoryReport::select("sequence_no")->latest()->first();
+		$submittedDates = InventoryReport::select("submitted_date")->get()->pluck("submitted_date");
 		$sequence = $latestReport ? (int)ltrim($latestReport->sequence_no) + 1 : 1;
 
 		return Inertia::render("Dashboard/Management/PPE/Report/index", [
 			"inventories" => $inventories,
+			"submittedDates" => $submittedDates,
 			"sequence_no" => str_pad(ltrim($sequence), 6, '0', STR_PAD_LEFT),
 			"employees" => Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
 				->where("is_deleted", 0)

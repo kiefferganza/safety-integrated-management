@@ -37,7 +37,7 @@ const newBudgetForecastSchema = Yup.object().shape({
 	inventories: Yup.array().min(1)
 });
 
-export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_no, ...other }) => {
+export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_no, submittedDates, ...other }) => {
 	const { auth: { user } } = usePage().props
 	const { load, stop } = useSwal();
 	const {
@@ -144,6 +144,11 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 		if (newStatus !== inventory.inventoryStatus) {
 			setValue(`inventories.${idx}.inventoryStatus`, newStatus);
 		}
+	}
+
+
+	const disableSubmittedDates = (date) => {
+		return submittedDates.some((submittedDate) => (new Date(submittedDate).toDateString() === date.toDateString()))
 	}
 
 
@@ -282,6 +287,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 								<MobileDatePicker
 									label="Submitted Date"
 									inputFormat="d-MMM-yyyy"
+									shouldDisableDate={disableSubmittedDates}
 									value={values?.submitted_date}
 									onChange={(val) => {
 										setValue("submitted_date", val, { shouldValidate: true });
