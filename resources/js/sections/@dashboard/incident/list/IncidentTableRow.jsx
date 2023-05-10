@@ -64,11 +64,11 @@ export function IncidentTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
 					</TableCell>
 				</Tooltip>
 
-				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.injured.fullname}</TableCell>
+				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.injured?.fullname}</TableCell>
 
 				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.location}</TableCell>
 
-				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.supervisor.fullname}</TableCell>
+				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{row.supervisor?.fullname}</TableCell>
 
 				<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>{fDate(row.incident_date)}</TableCell>
 
