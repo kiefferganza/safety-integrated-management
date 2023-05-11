@@ -23,15 +23,15 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, width, 
 			return red[500];
 		}],
 		series,
-		tooltip: {
-			shared: false,
-			y: {
-				formatter: (value) => fNumber(value),
-				title: {
-					formatter: (val) => val,
-				},
-			},
-		},
+		// tooltip: {
+		// 	shared: false,
+		// 	y: {
+		// 		formatter: (value) => fNumber(value),
+		// 		title: {
+		// 			formatter: (val) => val,
+		// 		},
+		// 	},
+		// },
 		plotOptions: {
 			bar: {
 				columnWidth: '65%',
