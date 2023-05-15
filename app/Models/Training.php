@@ -44,4 +44,12 @@ class Training extends Model
 		return $this->hasOne(Employee::class, "user_id", "user_id");
 	}
 
+	public function external_status() {
+		return $this->hasOne(TrainingExternalStatus::class, "training_id", "training_id");
+	}
+
+	public function external_comments() {
+		return $this->hasMany(TrainingExternalComment::class, "training_id", "training_id");
+	}
+
 }

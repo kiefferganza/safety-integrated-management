@@ -24,9 +24,9 @@ class TrainingService {
 		];
 		if($training->type === 3) {
 			$relation["external_details"] = fn($q) => $q->with([
-				"approval" => fn($q) => $q->select("employee_id","firstname", "lastname"),
-				"reviewer" => fn($q) => $q->select("employee_id","firstname", "lastname"),
-				"requested" => fn($q) => $q->select("employee_id","firstname", "lastname")
+				"approval" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+				"reviewer" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+				"requested" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			]);
 		}
 		return $training->load($relation);
@@ -34,7 +34,18 @@ class TrainingService {
 
 
 	public function getTrainingByType($type) {
+		$relation = [];
+		if($type === 3) {
+			$relation[] = "external_status";
+			$relation["external_details"] = fn($q) => $q->select("approved_by", "reviewed_by", "requested_by", "course_price", "currency", "training_id", "training_ext_id")->with([
+				"approval" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+				"reviewer" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+				"requested" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+			]);
+		}
+		
 		return Training::where([["is_deleted", false], ["type", $type]])
+		->with($relation)
 		->withCount(["training_files", "trainees"])
 		->orderByDesc("date_created")
 		->get();

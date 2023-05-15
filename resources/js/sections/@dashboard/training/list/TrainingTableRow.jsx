@@ -9,7 +9,6 @@ import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
-import { Inertia } from '@inertiajs/inertia';
 import { Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
@@ -23,7 +22,7 @@ TrainingTableRow.propTypes = {
 };
 
 export default function TrainingTableRow ({ row, selected, onSelectRow, onDeleteRow, url, canEdit, canDelete }) {
-	const { cms, title, traninees_count, training_date, date_expired, status, completed } = row;
+	const { cms, title, trainees_count, training_date, date_expired, status, completed } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -56,7 +55,7 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 
 				<TableCell sx={{ whiteSpace: "nowrap" }}>{title}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap" }} align="center">{traninees_count}</TableCell>
+				<TableCell sx={{ whiteSpace: "nowrap" }} align="center">{trainees_count}</TableCell>
 
 				<TableCell sx={{ whiteSpace: "nowrap" }}>{fDate(training_date)}</TableCell>
 

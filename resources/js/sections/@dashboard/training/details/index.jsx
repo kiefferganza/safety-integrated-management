@@ -39,8 +39,6 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 
 	const getTotalAmmount = training?.external_details && training?.type === 3 ? training?.trainees?.length * (parseInt(training?.external_details?.course_price)) : 0;
 
-	console.log(training);
-
 	return (
 		<>
 			<TrainingToolbar training={training} module={module} url={url} />

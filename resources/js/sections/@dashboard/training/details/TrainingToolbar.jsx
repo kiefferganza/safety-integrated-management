@@ -3,8 +3,6 @@ import { useState } from 'react';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 // @mui
 import { Box, Stack, Dialog, Tooltip, IconButton, DialogActions, CircularProgress } from '@mui/material';
-// routes
-import { PATH_DASHBOARD } from '@/routes/paths';
 // components
 import Iconify from '@/Components/iconify';
 //

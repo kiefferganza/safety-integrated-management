@@ -6,6 +6,7 @@ use App\Http\Requests\TrainingRequest;
 use App\Models\Employee;
 use App\Models\Training;
 use App\Models\TrainingExternal;
+use App\Models\TrainingExternalComment;
 use App\Models\TrainingFiles;
 use App\Models\TrainingTrainees;
 use App\Services\TrainingService;
@@ -454,6 +455,146 @@ class TrainingController extends Controller
 			"module" => "Induction",
 			"url" => "induction"
 		]);
+	}
+
+	public function external_action(Training $training) {
+		$user = auth()->user();
+
+		$trainingService = new TrainingService();
+		
+		$training = $trainingService->loadTraining($training)->load(["external_status", "external_comments"]);
+		
+		if($user->emp_id !== $training->external_details->requested_by) {
+			return redirect()->back();
+		}
+
+		return Inertia::render("Dashboard/Management/Training/View/ThirdParty/index", [
+			"training" => $training,
+		]);
+		
+	}
+
+	public function external_approve_or_deny(Training $training, Request $request) {
+		$request->validate([
+			"type" => ["string", "required"],
+			"statusType" => ["string", "required"],
+			"remarks" => ["string", "max:255", "nullable"]
+		]);
+		$statuses = $training->external_status;
+		
+		if($request->type === "review" && $statuses->approval_status === "in_review") {
+			$statuses->review_status = $request->statusType;
+			$statuses->review_remark = $request->remarks;
+		}
+		if($request->type === "approve") {
+			$statuses->approval_status = $request->statusType;
+			$statuses->approval_remark = $request->remarks;
+		}
+		$statuses->save();
+		
+		return redirect()->back()
+		->with("message", "External training updated successfully!")
+		->with("type", "success");
+	}
+
+	public function external_review(Training $training) {
+		$user = auth()->user();
+
+		$trainingService = new TrainingService();
+		
+		$training = $trainingService->loadTraining($training)->load(["external_status", "external_comments"]);
+		
+		if($user->emp_id !== $training->external_details->reviewed_by) {
+			return redirect()->back();
+		}
+
+		return Inertia::render("Dashboard/Management/Training/View/ThirdParty/index", [
+			"training" => $training,
+			"type" => "review"
+		]);
+	}
+
+	public function external_approve(Training $training) {
+		$user = auth()->user();
+
+		$trainingService = new TrainingService();
+		
+		$training = $trainingService->loadTraining($training)->load(["external_status", "external_comments"]);
+		
+		if($user->emp_id !== $training->external_details->approved_by) {
+			return redirect()->back();
+		}
+
+		return Inertia::render("Dashboard/Management/Training/View/ThirdParty/index", [
+			"training" => $training,
+			"type" => "approve"
+		]);
+		
+	}
+
+	public function external_comment(Training $training, Request $request) {
+		$request->validate([
+			"comment" => ["string", "max:255", "required"],
+			"pages" => ["string", "required"],
+			"comment_code" => ["integer", "max:2", "required"],
+			"status" => ["string", "required"]
+		]);
+
+		$training->external_comments()->create([
+			"reviewer_id" => auth()->user()->emp_id,
+			"comment" => $request->comment,
+			"comment_page_section" => $request->pages,
+			"comment_code" => $request->comment_code,
+			"status" => $request->status
+		]);
+
+		$statuses = $training->external_status;
+		$statuses->review_status = "commented";
+		$statuses->save();
+
+		return redirect()->back()
+		->with("message", "Comment posted successfully!")
+		->with("type", "success");
+	}
+
+	public function external_comment_status(TrainingExternalComment $trainingComment, Request $request) {
+		$request->validate([
+			"status" => ["string", "required"]
+		]);
+
+		$trainingComment->status = $request->status;
+		$trainingComment->save();
+
+		return redirect()->back()
+		->with("message", "Comment". $request->status ."successfully!")
+		->with("type", "success");
+	}
+
+	public function external_comment_delete(TrainingExternalComment $trainingComment) {
+		$trainingComment->delete();
+
+		return redirect()->back()
+		->with("message", "Comment deleted successfully!")
+		->with("type", "success");
+	}
+
+	public function external_reply(TrainingExternalComment $trainingComment, Request $request) {
+		$request->validate([
+			"reply" => ["string", "max:255", "required"],
+			"reply_code" => ["string", "required"]
+		]);
+
+		$training = $trainingComment->training;
+		$training->increment("revision_no");
+		$training->save();
+
+		$trainingComment->reply = $request->reply;
+		$trainingComment->reply_code = $request->reply_code;
+		$trainingComment->save();
+
+		return redirect()->back()
+		->with("message", "Reply posted successfully!")
+		->with("type", "success");
 	}
 
 }

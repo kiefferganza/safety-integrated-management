@@ -7,6 +7,9 @@ import {
 	MenuItem,
 	TextField,
 	InputAdornment,
+	Badge,
+	Box,
+	Typography,
 } from '@mui/material';
 // components
 import Iconify from '@/Components/iconify';
@@ -21,6 +24,8 @@ TrainingTableToolbar.propTypes = {
 	filterStatus: PropTypes.string,
 	onFilterStatus: PropTypes.func,
 	statusOptions: PropTypes.array,
+	relatedList: PropTypes.object,
+	statusLabel: PropTypes.string
 };
 
 const INPUT_WIDTH = 160;
@@ -36,8 +41,11 @@ export default function TrainingTableToolbar ({
 	onResetFilter,
 	onFilterStatus,
 	onFilterStartDate,
-	onFilterEndDate
+	onFilterEndDate,
+	statusLabel = "Status",
+	relatedList
 }) {
+
 	return (
 		<Stack
 			spacing={2}
@@ -51,7 +59,7 @@ export default function TrainingTableToolbar ({
 			<TextField
 				fullWidth
 				select
-				label="Status"
+				label={statusLabel}
 				value={filterStatus}
 				onChange={onFilterStatus}
 				SelectProps={{
@@ -62,26 +70,49 @@ export default function TrainingTableToolbar ({
 					},
 				}}
 				sx={{
+					width: "100%",
 					maxWidth: { md: INPUT_WIDTH },
 					textTransform: 'capitalize',
 				}}
 			>
-				{statusOptions.map((option) => (
-					<MenuItem
-						key={option.value}
-						value={option.value}
-						sx={{
-							mx: 1,
-							my: 0.5,
-							borderRadius: 0.75,
-							typography: 'body2',
-							textTransform: 'capitalize',
-							'&:first-of-type': { mt: 0 },
-							'&:last-of-type': { mb: 0 },
-						}}
-					>
-						{option.label}
-					</MenuItem>
+				{statusOptions.map((option, idx) => (
+					(relatedList && idx !== 0) ? (
+						<MenuItem
+							value={option.value}
+							key={option.value}
+							sx={{
+								mx: 1,
+								my: 0.5,
+								borderRadius: 0.75,
+								typography: 'body2',
+								textTransform: 'capitalize',
+								'&:first-of-type': { mt: 0 },
+								'&:last-of-type': { mb: 0 },
+							}}
+						>
+							<Badge badgeContent={relatedList[option.value] || 0} color="primary" showZero>
+								<Box sx={{ width: { md: 120 } }}>
+									<Typography>{option.label}</Typography>
+								</Box>
+							</Badge>
+						</MenuItem>
+					) : (
+						<MenuItem
+							key={option.value}
+							value={option.value}
+							sx={{
+								mx: 1,
+								my: 0.5,
+								borderRadius: 0.75,
+								typography: 'body2',
+								textTransform: 'capitalize',
+								'&:first-of-type': { mt: 0 },
+								'&:last-of-type': { mb: 0 },
+							}}
+						>
+							<Typography>{option.label}</Typography>
+						</MenuItem>
+					)
 				))}
 			</TextField>
 

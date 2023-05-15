@@ -149,6 +149,15 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/client/{training}', [TrainingController::class, 'show_client'])->name('client.show');
 			Route::get('/induction/{training}', [TrainingController::class, 'show_induction'])->name('induction.show');
 			Route::get('/in-house/{training}', [TrainingController::class, 'show_in_house'])->name('in_house.show');
+			// Third Party / External
+			Route::get('/third-party/action/{training}', [TrainingController::class, 'external_action'])->name('external.external_action');
+			Route::get('/third-party/review/{training}', [TrainingController::class, 'external_review'])->name('external.external_review');
+			Route::get('/third-party/approve/{training}', [TrainingController::class, 'external_approve'])->name('external.external_approve');
+			Route::post('/third-party/approve-deny/{training}', [TrainingController::class, 'external_approve_or_deny'])->name('external.external_approve_or_deny');
+			Route::post('/third-party/comment/{training}', [TrainingController::class, 'external_comment'])->name('external.external_comment');
+			Route::post('/third-party/reply/{trainingComment}', [TrainingController::class, 'external_reply'])->name('external.external_reply');
+			Route::put('/third-party/comment-status/{trainingComment}', [TrainingController::class, 'external_comment_status'])->name('external.external_comment_status');
+			Route::delete('/third-party/comment/{trainingComment}', [TrainingController::class, 'external_comment_delete'])->name('external.external_comment_delete');
 			Route::get('/third-party/{training}', [TrainingController::class, 'show_external'])->name('external.show');
 		});
 

@@ -19,6 +19,10 @@ class TrainingExternal extends Model
 	
 	protected $guarded = [];
 
+	public function training() {
+		return $this->belongsTo(Training::class, "training_id", "training_id");
+	}
+
 
 	public function reviewer() {
 		return $this->hasOne(Employee::class, "employee_id", "reviewed_by");

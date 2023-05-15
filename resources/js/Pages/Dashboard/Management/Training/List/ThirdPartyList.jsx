@@ -23,9 +23,9 @@ import Scrollbar from '@/Components/scrollbar';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import ConfirmDialog from '@/Components/confirm-dialog';
 // sections
-import { Head, Link } from '@inertiajs/inertia-react';
-import { getTrainingStatus } from '@/utils/formatDates';
-import { TrainingTableRow, TrainingTableToolbar } from '@/sections/@dashboard/training/list';
+import { Head, Link, usePage } from '@inertiajs/inertia-react';
+import { getTrainingStatus, getTrainingActionStatus } from '@/utils/formatDates';
+import { TrainingThirdPartyRow, TrainingTableToolbar } from '@/sections/@dashboard/training/list';
 import TrainingAnalitic from '@/sections/@dashboard/training/TrainingAnalitic';
 import { fTimestamp } from '@/utils/formatTime';
 import { Inertia } from '@inertiajs/inertia';
@@ -42,19 +42,21 @@ const TABLE_HEAD = [
 	{ id: 'date_expired', label: 'Expiration', align: 'left' },
 	{ id: 'certificate', label: 'Certificate', align: 'left' },
 	{ id: 'status', label: 'Status', align: 'center' },
+	{ id: 'actionStatus', label: 'Action Status', align: 'center' },
 	{ id: '' },
 ];
 
 const STATUS_OPTIONS = [
 	{ value: 'all', label: 'All' },
-	{ value: 'Valid', label: 'Valid' },
-	{ value: 'Soon to Expire', label: 'Soon to Expire' },
-	{ value: 'Expired', label: 'Expired' }
+	{ value: 'requested_by', label: 'Request' },
+	{ value: 'reviewed_by', label: 'Review' },
+	{ value: 'approved_by', label: 'Approve' }
 ];
 
 // ----------------------------------------------------------------------
 
-export default function TrainingList ({ trainings, module, url, type }) {
+export default function TrainingThirdPartyList ({ trainings, url, type }) {
+	const { auth: { user } } = usePage().props;
 	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const {
@@ -88,6 +90,8 @@ export default function TrainingList ({ trainings, module, url, type }) {
 
 	const [filterStatus, setFilterStatus] = useState('all');
 
+	const [filterStatusTab, setFilterStatusTab] = useState('all');
+
 	const [filterStartDate, setFilterStartDate] = useState(null);
 
 	const [filterEndDate, setFilterEndDate] = useState(null);
@@ -107,6 +111,7 @@ export default function TrainingList ({ trainings, module, url, type }) {
 				id: training.training_id,
 				cms: training?.project_code ? `${training?.project_code}-${training?.originator}-${training?.discipline}-${training?.document_type}-${training?.document_zone ? training?.document_zone + "-" : ""}${training?.document_level ? training?.document_level + "-" : ""}${training?.sequence_no}` : "N/A",
 				status: getTrainingStatus(training.date_expired),
+				actionStatus: getTrainingActionStatus(training.external_status),
 				completed: checkTrainingComplete(training.trainees_count, training.training_files_count)
 			})));
 		}
@@ -119,12 +124,13 @@ export default function TrainingList ({ trainings, module, url, type }) {
 		filterStatus,
 		filterStartDate,
 		filterEndDate,
+		user
 	});
 
 
 	const denseHeight = dense ? 60 : 80;
 
-	const isFiltered = filterName !== '' || filterStatus !== 'all' || !!filterStartDate || !!filterEndDate;
+	const isFiltered = filterName !== '' || filterStatus !== 'all' || filterStatusTab !== 'all' || !!filterStartDate || !!filterEndDate;
 
 	const isNotFound = (!dataFiltered.length && !!filterName) || (!dataFiltered.length && !!filterStatus);
 
@@ -135,6 +141,12 @@ export default function TrainingList ({ trainings, module, url, type }) {
 	const getTotalHours = (trainings_arr) => trainings_arr.reduce((acc, curr) => acc += curr.training_hrs, 0);
 
 	const getCertificateLength = (bool) => dataFiltered.filter(data => data.completed === bool).length;
+
+	const relatedList = {
+		requested_by: trainings.filter((training) => training.external_details.requested_by === user.emp_id).length,
+		reviewed_by: trainings.filter((training) => training.external_details.reviewed_by === user.emp_id).length,
+		approved_by: trainings.filter((training) => training.external_details.approved_by === user.emp_id).length
+	};
 
 	const TABS = [
 		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
@@ -163,9 +175,9 @@ export default function TrainingList ({ trainings, module, url, type }) {
 		setFilterStatus(event.target.value);
 	};
 
-	const handleFilterStatusTabs = (event, newValue) => {
+	const handleFilterStatusTabs = (_event, newValue) => {
 		setPage(0);
-		setFilterStatus(newValue);
+		setFilterStatusTab(newValue);
 	};
 
 	const handleFilterStartDate = (newValue) => {
@@ -222,16 +234,16 @@ export default function TrainingList ({ trainings, module, url, type }) {
 	return (
 		<>
 			<Head>
-				<title>{`${module} List`}</title>
+				<title>Third Party List</title>
 			</Head>
 
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading={`${module} List`}
+					heading="Third Party List"
 					links={[
 						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{
-							name: module,
+							name: "Third Party",
 							href: PATH_DASHBOARD.training.new(type),
 						},
 						{ name: 'List' },
@@ -296,7 +308,7 @@ export default function TrainingList ({ trainings, module, url, type }) {
 
 				<Card>
 					<Tabs
-						value={filterStatus}
+						value={filterStatusTab}
 						onChange={handleFilterStatusTabs}
 						sx={{
 							px: 2,
@@ -330,6 +342,8 @@ export default function TrainingList ({ trainings, module, url, type }) {
 						onFilterStartDate={handleFilterStartDate}
 						onFilterEndDate={handleFilterEndDate}
 						onResetFilter={handleResetFilter}
+						statusLabel="Related To You"
+						relatedList={relatedList}
 					/>
 
 					<TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -374,7 +388,7 @@ export default function TrainingList ({ trainings, module, url, type }) {
 										.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 										.map((row, index) =>
 											row ? (
-												<TrainingTableRow
+												<TrainingThirdPartyRow
 													key={row.id}
 													row={row}
 													selected={selected.includes(row.id)}
@@ -438,7 +452,7 @@ export default function TrainingList ({ trainings, module, url, type }) {
 
 // ----------------------------------------------------------------------
 
-function applyFilter ({ inputData, comparator, filterName, filterStatus, filterStartDate, filterEndDate }) {
+function applyFilter ({ inputData, comparator, filterName, filterStatus, filterStartDate, filterEndDate, user }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
 
 	stabilizedThis.sort((a, b) => {
@@ -457,11 +471,7 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 	}
 
 	if (filterStatus !== 'all') {
-		if (typeof filterStatus === 'boolean') {
-			inputData = inputData.filter(training => training.completed === filterStatus);
-		} else {
-			inputData = inputData.filter((training) => filterStatus.trim().toLowerCase() == training.status.text.trim().toLowerCase());
-		}
+		inputData = inputData.filter((training) => training.external_details[filterStatus] === user.emp_id);
 	}
 
 	if (filterStartDate && !filterEndDate) {

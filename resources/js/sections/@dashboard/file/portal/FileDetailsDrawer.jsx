@@ -93,7 +93,7 @@ export default function FileDetailsDrawer ({
 									<Stack spacing={1.5}>
 										{size && <Row label="Size" value={fData(size)} />}
 
-										{revision_no && <Row label="Revisions" value={revision_no + ""} />}
+										<Row label="Revisions" value={revision_no + ""} />
 
 										{dateCreated && <Row label="Created" value={fDateTime(dateCreated)} />}
 
