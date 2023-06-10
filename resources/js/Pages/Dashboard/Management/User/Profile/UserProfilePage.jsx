@@ -66,7 +66,7 @@ export default function UserProfilePage ({ user }) {
 			value: 'gallery',
 			label: 'Gallery',
 			icon: <Iconify icon="ic:round-perm-media" />,
-			component: <ProfileGallery gallery={_userGallery.slice(0, 3)} />,
+			component: <ProfileGallery gallery={[]} />,
 		},
 		{
 			value: 'permissions',

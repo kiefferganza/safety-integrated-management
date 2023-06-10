@@ -32,32 +32,7 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, width, 
 			title: {
 				text: undefined
 			},
-			// labels: {
-			// 	// show: false,
-			// 	// align: "left",
-			// 	// // maxWidth: 20,
-			// 	rotate: 0,
-			// 	// formatter: function (value) {
-			// 	// 	return ellipsis(value);
-			// 	// }
-			// }
 		},
-		// tooltip: {
-		// 	// x: {
-		// 	// 	show: true,
-		// 	// 	// formatter: undefined,
-		// 	// 	title: {
-		// 	// 		formatter: (seriesName, option) => {
-		// 	// 			console.log({ option })
-		// 	// 			return seriesName;
-		// 	// 		},
-		// 	// 	},
-		// 	// },
-		// 	enabled: true,
-		// 	formatter: function (val) {
-		// 		return val;
-		// 	},
-		// },
 		states: {
 			hover: {
 				filter: 'none'
@@ -66,7 +41,6 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, width, 
 		dataLabels: {
 			enabled: true,
 			formatter: function (val, opts) {
-				console.log({ opts })
 				if (opts.seriesIndex === undefined) {
 					return val; // Handle tooltip label
 				} else {
@@ -77,16 +51,6 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, width, 
 				rotate: 0
 			}
 		},
-		// yaxis: {
-		// 	title: {
-		// 		text: undefined
-		// 	},
-		// 	labels: {
-		// 		show: true,
-		// 		align: "left",
-		// 		maxWidth: 20
-		// 	}
-		// },
 		legend: {
 			showForZeroSeries: true
 		},

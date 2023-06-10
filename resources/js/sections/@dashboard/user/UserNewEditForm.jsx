@@ -113,10 +113,7 @@ export default function UserNewEditForm ({ isEdit = false, user, employees }) {
 			setValue("email", emp?.email, { shouldDirty: true, shouldValidate: true });
 			setValue("about", emp?.about || "", { shouldDirty: true, shouldValidate: true });
 			setValue("emp_id", val?.employee_id, { shouldDirty: true, shouldValidate: true });
-			setValue("username", emp.firstname.toLowerCase() + random4digits, { shouldDirty: true, shouldValidate: true })
-			if (val?.img_src) {
-				setValue("profile_pic", `/storage/media/photos/employee/${val.img_src}`);
-			}
+			setValue("username", emp.firstname.toLowerCase() + random4digits, { shouldDirty: true, shouldValidate: true });
 		} else {
 			reset({ firstname: "", lastname: "", about: "", email: "" });
 		}

@@ -23,29 +23,29 @@ class UsersController extends Controller
 
 	public function index()
 	{
-			$user = auth()->user();
+		$user = auth()->user();
 
-			$userslist = User::select(DB::raw("users.user_id, users.username, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id"))
-			->with("social_accounts")
-			->join("tbl_employees", "users.emp_id", "tbl_employees.employee_id")
-			->where([
-					["users.subscriber_id", $user->subscriber_id],
-					["users.deleted", 0]
-			])->get()
-			->transform(function ($user) {
-				$profile = $user->getFirstMedia("profile", ["primary" => true]);
-				if($profile) {
-					$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
-					$user->profile = [
-						"url" => URL::route("image", [ "path" => $path ]),
-						"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
-						"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
-					];
-					return $user;
-				}
-				$user->profile = null;
+		$userslist = User::select(DB::raw("users.user_id, users.username, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id"))
+		->with("social_accounts")
+		->join("tbl_employees", "users.emp_id", "tbl_employees.employee_id")
+		->where([
+				["users.subscriber_id", $user->subscriber_id],
+				["users.deleted", 0]
+		])->get()
+		->transform(function ($user) {
+			$profile = $user->getFirstMedia("profile", ["primary" => true]);
+			if($profile) {
+				$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
+				$user->profile = [
+					"url" => URL::route("image", [ "path" => $path ]),
+					"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+					"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
+				];
 				return $user;
-			});
+			}
+			$user->profile = null;
+			return $user;
+		});
 
 		return Inertia::render("Dashboard/Management/User/List/index", ["users" => $userslist]);
 	}
@@ -241,11 +241,6 @@ class UsersController extends Controller
 		return redirect()->route("management.user.edit", $user->username)
 		->with("message", "User updated successfully!")
 		->with("type", "success");
-	}
-
-
-	public function destroy(Request $request) {
-		
 	}
 
 
