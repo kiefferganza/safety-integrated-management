@@ -9,13 +9,12 @@ import { Head } from "@inertiajs/inertia-react";
 const Container = lazy(() => import("@mui/material/Container"));
 const DocumentNewEditForm = lazy(() => import('@/sections/@dashboard/document/form/DocumentNewEditForm'));
 
-const index = ({ folder }) => {
+const index = ({ folder, document }) => {
 	const { themeStretch } = useSettingsContext();
-
 	return (
 		<>
 			<Head>
-				<title>Document Form</title>
+				<title>Edit Document</title>
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
@@ -32,11 +31,11 @@ const index = ({ folder }) => {
 									href: PATH_DASHBOARD.fileManager.view(folder.folder_id),
 								},
 								{
-									name: "New Document",
+									name: "Edit Document",
 								},
 							]}
 						/>
-						<DocumentNewEditForm />
+						<DocumentNewEditForm currentDocument={document} isEdit />
 					</Container>
 				</DashboardLayout>
 			</Suspense>

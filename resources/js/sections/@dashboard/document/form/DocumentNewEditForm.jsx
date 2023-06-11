@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Button, Card, Box, Stack, Typography, Divider, TextField, Autocomplete, Chip } from '@mui/material';
+import { Card, Box, Stack, Typography, Divider, TextField, Autocomplete, Chip } from '@mui/material';
 // components
 import FormProvider, { RHFTextField } from '@/Components/hook-form';
 import { Inertia } from '@inertiajs/inertia';
@@ -14,7 +14,7 @@ import { useSwal } from '@/hooks/useSwal';
 import { MultiFilePreview, Upload } from '@/Components/upload';
 import { PATH_DASHBOARD } from '@/routes/paths';
 
-const DocumentNewForm = () => {
+const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
 	const { load, stop } = useSwal();
 	const [cc, setCC] = useState([]);
 	const [file, setFile] = useState([]);
@@ -26,7 +26,7 @@ const DocumentNewForm = () => {
 		discipline: Yup.string().required('Discipline is required'),
 		document_type: Yup.string().required('Project Type is required'),
 		title: Yup.string().required(),
-		src: Yup.string().required("Please attach a file for the document."),
+		src: isEdit ? Yup.string().notRequired() : Yup.string().required("Please attach a file for the document."),
 		reviewers: Yup.array().test('isRequired', 'Please select either reviewer or approval personel', function (item) {
 			if (this.parent.approval_id === "" && item.length === 0) return false;
 			return true;
@@ -35,26 +35,27 @@ const DocumentNewForm = () => {
 	});
 
 	const defaultValues = {
-		sequence_no: sequence_no || '',
-		project_code: '',
-		originator: '',
-		discipline: '',
-		document_type: '',
-		document_zone: '',
-		document_level: '',
-		title: '',
-		description: '',
-		approval_id: '',
+		sequence_no: currentDocument?.sequence_no || sequence_no || '',
+		project_code: currentDocument?.project_code || '',
+		originator: currentDocument?.originator || '',
+		discipline: currentDocument?.discipline || '',
+		document_type: currentDocument?.document_type || '',
+		document_zone: currentDocument?.document_zone || '',
+		document_level: currentDocument?.document_level || '',
+		title: currentDocument?.title || '',
+		description: currentDocument?.description || '',
+		approval_id: currentDocument?.approval_id || '',
 		src: '',
-		reviewers: []
+		reviewers: currentDocument?.reviewer_employees ? currentDocument?.reviewer_employees.map(rev => ({ id: rev.employee_id, label: rev.fullname, user_id: rev.user_id })) : [],
 	};
+	// console.log({ currentDocument, file })
 
 	const methods = useForm({
 		resolver: yupResolver(newDocumentSchema),
 		defaultValues,
 	});
 
-	const { watch, handleSubmit, setValue, setError, reset, formState: { errors } } = methods;
+	const { watch, handleSubmit, setValue, setError, reset, formState: { errors, isDirty } } = methods;
 	const values = watch();
 
 	useEffect(() => {
@@ -64,7 +65,7 @@ const DocumentNewForm = () => {
 			}
 		} else {
 			reset(defaultValues);
-			setFile([]);
+			setFile(isEdit && currentDocument ? [currentDocument?.file?.src] : []);
 		}
 	}, [resErrors, sequence_no]);
 
@@ -85,7 +86,8 @@ const DocumentNewForm = () => {
 	}
 
 	const onSubmit = (data) => {
-		if (file.length === 1) {
+		if (file.length !== 1) return;
+		if (!isEdit) {
 			data.src = file[0];
 			Inertia.post(PATH_DASHBOARD.fileManager.newDocument(folder.folder_id), data, {
 				preserveScroll: true,
@@ -95,6 +97,19 @@ const DocumentNewForm = () => {
 				onFinish () {
 					reset();
 					setFile([]);
+					stop();
+				}
+			});
+		} else {
+			data.src = file[0];
+			Inertia.put(route('files.management.document.update', { folder: folder.folder_id, document: currentDocument.document_id }), data, {
+				preserveScroll: true,
+				onStart () {
+					load("Updating document.", "please wait...");
+				},
+				onFinish () {
+					// reset();
+					// setFile([]);
 					stop();
 				}
 			});
@@ -108,7 +123,6 @@ const DocumentNewForm = () => {
 		}
 		return null;
 	}
-
 
 	const options = personel.map((option) => ({ id: option.employee_id, label: option.fullname, user_id: option.user_id }));
 	return (
@@ -167,6 +181,7 @@ const DocumentNewForm = () => {
 							<PersonelAutocomplete
 								value={values.reviewers || []}
 								multiple
+								disabled={isEdit ? !(currentDocument?.status === '0') : false}
 								onChange={(_event, newValue) => {
 									if (newValue) {
 										setValue('reviewers', newValue, { shouldValidate: true, shouldDirty: true });
@@ -193,6 +208,7 @@ const DocumentNewForm = () => {
 										setValue('approval_id', '', { shouldValidate: true, shouldDirty: true });
 									}
 								}}
+								disabled={isEdit ? !(currentDocument?.status === '0') : false}
 								isOptionEqualToValue={(option, value) => option.label === value}
 								options={options}
 								label="Approval Personel"
@@ -225,28 +241,44 @@ const DocumentNewForm = () => {
 					</Stack>
 
 
-					<Stack spacing={3}>
-						<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-							<Box width={1}>
-								<Typography variant="h6" sx={{ color: 'text.disabled' }}>
-									Attached File
-								</Typography>
-								<Upload error={!!errors?.src?.message} helperText={errors?.src?.message} file={file[0] || null} onDrop={handleDropSingleFile} />
-								<MultiFilePreview files={file} onRemove={handleRemoveFile} />
-							</Box>
+					{!isEdit ? (
+						<Stack spacing={3}>
+							<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
+								<Box width={1}>
+									<Typography variant="h6" sx={{ color: 'text.disabled' }}>
+										Attached File
+									</Typography>
+									<Upload error={!!errors?.src?.message} helperText={errors?.src?.message} file={file[0] || null} onDrop={handleDropSingleFile} />
+									<MultiFilePreview files={file} onRemove={handleRemoveFile} />
+								</Box>
+							</Stack>
 						</Stack>
-					</Stack>
+					) : (
+						currentDocument?.status === "0" ? (
+							<Stack spacing={3}>
+								<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
+									<Box width={1}>
+										<Typography variant="h6" sx={{ color: 'text.disabled' }}>
+											Attached File
+										</Typography>
+										<Upload disabled={!(currentDocument?.status === '0')} error={!!errors?.src?.message} helperText={errors?.src?.message} file={file[0] || null} onDrop={handleDropSingleFile} />
+										<MultiFilePreview files={file} onRemove={handleRemoveFile} />
+									</Box>
+								</Stack>
+							</Stack>
+						) : <></>
+					)}
+
 				</Stack>
 			</Card>
 			<Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
 				<LoadingButton
 					size="large"
 					variant="contained"
-					// loading={loading}
 					onClick={handleSubmit(onSubmit)}
-				// disabled={isEdit ? !isDirty : false}
+					disabled={isEdit ? !isDirty : false}
 				>
-					Create
+					{isEdit ? "Update" : "Create"}
 				</LoadingButton>
 			</Stack>
 		</FormProvider>
@@ -274,4 +306,4 @@ function PersonelAutocomplete ({ value, onChange, options, label, error = "", ..
 }
 
 
-export default DocumentNewForm
+export default DocumentNewEditForm

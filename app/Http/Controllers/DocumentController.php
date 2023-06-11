@@ -18,7 +18,8 @@ use Inertia\Inertia;
 
 class DocumentController extends Controller
 {
-  public function index(FolderModel $folder){
+
+	public function index(FolderModel $folder){
 		if($folder->is_removed === 0) {
 			return redirect()->back();
 		}
@@ -68,7 +69,7 @@ class DocumentController extends Controller
 		$documentService = new DocumentService;
 		$sequence_no = $documentService->sequence_no($folder->folder_id);
 
-		$document_id = Document::insertGetId([
+		$document_id = Document::create([
 			'originator' => $fields['originator'],
 			'originator2' => $fields['originator'],
 			'sequence_no' => $sequence_no,
@@ -86,7 +87,7 @@ class DocumentController extends Controller
 			'is_deleted' => 0,
 			'rev' => 0,
 			'user_id' => $user->emp_id
-		]);
+		])->document_id;
 
 		// Files
 		if($request->hasFile('src')) {
@@ -98,7 +99,8 @@ class DocumentController extends Controller
 				'src' => $file_name,
 				'uploader_type' => $user->user_type,
 				'folder_id' => $folder->folder_id,
-				'is_deleted' => 0
+				'is_deleted' => 0,
+				'upload_date' => $date_today
 			]);
 		}
 
@@ -121,30 +123,20 @@ class DocumentController extends Controller
 		return redirect()->back()
 		->with("message", "Document added successfully!")
 		->with("type", "success");
-
-		// try {
-		// 	$title = "New Notification from Fiafi Group";
-		// 	$msg = "A new document has been created by $user->firstname $user->lastname on ". $fields['folder_name'] ." folder. please check the document info in the link below or visit the document page directly.";
-		// 	Mail::to($user)
-		// 	->cc(isset($body["cc"]) ? $body["cc"] : [])
-		// 	->send(new FileMailable($fields, $file_name, $title, $msg));
-		// } catch (\Throwable $th) {
-		// 	dd($th);
-		// }
-
-		// return Redirect::back()
-		// ->with("message", "Document added successfully!")
-		// ->with("type", "success");
 	}
 
 
 	public function view(Request $request) {
+		$request->validate([
+			'folder' => 'required|string',
+			'document' => 'required|string'
+		]);
 		$folder = FolderModel::where("is_removed", 1)->findOrFail($request->folder);
 		$user = auth()->user();
-		// dd($user);
 		$document = Document::where([
 				["is_deleted", 0],
-				["folder_id", $folder->folder_id]
+				["folder_id", $folder->folder_id],
+				["form_number", $request->document]
 			])->withWhereHas(
 				"employee", fn($q) => $q->select("employee_id", "firstname", "lastname", "position", "department", "img_src", "phone_no", "company", "email")->with([
 					"position",
@@ -157,7 +149,7 @@ class DocumentController extends Controller
 				"files",
 				"approval_employee",
 				"reviewer_employees",
-			)->findOrFail($request->document);
+			)->firstOrFail();
 
 
 		return Inertia::render("Dashboard/Management/FileManager/Document/Details/index", [
@@ -166,6 +158,154 @@ class DocumentController extends Controller
 			"companies" => CompanyModel::where("sub_id", $user->subscriber_id)->get(),
 			"positions" => Position::select("position_id", "position")->where("user_id", $user->subscriber_id)->get()
 		]);
+	}
+
+
+	public function edit(Request $request) {
+		$user = auth()->user();
+
+		$folder = FolderModel::where("is_removed", 1)->findOrFail($request->folder);
+		$user = auth()->user();
+		$document = Document::where([
+				["is_deleted", 0],
+				["folder_id", $folder->folder_id],
+				["form_number", $request->document]
+			])->withWhereHas(
+				"employee", fn($q) => $q->select("employee_id", "firstname", "lastname", "position", "department", "img_src", "phone_no", "company", "email")->with([
+					"position",
+					"department"
+				])
+			)
+			->with([
+				"files" => fn($q) => $q->orderByRaw('COALESCE(file_id, upload_date) desc'),
+				"approval_employee",
+				"reviewer_employees",
+			])
+			->firstOrFail();
+		$document->file = $document->files[0] ?? "";
+
+		return Inertia::render("Dashboard/Management/FileManager/Document/Edit/index", [
+			"folder" => $folder,
+			"personel" => Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id", "user_id")
+				->where("is_deleted", 0)
+				->where("user_id", "!=", NULL)
+				->where("sub_id", $user->subscriber_id)
+				->where("employee_id", "!=", $user->emp_id)
+				->get(),
+			"document" => $document
+		]);
+	}
+
+	public function update(Request $request) {
+		$request->validate([
+			'src' => ['required', 'max:204800'],
+			'originator' => ['required', 'max:255'],
+			'sequence_no' => ['nullable'],
+			'description' => ['nullable', 'max:255'],
+			'title' => ['required', 'string', 'max:255'],
+			'project_code' => ['required', 'string', 'max:255'],
+			'discipline' => ['required', 'string', 'max:255'],
+			'document_type' => ['required','string', 'max:255'],
+			'document_zone' => ['nullable', 'max:255'],
+			'document_level' => ['nullable', 'max:255'],
+			// 'manual_cc' => ['nullable', 'email'],
+			// 'cc' => ['array'],
+			'approval_id' => ['nullable'],
+			'reviewers' => ['array'],
+			"folder" => ['string', 'required'],
+			"document" => ['string', 'required'],
+		]);
+
+		$folder = FolderModel::where("is_removed", 1)->findOrFail($request->folder);
+		$user = auth()->user();
+
+		$document = Document::where([
+			["is_deleted", 0],
+			["folder_id", $folder->folder_id]
+		])->with([
+			"approval_employee",
+			"reviewer_employees"
+		])->findOrFail($request->document);
+
+		$document->description = $request->description;
+		$document->title = $request->title;
+		$document->originator = $request->originator;
+		$document->project_code = $request->project_code;
+		$document->discipline = $request->discipline;
+		$document->document_type = $request->document_type;
+		$document->document_zone = $request->document_zone;
+		$document->document_level = $request->document_level;
+
+		if(isset($request->approval_id)) {
+			if($document->approval_id !== (int)$request->approval_id) {
+				$document->status = "0";
+				$document->approval_id = (int)$request->approval_id;
+			}
+		}
+
+		$documentService = new DocumentService;
+
+		// Files
+		if($request->hasFile('src') && $document->status == "0") {
+			$file_name = $documentService->upload_file($request->src);
+
+			FileModel::where([
+				"document_id" => $document->document_id,
+				"user_id" =>  $user->emp_id,
+				"folder_id" => $folder->folder_id
+			])->update([
+				'src' => $file_name,
+			]);
+		}
+		// Document Reviewers
+		$inReviewers = DocumentReviewer::select("reviewer_id")
+			->where([
+				"document_id" => $document->document_id,
+				"folder_id" => $folder->folder_id,
+			])
+			->whereIn("reviewer_id", collect($request->reviewers)->pluck("id")->toArray())
+			->get()
+			->pluck("reviewer_id")
+			->toArray();
+		if(isset($request->reviewers) && count($request->reviewers) > 0) {
+			$reviewers = [];
+			foreach ($request->reviewers as $reviewer) {
+				if(!in_array((int)$reviewer["id"], $inReviewers)) {
+					$reviewers[] = array(
+						"document_id" => $document->document_id,
+						"originator_id" => $user->emp_id,
+						"reviewer_id" => (int)$reviewer["id"],
+						"review_status" => "0",
+						"folder_id" => $folder->folder_id,
+						"is_deleted" => 0
+					);
+				}
+			}
+			if(count($reviewers) > 0) {
+				DocumentReviewer::insert($reviewers);
+			}
+			// Delete replaced reviewers
+			$isDeleted = DocumentReviewer::select("reviewer_id")
+			->where([
+				"document_id" => $document->document_id,
+				"folder_id" => $folder->folder_id,
+			])
+			->whereNotIn("reviewer_id", collect($request->reviewers)->pluck("id")->toArray())
+			->delete();
+			if($isDeleted > 0) {
+				$document->status = "0";
+			}
+		}
+
+		$document->save();
+
+		return redirect()
+		->route('files.management.document.edit', [
+			'folder' => $request->folder,
+			'document' => $document->form_number
+		])
+		->with("message", "Document updated successfully!")
+		->with("type", "success");
 	}
 
 

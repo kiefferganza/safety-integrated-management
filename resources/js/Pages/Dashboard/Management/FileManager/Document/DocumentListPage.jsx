@@ -21,7 +21,6 @@ const {
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils/hooks
-import { formatCms } from '@/utils/tablesUtils';
 import { getDocumentReviewStatus, getDocumentStatus } from '@/utils/formatStatuses';
 import { useSwal } from '@/hooks/useSwal';
 // components
@@ -124,7 +123,6 @@ const DocumentListPage = ({ folder, user }) => {
 				const docObj = {
 					...curr,
 					id: curr.document_id,
-					formNumber: formatCms(curr),
 					employee: {
 						...curr.employee,
 						position: curr.employee.position,
@@ -133,7 +131,7 @@ const DocumentListPage = ({ folder, user }) => {
 					docStatus: getDocumentStatus(curr.status)
 				};
 
-				if (curr.status === "0") {
+				if (curr.status == "0") {
 					const isForApproval = curr.reviewer_sign.length >= curr.reviewer_employees.length;
 					if (isForApproval) {
 						const stat = curr.status === "0" ? curr?.reviewer_employees[0]?.pivot.review_status : curr.status
@@ -164,8 +162,8 @@ const DocumentListPage = ({ folder, user }) => {
 				} else {
 					docObj.docStatus = getDocumentReviewStatus(curr.status);
 				}
-
 				acc.push({ ...docObj, docType: "documentControl" })
+
 			}
 			return acc;
 		}, []);
@@ -229,9 +227,9 @@ const DocumentListPage = ({ folder, user }) => {
 	}
 
 	const handleDeleteRow = (id) => {
-		Inertia.post(route('filemanager.document.delete'), { ids: [id] }, {
+		Inertia.post(route('files.management.document.delete'), { ids: [id] }, {
 			onStart () {
-				load("Deleting inspection", "Please wait...");
+				load("Deleting document", "Please wait...");
 			},
 			onFinish () {
 				setPage(0);
@@ -242,11 +240,11 @@ const DocumentListPage = ({ folder, user }) => {
 	};
 
 	const handleDeleteRows = (selected) => {
-		Inertia.post(route('filemanager.document.delete'), { ids: selected }, {
+		Inertia.post(route('files.management.document.delete'), { ids: selected }, {
 			onStart () {
 				load(`Deleting ${selected.length} documents`, "Please wait...");
 			},
-			onFinishonStart () {
+			onFinish () {
 				setSelected([]);
 				setPage(0);
 				stop();

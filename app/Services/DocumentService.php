@@ -34,25 +34,24 @@ class DocumentService {
 
 
 	public function sequence_no($folder_id) {
-		$user = auth()->user();
+		$sequence = Document::where('is_deleted', 0)->where("folder_id", $folder_id)->count();
+		$sequence = str_pad($sequence, 6, '0', STR_PAD_LEFT);
+		// $lastSubmittedDoc = Document::select("sequence_no")->where([
+		// 	["is_deleted", 0],
+		// 	["folder_id", $folder_id]
+		// ])->latest("date_uploaded")->first();
 
-		$lastSubmittedDoc = Document::select("sequence_no")->where([
-			["user_id", $user->emp_id],
-			["is_deleted", 0],
-			["folder_id", $folder_id]
-		])->latest("date_uploaded")->first();
+		// $sequence = '000001';
 
-		$sequence = '000001';
-
-		if($lastSubmittedDoc) {
-			$zeroes = '';
-			$prevSequence = (int)$lastSubmittedDoc->sequence_no + 1;
-			$number_of_zeroes = strlen((string) $prevSequence);
-			for($i = $number_of_zeroes; $i < 6; $i++) {
-				$zeroes .= "0";
-			}
-			$sequence = $zeroes . $prevSequence;
-		}
+		// if($lastSubmittedDoc) {
+		// 	$zeroes = '';
+		// 	$prevSequence = (int)$lastSubmittedDoc->sequence_no + 1;
+		// 	$number_of_zeroes = strlen((string) $prevSequence);
+		// 	for($i = $number_of_zeroes; $i < 6; $i++) {
+		// 		$zeroes .= "0";
+		// 	}
+		// 	$sequence = $zeroes . $prevSequence;
+		// }
 		return $sequence;
 	}
 

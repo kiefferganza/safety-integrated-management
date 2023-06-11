@@ -323,6 +323,10 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			->name('update');
 		// Folder -> Documents
 		Route::get('/view', [DocumentController::class, "view"])->name("show")->middleware(["permission:file_show", "permission:folder_show"]);
+
+		Route::get('/edit', [DocumentController::class, "edit"])->name("document.edit")->middleware(["permission:file_show", "permission:folder_show"]);
+		Route::put('/update', [DocumentController::class, "update"])->name("document.update")->middleware(["permission:file_show", "permission:folder_show"]);
+
 		Route::get('/external', [FilePageController::class, "thirdParty"])->name("external")->middleware("permission:folder_show");
 		Route::get('/{folder}', [DocumentController::class, "index"])->name("document.show")->middleware("permission:folder_show");
 		Route::middleware("permission:file_create")->group(function() {
@@ -331,7 +335,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		}); 
 		Route::post('/document/delete', [DocumentController::class, "destroy"])
 			->middleware("permission:file_delete")
-			->name('filemanager.document.delete');
+			->name('document.delete');
 		Route::middleware("permission:file_edit")->group(function() {
 			Route::post('/document/{document}/action', [DocumentController::class, "approve_or_fail_document"]);
 			Route::post('/document/{document}/add-comment', [DocumentController::class, "add_comment"]);
