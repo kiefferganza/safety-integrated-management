@@ -94,7 +94,7 @@ const navConfig = [
 					"management.company.list",
 				],
 				children: [
-					{ title: 'create', gate: 'employee_create', path: PATH_DASHBOARD.employee.new, routeNames: ["management.employee.create"] },
+					{ title: 'create', disabled: true, gate: 'employee_create', path: PATH_DASHBOARD.employee.new, routeNames: ["management.employee.create"] },
 					{ title: 'list', gate: 'employee_show', path: PATH_DASHBOARD.employee.root, routeNames: ["management.employee.list", "management.employee.show", "management.employee.profileGallery", "management.employee.profileTrainings"] },
 					// Position
 					{ title: 'position', gate: 'position_show', path: PATH_DASHBOARD.position.root, routeNames: ["management.position.list"] },
