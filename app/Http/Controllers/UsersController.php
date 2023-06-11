@@ -90,9 +90,45 @@ class UsersController extends Controller
 		$user->emp_id = $request->emp_id;
 
 		$requestRole = $request->user_type === 1 ? "User" : "Admin";
-		$role = Role::findByName($requestRole);
+		$userPermissions = [
+			'user_edit',
+			'user_show',
+
+			'employee_edit',
+			'employee_show',
+
+			'training_create',
+			'training_edit',
+			'training_delete',
+			'training_show',
+
+			'inspection_create',
+			'inspection_edit',
+			'inspection_delete',
+			'inspection_show',
+
+			'talk_toolbox_create',
+			'talk_toolbox_edit',
+			'talk_toolbox_delete',
+			'talk_toolbox_show',
+
+			'folder_show',
+			
+			'file_create',
+			'file_edit',
+			'file_delete',
+			'file_show',
+
+			'inventory_create',
+			'inventory_edit',
+			'inventory_delete',
+			'inventory_show',
+
+			'stock_addOrRemove',
+			'stock_show',
+		];
 		$user->assignRole($requestRole);
-		$user->syncPermissions($role->permissions);
+		$user->syncPermissions($userPermissions);
 
 		if($request->hasFile('profile_pic')){
 			$user

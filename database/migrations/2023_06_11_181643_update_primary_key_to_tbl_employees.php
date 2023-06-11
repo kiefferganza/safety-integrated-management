@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
 		Schema::table('training_external_comment', function (Blueprint $table) {
-			// $table->unsignedInteger("reviewer_id")->change();
-            // $table->dropForeign("training_external_comment_reviewer_id_foreign");
+			$table->unsignedInteger("reviewer_id")->change();
+            $table->dropForeign("training_external_comment_reviewer_id_foreign");
         });
         Schema::table('tbl_employees', function (Blueprint $table) {
             $table->increments("employee_id")->change();

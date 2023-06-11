@@ -87,7 +87,10 @@ export default function EmployeeListPage ({ employees, unassignedUsers }) {
 		onChangeDense,
 		onChangePage,
 		onChangeRowsPerPage,
-	} = useTable();
+	} = useTable({
+		defaultOrderBy: "date_created",
+		defaultOrder: "desc"
+	});
 
 	const [openAssign, setOpenAssign] = useState(false);
 	const [empAssignData, setEmpAssignData] = useState(null);

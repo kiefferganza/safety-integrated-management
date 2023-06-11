@@ -104,7 +104,7 @@ class EmployeeController extends Controller
 		$user = auth()->user();
 
 		$employee = new Employee;
-		$employee->user_id = $user->user_id; 
+		$employee->user_id = null; 
 		$employee->sub_id = $user->subscriber_id;
 		$employee->firstname = $request->firstname;
 		$employee->middlename = $request->middlename ? $request->middlename : " ";
@@ -126,10 +126,10 @@ class EmployeeController extends Controller
 		$employee->date_created = Carbon::now();
 		$employee->date_updated = Carbon::now();
 
-		if ($request->hasFile("img_src"))
-		{
-			// $employee->user->addMediaFromRequest("profile_pic")->toMediaCollection("profile");
-		}
+		// if ($request->hasFile("img_src"))
+		// {
+		// 	// $employee->user->addMediaFromRequest("profile_pic")->toMediaCollection("profile");
+		// }
 
 		$employee->save();
 
