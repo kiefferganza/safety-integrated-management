@@ -71,10 +71,10 @@ const navConfig = [
 				],
 				children: [
 					{ title: 'profile', path: PATH_DASHBOARD.user.profile, routeNames: ["management.user.profile"] },
-					{ title: 'cards', gate: "user_access", path: PATH_DASHBOARD.user.cards, routeNames: ["management.user.cards"] },
-					{ title: 'list', gate: "user_access", path: PATH_DASHBOARD.user.list, routeNames: ["management.user.list", "management.user.show"] },
+					{ title: 'cards', gate: "user_show", path: PATH_DASHBOARD.user.cards, routeNames: ["management.user.cards"] },
+					{ title: 'list', gate: "user_show", path: PATH_DASHBOARD.user.list, routeNames: ["management.user.list", "management.user.show"] },
 					{ title: 'create', gate: "user_create", path: PATH_DASHBOARD.user.new, routeNames: ["management.user.new"] },
-					{ title: 'settings', path: PATH_DASHBOARD.user.account, routeNames: ["management.user.settings"] },
+					{ title: 'settings', gate: "user_create", path: PATH_DASHBOARD.user.account, routeNames: ["management.user.settings"] },
 				],
 			},
 			// Employees

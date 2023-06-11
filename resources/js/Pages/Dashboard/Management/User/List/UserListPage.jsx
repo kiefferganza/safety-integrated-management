@@ -54,6 +54,7 @@ const ROLE_OPTIONS = [
 
 const TABLE_HEAD = [
 	{ id: 'name', label: 'Name', align: 'left' },
+	{ id: 'username', label: 'Username', align: 'left' },
 	{ id: 'email', label: 'Email', align: 'left' },
 	{ id: 'date_created', label: 'Date Created', align: 'left' },
 	{ id: 'user_type', label: 'Type', align: 'left' },
@@ -81,7 +82,10 @@ export default function UserListPage ({ users }) {
 		onChangeDense,
 		onChangePage,
 		onChangeRowsPerPage,
-	} = useTable();
+	} = useTable({
+		defaultOrderBy: "date_created",
+		defaultOrder: "desc"
+	});
 
 	const { themeStretch } = useSettingsContext();
 	const theme = useTheme();

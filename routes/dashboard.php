@@ -97,6 +97,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/profile', [UsersController::class, 'profile'])->name('profile');
 			Route::get('/settings', [UsersController::class, 'settings'])->name('settings');
 			Route::get('/profile/{user:username}', [UsersController::class, "show"])->name('show');
+			Route::get('/cards', [UsersController::class, 'cards'])->name('cards');
+			Route::get('/list', [UsersController::class, 'index'])->name('list');
 		});
 		
 		// CRUD
@@ -116,9 +118,6 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		});
 
 		Route::middleware("permission:user_access")->group(function() {
-			Route::get('/cards', [UsersController::class, 'cards'])->name('cards');
-			Route::get('/list', [UsersController::class, 'index'])->name('list');
-
 			Route::put('/{user}/activate',  [UsersController::class, 'activate'])->name("activate");
 			Route::put('/{user}/deactivate',  [UsersController::class, 'deactivate'])->name("deactivate");
 

@@ -21,74 +21,74 @@ class PermissionSeeder extends Seeder
 			 app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
 			 // create permissions
-			 $permissions = [
-				'permission_access',
-				'permission_create',
-				'permission_edit',
-				'permission_delete',
+			//  $permissions = [
+			// 	'permission_access',
+			// 	'permission_create',
+			// 	'permission_edit',
+			// 	'permission_delete',
 
-				'image_upload_slider',
-				'image_upload_defaultCover',
-				'image_upload_delete',
+			// 	'image_upload_slider',
+			// 	'image_upload_defaultCover',
+			// 	'image_upload_delete',
 
-				'role_access',
-				'role_create',
-				'role_edit',
-				'role_delete',
+			// 	'role_access',
+			// 	'role_create',
+			// 	'role_edit',
+			// 	'role_delete',
 
-				'user_access',
-				'user_create',
-				'user_edit',
-				'user_show',
-				'user_delete',
+			// 	'user_access',
+			// 	'user_create',
+			// 	'user_edit',
+			// 	'user_show',
+			// 	'user_delete',
 
-				'employee_create',
-				'employee_delete',
-				'employee_edit',
-				'employee_show',
+			// 	'employee_create',
+			// 	'employee_delete',
+			// 	'employee_edit',
+			// 	'employee_show',
 
-				'training_create',
-				'training_edit',
-				'training_delete',
-				'training_show',
+			// 	'training_create',
+			// 	'training_edit',
+			// 	'training_delete',
+			// 	'training_show',
 
-				'inspection_create',
-				'inspection_edit',
-				'inspection_delete',
-				'inspection_show',
+			// 	'inspection_create',
+			// 	'inspection_edit',
+			// 	'inspection_delete',
+			// 	'inspection_show',
 
-				'talk_toolbox_create',
-				'talk_toolbox_edit',
-				'talk_toolbox_delete',
-				'talk_toolbox_show',
+			// 	'talk_toolbox_create',
+			// 	'talk_toolbox_edit',
+			// 	'talk_toolbox_delete',
+			// 	'talk_toolbox_show',
 
-				'folder_create',
-				'folder_edit',
-				'folder_delete',
-				'folder_show',
+			// 	'folder_create',
+			// 	'folder_edit',
+			// 	'folder_delete',
+			// 	'folder_show',
 				
-				'file_create',
-				'file_edit',
-				'file_delete',
-				'file_show',
+			// 	'file_create',
+			// 	'file_edit',
+			// 	'file_delete',
+			// 	'file_show',
 
-				'inventory_create',
-				'inventory_edit',
-				'inventory_delete',
-				'inventory_show',
+			// 	'inventory_create',
+			// 	'inventory_edit',
+			// 	'inventory_delete',
+			// 	'inventory_show',
 
-				'stock_addOrRemove',
-				'stock_show',
-			 ];
+			// 	'stock_addOrRemove',
+			// 	'stock_show',
+			//  ];
 
-			foreach ($permissions as $permission)   {
-				Permission::create([
-					'name' => $permission
-				]);
-			}
+			// foreach ($permissions as $permission)   {
+			// 	Permission::create([
+			// 		'name' => $permission
+			// 	]);
+			// }
 			
-      // gets all permissions via Gate::before rule; see AuthServiceProvider
-			Role::create(['name' => 'Admin']);
+      	// gets all permissions via Gate::before rule; see AuthServiceProvider
+			// Role::create(['name' => 'Admin']);
 
 			// $modPermissions = [
 			// 	'permission_access',
@@ -150,63 +150,75 @@ class PermissionSeeder extends Seeder
 			// 	'stock_show',
 			// ];
 
-			Role::create(['name' => 'Moderator']);
+			// Role::create(['name' => 'Moderator']);
 
 			// foreach ($modPermissions as $permission)   {
 			// 	$modRole->givePermissionTo($permission);
 			// }
 
-			$admin = User::where('user_type', 0)->first();
-			$admin->assignRole("Admin");
+			// $admin = User::where('user_type', 0)->first();
+			// $admin->assignRole("Admin");
 
-			Role::create(['name' => 'User']);
+			// $roleUser = Role::create(['name' => 'User']);
 
-			$userPermissions = [
-				'user_edit',
-				'user_show',
+		
+		
+		
+		
+		$userPermissions = [
+			'user_edit',
+			'user_show',
 
-				'employee_edit',
-				'employee_show',
+			'employee_edit',
+			'employee_show',
 
-				'training_create',
-				'training_edit',
-				'training_delete',
-				'training_show',
+			'training_create',
+			'training_edit',
+			'training_delete',
+			'training_show',
 
-				'inspection_create',
-				'inspection_edit',
-				'inspection_delete',
-				'inspection_show',
+			'inspection_create',
+			'inspection_edit',
+			'inspection_delete',
+			'inspection_show',
 
-				'talk_toolbox_create',
-				'talk_toolbox_edit',
-				'talk_toolbox_delete',
-				'talk_toolbox_show',
+			'talk_toolbox_create',
+			'talk_toolbox_edit',
+			'talk_toolbox_delete',
+			'talk_toolbox_show',
 
-				'folder_show',
-				
-				'file_create',
-				'file_edit',
-				'file_delete',
-				'file_show',
+			'folder_show',
+			
+			'file_create',
+			'file_edit',
+			'file_delete',
+			'file_show',
 
-				'inventory_create',
-				'inventory_edit',
-				'inventory_delete',
-				'inventory_show',
+			'inventory_create',
+			'inventory_edit',
+			'inventory_delete',
+			'inventory_show',
 
-				'stock_addOrRemove',
-				'stock_show',
-			];
+			'stock_addOrRemove',
+			'stock_show',
+		];
 
-			// foreach ($userPermissions as $permission)   {
-			// 	$roleUser->givePermissionTo($permission);
-			// }
+		// foreach ($userPermissions as $permission)   {
+		// 	$roleUser->givePermissionTo($permission);
+		// }
 
-			User::where('user_type', 1)->where('deleted', 0)->get()->map(function($user) use($userPermissions){
-				$user->givePermissionTo($userPermissions);
-				$user->assignRole("User");
-			});
+		$users = User::where('user_type', 1)->where('deleted', 0)->get();
+		$role = Role::findByName("User");
+		$role->syncPermissions($userPermissions);
+		foreach ($users as $user) {
+			$user->syncPermissions($role->permissions); // Sync the permissions of the role to each user
+		}
+		// User::where('user_type', 1)->where('deleted', 0)->get()->each(function($user) use($userPermissions){
+		// 	// $user->givePermissionTo($userPermissions);
+		// 	$role = Role::findByName("User");
+		// 	$user->syncPermissions($role->permissions);
+		// 	// $user->assignRole("User");
+		// });
 
 
     }

@@ -83,7 +83,7 @@ export default function UserNewEditForm ({ isEdit = false, user, employees }) {
 		formState: { isDirty, errors },
 	} = methods;
 
-	const values = watch()
+	const values = watch();
 
 	useEffect(() => {
 		if (isEdit && user) {
@@ -101,6 +101,8 @@ export default function UserNewEditForm ({ isEdit = false, user, employees }) {
 			for (const key in resErrors) {
 				setError(key, { type: "custom", message: resErrors[key] });
 			}
+		} else {
+			reset();
 		}
 	}, [resErrors]);
 
@@ -282,6 +284,7 @@ export default function UserNewEditForm ({ isEdit = false, user, employees }) {
 										<TextField
 											label="Select Employee"
 											{...params}
+											value={employees.find(emp => emp.employee_id == values.emp_id)?.fullname || ""}
 											error={!!errors?.employee_id?.message}
 											helperText={errors?.employee_id?.message}
 										/>

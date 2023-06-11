@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
@@ -31,7 +32,8 @@ class UsersController extends Controller
 		->where([
 				["users.subscriber_id", $user->subscriber_id],
 				["users.deleted", 0]
-		])->get()
+		])
+		->get()
 		->transform(function ($user) {
 			$profile = $user->getFirstMedia("profile", ["primary" => true]);
 			if($profile) {
@@ -88,7 +90,9 @@ class UsersController extends Controller
 		$user->emp_id = $request->emp_id;
 
 		$requestRole = $request->user_type === 1 ? "User" : "Admin";
+		$role = Role::findByName($requestRole);
 		$user->assignRole($requestRole);
+		$user->syncPermissions($role->permissions);
 
 		if($request->hasFile('profile_pic')){
 			$user
