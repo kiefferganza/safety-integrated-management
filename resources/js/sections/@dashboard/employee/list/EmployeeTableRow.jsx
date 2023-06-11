@@ -36,7 +36,7 @@ EmployeeTableRow.propTypes = {
 	canDelete: PropTypes.bool
 };
 
-export default function EmployeeTableRow ({ row, selected, onSelectRow, onDeleteRow, canDelete }) {
+export default function EmployeeTableRow ({ row, selected, onSelectRow, onDeleteRow, canDelete, canEditAll }) {
 	// const [hasPermission] = usePermission();
 	// const dispatch = useDispatch();
 	// const { isLoading } = useSelector(state => state.employee);
@@ -140,15 +140,17 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onDelete
 						Follow
 					</MenuItem>
 				)} */}
-				<MenuItem
-					component={Link}
-					href={route('management.employee.edit', row.id)}
-					preserveScroll
-					onClick={handleClosePopover}
-				>
-					<Iconify icon="eva:edit-fill" />
-					Edit
-				</MenuItem>
+				{canEditAll && (
+					<MenuItem
+						component={Link}
+						href={route('management.employee.edit', row.id)}
+						preserveScroll
+						onClick={handleClosePopover}
+					>
+						<Iconify icon="eva:edit-fill" />
+						Edit
+					</MenuItem>
+				)}
 
 				{canDelete && (
 					<>

@@ -40,8 +40,8 @@ class EmployeeController extends Controller
 		tbl_employees.is_deleted,
 		tbl_employees.is_active,
 		tbl_employees.country"))
-			->join("tbl_department", "tbl_employees.department", "tbl_department.department_id")
-			->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+			->leftJoin("tbl_department", "tbl_employees.department", "tbl_department.department_id")
+			->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			// ->join("tbl_nationalities", "tbl_employees.nationality", "tbl_nationalities.id")
 			->where([
 				["tbl_employees.sub_id", $user->subscriber_id],
@@ -79,7 +79,6 @@ class EmployeeController extends Controller
 
 	public function create()
 	{
-		return redirect()->back(302);
 		$user = auth()->user();
 
 		$positions = cache()->rememberForever("positions:" . $user->subscriber_id, fn () => Position::where("user_id", $user->subscriber_id)->get());

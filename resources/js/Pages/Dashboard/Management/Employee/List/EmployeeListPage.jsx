@@ -235,6 +235,7 @@ export default function EmployeeListPage ({ employees, unassignedUsers }) {
 
 	const canCreate = hasPermission("employee_create");
 	const canDelete = hasPermission("employee_delete");
+	const canEditAll = hasPermission("employee_access");
 	return (
 		<>
 			<Head>
@@ -412,6 +413,7 @@ export default function EmployeeListPage ({ employees, unassignedUsers }) {
 											onDeleteRow={() => handleDeleteRow(row.id)}
 											onAssign={handleOpenAssignment}
 											canDelete={canDelete}
+											canEditAll={canEditAll}
 										/>
 									))}
 

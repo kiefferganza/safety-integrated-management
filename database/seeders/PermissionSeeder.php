@@ -171,6 +171,7 @@ class PermissionSeeder extends Seeder
 
 			'employee_edit',
 			'employee_show',
+			'employee_access',
 
 			'training_create',
 			'training_edit',
@@ -203,23 +204,24 @@ class PermissionSeeder extends Seeder
 			'stock_show',
 		];
 
+		Permission::create([
+			"name" => 'employee_access'
+		]);
+
 		// foreach ($userPermissions as $permission)   {
 		// 	$roleUser->givePermissionTo($permission);
 		// }
 
 		$users = User::where('user_type', 1)->where('deleted', 0)->get();
 		$role = Role::findByName("User");
-		$role->syncPermissions($userPermissions);
+		// $role->syncPermissions($userPermissions);
 		foreach ($users as $user) {
-			$user->syncPermissions($role->permissions); // Sync the permissions of the role to each user
+			$user->syncPermissions($userPermissions); // Sync the permissions of the role to each user
 		}
-		// User::where('user_type', 1)->where('deleted', 0)->get()->each(function($user) use($userPermissions){
-		// 	// $user->givePermissionTo($userPermissions);
-		// 	$role = Role::findByName("User");
-		// 	$user->syncPermissions($role->permissions);
-		// 	// $user->assignRole("User");
-		// });
 
+		$role = Role::findByName("User");
+		$role->syncPermissions([]);
+		
 
     }
 }

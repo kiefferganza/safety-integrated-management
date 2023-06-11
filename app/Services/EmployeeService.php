@@ -98,19 +98,19 @@ class EmployeeService {
 
 
 		if($employee->position !== (int)$request->position) {
-			$pos = Position::select("position_id", "position")->firstOrFail($request->position);
+			$pos = Position::select("position_id", "position")->findOrFail($request->position);
 			$employee->position = $pos->position_id;
 			$employee->raw_position = $pos->position;
 		}
 
 		if($employee->department !== (int)$request->department) {
-			$dep = Department::select("department_id ", "department")->firstOrFail($request->department);
+			$dep = Department::select("department_id", "department")->findOrFail($request->department);
 			$employee->department = $dep->department_id;
 			$employee->raw_department = $dep->department;
 		}
 
 		if($employee->company !== (int)$request->company) {
-			$pos = CompanyModel::select("company_id ", "company_name")->firstOrFail($request->company);
+			$pos = CompanyModel::select("company_id", "company_name")->findOrFail($request->company);
 			$employee->company = $pos->company_id;
 			$employee->raw_company = $pos->company_name;
 		}
