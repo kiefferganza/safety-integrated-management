@@ -105,9 +105,10 @@ class UsersController extends Controller
 
 		$emp = Employee::find($request->emp_id);
 
-		if($emp) {
+		if($emp && $user) {
 			$emp->user_id = $user->user_id;
 			$emp->email = $user->email;
+			$emp->save();
 		}
 
 		return redirect()->back()
