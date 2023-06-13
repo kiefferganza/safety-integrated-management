@@ -193,8 +193,9 @@ class UsersController extends Controller
 					"department" => fn ($query) => 
 						$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]])
 				]),
-				"createdEmployees" => fn($q) => $q->select("employee_id", "firstname", "lastname", "img_src", "email", "created_by", "is_active")
+				"createdEmployees" => fn($q) => $q->select("employee_id", "firstname", "lastname", "img_src", "email", "created_by", "is_active"),
 				// "social_accounts",
+				'roles'
 		]);
 		$user->profile = null;
 		$profile = $user->getFirstMedia("profile", ["primary" => true]);

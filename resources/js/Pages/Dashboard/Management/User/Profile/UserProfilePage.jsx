@@ -68,13 +68,16 @@ export default function UserProfilePage ({ user }) {
 			icon: <Iconify icon="ic:round-perm-media" />,
 			component: <ProfileGallery gallery={[]} />,
 		},
-		{
+	];
+
+	if (!user?.roles.some((role) => role.name === 'Admin')) {
+		TABS.push({
 			value: 'permissions',
 			label: 'Permissions',
 			icon: <Iconify icon="fluent-mdl2:permissions-solid" />,
 			component: <ProfilePermissions />,
-		},
-	];
+		},);
+	}
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'lg'}>
