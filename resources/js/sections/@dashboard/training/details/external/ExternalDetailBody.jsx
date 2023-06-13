@@ -39,7 +39,8 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 		setStatusType("");
 	}
 
-	const canReviewStatus = external_comments.some(com => com.status === "open");
+	// If no comments, can review otherwise check if all comments are closed
+	const canReviewStatus = external_comments.length > 0 ? !external_comments.some(com => com.status === "open") : true;
 	return (
 		<>
 			<Stack>
@@ -234,7 +235,7 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 									size="large"
 									variant="contained"
 									color="success"
-									disabled={canReviewStatus || external_status.review_status === "accepted" || external_status.approval_status === "in_review"}
+									disabled={!canReviewStatus || external_status.review_status === "accepted" || external_status.approval_status !== "in_review"}
 									onClick={() => {
 										handleActionFail({ type: "review", action: "accepted" })
 									}}
@@ -248,7 +249,7 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 									size="large"
 									variant="contained"
 									color="error"
-									disabled={canReviewStatus || external_status.review_status === "failed" || external_status.approval_status === "in_review"}
+									disabled={!canReviewStatus || external_status.review_status === "failed" || external_status.approval_status !== "in_review"}
 									onClick={() => {
 										handleActionFail({ type: "review", action: "failed" })
 									}}

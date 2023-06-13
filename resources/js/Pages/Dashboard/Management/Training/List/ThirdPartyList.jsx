@@ -122,6 +122,7 @@ export default function TrainingThirdPartyList ({ trainings, url, type }) {
 		comparator: getComparator(order, orderBy),
 		filterName,
 		filterStatus,
+		filterStatusTab,
 		filterStartDate,
 		filterEndDate,
 		user
@@ -138,9 +139,11 @@ export default function TrainingThirdPartyList ({ trainings, url, type }) {
 
 	const getPercentByStatus = (status) => (getLengthByStatus(status).length / dataFiltered.length) * 100;
 
+	const getLengthByStatusNotFiltered = (status) => tableData.filter((item) => item.status.text === status);
+
 	const getTotalHours = (trainings_arr) => trainings_arr.reduce((acc, curr) => acc += curr.training_hrs, 0);
 
-	const getCertificateLength = (bool) => dataFiltered.filter(data => data.completed === bool).length;
+	const getCertificateLength = (bool) => tableData.filter(data => data.completed === bool).length;
 
 	const relatedList = {
 		requested_by: trainings.filter((training) => training.external_details.requested_by === user.emp_id).length,
@@ -150,11 +153,11 @@ export default function TrainingThirdPartyList ({ trainings, url, type }) {
 
 	const TABS = [
 		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
-		{ value: 'Valid', label: 'Valid', color: 'success', count: getLengthByStatus('Valid').length },
-		{ value: 'Soon to Expire', label: 'Soon to Expire', color: 'warning', count: getLengthByStatus('Soon to Expire').length },
-		{ value: 'Expired', label: 'Expired', color: 'error', count: getLengthByStatus('Expired').length },
-		{ value: true, label: 'Completed', color: 'success', count: getCertificateLength(true) },
-		{ value: false, label: 'Incomplete', color: 'warning', count: getCertificateLength(false) },
+		{ value: 'Valid', label: 'Valid', color: 'success', count: getLengthByStatusNotFiltered('Valid').length },
+		{ value: 'Soon to Expire', label: 'Soon to Expire', color: 'warning', count: getLengthByStatusNotFiltered('Soon to Expire').length },
+		{ value: 'Expired', label: 'Expired', color: 'error', count: getLengthByStatusNotFiltered('Expired').length },
+		{ value: 'Completed', label: 'Completed', color: 'success', count: getCertificateLength(true) },
+		{ value: 'Incomplete', label: 'Incomplete', color: 'warning', count: getCertificateLength(false) },
 	];
 
 	const handleOpenConfirm = () => {
@@ -224,6 +227,7 @@ export default function TrainingThirdPartyList ({ trainings, url, type }) {
 	const handleResetFilter = () => {
 		setFilterName('');
 		setFilterStatus('all');
+		setFilterStatusTab('all');
 		setFilterStartDate(null);
 		setFilterEndDate(null);
 	};
@@ -452,7 +456,7 @@ export default function TrainingThirdPartyList ({ trainings, url, type }) {
 
 // ----------------------------------------------------------------------
 
-function applyFilter ({ inputData, comparator, filterName, filterStatus, filterStartDate, filterEndDate, user }) {
+function applyFilter ({ inputData, comparator, filterName, filterStatus, filterStatusTab, filterStartDate, filterEndDate, user }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
 
 	stabilizedThis.sort((a, b) => {
@@ -472,6 +476,14 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 
 	if (filterStatus !== 'all') {
 		inputData = inputData.filter((training) => training.external_details[filterStatus] === user.emp_id);
+	}
+
+	if (filterStatusTab !== 'all') {
+		if (filterStatusTab === "Completed" || filterStatusTab === "Incomplete") {
+			inputData = inputData.filter((training) => training.completed === (filterStatusTab === "Completed"));
+		} else {
+			inputData = inputData.filter((training) => training.status.text === filterStatusTab);
+		}
 	}
 
 	if (filterStartDate && !filterEndDate) {
