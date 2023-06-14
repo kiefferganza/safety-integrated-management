@@ -208,19 +208,12 @@ class PermissionSeeder extends Seeder
 		// 	$roleUser->givePermissionTo($permission);
 		// }
 
-		$users = User::where('user_type', 1)->where('deleted', 0)->get();
-		// $role = Role::findByName("User");
-		// $role->syncPermissions($userPermissions);
+		$users = User::where('user_type', 1)->doesntHave('roles')->where('deleted', 0)->get();
 		foreach ($users as $user) {
+			dump($user->user_id);
+			$user->assignRole('User');
 			$user->syncPermissions($userPermissions); // Sync the permissions of the role to each user
 		}
-
-		Permission::create([
-			"name" => 'employee_access'
-		]);
-
-		$role = Role::findByName("User");
-		$role->syncPermissions([]);
 		
 
     }
