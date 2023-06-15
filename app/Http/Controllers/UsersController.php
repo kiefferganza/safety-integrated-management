@@ -159,7 +159,7 @@ class UsersController extends Controller
 
 		foreach ($request->ids as $id) {
 			$user = User::where("user_id", $id)->first();
-			$user->is_deleted = 1;
+			$user->deleted = 1;
 			$user->save();
 			Employee::where("user_id", $id)->update(["user_id" => null]);
 		}

@@ -18,8 +18,8 @@ import {
 } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
-// _mock_
-import { _userList } from '@/_mock/arrays';
+// 
+import { useSwal } from '@/hooks/useSwal';
 // components
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';
@@ -66,6 +66,7 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 export default function UserListPage ({ users }) {
+	const { load, stop } = useSwal()
 	const {
 		dense,
 		page,
@@ -91,7 +92,7 @@ export default function UserListPage ({ users }) {
 	const { themeStretch } = useSettingsContext();
 	const theme = useTheme();
 
-	const [tableData, setTableData] = useState(() => users.map(user => ({ ...user, name: getCurrentUserName(user) })));
+	const [tableData] = useState(() => users.map(user => ({ ...user, name: getCurrentUserName(user) })));
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
