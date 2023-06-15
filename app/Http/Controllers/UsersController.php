@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
-use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
@@ -150,6 +149,18 @@ class UsersController extends Controller
 		return redirect()->back()
 			->with('message', 'User added successfully')
 			->with('type', 'success');
+	}
+
+
+	public function destroy(Request $request) {
+		$request->validate([
+			'ids' => 'required|array'
+		]);
+
+		foreach ($request->ids as $id) {
+			$user = User::where("user_id", $id)->first();
+			// $user->emp_id
+		}
 	}
 
 
