@@ -159,8 +159,14 @@ class UsersController extends Controller
 
 		foreach ($request->ids as $id) {
 			$user = User::where("user_id", $id)->first();
-			// $user->emp_id
+			$user->is_deleted = 1;
+			$user->save();
+			Employee::where("user_id", $id)->update(["user_id" => null]);
 		}
+		
+		return redirect()->back()
+			->with('message', 'User deleted successfully')
+			->with('type', 'success');
 	}
 
 

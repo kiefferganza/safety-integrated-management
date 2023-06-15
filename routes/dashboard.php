@@ -110,7 +110,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::post('/{user}/update', [UsersController::class, 'update'])->name("update");
 		});
 		// Can delete
-		Route::post('/delete', [UsersController::class, 'delete'])->middleware('permission:user_delete');
+		Route::post('/delete', [UsersController::class, 'destroy'])->name('delete')->middleware('permission:user_delete');
 		// Can create
 		Route::middleware("permission:user_create")->group(function() {
 			Route::get('/new', [UsersController::class, 'create'])->name('new');
