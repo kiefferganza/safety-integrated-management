@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class UsersController extends Controller
 {
@@ -186,7 +187,7 @@ class UsersController extends Controller
 
 		// $employee->profiles = $user->getMedia('profile')->transform(function($profile) {});
 
-		return Inertia::render("Dashboard/Management/User/index", [
+		return Inertia::render("Dashboard/Management/User/index", [ 
 			"employee" => $employee,
 			"trainingTypes" => TrainingType::get()
 		]);
@@ -226,6 +227,7 @@ class UsersController extends Controller
 		}
 
 		$userRole = $user->roles->first()->name;
+		// dd($profile->getResponsiveImageUrls());
 
 		return Inertia::render("Dashboard/Management/User/Profile/index", [
 			"user" => $users,
@@ -283,6 +285,8 @@ class UsersController extends Controller
 		}
 
 		$user->save();
+
+		cache()->forget("authUser:".$user->user_id);
 
 		if($request->about && $user->emp_id) {
 			Employee::find($user->emp_id)->update(["about" => $request->about]);
@@ -443,6 +447,30 @@ class UsersController extends Controller
 
 		return redirect()->back()
 		->with("message", "User". $user->fullname ." deactivated successfully!")
+		->with("type", "success");
+	}
+
+
+	public function updateProfilePic(Request $request, User $user) {
+		$request->validate([
+			"mediaId" => ['integer', 'required']
+		]);
+		$oldMedia = Media::where('model_type', User::class)
+             ->where('model_id', $user->user_id)
+             ->where('custom_properties', '{"primary":true}')
+             ->where('collection_name', 'profile')
+             ->first();
+		if($oldMedia){
+			$oldMedia->setCustomProperty('primary', false);
+			$oldMedia->save();
+		}
+		$media = Media::findOrFail($request->mediaId);
+		$media->setCustomProperty('primary', true);
+		$media->save();
+		cache()->forget("authUser:".$user->user_id);
+
+		return redirect()->back()
+		->with("message", "Profile changed successfully!")
 		->with("type", "success");
 	}
 

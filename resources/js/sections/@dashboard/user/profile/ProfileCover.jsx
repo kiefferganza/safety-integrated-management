@@ -82,7 +82,7 @@ export default function ProfileCover ({ name, role, cover, user }) {
 
 			<Image
 				alt="cover"
-				src={cover}
+				src={"/storage/assets/images/home/cover.jpg"}
 				sx={{
 					top: 0,
 					left: 0,

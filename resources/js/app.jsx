@@ -47,6 +47,9 @@ import ThemeProvider from './theme';
 // locales
 import ThemeLocalization from './locales';
 
+// React Query
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
 // InertiaProgress.init({
@@ -59,28 +62,31 @@ createInertiaApp({
 	resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx')),
 	setup ({ el, App, props }) {
 		const root = createRoot(el);
+		const queryClient = new QueryClient();
 
 		root.render(
-			<ReduxProvider store={store}>
-				<PersistGate loading={null} persistor={persistor}>
-					<LocalizationProvider dateAdapter={AdapterDateFns}>
-						<SettingsProvider>
-							<MotionLazyContainer>
-								<ThemeProvider>
-									<ThemeSettings>
-										<ThemeLocalization>
-											<SnackbarProvider>
-												<StyledChart />
-												<App {...props} />
-											</SnackbarProvider>
-										</ThemeLocalization>
-									</ThemeSettings>
-								</ThemeProvider>
-							</MotionLazyContainer>
-						</SettingsProvider>
-					</LocalizationProvider>
-				</PersistGate>
-			</ReduxProvider>
+			<QueryClientProvider client={queryClient}>
+				<ReduxProvider store={store}>
+					<PersistGate loading={null} persistor={persistor}>
+						<LocalizationProvider dateAdapter={AdapterDateFns}>
+							<SettingsProvider>
+								<MotionLazyContainer>
+									<ThemeProvider>
+										<ThemeSettings>
+											<ThemeLocalization>
+												<SnackbarProvider>
+													<StyledChart />
+													<App {...props} />
+												</SnackbarProvider>
+											</ThemeLocalization>
+										</ThemeSettings>
+									</ThemeProvider>
+								</MotionLazyContainer>
+							</SettingsProvider>
+						</LocalizationProvider>
+					</PersistGate>
+				</ReduxProvider>
+			</QueryClientProvider>
 		);
 	},
 });

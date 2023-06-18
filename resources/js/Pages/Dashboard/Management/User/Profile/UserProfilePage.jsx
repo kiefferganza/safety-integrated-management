@@ -66,7 +66,7 @@ export default function UserProfilePage ({ user }) {
 			value: 'gallery',
 			label: 'Gallery',
 			icon: <Iconify icon="ic:round-perm-media" />,
-			component: <ProfileGallery gallery={[]} />,
+			component: <ProfileGallery user={user} />,
 		},
 	];
 
@@ -96,7 +96,7 @@ export default function UserProfilePage ({ user }) {
 					position: 'relative',
 				}}
 			>
-				<ProfileCover user={user} name={getCurrentUserName(user)} role={user?.employee?.position?.position} cover="/storage/assets/images/home/cover.jpg" />
+				<ProfileCover user={user} name={getCurrentUserName(user)} role={user?.employee?.position?.position} />
 
 				<Tabs
 					value={currentTab}

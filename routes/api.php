@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiControllers\UserApiController;
 use App\Http\Controllers\UsersController;
 use App\Models\Employee;
 use App\Models\Position;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth')->group(function ()
+Route::middleware('auth')->as('api.')->group(function ()
 {
 
 	Route::get('toolbox-talks', function() {
@@ -36,6 +37,10 @@ Route::middleware('auth')->group(function ()
 	});
 
 	Route::post('/user/follow/{user_id}', [UsersController::class, "followUser"]);
+
+	Route::get('user/{user}', [UserApiController::class, 'profileImages'])->name('user.profile_images');
+	Route::get('user/cover/{user}', [UserApiController::class, 'coverImages'])->name('user.cover_images');
+	Route::delete('/delete-image/{media}', [UserApiController::class, 'deleteImageById'])->name('images.delete-image');
 
 });
 

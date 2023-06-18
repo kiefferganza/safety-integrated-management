@@ -32,7 +32,7 @@ class EmployeeService {
 		}else {
 			return Position::where("is_deleted", 0)->get();
 		}
-	}
+	} 
 
 	public function get() {
 		return $this->personels->get();
