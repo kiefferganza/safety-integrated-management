@@ -25,10 +25,16 @@ export default function UserEditPage ({ user }) {
 						href: PATH_DASHBOARD.root,
 					},
 					{
-						name: 'User',
+						name: 'User List',
 						href: PATH_DASHBOARD.user.list,
 					},
-					{ name: getCurrentUserName(user) },
+					{
+						name: getCurrentUserName(user),
+						href: route('management.user.show', user.username)
+					},
+					{
+						name: "Edit"
+					},
 				]}
 			/>
 

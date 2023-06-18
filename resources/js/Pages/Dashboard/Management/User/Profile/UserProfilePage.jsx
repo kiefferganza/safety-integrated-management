@@ -96,7 +96,7 @@ export default function UserProfilePage ({ user }) {
 					position: 'relative',
 				}}
 			>
-				<ProfileCover user={user} name={getCurrentUserName(user)} role={user?.employee?.position?.position} />
+				<ProfileCover setOpenBackdrop={null} isCurrentProfile={false} user={user} name={getCurrentUserName(user)} role={user?.employee?.position?.position} />
 
 				<Tabs
 					value={currentTab}

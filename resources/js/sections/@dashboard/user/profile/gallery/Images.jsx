@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import GalleryItem from './GalleryItem';
 import GalleryLoad from './GalleryLoad';
 
-const Images = ({ name, queryKey, params, title, onDelete, canDelete, actionName, actionFn }) => {
+const Images = ({ name, queryKey, params, title, onDelete, canDelete, actionName, actionFn, emptyContent, urlKey = "" }) => {
 	const [currentPage] = useState(1);
 	const [openLightbox, setOpenLightbox] = useState(false);
 	const { data, isLoading, error } = useQuery({
@@ -25,7 +25,7 @@ const Images = ({ name, queryKey, params, title, onDelete, canDelete, actionName
 
 	const [selectedImage, setSelectedImage] = useState(0);
 
-	const imagesLightbox = (data?.data?.data || []).map((img) => img.medium);
+	const imagesLightbox = (data?.data?.data || []).map((img) => (img[urlKey] || img.medium));
 
 	const handleOpenLightbox = (url) => {
 		const selectedImage = imagesLightbox.findIndex((index) => index === url);
@@ -73,6 +73,24 @@ const Images = ({ name, queryKey, params, title, onDelete, canDelete, actionName
 			</Typography>
 		)
 	}
+
+	if ((data?.data?.data || []).length <= 0) {
+		if (emptyContent) {
+			return emptyContent;
+		} else {
+			return (
+				<Stack>
+					<Typography variant="h4" sx={{ my: 5 }}>
+						{title}
+					</Typography>
+					<Typography variant="h4" sx={{ my: 5 }}>
+						No image
+					</Typography>
+				</Stack>
+			)
+		}
+	}
+
 	return (
 		<Stack>
 			<Typography variant="h4" sx={{ my: 5 }}>
@@ -98,6 +116,7 @@ const Images = ({ name, queryKey, params, title, onDelete, canDelete, actionName
 						actionName={actionName}
 						actionFn={actionFn}
 						queryKey={queryKey}
+						urlKey={urlKey}
 					/>
 				))}
 			</Box>

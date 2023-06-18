@@ -4,11 +4,11 @@ import Image from '../../image';
 
 // ----------------------------------------------------------------------
 
-AvatarPreview.propTypes = {
+CoverPreview.propTypes = {
 	file: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 };
 
-export default function AvatarPreview ({ file, sx = {} }) {
+export default function CoverPreview ({ file, sx = {} }) {
 	if (!file) {
 		return null;
 	}
@@ -17,15 +17,14 @@ export default function AvatarPreview ({ file, sx = {} }) {
 
 	return (
 		<Image
-			alt="avatar"
+			alt="cover"
 			src={imgUrl}
 			sx={{
 				zIndex: 8,
 				overflow: 'hidden',
-				borderRadius: '50%',
 				position: 'absolute',
-				width: `calc(100% - 16px)`,
-				height: `calc(100% - 16px)`,
+				width: '100%',
+				height: '100%',
 				...sx
 			}}
 		/>

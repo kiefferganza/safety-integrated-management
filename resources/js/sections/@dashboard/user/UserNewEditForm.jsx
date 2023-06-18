@@ -59,7 +59,7 @@ export default function UserNewEditForm ({ isEdit = false, user, employees }) {
 			lastname: user?.lastname || user?.employee?.lastname || '',
 			password: '',
 			password_confirmation: '',
-			profile_pic: user?.profile_pic ? `/storage/media/photos/employee/${user?.profile_pic}` : null,
+			profile_pic: user?.profile?.small || null,
 			username: user?.username || '',
 			user_type: user?.user_type === 0 ? 0 : 1,
 			status: user?.status === 0 ? 0 : 1

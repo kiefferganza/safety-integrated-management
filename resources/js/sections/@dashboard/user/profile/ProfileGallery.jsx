@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Backdrop, CircularProgress, Stack } from '@mui/material';
+import { Backdrop, CircularProgress, Stack, Typography } from '@mui/material';
 import Images from './gallery/Images';
 import { usePage } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
@@ -29,8 +29,8 @@ export default function ProfileGallery ({ user }) {
 		});
 	}
 
-	const setProfile = (id) => {
-		Inertia.post(route('management.user.change-profile', user.user_id), { mediaId: id }, {
+	const setProfile = (mediaId, collectionName) => {
+		Inertia.post(route('api.images.set-image', user.user_id), { mediaId, collectionName }, {
 			preserveScroll: true,
 			onStart () {
 				setOpenBackdrop(true);
@@ -50,11 +50,11 @@ export default function ProfileGallery ({ user }) {
 					params={{
 						user: user.user_id
 					}}
-					title='Profile'
+					title='Profile Photos'
 					onDelete={(id) => handleDeleteProfile(id)}
 					canDelete={auth.user.user_id === user.user_id}
 					actionName="Set Profile"
-					actionFn={(id) => setProfile(id)}
+					actionFn={(id) => setProfile(id, "profile")}
 				/>
 				<Images
 					name='api.user.cover_images'
@@ -65,8 +65,19 @@ export default function ProfileGallery ({ user }) {
 					title='Cover Photos'
 					onDelete={(id) => handleDeleteProfile(id)}
 					canDelete={auth.user.user_id === user.user_id}
-					actionName="Set Profile"
-					actionFn={(id) => setProfile(id)}
+					actionName="Set Cover"
+					actionFn={(id) => setProfile(id, "cover")}
+					urlKey="cover"
+					emptyContent={
+						<Stack>
+							<Typography variant="h4" sx={{ my: 5 }}>
+								Cover Photos
+							</Typography>
+							<Typography variant="h6">
+								No Cover Photos
+							</Typography>
+						</Stack>
+					}
 				/>
 			</Stack>
 			<Backdrop open={openBackdrop}>

@@ -31,7 +31,7 @@ export default function AccountGeneral ({ user }) {
 		firstname: user?.firstname || user?.employee?.firstname || '',
 		lastname: user?.lastname || user?.employee?.lastname || '',
 		email: user?.email || '',
-		profile_pic: user?.profile_pic ? `/storage/media/photos/employee/${user?.profile_pic}` : null,
+		profile_pic: user?.profile ? user.profile.url : null,
 		username: user?.username || '',
 		about: user?.employee?.about || '',
 		// isPublic: user?.isPublic || false,

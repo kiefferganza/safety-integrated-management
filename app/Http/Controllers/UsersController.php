@@ -216,7 +216,9 @@ class UsersController extends Controller
 				'roles'
 		]);
 		$user->profile = null;
+		$user->cover = null;
 		$profile = $user->getFirstMedia("profile", ["primary" => true]);
+		$cover = $user->getFirstMedia("cover", ["primary" => true]);
 		if($profile) {
 			$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
 			$user->profile = [
@@ -225,9 +227,17 @@ class UsersController extends Controller
 				"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
 			];
 		}
+		if($cover) {
+			$path = "user/" . md5($cover->id . config('app.key')). "/" .$cover->file_name;
+			$user->cover = [
+				"url" => URL::route("image", [ "path" => $path ]),
+				"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+				"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ]),
+				"cover" => URL::route("image", [ "path" => $path, "w" => 1200, "h" => 280, "fit" => "crop" ]),
+			];
+		}
 
 		$userRole = $user->roles->first()->name;
-		// dd($profile->getResponsiveImageUrls());
 
 		return Inertia::render("Dashboard/Management/User/Profile/index", [
 			"user" => $users,
@@ -309,6 +319,17 @@ class UsersController extends Controller
 
 	public function edit_user(User $user) {
 		$user->employee = $user->employee;
+		$user->profile = null;
+		$profile = $user->getFirstMedia("profile", ["primary" => true]);
+		if($profile) {
+			$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
+			$user->profile = [
+				"url" => URL::route("image", [ "path" => $path ]),
+				"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+				"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
+			];
+		}
+
 		return Inertia::render("Dashboard/Management/User/Edit/index", ["user" => $user]);
 	}
 
@@ -449,30 +470,5 @@ class UsersController extends Controller
 		->with("message", "User". $user->fullname ." deactivated successfully!")
 		->with("type", "success");
 	}
-
-
-	public function updateProfilePic(Request $request, User $user) {
-		$request->validate([
-			"mediaId" => ['integer', 'required']
-		]);
-		$oldMedia = Media::where('model_type', User::class)
-             ->where('model_id', $user->user_id)
-             ->where('custom_properties', '{"primary":true}')
-             ->where('collection_name', 'profile')
-             ->first();
-		if($oldMedia){
-			$oldMedia->setCustomProperty('primary', false);
-			$oldMedia->save();
-		}
-		$media = Media::findOrFail($request->mediaId);
-		$media->setCustomProperty('primary', true);
-		$media->save();
-		cache()->forget("authUser:".$user->user_id);
-
-		return redirect()->back()
-		->with("message", "Profile changed successfully!")
-		->with("type", "success");
-	}
-
 
 }

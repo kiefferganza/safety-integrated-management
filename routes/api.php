@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiControllers\ImageApiController;
 use App\Http\Controllers\ApiControllers\UserApiController;
 use App\Http\Controllers\UsersController;
 use App\Models\Employee;
@@ -38,9 +39,19 @@ Route::middleware('auth')->as('api.')->group(function ()
 
 	Route::post('/user/follow/{user_id}', [UsersController::class, "followUser"]);
 
-	Route::get('user/{user}', [UserApiController::class, 'profileImages'])->name('user.profile_images');
-	Route::get('user/cover/{user}', [UserApiController::class, 'coverImages'])->name('user.cover_images');
-	Route::delete('/delete-image/{media}', [UserApiController::class, 'deleteImageById'])->name('images.delete-image');
+	Route::prefix('user')->as('user.')->group(function() {
+		Route::get('/{user}', [UserApiController::class, 'profileImages'])->name('profile_images');
+		Route::get('/cover/{user}', [UserApiController::class, 'coverImages'])->name('cover_images');
+		Route::post('/cover/{user}', [UserApiController::class, 'addCoverImage'])->name('add_cover');
+		Route::post('/profile-image-update/{user}', [UserApiController::class, 'updateProfileImage'])->name('update_profile_image');
+		Route::post('/set-image/{media}', [UsersController::class, 'setProfilePic'])->name('set-profile');
+	});
+
+	Route::prefix('images')->as('images.')->group(function() {
+		Route::post('/set-image/{user}', [ImageApiController::class, 'setImageByMediaAndCollectionName'])->name('set-image');
+		Route::delete('/delete-image/{media}', [ImageApiController::class, 'deleteImageById'])->name('delete-image');
+	});
+
 
 });
 

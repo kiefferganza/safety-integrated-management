@@ -92,7 +92,6 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 * Management - User
 	 */
 	Route::prefix('user')->as('management.user.')->group(function() {
-		Route::post('/change-profile/{user}', [UsersController::class, 'updateProfilePic'])->name('change-profile');
 		// Route::post('/user/{user_id}/follow', [UsersController::class, 'followUser']);
 		Route::middleware("permission:user_show")->group(function() {
 			Route::get('/profile', [UsersController::class, 'profile'])->name('profile');

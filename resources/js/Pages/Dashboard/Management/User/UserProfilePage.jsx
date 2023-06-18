@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 // @mui
-import { Tab, Card, Tabs, Container, Box } from '@mui/material';
+import { Tab, Card, Tabs, Container, Box, Backdrop, CircularProgress } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // _mock_
@@ -24,6 +24,7 @@ import { getCurrentUserName } from '@/utils/formatName';
 // ----------------------------------------------------------------------
 
 export default function UserProfilePage ({ user, employee }) {
+	const [openBackdrop, setOpenBackdrop] = useState(false);
 	const { themeStretch } = useSettingsContext();
 
 	// const [searchFriends, setSearchFriends] = useState('');
@@ -65,54 +66,59 @@ export default function UserProfilePage ({ user, employee }) {
 			value: 'gallery',
 			label: 'Gallery',
 			icon: <Iconify icon="ic:round-perm-media" />,
-			component: <ProfileGallery user={user} />,
+			component: <ProfileGallery isCurrentProfile user={user} />,
 		},
 	];
 
 	return (
-		<Container maxWidth={themeStretch ? false : 'lg'}>
-			<CustomBreadcrumbs
-				heading="Profile"
-				links={[
-					{ name: 'Dashboard', href: PATH_DASHBOARD.root },
-					{ name: 'User', href: PATH_DASHBOARD.user.root },
-					{ name: getCurrentUserName(user) },
-				]}
-			/>
-			<Card
-				sx={{
-					mb: 3,
-					height: 280,
-					position: 'relative',
-				}}
-			>
-				<ProfileCover user={user} name={getCurrentUserName(user)} role={user?.employee?.position} cover="/storage/assets/images/home/cover.jpg" />
-
-				<Tabs
-					value={currentTab}
-					onChange={(event, newValue) => setCurrentTab(newValue)}
+		<>
+			<Container maxWidth={themeStretch ? false : 'lg'}>
+				<CustomBreadcrumbs
+					heading="Profile"
+					links={[
+						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
+						{ name: 'User', href: PATH_DASHBOARD.user.root },
+						{ name: getCurrentUserName(user) },
+					]}
+				/>
+				<Card
 					sx={{
-						width: 1,
-						bottom: 0,
-						zIndex: 9,
-						position: 'absolute',
-						bgcolor: 'background.paper',
-						'& .MuiTabs-flexContainer': {
-							pr: { md: 3 },
-							justifyContent: {
-								sm: 'center',
-								md: 'flex-end',
-							},
-						},
+						mb: 3,
+						height: 280,
+						position: 'relative',
 					}}
 				>
-					{TABS.map((tab) => (
-						<Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
-					))}
-				</Tabs>
-			</Card>
+					<ProfileCover isCurrentProfile setOpenBackdrop={setOpenBackdrop} user={user} name={getCurrentUserName(user)} role={user?.employee?.position} />
 
-			{TABS.map((tab) => tab.value === currentTab && <Box key={tab.value}> {tab.component} </Box>)}
-		</Container>
+					<Tabs
+						value={currentTab}
+						onChange={(event, newValue) => setCurrentTab(newValue)}
+						sx={{
+							width: 1,
+							bottom: 0,
+							zIndex: 9,
+							position: 'absolute',
+							bgcolor: 'background.paper',
+							'& .MuiTabs-flexContainer': {
+								pr: { md: 3 },
+								justifyContent: {
+									sm: 'center',
+									md: 'flex-end',
+								},
+							},
+						}}
+					>
+						{TABS.map((tab) => (
+							<Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
+						))}
+					</Tabs>
+				</Card>
+
+				{TABS.map((tab) => tab.value === currentTab && <Box key={tab.value}> {tab.component} </Box>)}
+			</Container>
+			<Backdrop open={openBackdrop}>
+				<CircularProgress />
+			</Backdrop>
+		</>
 	);
 }

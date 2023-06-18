@@ -2,30 +2,48 @@
 
 namespace App\Services\API;
 
-use Illuminate\Support\Facades\URL;
+use App\Models\User;
 
 class UserApiService {
-	public function getImagesByCollection($model, $name) {
+
+	public $collectionName;
+
+	public function __construct(String $collectionName)
+	{
+		$this->collectionName = $collectionName;
+	}
+
+	public function getImagesByCollection($model) {
 		$medias = $model
 				->media()
-				->where('collection_name', $name)
+				->where('collection_name', $this->collectionName)
 				->paginate(10)
-				->withQueryString()
-				->through(function($media){
-					$path = "user/" . md5($media->id . config('app.key')). "/" .$media->file_name;
-					$transformedData = [
-						"id" => $media->id,
-						"uuid" => $media->uuid,
-						"name" => $media->file_name,
-						"alt" => $media->collection_name,
-						"properties" => $media->custom_properties,
-						"url" => URL::route("image", [ "path" => $path ]),
-						"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
-						"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ]),
-						"medium" => URL::route("image", [ "path" => $path, "w" => 360, "h" => 360, "fit" => "crop"])
-					];
-					return $transformedData ;
-				});
+				->withQueryString();
 		return $medias;
 	}
+
+	/**
+	 * Add image from request by collection name with custom property "primary" => true
+	 *
+	 * @param User $user
+	 * @param String $value Name of the request file
+	 * @return \Spatie\MediaLibrary\MediaCollections\Models\Media
+	 */
+	public function addImageToUserByCollectionName(User $user, String $value) {
+		return $user
+			->addMediaFromRequest($value)
+			->withCustomProperties(['primary' => true])
+			->toMediaCollection($this->collectionName);
+	}
+
+	public function unsetUserImage(User $user) {
+		$prevMedia = $user->getFirstMedia($this->collectionName, ["primary" => true]);
+		if($prevMedia) {
+			$prevMedia->setCustomProperty("primary", false);
+			$prevMedia->save();
+			return $this;
+		}
+		return $this;
+	}
+
 }

@@ -11,7 +11,7 @@ import { ellipsis } from '@/utils/exercpt';
 import MenuPopover from '@/Components/menu-popover/MenuPopover';
 import ConfirmDialog from '@/Components/confirm-dialog/ConfirmDialog';
 
-const GalleryItem = ({ image, onOpenLightbox, onDelete, canDelete, actionName, actionFn, queryKey }) => {
+const GalleryItem = ({ image, onOpenLightbox, onDelete, canDelete, actionName, actionFn, queryKey, urlKey }) => {
 	const theme = useTheme();
 	const { medium, name, alt } = image;
 	const [openConfirm, setOpenConfirm] = useState(false);
@@ -38,7 +38,7 @@ const GalleryItem = ({ image, onOpenLightbox, onDelete, canDelete, actionName, a
 	return (
 		<>
 			<Card sx={{ cursor: 'pointer', position: 'relative' }}>
-				<Image alt={alt} ratio="1/1" src={medium} onClick={() => onOpenLightbox(medium)} />
+				<Image alt={alt} ratio="1/1" src={medium} onClick={() => onOpenLightbox((image[urlKey] || medium))} />
 
 				<Stack
 					spacing={2}
