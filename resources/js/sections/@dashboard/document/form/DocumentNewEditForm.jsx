@@ -241,7 +241,7 @@ const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
 					</Stack>
 
 
-					{!isEdit ? (
+					{!isEdit && (
 						<Stack spacing={3}>
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 								<Box width={1}>
@@ -253,20 +253,6 @@ const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
 								</Box>
 							</Stack>
 						</Stack>
-					) : (
-						currentDocument?.status === "0" ? (
-							<Stack spacing={3}>
-								<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-									<Box width={1}>
-										<Typography variant="h6" sx={{ color: 'text.disabled' }}>
-											Attached File
-										</Typography>
-										<Upload disabled={!(currentDocument?.status === '0')} error={!!errors?.src?.message} helperText={errors?.src?.message} file={file[0] || null} onDrop={handleDropSingleFile} />
-										<MultiFilePreview files={file} onRemove={handleRemoveFile} />
-									</Box>
-								</Stack>
-							</Stack>
-						) : <></>
 					)}
 
 				</Stack>
