@@ -4,7 +4,6 @@ import { Page, View, Text, Image, Document } from '@react-pdf/renderer';
 // utils
 import { format } from 'date-fns';
 import { fDate } from '@/utils/formatTime';
-import { getCurrentUserImage } from '@/utils/formatName'
 import { getDocumentReviewStatus, getDocumentStatus } from '@/utils/formatStatuses';
 // 
 import styles from './DocStyle';
@@ -48,7 +47,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 
 				<View style={styles.mb16}>
 					<View style={styles.gridContainer}>
-						<Image source="/logo/Fiafi-logo.png" style={{ height: 32, padding: 2 }} />
+						{/* <Image source="/logo/Fiafi-logo.png" style={{ height: 32, padding: 2 }} /> */}
 					</View>
 					<View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
 						<Text style={styles.h3}>Document Review Sheet</Text>
@@ -73,7 +72,9 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 					<View style={styles.col6}>
 						<View>
 							<View style={{ width: "100%", paddingVertical: 12, backgroundColor: theme.palette.primary.light }}>
-								<Image src={getCurrentUserImage(employee)} style={{ borderRadius: "50%", width: "32px", height: "32px", margin: "auto" }} />
+								{employee?.profile?.small &&
+									<Image src={employee?.profile?.small} style={{ borderRadius: "50%", width: "32px", height: "32px", margin: "auto" }} />
+								}
 							</View>
 							<View style={{ width: "100%", backgroundColor: theme.palette.primary.dark, paddingVertical: 2 }}>
 								<Text style={{ textAlign: "center", color: "#fff", fontSize: 9 }}>Submitted By: {employee.fullname}</Text>

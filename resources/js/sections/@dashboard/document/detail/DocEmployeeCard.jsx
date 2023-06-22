@@ -1,10 +1,7 @@
-import PropTypes from 'prop-types';
 // @mui
 import { alpha, styled } from '@mui/material/styles';
 import { Box, Card, Avatar, Divider, Typography, Stack, Link as MUILink } from '@mui/material';
 // utils
-import { getCurrentUserImage } from '@/utils/formatName';
-import { fTimestamp } from '@/utils/formatTime';
 import { excerpt } from '@/utils/exercpt';
 // components
 import SvgColor from '@/Components/svg-color';
@@ -47,7 +44,7 @@ export function DocEmployeeCard ({ employee, latestUploadedFile }) {
 
 				<Avatar
 					alt={employee.fullname}
-					src={getCurrentUserImage(employee)}
+					src={employee?.profile?.small}
 					sx={{
 						width: 64,
 						height: 64,
