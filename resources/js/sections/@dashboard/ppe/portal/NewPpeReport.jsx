@@ -483,7 +483,7 @@ function getStatus (qty, minQty) {
 	// return "in_stock";
 	if (qty <= 0) return "out_of_stock";
 	if (qty < minQty) return "low_stock";
-	const lowStockThreshold = Math.ceil(minQty + 9);
+	const lowStockThreshold = minQty + 5;
 	if (qty >= minQty && qty < lowStockThreshold) return "need_reorder";
 	return "in_stock";
 }
