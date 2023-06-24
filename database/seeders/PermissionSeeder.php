@@ -20,6 +20,10 @@ class PermissionSeeder extends Seeder
 			 // Reset cached roles and permissions
 			 app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
+			 Permission::create([
+				'name' => 'employee_access'
+			]);
+
 			 // create permissions
 			//  $permissions = [
 			// 	'permission_access',
@@ -165,55 +169,55 @@ class PermissionSeeder extends Seeder
 		
 		
 		
-		$userPermissions = [
-			'user_edit',
-			'user_show',
+		// $userPermissions = [
+		// 	'user_edit',
+		// 	'user_show',
 
-			'employee_edit',
-			'employee_show',
+		// 	'employee_edit',
+		// 	'employee_show',
 
-			'training_create',
-			'training_edit',
-			'training_delete',
-			'training_show',
+		// 	'training_create',
+		// 	'training_edit',
+		// 	'training_delete',
+		// 	'training_show',
 
-			'inspection_create',
-			'inspection_edit',
-			'inspection_delete',
-			'inspection_show',
+		// 	'inspection_create',
+		// 	'inspection_edit',
+		// 	'inspection_delete',
+		// 	'inspection_show',
 
-			'talk_toolbox_create',
-			'talk_toolbox_edit',
-			'talk_toolbox_delete',
-			'talk_toolbox_show',
+		// 	'talk_toolbox_create',
+		// 	'talk_toolbox_edit',
+		// 	'talk_toolbox_delete',
+		// 	'talk_toolbox_show',
 
-			'folder_show',
+		// 	'folder_show',
 			
-			'file_create',
-			'file_edit',
-			'file_delete',
-			'file_show',
+		// 	'file_create',
+		// 	'file_edit',
+		// 	'file_delete',
+		// 	'file_show',
 
-			'inventory_create',
-			'inventory_edit',
-			'inventory_delete',
-			'inventory_show',
+		// 	'inventory_create',
+		// 	'inventory_edit',
+		// 	'inventory_delete',
+		// 	'inventory_show',
 
-			'stock_addOrRemove',
-			'stock_show',
-		];
+		// 	'stock_addOrRemove',
+		// 	'stock_show',
+		// ];
 
 
-		// foreach ($userPermissions as $permission)   {
-		// 	$roleUser->givePermissionTo($permission);
+		// // foreach ($userPermissions as $permission)   {
+		// // 	$roleUser->givePermissionTo($permission);
+		// // }
+
+		// $users = User::where('user_type', 1)->doesntHave('roles')->where('deleted', 0)->get();
+		// foreach ($users as $user) {
+		// 	dump($user->user_id);
+		// 	$user->assignRole('User');
+		// 	$user->syncPermissions($userPermissions); // Sync the permissions of the role to each user
 		// }
-
-		$users = User::where('user_type', 1)->doesntHave('roles')->where('deleted', 0)->get();
-		foreach ($users as $user) {
-			dump($user->user_id);
-			$user->assignRole('User');
-			$user->syncPermissions($userPermissions); // Sync the permissions of the role to each user
-		}
 		
 
     }

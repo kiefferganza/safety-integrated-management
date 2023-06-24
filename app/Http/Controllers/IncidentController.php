@@ -61,12 +61,6 @@ class IncidentController extends Controller
 
 		$incidentService->insert($request, $user);
 		
-		// $fields = $request->all();
-		// $fields["employee_id"] = $user->emp_id;
-		// $fields["user_id"] = $user->user_id;
-
-		// Incident::create($fields);
-		
 		return redirect()->back()
 		->with("message", "Incident submitted successfully!")
 		->with("type", "success");

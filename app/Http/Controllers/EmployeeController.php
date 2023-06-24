@@ -343,4 +343,33 @@ class EmployeeController extends Controller
 			->with("message", "Success")
 			->with("type", "success");
 	}
+
+
+	public function activate(Request $request) {
+		$request->validate([
+			'ids' => ['required', 'array', 'min:1'],
+			'ids.*' => ['numeric'],
+		]);
+
+		Employee::whereIn('employee_id', $request->ids)->update(['is_active' => 0]);
+
+		return redirect()->back()
+			->with("message", count($request->ids) . " employee('s) activated")
+			->with("type", "success");
+	}
+
+
+	public function deactivate(Request $request) {
+		$request->validate([
+			'ids' => ['required', 'array', 'min:1'],
+			'ids.*' => ['numeric'],
+		]);
+		// dd($request->ids);
+		Employee::whereIn('employee_id', $request->ids)->update(['is_active' => 1]);
+
+		return redirect()->back()
+			->with("message", count($request->ids) . " employee('s) deactivated")
+			->with("type", "success");
+	}
+
 }

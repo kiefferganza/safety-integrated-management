@@ -56,7 +56,8 @@ class UsersController extends Controller
 	public function create() {
 		$employees = Employee::where([
 			["is_deleted", 0],
-			["user_id", null]
+			["user_id", null],
+			["is_active", 0]
 		])->get();
 		return Inertia::render("Dashboard/Management/User/Create/index", ["employees" => $employees]);
 	}

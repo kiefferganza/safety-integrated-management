@@ -66,7 +66,8 @@ class TrainingController extends Controller
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 				->where([
 					["tbl_position.is_deleted", 0],
-					["tbl_employees.is_deleted", 0]
+					["tbl_employees.is_deleted", 0],
+					["tbl_employees.is_active", 0]
 				])
 				->get(),
 			"type" => $request->query('type') ? $request->query('type') : 2,
@@ -180,7 +181,8 @@ class TrainingController extends Controller
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0]
+				["tbl_employees.is_deleted", 0],
+				["tbl_employees.is_active", 0],
 			])
 			->get(),
 			"details" => $trainingService->getTrainingType($training->type)
@@ -379,7 +381,8 @@ class TrainingController extends Controller
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0]
+				["tbl_employees.is_deleted", 0],
+				["tbl_employees.is_active", 0],
 			])
 			->get(),
 			"module" => "In House",
@@ -403,7 +406,8 @@ class TrainingController extends Controller
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0]
+				["tbl_employees.is_deleted", 0],
+				["tbl_employees.is_active", 0],
 			])
 			->get(),
 			"module" => "Client",
@@ -426,7 +430,8 @@ class TrainingController extends Controller
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0]
+				["tbl_employees.is_deleted", 0],
+				["tbl_employees.is_active", 0],
 			])
 			->get(),
 			"module" => "External",
@@ -449,7 +454,8 @@ class TrainingController extends Controller
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0]
+				["tbl_employees.is_deleted", 0],
+				["tbl_employees.is_active", 0],
 			])
 			->get(),
 			"module" => "Induction",

@@ -54,6 +54,7 @@ class InventoryReportController extends Controller
 			"sequence_no" => str_pad(ltrim($sequence), 6, '0', STR_PAD_LEFT),
 			"employees" => Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
 				->where("is_deleted", 0)
+				->where("is_active", 0)
 				->where("sub_id", $user->subscriber_id)
 				->where("user_id", "!=", null)
 				->where("user_id", "!=", $user->user_id)

@@ -53,6 +53,10 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::delete('/{employee}/delete', [EmployeeController ::class, 'destroy']);
 			Route::post('/delete/delete-multiple', [EmployeeController ::class, 'delete_multiple'])->name('delete-multiple');
 		});
+		Route::middleware("permission:employee_access")->group(function() {
+			Route::post('/deactivate', [EmployeeController::class, "deactivate"])->name("deactivate");
+			Route::post('/activate', [EmployeeController::class, "activate"])->name("activate");
+		});
 	});
 	/**
 	 * Management - Employee/Position 

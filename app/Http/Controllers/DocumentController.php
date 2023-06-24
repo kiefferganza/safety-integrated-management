@@ -40,6 +40,7 @@ class DocumentController extends Controller
 			"sequence_no" => (new DocumentService)->sequence_no($folder->folder_id),
 			"personel" => Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id", "user_id")
 				->where("is_deleted", 0)
+				->where("is_active", 0)
 				->where("user_id", "!=", NULL)
 				->where("sub_id", $user->subscriber_id)
 				->where("employee_id", "!=", $user->emp_id)
@@ -205,6 +206,7 @@ class DocumentController extends Controller
 			"folder" => $folder,
 			"personel" => Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id", "user_id")
 				->where("is_deleted", 0)
+				->where("is_active", 0)
 				->where("user_id", "!=", NULL)
 				->where("sub_id", $user->subscriber_id)
 				->where("employee_id", "!=", $user->emp_id)

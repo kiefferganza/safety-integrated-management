@@ -18,6 +18,7 @@ class EmployeeService {
 		$user = Auth::user();
 		$this->personels = Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id")
 			->where("is_deleted", 0)
+			->where("is_active", 0)
 			->where("sub_id", $user->subscriber_id)
 			->where("employee_id", "!=", $user->emp_id);
 		
@@ -91,7 +92,6 @@ class EmployeeService {
 		$employee->company_type = $request->company_type;
 		$employee->country = $request->country;
 		$employee->birth_date = $request->birth_date;
-		$employee->is_active = $request->is_active;
 		$employee->sex = $request->sex;
 		$employee->about = $request->about;
 		$employee->date_updated = Carbon::now();

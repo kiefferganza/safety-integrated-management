@@ -22,6 +22,8 @@ import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
+import { Inertia } from '@inertiajs/inertia';
+import { useSwal } from '@/hooks/useSwal';
 // import usePermission from '@/hooks/usePermission';
 // import { useSelector, useDispatch } from 'react-redux';
 // import { followUser } from '@/redux/slices/employee';
@@ -37,13 +39,9 @@ EmployeeTableRow.propTypes = {
 };
 
 export default function EmployeeTableRow ({ row, selected, onSelectRow, onDeleteRow, canDelete, canEditAll }) {
-	// const [hasPermission] = usePermission();
-	// const dispatch = useDispatch();
-	// const { isLoading } = useSelector(state => state.employee);
-	// const { auth: { user } } = usePage().props;
+	const { load, stop } = useSwal();
 	const [openConfirm, setOpenConfirm] = useState(false);
 
-	// const [loading, setLoading] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
 
 	const handleOpenConfirm = () => {
@@ -62,18 +60,31 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onDelete
 		setOpenPopover(null);
 	};
 
-	// const handleFollowEmployee = () => {
-	// 	setLoading(true);
-	// 	handleClosePopover();
-	// 	Inertia.post(`/dashboard/user/${row.user_id}/follow`, {}, {
-	// 		preserveScroll: true,
-	// 		preserveState: true,
-	// 		onFinish () {
-	// 			setLoading(false);
-	// 		}
-	// 	});
-	// 	// dispatch(followUser(row.user_id));
-	// }
+	const handleActivate = () => {
+		handleClosePopover()
+		Inertia.post(route('management.employee.activate'), { ids: [row.employee_id] }, {
+			preserveScroll: true,
+			onStart () {
+				load("Activating employee's", "please wait...");
+			},
+			onFinish () {
+				stop();
+			}
+		});
+	}
+
+	const handleDeactivate = () => {
+		handleClosePopover()
+		Inertia.post(route('management.employee.deactivate'), { ids: [row.employee_id] }, {
+			preserveScroll: true,
+			onStart () {
+				load("Deactivating employee's", "please wait...");
+			},
+			onFinish () {
+				stop();
+			}
+		});
+	}
 
 	return (
 		<>
@@ -141,15 +152,30 @@ export default function EmployeeTableRow ({ row, selected, onSelectRow, onDelete
 					</MenuItem>
 				)} */}
 				{canEditAll && (
-					<MenuItem
-						component={Link}
-						href={route('management.employee.edit', row.id)}
-						preserveScroll
-						onClick={handleClosePopover}
-					>
-						<Iconify icon="eva:edit-fill" />
-						Edit
-					</MenuItem>
+					<>
+						<MenuItem
+							component={Link}
+							href={route('management.employee.edit', row.id)}
+							preserveScroll
+							onClick={handleClosePopover}
+						>
+							<Iconify icon="eva:edit-fill" />
+							Edit
+						</MenuItem>
+						<Divider sx={{ borderStyle: 'dashed' }} />
+						{row.is_active === 1 && (
+							<MenuItem onClick={handleActivate} sx={{ color: 'success.main' }}>
+								<Iconify icon="mdi:user-key" />
+								Activate
+							</MenuItem>
+						)}
+						{row.is_active === 0 && (
+							<MenuItem onClick={handleDeactivate} sx={{ color: 'warning.main' }}>
+								<Iconify icon="mdi:account-off" />
+								Deactivate
+							</MenuItem>
+						)}
+					</>
 				)}
 
 				{canDelete && (

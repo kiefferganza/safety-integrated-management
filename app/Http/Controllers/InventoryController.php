@@ -25,6 +25,7 @@ class InventoryController extends Controller
 			"inventory" => Inventory::where("is_removed", 0)->get(),
 			"employee" => Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
 				->where("is_deleted", 0)
+				->where("is_active", 0)
 				->where("sub_id", auth()->user()->subscriber_id)
 				->get()
 		]);
@@ -108,6 +109,7 @@ class InventoryController extends Controller
 			]),
 			"employee" => Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
 				->where("is_deleted", 0)
+				->where("is_active", 0)
 				->where("sub_id", auth()->user()->subscriber_id)
 				->get()
 		]);
