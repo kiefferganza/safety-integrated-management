@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Inertia } from "@inertiajs/inertia";
 import { usePage } from "@inertiajs/inertia-react";
-import { fCurrencyNumberAndSymbol } from "@/utils/formatNumber";
+import { fCurrencyNumberAndSymbol, fNumber } from "@/utils/formatNumber";
 import { sentenceCase } from "change-case";
 import { useSwal } from "@/hooks/useSwal";
 // mui
@@ -140,7 +140,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 	const handleMaxOrderChange = (idx, val) => {
 		setValue(`inventories.${idx}.maxOrder`, val);
 		const inventory = values.inventories[idx];
-		const newStatus = getStatus(inventory.maxOrder, inventory.min_qty);
+		const newStatus = getStatus((inventory.current_stock_qty + inventory.maxOrder), inventory.min_qty);
 		if (newStatus !== inventory.inventoryStatus) {
 			setValue(`inventories.${idx}.inventoryStatus`, newStatus);
 		}
@@ -154,7 +154,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 
 	const options = employees.map((option) => ({ id: option.employee_id, label: option.fullname, user_id: option.user_id }));
 	return (
-		<Dialog fullWidth maxWidth="md" open={open} onClose={handleClose} {...other}>
+		<Dialog fullWidth maxWidth="lg" open={open} onClose={handleClose} {...other}>
 			<Stack direction="row" justifyContent="space-between" alignItems="center">
 				<DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>Add Report List</DialogTitle>
 				<DialogTitle component="div" sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>
@@ -359,10 +359,6 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 
 
 function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChange }) {
-	// const { fields } = useFieldArray({
-	// 	control,
-	// 	name: "inventories"
-	// });
 
 	return (
 		<Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3} sx={{ paddingX: { xs: 0, md: 2 }, width: 1 }}>
@@ -381,6 +377,8 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 								<TableCell align="left">Product</TableCell>
 
 								<TableCell align="left">Price</TableCell>
+
+								<TableCell align="left">Remaining Quantity</TableCell>
 
 								<TableCell align="left">Min Order</TableCell>
 
@@ -415,6 +413,10 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 
 									<TableCell align="left">
 										{fCurrencyNumberAndSymbol(inv.item_price, inv.item_currency)}
+									</TableCell>
+
+									<TableCell align="left">
+										{fNumber(inv.current_stock_qty)}
 									</TableCell>
 
 									<TableCell align="left">
@@ -459,6 +461,7 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 											}
 											sx={{ textTransform: 'capitalize' }}
 										>
+											{ }
 											{inv.inventoryStatus ? sentenceCase(inv.inventoryStatus) : ''}
 										</Label>
 									</TableCell>
@@ -473,10 +476,15 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 }
 
 function getStatus (qty, minQty) {
+	// if (qty <= 0) return "out_of_stock";
+	// if (minQty > qty) return "low_stock"
+	// if (qty !== minQty || minQty + 9 > qty) return "need_reorder";
+	// if (qty >= minQty) return "in_stock";
+	// return "in_stock";
 	if (qty <= 0) return "out_of_stock";
-	if (minQty > qty) return "low_stock"
-	if (qty === minQty || minQty + 10 > qty) return "need_reorder";
-	if (qty > minQty) return "in_stock";
+	if (qty < minQty) return "low_stock";
+	const lowStockThreshold = Math.ceil(minQty + 9);
+	if (qty >= minQty && qty < lowStockThreshold) return "need_reorder";
 	return "in_stock";
 }
 

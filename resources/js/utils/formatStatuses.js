@@ -63,9 +63,13 @@ export function getDocumentReviewStatus (status) {
 
 
 export function getInventoryStatus (qty, minQty) {
+	// if (qty <= 0) return "out_of_stock";
+	// if (minQty > qty) return "low_stock"
+	// if (Math.ceil((minQty * 0.80)) >= qty) return "need_reorder";
+	// return "in_stock"
 	if (qty <= 0) return "out_of_stock";
-	if (minQty > qty) return "low_stock"
-	if (qty === minQty || minQty + 5 > qty) return "need_reorder";
-	if (qty > minQty) return "in_stock";
-	return "in_stock"
+	if (qty < minQty) return "low_stock";
+	const lowStockThreshold = Math.ceil(minQty + 9);
+	if (qty >= minQty && qty < lowStockThreshold) return "need_reorder";
+	return "in_stock";
 }
