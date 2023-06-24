@@ -4,8 +4,7 @@ import { excerpt } from '@/utils/exercpt';
 import { Dialog, DialogContent, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Link as MuiLink, Typography, Stack, Avatar, Box } from '@mui/material';
 
 export const DocumentFileList = ({ title = "File List", open, onClose, document, ...other }) => {
-	const { files, reviewer_employees, reviewer_sign, approval_employee, approval_sign } = document;
-
+	const { currentFile, reviewer_employees, reviewer_sign, approval_employee, approval_sign } = document;
 	return (
 		<Dialog fullWidth maxWidth="lg" open={open} onClose={onClose} {...other}>
 			<DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>{title}</DialogTitle>
@@ -31,7 +30,7 @@ export const DocumentFileList = ({ title = "File List", open, onClose, document,
 							<TableBody>
 								<TableRow>
 									<TableCell align="left">
-										<FileLinkThumbnail src={files ? files[0]?.src : ""} />
+										{currentFile?.src && <FileLinkThumbnail src={currentFile?.src || ""} />}
 									</TableCell>
 									<TableCell align="left">
 										{reviewer_employees.length > 0 ? (

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\CompanyModel;
 use App\Models\Document;
+use App\Models\DocumentApprovalSign;
 use App\Models\DocumentCommentReplies;
 use App\Models\DocumentResponseFile;
 use App\Models\DocumentReviewer;
+use App\Models\DocumentReviewerSign;
 use App\Models\Employee;
 use App\Models\FileModel;
 use App\Models\FolderModel;
@@ -150,7 +152,22 @@ class DocumentController extends Controller
 				"approval_employee",
 				"reviewer_employees",
 			)->firstOrFail();
-
+		$files = collect([]);
+		$document->currentFile = null;
+		if(count($document->files) > 0) {
+			$files->push(["src" => $document->files[0]->src,"date" => $document->files[0]->upload_date]);
+		}
+		if($document->approval_sign) {
+			$files->push(["src" => $document->approval_sign->src, "date" => $document->approval_sign->created_at->format('Y-m-d H:i:s')]);
+		}
+		if(count($document->reviewer_sign) > 0) {
+			foreach ($document->reviewer_sign as $revSign) {
+				$files->push(["src" => $revSign->src, "date" => $revSign->upload_date]);
+			}
+		}
+		if($files->count() > 0) {
+			$document->currentFile = $files->sortByDesc("date")->first();
+		}
 
 		return Inertia::render("Dashboard/Management/FileManager/Document/Details/index", [
 			"folder" => $folder,
@@ -198,7 +215,6 @@ class DocumentController extends Controller
 
 	public function update(Request $request) {
 		$request->validate([
-			'src' => ['required', 'max:204800'],
 			'originator' => ['required', 'max:255'],
 			'sequence_no' => ['nullable'],
 			'description' => ['nullable', 'max:255'],
@@ -243,20 +259,8 @@ class DocumentController extends Controller
 			}
 		}
 
-		$documentService = new DocumentService;
+		// $documentService = new DocumentService;
 
-		// Files
-		if($request->hasFile('src') && $document->status == "0") {
-			$file_name = $documentService->upload_file($request->src);
-
-			FileModel::where([
-				"document_id" => $document->document_id,
-				"user_id" =>  $user->emp_id,
-				"folder_id" => $folder->folder_id
-			])->update([
-				'src' => $file_name,
-			]);
-		}
 		// Document Reviewers
 		$inReviewers = DocumentReviewer::select("reviewer_id")
 			->where([
@@ -435,7 +439,6 @@ class DocumentController extends Controller
 		$user = auth()->user();
 		if($request->hasFile('src')) {
 			$documentService = new DocumentService;
-			$user = auth()->user();
 			$file_name = "";
 			$file_name = $documentService->upload_file($request->file("src"));
 
@@ -444,12 +447,6 @@ class DocumentController extends Controller
 			}else {
 				$documentService->reviewer_action($request, $document, $file_name, $user);
 			}
-	
-			// Add file to response file and upload to storage
-			// $docFile = $document->files[0];
-			// $docFile->update([
-			// 	"src" => $file_name,
-			// ]);
 			$document->save();
 		}else {
 			abort(500);
@@ -461,5 +458,55 @@ class DocumentController extends Controller
 			->with("type",  "success");
 	}
 
+
+	public function reupload_approval_file(Document $document, DocumentApprovalSign $signedFile, Request $request) {
+		$request->validate([
+			'src' => ['required', 'file']
+		]);
+
+		if($request->remarks) {
+			$document->remarks = $request->remarks;
+			$document->save();
+		}
+
+		if($request->hasFile('src')) {
+			$documentService = new DocumentService;
+			$file_name = "";
+			$file_name = $documentService->upload_file($request->file("src"));
+			$signedFile->src = $file_name;
+			$signedFile->save();
+		}else {
+			abort(500);
+		}
+		
+		return redirect()->back()
+			->with("message", "File updated successfuly!")
+			->with("type",  "success");
+	}
+
+	public function reupload_reviewer_file(Document $document, DocumentReviewerSign $signedFile, Request $request) {
+		$request->validate([
+			'src' => ['required', 'file']
+		]);
+
+		if($request->remarks) {
+			$document->remarks = $request->remarks;
+			$document->save();
+		}
+
+		if($request->hasFile('src')) {
+			$documentService = new DocumentService;
+			$file_name = "";
+			$file_name = $documentService->upload_file($request->file("src"));
+			$signedFile->src = $file_name;
+			$signedFile->save();
+		}else {
+			abort(500);
+		}
+		
+		return redirect()->back()
+			->with("message", "File updated successfuly!")
+			->with("type",  "success");
+	}
 
 }

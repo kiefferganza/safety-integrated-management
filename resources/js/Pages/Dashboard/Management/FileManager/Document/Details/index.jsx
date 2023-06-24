@@ -26,13 +26,14 @@ const index = ({ folder, document, positions, auth: { user } }) => {
 		approval_employee,
 		approval_sign,
 		reviewer_employees,
-		reviewer_sign
+		reviewer_sign,
+		currentFile
 	} = document;
 	const { themeStretch } = useSettingsContext();
 
 	const cms = formatCms(document).toUpperCase();
-
-	const latestUploadedFile = files[0];
+	console.log(document)
+	const latestUploadedFile = currentFile;
 
 	const docType = getDocumentType({ employee, reviewer_employees, approval_employee, userEmpId: user.emp_id });
 	const docStatus = getStatus({ status, reviewer_sign, reviewer_employees, approval_sign });

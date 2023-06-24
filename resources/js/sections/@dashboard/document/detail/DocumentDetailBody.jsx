@@ -9,6 +9,7 @@ import DocumentComments from './DocumentComments';
 import { Inertia } from '@inertiajs/inertia';
 import { PATH_DASHBOARD } from '@/routes/paths';
 import { useSwal } from '@/hooks/useSwal';
+import { DocumentUpdateFileDialog } from '../portal/DocumentUpdateFileDialog';
 const { DocumentApproveFailDialog } = await import('../portal/DocumentApproveFailDialog');
 const { DocumentCommentDialog } = await import('../portal/DocumentCommentDialog');
 
@@ -17,10 +18,10 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 	const [customDocType, setCustomDocType] = useState(null);
 	const [openComment, setOpenComment] = useState(false);
 	const [openAction, setOpenAction] = useState(false);
+	const [openUpdateFile, setOpenUpdateFile] = useState(false);
+	const [updateFileInfo, setUpdateFileInfo] = useState(null);
 	const [selectedStatus, setSelectedStatus] = useState("");
 	const [actionResponseId, setActionResponseId] = useState(null);
-
-	// console.log({ docType })
 
 	const docStat = document.approval_sign ? getDocumentReviewStatus(document.status) : getDocumentStatus(document.status);
 	// reviewer
@@ -28,6 +29,16 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 	// approval
 	const approvalPos = document.approval_employee ? positions.find(pos => pos.position_id === document.approval_employee.position).position : null;
 	const canApprove = checkCanApprove({ docType, document });
+
+	const handleOpenUpdateFile = (info) => {
+		setOpenUpdateFile(true);
+		setUpdateFileInfo(info);
+	}
+
+	const handleCloseUpdateFile = () => {
+		setOpenUpdateFile(false);
+		setUpdateFileInfo(null)
+	}
 
 	const handleAction = ({ status, responseId }) => {
 		setSelectedStatus(status);
@@ -57,6 +68,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 	}
 	const canComment = document.approval_sign !== null ? false : typeof docType === "string" ? docType === "review" : true;
 	const reviewerStatus = document.reviewer_employees.find(revEmp => revEmp.employee_id === user?.employee?.employee_id)?.pivot?.review_status;
+
 	return (
 		<>
 			<Stack>
@@ -324,23 +336,60 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 					</Grid>
 				</Grid>
 				{canApprove && (
-					<>
-						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
-						<Grid container spacing={3}>
-							<Grid item md={6} xs={12}>
-								<Button fullWidth size="large" variant="contained" color="success" onClick={() => {
-									setCustomDocType("approve");
-									handleAction({ status: "A" });
-								}}>Approved</Button>
+					document.approval_sign !== null ? (
+						<>
+							<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+							<Grid container spacing={3}>
+								<Grid item md={4} xs={12}>
+									<Button
+										fullWidth
+										size="large"
+										variant="contained"
+										color="secondary"
+										onClick={() => handleOpenUpdateFile({ name: "update-approval-file", id: document.approval_sign.approval_sign_id })}
+									>Re-upload File</Button>
+								</Grid>
+								<Grid item md={4} xs={12}>
+									{document?.status === "A" ? (
+										<Button fullWidth size="large" variant="contained" color="success" disabled>Approved</Button>
+									) : (
+										<Button fullWidth size="large" variant="contained" color="success" onClick={() => {
+											setCustomDocType("approve");
+											handleAction({ status: "A" });
+										}}>Approved</Button>
+									)}
+								</Grid>
+								<Grid item md={4} xs={12}>
+									{document?.status === "C" ? (
+										<Button fullWidth size="large" variant="contained" color="error" disabled>Fail/Not approved</Button>
+									) : (
+										<Button fullWidth size="large" variant="contained" color="error" onClick={() => {
+											setCustomDocType("approve");
+											handleAction({ status: "C" });
+										}}>Fail/Not approved</Button>
+									)}
+								</Grid>
 							</Grid>
-							<Grid item md={6} xs={12}>
-								<Button fullWidth size="large" variant="contained" color="error" onClick={() => {
-									setCustomDocType("approve");
-									handleAction({ status: "C" });
-								}}>Fail/Not approved</Button>
+						</>
+					) : (
+						<>
+							<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+							<Grid container spacing={3}>
+								<Grid item md={6} xs={12}>
+									<Button fullWidth size="large" variant="contained" color="success" onClick={() => {
+										setCustomDocType("approve");
+										handleAction({ status: "A" });
+									}}>Approved</Button>
+								</Grid>
+								<Grid item md={6} xs={12}>
+									<Button fullWidth size="large" variant="contained" color="error" onClick={() => {
+										setCustomDocType("approve");
+										handleAction({ status: "C" });
+									}}>Fail/Not approved</Button>
+								</Grid>
 							</Grid>
-						</Grid>
-					</>
+						</>
+					)
 				)}
 			</Stack>
 
@@ -356,6 +405,12 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 				actionResponseId={actionResponseId}
 				documentId={document.document_id}
 				docType={customDocType}
+			/>
+			<DocumentUpdateFileDialog
+				open={openUpdateFile}
+				onClose={handleCloseUpdateFile}
+				documentId={document.document_id}
+				updateFileInfo={updateFileInfo}
 			/>
 		</>
 	)
@@ -387,6 +442,7 @@ function ReviewStatus ({ canReviewStatus, onClick, isSelected = false, children,
 }
 
 function checkCanReview ({ docType, document, user }) {
+	console.log(document)
 	const type = typeof docType === "string" ? docType : "review";
 	const currReviewSign = document?.reviewer_sign?.find(revS => revS?.user_id === user?.emp_id);
 	if (type === "review" && currReviewSign) return false;
@@ -398,7 +454,6 @@ function checkCanReview ({ docType, document, user }) {
 }
 
 function checkCanApprove ({ docType, document }) {
-	if (document.approval_sign !== null) return false;
 	const type = typeof docType === "string" ? docType : "approve";
 	if (type !== "approve") return false;
 	return document.reviewer_sign.length === document.reviewer_employees.length;

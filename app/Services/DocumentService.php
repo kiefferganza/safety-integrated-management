@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 class DocumentService {
 
 	public function getDocumentByFolders(FolderModel $folder) {
-		return $folder->load([
+		$folder = $folder->load([
 			"documents" => fn($q) =>
 				$q->where("is_deleted", 0)->withWhereHas(
 					"employee", fn($q) => $q->select("employee_id", "firstname", "lastname", "position", "department")->with([
@@ -30,6 +30,28 @@ class DocumentService {
 					"reviewer_employees",
 				)->orderByDesc("date_uploaded")
 		]);
+
+		$folder->documents->transform(function($document) {
+			$files = collect([]);
+			$document->currentFile = ["src" => ""];
+			if(count($document->files) > 0) {
+				$files->push(["src" => $document->files[0]->src,"date" => $document->files[0]->upload_date]);
+			}
+			if($document->approval_sign) {
+				$files->push(["src" => $document->approval_sign->src, "date" => $document->approval_sign->created_at->format('Y-m-d H:i:s')]);
+			}
+			if(count($document->reviewer_sign) > 0) {
+				foreach ($document->reviewer_sign as $revSign) {
+					$files->push(["src" => $revSign->src, "date" => $revSign->upload_date]);
+				}
+			}
+			if($files->count() > 0) {
+				$document->currentFile = $files->sortByDesc("date")->first();
+			}
+			return $document;
+		});
+
+		return $folder;
 	}
 
 

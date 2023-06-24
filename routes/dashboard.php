@@ -320,6 +320,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/{folder}/edit', [FilePageController::class, "update"])
 			->middleware("permission:folder_edit")
 			->name('update');
+
+
 		// Folder -> Documents
 		Route::get('/view', [DocumentController::class, "view"])->name("show")->middleware(["permission:file_show", "permission:folder_show"]);
 
@@ -337,10 +339,13 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			->name('document.delete');
 		Route::middleware("permission:file_edit")->group(function() {
 			Route::post('/document/{document}/action', [DocumentController::class, "approve_or_fail_document"]);
+			Route::post('/document/{document}/{signedFile}/reupload-approval-file', [DocumentController::class, "reupload_approval_file"])->name('document.update-approval-file');
+			Route::post('/document/{document}/{signedFile}/reupload-reviewer-file', [DocumentController::class, "reupload_reviewer_file"])->name('document.update-reviewer-file');
 			Route::post('/document/{document}/add-comment', [DocumentController::class, "add_comment"]);
 			Route::post('/document/{comment}/reply-comment', [DocumentController::class, "reply_comment"]);
 			Route::post('/document/{comment}/delete-comment', [DocumentController::class, "delete_comment"]);
 		});
+		
 	});
 
 });
