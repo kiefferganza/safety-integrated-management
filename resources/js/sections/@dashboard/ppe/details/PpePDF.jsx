@@ -140,6 +140,10 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 									</View>
 
 									<View style={[styles.tableCell_2]}>
+										<Text style={styles.subtitle3}>Unit</Text>
+									</View>
+
+									<View style={[styles.tableCell_2]}>
 										<Text style={styles.subtitle3}>Price</Text>
 									</View>
 
@@ -184,6 +188,10 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 
 											<View style={styles.tableCell_2}>
 												<Text style={{ fontSize: 6 }}>{(row?.min_qty || row?.level || 0).toLocaleString()}</Text>
+											</View>
+
+											<View style={styles.tableCell_2}>
+												<Text style={{ fontSize: 6 }}>{row?.try || ""}</Text>
 											</View>
 
 											<View style={styles.tableCell_2}>
@@ -291,26 +299,28 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 									</View>
 								</View>
 								<View style={{ flexDirection: 'row' }}>
-									<View style={{ width: "33.3%" }}>
+									<View style={{ width: "25%" }}>
 										{/* <Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.submitted?.fullname}</Text>
 										<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4, lineHeight: 0 }]}>Submitted By</Text>
 										{report?.submitted && (
 											<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.submitted?.position}</Text>
 										)} */}
 									</View>
-									<View style={{ width: "33.3%" }}>
+									<View style={{ width: "50%" }}>
 										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.reviewer?.fullname}</Text>
 										<Text style={[styles.body1, { borderTop: 1, width: 140, lineHeight: 0, textAlign: 'center', paddingTop: 4 }]}>Reviewed By</Text>
 										{report?.reviewer && (
 											<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.reviewer?.position}</Text>
 										)}
 									</View>
-									<View style={{ width: "33.3%" }}>
+									<View style={{ width: "50%" }}>
 										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.approval?.fullname}</Text>
 										<Text style={[styles.body1, { borderTop: 1, width: 140, lineHeight: 0, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
 										{report?.approval && (
 											<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.approval?.position}</Text>
 										)}
+									</View>
+									<View style={{ width: "25%" }}>
 									</View>
 								</View>
 							</View>
