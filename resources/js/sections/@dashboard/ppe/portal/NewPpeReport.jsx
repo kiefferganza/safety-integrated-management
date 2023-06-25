@@ -300,12 +300,6 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 							</Stack>
 
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
-								<TextField
-									fullWidth
-									label="Submitted By"
-									value={user?.employee?.fullname}
-									disabled
-								/>
 								<PersonelAutocomplete
 									value={getAutocompleteValue(values.reviewer_id)}
 									onChange={(_event, newValue) => {
@@ -334,6 +328,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 									label="Approved By"
 									error={errors?.approval_id?.message}
 								/>
+								<Box width={1} />
 							</Stack>
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 								<RHFTextField label="Remarks (Optional)" fullWidth multiline name="remarks" rows={3} />
@@ -382,7 +377,7 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 
 								<TableCell align="left">Min Order</TableCell>
 
-								<TableCell align="left">Max Order</TableCell>
+								<TableCell align="left">Order</TableCell>
 
 								<TableCell align="left">Status</TableCell>
 							</TableRow>
@@ -476,11 +471,6 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 }
 
 function getStatus (qty, minQty) {
-	// if (qty <= 0) return "out_of_stock";
-	// if (minQty > qty) return "low_stock"
-	// if (qty !== minQty || minQty + 9 > qty) return "need_reorder";
-	// if (qty >= minQty) return "in_stock";
-	// return "in_stock";
 	if (qty <= 0) return "out_of_stock";
 	if (qty < minQty) return "low_stock";
 	const lowStockThreshold = minQty + 5;

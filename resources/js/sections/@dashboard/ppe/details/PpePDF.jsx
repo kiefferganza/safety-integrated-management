@@ -29,13 +29,13 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 		}
 	}, [report]);
 
-	const overallTotal = report?.inventories ? report.inventories.reduce((acc, curr) => acc + ((curr?.max_order || 0) + (curr?.min_order)) * (curr?.item_price || curr?.price), 0) : 0;
+	const overallTotal = report?.inventories ? report.inventories.reduce((acc, curr) => acc + (curr?.max_order || 0) * (curr?.item_price || curr?.price), 0) : 0;
 
 	const forcastMonth = report.budget_forcast_date ? `${fDate(startOfMonth(new Date(report.budget_forcast_date)), 'dd')} - ${fDate(endOfMonth(new Date(report.budget_forcast_date)), 'dd MMM yyyy')}` : "_______";
 	return (
 		<Document title={title}>
 			{documents.map((doc, index) => {
-				const total = doc.reduce((acc, curr) => acc + ((curr?.max_order || 0) + (curr?.min_order)) * (curr?.item_price || curr?.price), 0);
+				const total = doc.reduce((acc, curr) => acc + (curr?.max_order || 0) * (curr?.item_price || curr?.price), 0);
 				const curr = doc.at(-1)?.item_currency || doc.at(-1)?.currency;
 				return (
 					<Page size="A4" style={styles.page} key={index}>
@@ -148,11 +148,7 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 									</View>
 
 									<View style={[styles.tableCell_2]}>
-										<Text style={styles.subtitle3}>Min Order</Text>
-									</View>
-
-									<View style={[styles.tableCell_2]}>
-										<Text style={styles.subtitle3}>Max Order</Text>
+										<Text style={styles.subtitle3}>Forecast Order</Text>
 									</View>
 
 									<View style={[styles.tableCell_3]}>
@@ -163,7 +159,7 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 
 							<View style={styles.tableBody}>
 								{doc?.map((row, idx) => {
-									const requestStatus = getInventoryStatus((row?.min_order + (row?.qty || 0) || 0), (row?.level || 0));
+									const requestStatus = getInventoryStatus((row?.max_order + (row?.qty || 0) || 0), (row?.level || 0));
 									return (
 										<View style={styles.tableRow} key={idx}>
 											<View style={styles.tableCell_1}>
@@ -203,9 +199,6 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 												</View>
 											</View>
 
-											<View style={styles.tableCell_2}>
-												<Text style={{ fontSize: 6 }}>{(row?.min_order || 0).toLocaleString()}</Text>
-											</View>
 											<View style={styles.tableCell_2}>
 												<Text style={{ fontSize: 6 }}>{(row?.max_order || 0).toLocaleString()}</Text>
 											</View>
@@ -299,11 +292,11 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 								</View>
 								<View style={{ flexDirection: 'row' }}>
 									<View style={{ width: "33.3%" }}>
-										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.submitted?.fullname}</Text>
+										{/* <Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.submitted?.fullname}</Text>
 										<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4, lineHeight: 0 }]}>Submitted By</Text>
 										{report?.submitted && (
 											<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.submitted?.position}</Text>
-										)}
+										)} */}
 									</View>
 									<View style={{ width: "33.3%" }}>
 										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.reviewer?.fullname}</Text>
