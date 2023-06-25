@@ -56,9 +56,13 @@ class DocumentService {
 
 
 	public function sequence_no($folder_id) {
-		$sequence = Document::select("sequence_no")->where('is_deleted', 0)->where("folder_id", $folder_id)->orderByDesc("date_uploaded")->firstOrFail();
-		$number = (int)ltrim($sequence->sequence_no, '0');
-		$number += 1;
+		$sequence = Document::select("sequence_no")->where('is_deleted', 0)->where("folder_id", $folder_id)->orderByDesc("date_uploaded")->first();
+		if(!$sequence) {
+			$sequence_no = '000000';
+			$number = (int)ltrim($sequence_no, '0') + 1;
+			return sprintf("%06d", $number);
+		}
+		$number = (int)ltrim($sequence->sequence_no, '0') + 1;
 		return sprintf("%06d", $number);
 	}
 

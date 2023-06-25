@@ -297,7 +297,7 @@ export default function FileManagerPage ({ folders, externalTraining }) {
 			<FileNewFolderDialog
 				folderName={newFolderName}
 				onChangeFolderName={(e) => {
-					setNewFolderName(capitalize(e.target.value));
+					setNewFolderName(e.target.value);
 				}}
 				onCreate={handleCreateFolder}
 				open={openUploadFile}

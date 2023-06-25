@@ -34,7 +34,7 @@ class DocumentController extends Controller
 
 	public function create(FolderModel $folder) {
 		$user = auth()->user();
-
+		// dd($folder);
 		return Inertia::render("Dashboard/Management/FileManager/Document/Create/index", [
 			"folder" => $folder,
 			"sequence_no" => (new DocumentService)->sequence_no($folder->folder_id),
