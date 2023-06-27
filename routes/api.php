@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiControllers\FolderApiController;
 use App\Http\Controllers\ApiControllers\ImageApiController;
 use App\Http\Controllers\ApiControllers\UserApiController;
 use App\Http\Controllers\UsersController;
@@ -52,6 +53,9 @@ Route::middleware('auth')->as('api.')->group(function ()
 		Route::delete('/delete-image/{media}', [ImageApiController::class, 'deleteImageById'])->name('delete-image');
 	});
 
+	Route::prefix('folder')->as('folder.')->group(function() {
+		Route::post('/update-order', [FolderApiController::class, 'updateOrder'])->name('update-order');
+	});
 
 });
 

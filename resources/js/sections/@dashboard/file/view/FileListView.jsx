@@ -13,6 +13,7 @@ import {
 } from '@/Components/table';
 //
 import FileTableRow from '../item/FileTableRow';
+import { Droppable } from 'react-beautiful-dnd';
 
 // ----------------------------------------------------------------------
 
@@ -125,22 +126,26 @@ export default function FileListView ({ table, tableData, isNotFound, onDeleteRo
 								},
 							}}
 						/>
+						<Droppable droppableId="tableRows">
+							{(provided) => (
+								<TableBody ref={provided.innerRef} {...provided.droppableProps}>
+									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+										<FileTableRow
+											index={index}
+											key={row.item_order}
+											row={row}
+											selected={selected.includes(row.id)}
+											onSelectRow={() => onSelectRow(row.id)}
+											onDeleteRow={() => onDeleteRow(row.id)}
+										/>
+									))}
+									{provided.placeholder}
+									<TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, tableData.length)} />
 
-						<TableBody>
-							{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-								<FileTableRow
-									key={row.id}
-									row={row}
-									selected={selected.includes(row.id)}
-									onSelectRow={() => onSelectRow(row.id)}
-									onDeleteRow={() => onDeleteRow(row.id)}
-								/>
-							))}
-
-							<TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, tableData.length)} />
-
-							<TableNoData isNotFound={isNotFound} />
-						</TableBody>
+									<TableNoData isNotFound={isNotFound} />
+								</TableBody>
+							)}
+						</Droppable>
 					</Table>
 				</TableContainer>
 			</Box>

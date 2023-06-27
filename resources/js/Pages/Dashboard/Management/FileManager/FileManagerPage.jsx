@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Head } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
+import { DragDropContext } from 'react-beautiful-dnd';
 // @mui
 const { Stack, Button, Container } = await import('@mui/material');
 // routes
@@ -15,6 +16,8 @@ import { useSettingsContext } from '@/Components/settings';
 import { useTable, getComparator } from '@/Components/table';
 import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
 import usePermission from '@/hooks/usePermission';
+import { useMutation } from '@tanstack/react-query';
+import axiosInstance from '@/utils/axios';
 const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialog');
 // sections
 const {
@@ -25,18 +28,19 @@ const {
 	FileChangeViewButton,
 	FileNewFolderDialog,
 } = await import('@/sections/@dashboard/file');
-const { capitalize } = await import('lodash');
 
 // ----------------------------------------------------------------------
 
-// ----------------------------------------------------------------------
 
-export default function FileManagerPage ({ folders, externalTraining }) {
+export default function FileManagerPage ({ folders }) {
+	const mutation = useMutation({
+		mutationFn: (newOrder) => axiosInstance.post(route('api.folder.update-order'), { folders: newOrder })
+	});
 	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const table = useTable({
-		defaultRowsPerPage: 10,
-		defaultOrderBy: "id",
+		defaultRowsPerPage: 25,
+		defaultOrderBy: "item_order",
 		defaultOrder: "asc"
 	});
 
@@ -62,7 +66,7 @@ export default function FileManagerPage ({ folders, externalTraining }) {
 
 	const [filterName, setFilterName] = useState('');
 
-	const [tableData, setTableData] = useState([]);
+	const [tableData, setTableData] = useState(folders);
 	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [openUploadFile, setOpenUploadFile] = useState(false);
@@ -76,34 +80,29 @@ export default function FileManagerPage ({ folders, externalTraining }) {
 		isError: !!isError,
 	});
 
-	// const dataInPage = dataFiltered.slice(
-	// 	table.page * table.rowsPerPage,
-	// 	table.page * table.rowsPerPage + table.rowsPerPage
-	// );
-
 	const isNotFound =
 		(!dataFiltered.length && !!filterName) ||
 		(!dataFiltered.length && !!endDate && !!startDate);
 
 	const isFiltered = !!filterName || (!!startDate && !!endDate);
 
-	useEffect(() => {
-		setTableData([
-			{
-				id: externalTraining.id,
-				revision_no: null,
-				name: "Third Party",
-				type: "folder",
-				fileType: "external",
-				dateCreated: null,
-				totalFiles: externalTraining.files,
-				totalDocs: externalTraining.count,
-				size: externalTraining.size,
-				url: route("files.management.external"),
-			},
-			...folders
-		])
-	}, [folders]);
+	const handleDragEnd = (result) => {
+		if (!result.destination) return; // No valid drop destination
+
+		const items = Array.from(tableData).sort((a, b) => a.item_order - b.item_order);
+		const { source, destination } = result;
+
+		const [draggedItem] = items.splice(source.index, 1);
+		items.splice(destination.index, 0, draggedItem);
+		items.forEach((item, index) => {
+			if (item.fileType === "external") return;
+			item.item_order = index + 1; // Assuming ordering starts from 1, adjust if it starts from 0
+		});
+		setTableData(items);
+
+		const updatedOrder = items.filter(f => f.fileType !== "external").map(f => ({ folder_id: f.id, order: f.item_order }));
+		mutation.mutate(updatedOrder);
+	};
 
 	const handleChangeView = (_event, newView) => {
 		if (newView !== null) {
@@ -274,24 +273,26 @@ export default function FileManagerPage ({ folders, externalTraining }) {
 					<FileChangeViewButton value={view} onChange={handleChangeView} />
 				</Stack>
 
-				{view === 'list' ? (
-					<FileListView
-						table={table}
-						tableData={tableData}
-						dataFiltered={dataFiltered}
-						onDeleteRow={handleDeleteItem}
-						isNotFound={isNotFound}
-						onOpenConfirm={handleOpenConfirm}
-					/>
-				) : (
-					<FileGridView
-						table={table}
-						data={tableData}
-						dataFiltered={dataFiltered}
-						onDeleteItem={handleDeleteItem}
-						onOpenConfirm={handleOpenConfirm}
-					/>
-				)}
+				<DragDropContext onDragEnd={handleDragEnd}>
+					{view === 'list' ? (
+						<FileListView
+							table={table}
+							tableData={tableData}
+							dataFiltered={dataFiltered}
+							onDeleteRow={handleDeleteItem}
+							isNotFound={isNotFound}
+							onOpenConfirm={handleOpenConfirm}
+						/>
+					) : (
+						<FileGridView
+							table={table}
+							data={tableData}
+							dataFiltered={dataFiltered}
+							onDeleteItem={handleDeleteItem}
+							onOpenConfirm={handleOpenConfirm}
+						/>
+					)}
+				</DragDropContext>
 			</Container>
 
 			<FileNewFolderDialog
