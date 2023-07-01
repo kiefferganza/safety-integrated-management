@@ -28,14 +28,12 @@ FileDetailsDrawer.propTypes = {
 	item: PropTypes.object,
 	onClose: PropTypes.func,
 	onDelete: PropTypes.func,
-	onCopyLink: PropTypes.func,
 };
 
 export default function FileDetailsDrawer ({
 	item,
 	open,
 	//
-	onCopyLink,
 	onClose,
 	onDelete,
 	canDelete,

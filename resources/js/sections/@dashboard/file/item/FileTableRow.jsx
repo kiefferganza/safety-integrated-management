@@ -17,14 +17,12 @@ import {
 } from '@mui/material';
 // hooks
 import useDoubleClick from '@/hooks/useDoubleClick';
-import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 // utils
 import { fDate } from '@/utils/formatTime';
 import { fData } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
-import { useSnackbar } from '@/Components/snackbar';
 import ConfirmDialog from '@/Components/confirm-dialog';
 import FileThumbnail from '@/Components/file-thumbnail';
 //
@@ -48,10 +46,6 @@ export default function FileTableRow ({ index, row, selected, onSelectRow, onDel
 	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const { id, name, size, type, dateCreated, totalDocs, totalFiles, revision_no, url } = row;
-
-	const { enqueueSnackbar } = useSnackbar();
-
-	const { copy } = useCopyToClipboard();
 
 	const [folderName, setFolderName] = useState(name);
 
@@ -102,11 +96,6 @@ export default function FileTableRow ({ index, row, selected, onSelectRow, onDel
 		doubleClick: () => console.log('DOUBLE CLICK'),
 	});
 
-	const handleCopy = () => {
-		enqueueSnackbar('Copied!');
-		copy(row.url);
-	};
-
 	const handleUpdateFolder = () => {
 		handleCloseEditFolder();
 		Inertia.post(PATH_DASHBOARD.fileManager.edit(id), { folderName }, {
@@ -123,6 +112,7 @@ export default function FileTableRow ({ index, row, selected, onSelectRow, onDel
 
 	const canDelete = hasPermission("folder_delete");
 	const canEdit = hasPermission("folder_edit");
+	// console.log(row);
 	return (
 		<>
 			<Draggable isDragDisabled={row?.disableDrag} key={row.item_order.toString()} draggableId={row.item_order.toString()} index={index}>
@@ -215,17 +205,6 @@ export default function FileTableRow ({ index, row, selected, onSelectRow, onDel
 					</MenuItem>
 				)}
 
-				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						handleCopy();
-					}}
-				>
-					<Iconify icon="eva:link-2-fill" />
-					Copy Link
-				</MenuItem>
-
-
 				{canDelete && (
 					<>
 						<Divider sx={{ borderStyle: 'dashed' }} />
@@ -254,7 +233,6 @@ export default function FileTableRow ({ index, row, selected, onSelectRow, onDel
 
 			<FileDetailsDrawer
 				item={row}
-				onCopyLink={handleCopy}
 				open={openDetails}
 				onClose={handleCloseDetails}
 				onDelete={onDeleteRow}
@@ -275,6 +253,7 @@ export default function FileTableRow ({ index, row, selected, onSelectRow, onDel
 					</Button>
 				}
 			/>
+
 		</>
 	);
 }
