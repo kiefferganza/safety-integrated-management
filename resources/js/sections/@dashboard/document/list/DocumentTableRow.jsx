@@ -19,6 +19,8 @@ import { fDate } from '@/utils/formatTime';
 import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
+import { CopyUrlDialog } from '@/Components/dialogs';
+import axiosInstance from '@/utils/axios';
 const { DocumentTableSubRow } = await import('./DocumentTableSubRow');
 const { DocumentFileList } = await import('../portal/DocumentFileList');
 const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialog');
@@ -33,12 +35,18 @@ DocumentTableRow.propTypes = {
 	onSelectRow: PropTypes.func,
 };
 
-export default function DocumentTableRow ({ row, selected, onSelectRow, onDeleteRow, folder, canView }) {
+export default function DocumentTableRow ({ row, selected, onSelectRow, onDeleteRow, folder, canView, load }) {
 	const { auth: { user } } = usePage().props;
 	const [openCollapse, setOpenCollapse] = useState(false);
 	const [openConfirm, setOpenConfirm] = useState(false);
 	const [openFileList, setOpenFileList] = useState(false);
+	const [openCopyURL, setOpenCopyURL] = useState(false);
+
 	const [openPopover, setOpenPopover] = useState(null);
+
+	const [generatedUrl, setGeneratedUrl] = useState("");
+
+	console.log({ folder, row })
 
 	const handleOpenConfirm = () => {
 		setOpenConfirm(true);
@@ -68,6 +76,29 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 	const handleTriggerCollapse = () => {
 		setOpenCollapse((currState) => !currState);
 	}
+
+	const handleOpenCopy = async () => {
+		setOpenPopover(null);
+		load(true);
+
+		try {
+			const urlRoute = route('api.folder.generate-url', { document: row.document_id });
+			const { data } = await axiosInstance.post(urlRoute);
+			console.log(data);
+			setGeneratedUrl(data.shareableLink);
+			load(false);
+			setOpenCopyURL(true);
+		} catch (error) {
+			load(false);
+			console.log(error);
+		}
+	};
+
+	const handleCloseCopy = () => {
+		setOpenCopyURL(false);
+		setGeneratedUrl("");
+	}
+
 
 	const canDeleteAndCanEdit = user?.emp_id === row.employee.employee_id;
 	return (
@@ -134,12 +165,21 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 				</MenuItem>
 
 				{canDeleteAndCanEdit && (
-					<>
-						<MenuItem disabled={row.status !== '0'} onClick={handleClosePopover} component={InertiaLink} href={route('files.management.document.edit', { folder: folder.folder_id, document: row.form_number })}>
-							<Iconify icon="eva:edit-fill" />
-							Edit
-						</MenuItem>
+					<MenuItem disabled={row.status !== '0'} onClick={handleClosePopover} component={InertiaLink} href={route('files.management.document.edit', { folder: folder.folder_id, document: row.form_number })}>
+						<Iconify icon="eva:edit-fill" />
+						Edit
+					</MenuItem>
+				)}
 
+				<Divider sx={{ borderStyle: 'dashed' }} />
+
+				<MenuItem onClick={handleOpenCopy}>
+					<Iconify icon="material-symbols:share" />
+					Share
+				</MenuItem>
+
+				{canDeleteAndCanEdit && (
+					<>
 						<Divider sx={{ borderStyle: 'dashed' }} />
 
 						<MenuItem
@@ -177,6 +217,12 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 				onClose={handleCloseFileList}
 				document={row}
 				title={`${row.form_number} File List`}
+			/>
+
+			<CopyUrlDialog
+				open={openCopyURL}
+				onClose={handleCloseCopy}
+				value={generatedUrl}
 			/>
 
 		</>

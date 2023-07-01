@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Head } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';

@@ -22,7 +22,6 @@ const index = ({ folder, document, positions, auth: { user } }) => {
 	const {
 		status,
 		employee,
-		files,
 		approval_employee,
 		approval_sign,
 		reviewer_employees,
@@ -32,7 +31,6 @@ const index = ({ folder, document, positions, auth: { user } }) => {
 	const { themeStretch } = useSettingsContext();
 
 	const cms = formatCms(document).toUpperCase();
-	console.log(document)
 	const latestUploadedFile = currentFile;
 
 	const docType = getDocumentType({ employee, reviewer_employees, approval_employee, userEmpId: user.emp_id });

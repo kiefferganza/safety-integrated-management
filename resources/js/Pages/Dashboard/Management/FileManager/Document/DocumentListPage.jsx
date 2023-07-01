@@ -47,6 +47,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { DocumentTableRow, DocumentTableToolbar } from '@/sections/@dashboard/document/list';
 import { capitalCase } from 'change-case';
 import usePermission from '@/hooks/usePermission';
+import { Backdrop, CircularProgress, Portal } from '@mui/material';
 
 
 // ----------------------------------------------------------------------
@@ -89,6 +90,8 @@ const DocumentListPage = ({ folder, user }) => {
 		defaultOrderBy: "date_uploaded",
 		defaultOrder: "desc"
 	});
+
+	const [loading, setLoading] = useState(false);
 
 	const [anchorLegendEl, setAnchorLegendEl] = useState(null);
 
@@ -169,7 +172,6 @@ const DocumentListPage = ({ folder, user }) => {
 		}, []);
 		setTableData(data || []);
 	}, [folder]);
-
 
 	const denseHeight = dense ? 56 : 76;
 
@@ -482,6 +484,7 @@ const DocumentListPage = ({ folder, user }) => {
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
 											canView={canView}
+											load={setLoading}
 										/>
 									))}
 
@@ -565,6 +568,11 @@ const DocumentListPage = ({ folder, user }) => {
 					</Stack>
 				</Box>
 			</Popover>
+			<Portal>
+				<Backdrop open={loading} sx={{ overflow: "hidden" }}>
+					<CircularProgress color="primary" />
+				</Backdrop>
+			</Portal>
 		</>
 	);
 }

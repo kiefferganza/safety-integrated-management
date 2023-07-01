@@ -7,6 +7,7 @@ require __DIR__.'/example.php';
 require __DIR__.'/dashboard.php';
 
 require __DIR__.'/auth.php';
+require __DIR__.'/guess.php';
 
 Route::get('/image/{path}', [ImagesController::class, 'showImage'])
 	->where('path', '.*')

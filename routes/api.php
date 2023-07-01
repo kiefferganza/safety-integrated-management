@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth')->as('api.')->group(function ()
+Route::middleware('auth')->prefix('api')->as('api.')->group(function ()
 {
 
 	Route::get('toolbox-talks', function() {
@@ -55,6 +55,7 @@ Route::middleware('auth')->as('api.')->group(function ()
 
 	Route::prefix('folder')->as('folder.')->group(function() {
 		Route::post('/update-order', [FolderApiController::class, 'updateOrder'])->name('update-order');
+		Route::post('/generate-url/{document}', [FolderApiController::class, 'generateUrl'])->name('generate-url');
 	});
 
 });

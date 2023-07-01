@@ -16,6 +16,7 @@ use App\Models\Position;
 use App\Services\DocumentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 
 class DocumentController extends Controller
@@ -141,9 +142,10 @@ class DocumentController extends Controller
 				["folder_id", $folder->folder_id],
 				["form_number", $request->document]
 			])->withWhereHas(
-				"employee", fn($q) => $q->select("employee_id", "firstname", "lastname", "position", "department", "img_src", "phone_no", "company", "email")->with([
+				"employee", fn($q) => $q->select("employee_id", "firstname", "lastname", "position", "department", "img_src", "phone_no", "company", "email", "user_id")->with([
 					"position",
-					"department"
+					"department",
+					"user"
 				])
 			)->with(
 				"comments",
@@ -153,6 +155,22 @@ class DocumentController extends Controller
 				"approval_employee",
 				"reviewer_employees",
 			)->firstOrFail();
+
+		// Submitter Profile
+		$document->employee->profile = null;
+		if($document->employee->user) {
+			$profile = $document->employee->user->getFirstMedia("profile", ["primary" => true]);
+			// dd($profile);
+			if($profile) {
+				$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
+				$document->employee->profile = [
+					"url" => URL::route("image", [ "path" => $path ]),
+					"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+					"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
+				];
+			}
+		}
+		// FILES
 		$files = collect([]);
 		$document->currentFile = null;
 		if(count($document->files) > 0) {

@@ -10,6 +10,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { PATH_DASHBOARD } from '@/routes/paths';
 import { useSwal } from '@/hooks/useSwal';
 import { DocumentUpdateFileDialog } from '../portal/DocumentUpdateFileDialog';
+import { TableEmptyRows } from '@/Components/table';
 const { DocumentApproveFailDialog } = await import('../portal/DocumentApproveFailDialog');
 const { DocumentCommentDialog } = await import('../portal/DocumentCommentDialog');
 
@@ -145,23 +146,27 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 							</TableHead>
 
 							<TableBody>
-								{document.comments.map((row, index) => {
-									const reviewer = document.reviewer_employees?.find(revEmp => revEmp.employee_id === row.reviewer_id);
-									const commentStatus = row.comment_status == 0 ? { text: "Open", color: "success" } : { text: "Closed", color: "error" }
-									return (
-										<DocumentComments
-											key={row.response_id}
-											row={row}
-											index={index}
-											reviewer={reviewer}
-											commentStatus={commentStatus}
-											docType={typeof docType === "string" ? docType : "review"}
-											onDelete={() => handleDeleteComment(row.response_id)}
-											onAction={handleAction}
-											user={user}
-										/>
-									)
-								})}
+								{document.comments.length > 0 ? (
+									document.comments.map((row, index) => {
+										const reviewer = document.reviewer_employees?.find(revEmp => revEmp.employee_id === row.reviewer_id);
+										const commentStatus = row.comment_status == 0 ? { text: "Open", color: "success" } : { text: "Closed", color: "error" }
+										return (
+											<DocumentComments
+												key={row.response_id}
+												row={row}
+												index={index}
+												reviewer={reviewer}
+												commentStatus={commentStatus}
+												docType={typeof docType === "string" ? docType : "review"}
+												onDelete={() => handleDeleteComment(row.response_id)}
+												onAction={handleAction}
+												user={user}
+											/>
+										)
+									})
+								) : (
+									<TableEmptyRows height={8} emptyRows={8} />
+								)}
 							</TableBody>
 						</Table>
 					</Scrollbar>

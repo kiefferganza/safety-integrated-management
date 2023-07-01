@@ -124,6 +124,10 @@ class Document extends Model
 		return $this->hasMany(DocumentCommentReplies::class, "document_id");
 	}
 
+	public function folder()
+	{
+		return $this->belongsTo(FolderModel::class, "folder_id");
+	}
 
 	public function files()
 	{
