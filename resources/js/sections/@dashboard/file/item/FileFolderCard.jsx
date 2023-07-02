@@ -20,7 +20,6 @@ import FileNewFolderDialog from '../portal/FileNewFolderDialog';
 import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
 import usePermission from '@/hooks/usePermission';
-import { Draggable } from 'react-beautiful-dnd';
 
 // ----------------------------------------------------------------------
 
@@ -103,68 +102,56 @@ export default function FileFolderCard ({ folder, onDelete, sx, index, ...other 
 	const canEdit = hasPermission("folder_edit");
 	return (
 		<>
-			<Draggable
-				key={folder.id.toString()}
-				draggableId={folder.id.toString()}
-				index={index}
-			// isDragDisabled={!row.isDraggable}
+			<Card
+				sx={{
+					p: 2.5,
+					width: 1,
+					maxWidth: 222,
+					boxShadow: 0,
+					bgcolor: 'background.default',
+					border: (theme) => `solid 1px ${theme.palette.divider}`,
+					...sx,
+				}}
+				{...other}
+				onClick={handleOpenDetails}
 			>
-				{(provided) => (
-					<Card
-						ref={provided.innerRef}
-						sx={{
-							p: 2.5,
-							width: 1,
-							maxWidth: 222,
-							boxShadow: 0,
-							bgcolor: 'background.default',
-							border: (theme) => `solid 1px ${theme.palette.divider}`,
-							...sx,
-						}}
-						{...other}
-						{...provided.draggableProps}
-						{...provided.dragHandleProps}
-						onClick={handleOpenDetails}
-					>
-						<Stack direction="row" alignItems="center" sx={{ top: 8, right: 8, position: 'absolute' }}>
-							<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
-								<Iconify icon="eva:more-vertical-fill" />
-							</IconButton>
-						</Stack>
+				<Stack direction="row" alignItems="center" sx={{ top: 8, right: 8, position: 'absolute' }}>
+					<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
+						<Iconify icon="eva:more-vertical-fill" />
+					</IconButton>
+				</Stack>
 
-						<Box
-							onClick={(e) => {
-								e.stopPropagation();
-								Inertia.visit(folder.url || PATH_DASHBOARD.fileManager.view(folder.id));
-							}}
-							component="img"
-							src="/storage/assets/icons/files/ic_folder.svg"
-							sx={{ width: 40, height: 40, cursor: 'pointer' }}
-						/>
+				<Box
+					onClick={(e) => {
+						e.stopPropagation();
+						Inertia.visit(folder.url || PATH_DASHBOARD.fileManager.view(folder.id));
+					}}
+					component="img"
+					src="/storage/assets/icons/files/ic_folder.svg"
+					sx={{ width: 40, height: 40, cursor: 'pointer' }}
+				/>
 
-						<TextMaxLine asLink href={folder.url || PATH_DASHBOARD.fileManager.view(folder.id)} onClick={(e) => e.stopPropagation()} variant="h6" sx={{ mt: 1, mb: 0.5, cursor: 'pointer' }}>
-							{folder.name}
-						</TextMaxLine>
+				<TextMaxLine asLink href={folder.url || PATH_DASHBOARD.fileManager.view(folder.id)} onClick={(e) => e.stopPropagation()} variant="h6" sx={{ mt: 1, mb: 0.5, cursor: 'pointer' }}>
+					{folder.name}
+				</TextMaxLine>
 
-						<Stack
-							direction="row"
-							alignItems="center"
-							spacing={0.75}
-							sx={{ typography: 'caption', color: 'text.disabled' }}
-						>
-							<Box> {folder.size && fData(folder.size)} </Box>
+				<Stack
+					direction="row"
+					alignItems="center"
+					spacing={0.75}
+					sx={{ typography: 'caption', color: 'text.disabled' }}
+				>
+					<Box> {folder.size && fData(folder.size)} </Box>
 
-							<Box sx={{ width: 2, height: 2, borderRadius: '50%', bgcolor: 'currentColor' }} />
+					<Box sx={{ width: 2, height: 2, borderRadius: '50%', bgcolor: 'currentColor' }} />
 
-							<Box> {folder.totalFiles && `${folder.totalFiles} files`} </Box>
+					<Box> {folder.totalFiles && `${folder.totalFiles} files`} </Box>
 
-							<Box sx={{ width: 2, height: 2, borderRadius: '50%', bgcolor: 'currentColor' }} />
+					<Box sx={{ width: 2, height: 2, borderRadius: '50%', bgcolor: 'currentColor' }} />
 
-							<Box>{folder.totalDocs && `${folder.totalDocs} docs`}</Box>
-						</Stack>
-					</Card>
-				)}
-			</Draggable>
+					<Box>{folder.totalDocs && `${folder.totalDocs} docs`}</Box>
+				</Stack>
+			</Card>
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem
 					component={Link}

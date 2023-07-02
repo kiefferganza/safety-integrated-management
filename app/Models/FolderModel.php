@@ -26,7 +26,8 @@ class FolderModel extends Model
 		'is_removed',
 		'is_active',
 		'folder_name',
-		'sub_id'
+		'sub_id',
+		'item_order'
 	];
 
 	public function documents() {

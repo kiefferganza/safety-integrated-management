@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Head } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
@@ -70,6 +70,10 @@ export default function FileManagerPage ({ folders }) {
 	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [openUploadFile, setOpenUploadFile] = useState(false);
+
+	useEffect(() => {
+		setTableData(folders);
+	}, [folders])
 
 	const dataFiltered = applyFilter({
 		inputData: tableData,
@@ -273,8 +277,9 @@ export default function FileManagerPage ({ folders }) {
 					<FileChangeViewButton value={view} onChange={handleChangeView} />
 				</Stack>
 
-				<DragDropContext onDragEnd={handleDragEnd}>
-					{view === 'list' ? (
+
+				{view === 'list' ? (
+					<DragDropContext onDragEnd={handleDragEnd}>
 						<FileListView
 							table={table}
 							tableData={tableData}
@@ -283,16 +288,16 @@ export default function FileManagerPage ({ folders }) {
 							isNotFound={isNotFound}
 							onOpenConfirm={handleOpenConfirm}
 						/>
-					) : (
-						<FileGridView
-							table={table}
-							data={tableData}
-							dataFiltered={dataFiltered}
-							onDeleteItem={handleDeleteItem}
-							onOpenConfirm={handleOpenConfirm}
-						/>
-					)}
-				</DragDropContext>
+					</DragDropContext>
+				) : (
+					<FileGridView
+						table={table}
+						data={tableData}
+						dataFiltered={dataFiltered}
+						onDeleteItem={handleDeleteItem}
+						onOpenConfirm={handleOpenConfirm}
+					/>
+				)}
 			</Container>
 
 			<FileNewFolderDialog

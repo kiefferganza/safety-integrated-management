@@ -14,7 +14,6 @@ import FilePanel from '../FilePanel';
 // import FileCard from '../item/FileCard';
 import FileFolderCard from '../item/FileFolderCard';
 import FileNewFolderDialog from '../portal/FileNewFolderDialog';
-import { Droppable } from 'react-beautiful-dnd';
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +25,7 @@ FileGridView.propTypes = {
 	onOpenConfirm: PropTypes.func,
 };
 
-export default function FileGridView ({ table, data, dataFiltered, onDeleteItem }) {
+export default function FileGridView ({ data, dataFiltered, onDeleteItem }) {
 	// const { selected, onSelectRow: onSelectItem } = table;
 
 	const containerRef = useRef(null);
@@ -70,34 +69,28 @@ export default function FileGridView ({ table, data, dataFiltered, onDeleteItem 
 				/>
 
 				<Collapse in={!collapseFolders} unmountOnExit>
-					<Droppable droppableId="tableRows">
-						{(provided) => (
-							<Box
-								ref={provided.innerRef} {...provided.droppableProps}
-								gap={3}
-								display="grid"
-								gridTemplateColumns={{
-									xs: 'repeat(1, 1fr)',
-									sm: 'repeat(2, 1fr)',
-									md: 'repeat(3, 1fr)',
-									lg: 'repeat(4, 1fr)',
-								}}
-							>
-								{dataFiltered
-									.filter((i) => i.type === 'folder')
-									.map((folder, index) => (
-										<FileFolderCard
-											key={folder.id}
-											folder={folder}
-											onDelete={() => onDeleteItem(folder.id)}
-											index={index}
-											sx={{ maxWidth: 'auto' }}
-										/>
-									))}
-								{provided.placeholder}
-							</Box>
-						)}
-					</Droppable>
+					<Box
+						gap={3}
+						display="grid"
+						gridTemplateColumns={{
+							xs: 'repeat(1, 1fr)',
+							sm: 'repeat(2, 1fr)',
+							md: 'repeat(3, 1fr)',
+							lg: 'repeat(4, 1fr)',
+						}}
+					>
+						{dataFiltered
+							.filter((i) => i.type === 'folder')
+							.map((folder, index) => (
+								<FileFolderCard
+									key={folder.id}
+									folder={folder}
+									onDelete={() => onDeleteItem(folder.id)}
+									index={index}
+									sx={{ maxWidth: 'auto' }}
+								/>
+							))}
+					</Box>
 				</Collapse>
 
 				{/* <Divider sx={{ my: 5, borderStyle: 'dashed' }} />

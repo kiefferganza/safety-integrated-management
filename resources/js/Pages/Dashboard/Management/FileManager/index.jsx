@@ -38,6 +38,7 @@ const index = ({ folders, externalTraining }) => {
 		});
 		setData(mutatedFolders);
 	}, [folders]);
+	console.log({ folders, data })
 
 	return (
 		<Suspense fallback={<LoadingScreen />}>

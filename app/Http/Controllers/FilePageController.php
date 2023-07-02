@@ -8,7 +8,6 @@ use App\Services\FolderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class FilePageController extends Controller
@@ -46,14 +45,24 @@ class FilePageController extends Controller
 
 	public function create_folder(Request $request) {
 		$user = auth()->user();
+
+		$lastOrder = FolderModel::select('item_order')->where('is_removed', 1)->where('sub_id', $user->subscriber_id)->orderByDesc('item_order')->first();
+
+		if ($lastOrder) {
+			$itemOrder = $lastOrder->item_order + 1;
+		} else {
+			$itemOrder = 0;
+		}
+
 		FolderModel::create([
 			'is_removed' => 1,
 			'is_active' => 0,
+			'item_order' => $itemOrder,
 			'folder_name' => $request->folderName,
 			'sub_id' => $user->subscriber_id
 		]);
 
-		return Redirect::back()
+		return redirect()->back()
 		->with("message", "Folder added successfully!")
 		->with("type", "success");
 	}
@@ -77,9 +86,9 @@ class FilePageController extends Controller
 		]);
 		FolderModel::whereIn("folder_id", $fields["ids"])->update(["is_removed" => 0]);
 
-		return Redirect::back()
+		return redirect()->back()
 		->with("message", "File deleted successfully!")
-		->with("type", "error");
+		->with("type", "success");
 	}
 
 
