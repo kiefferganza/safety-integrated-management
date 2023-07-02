@@ -189,15 +189,19 @@ class DocumentController extends Controller
 
 		if(count($document->external_reviewer) > 0) {
 			foreach ($document->external_reviewer as $externalReviewer) {
-				$media = $externalReviewer->getFirstMedia();
-				$files->push(["fullSrc" => $media->getFullUrl(), "src" => $media->name, "date" => $media->created_at]);
+				if($externalReviewer->src) {
+					$media = $externalReviewer->getFirstMedia();
+					$files->push(["fullSrc" => $media->getFullUrl(), "src" => $media->name, "date" => $media->created_at]);
+				}
 			}
 		}
 
 		if(count($document->external_approver) > 0) {
 			foreach ($document->external_approver as $externalApprover) {
-				$media = $externalApprover->getFirstMedia();
-				$files->push(["fullSrc" => $media->getFullUrl(), "src" => $media->name, "date" => $media->created_at]);
+				if($externalApprover->src) {
+					$media = $externalApprover->getFirstMedia();
+					$files->push(["fullSrc" => $media->getFullUrl(), "src" => $media->name, "date" => $media->created_at]);
+				}
 			}
 		}
 

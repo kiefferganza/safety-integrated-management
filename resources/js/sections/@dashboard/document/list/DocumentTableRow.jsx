@@ -136,11 +136,11 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 	const handleCloseCopy = () => {
 		setOpenCopyURL(false);
 		setGeneratedUrl("");
+		window.location.reload();
 	}
 
 
 	const canDeleteAndCanEdit = user?.emp_id === row.employee.employee_id;
-	console.log(row)
 	return (
 		<>
 			<TableRow hover selected={selected} sx={{ width: 1 }}>
