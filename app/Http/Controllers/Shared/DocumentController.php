@@ -144,6 +144,7 @@ class DocumentController extends Controller
 			$docExternal->save();
 
 			$document->status = $request->status;
+			$document->increment('rev');
 			$document->save();
 		}else {
 			abort(500);
@@ -166,6 +167,10 @@ class DocumentController extends Controller
 			$docApprover->src = $request->file('src')->getClientOriginalName();
 			$docApprover->remarks = $request->remarks ? $request->remarks : NULL;
 			$docApprover->save();
+
+			$document = Document::find($docApprover->document_id);
+			$document->increment('rev');
+			$document->save();
 		}else {
 			abort(500);
 		}

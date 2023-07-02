@@ -104,6 +104,7 @@ class DocumentService {
 
 	public function approval_action(Request $request, Document $document, $file_name, $user) {
 		$document->status = $request->status;
+		$document->increment('rev');
 		if($request->remarks) {
 			$document->remarks = $request->remarks;
 		}
@@ -140,7 +141,8 @@ class DocumentService {
 	}
 
 	public function updateReviewStatus(Document $document, $file_name, $user) {
-		$doc_rev_sign = DocumentReviewerSign::where(["document_id" => $document->document_id, "user_id" => $user->emp_id])->first();	
+		$doc_rev_sign = DocumentReviewerSign::where(["document_id" => $document->document_id, "user_id" => $user->emp_id])->first();
+		$document->increment('rev');
 		if($doc_rev_sign && $file_name !== "") {
 			if(Storage::exists("public/media/docs/" . $doc_rev_sign->src)) {
 				Storage::delete("public/media/docs/" . $doc_rev_sign->src);
