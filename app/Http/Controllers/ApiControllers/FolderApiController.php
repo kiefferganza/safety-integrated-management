@@ -4,6 +4,8 @@ namespace App\Http\Controllers\ApiControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Document;
+use App\Models\DocumentExternalApprover;
+use App\Models\DocumentExternalReviewer;
 use App\Models\FolderModel;
 use App\Models\ShareableLink;
 use Illuminate\Http\Request;
@@ -25,17 +27,39 @@ class FolderApiController extends Controller
 		]);
 	}
 
-	public function generateUrl(Document $document) {
+	public function generateUrl(Request $request, Document $document) {
 		$token = Str::uuid()->toString();
-		$shareableLink = URL::route('shared.document.show', ['folder' => $document->folder_id, 'document' => $document->document_id, 'token' => $token]);
 
-		ShareableLink::create([
+		$shareableLink = URL::route('shared.document.show', ['folder' => $document->folder->folder_name, 'document' => $document->form_number, 'token' => $token]);
+
+		switch ($request->type) {
+			case 'reviewer':
+				$personel = new DocumentExternalReviewer();
+				$personel->document_id = $document->document_id;
+				$personel->firstname = $request->firstname;
+				$personel->lastname = $request->lastname;
+				break;
+			case 'approver':
+				$personel = new DocumentExternalApprover();
+				$personel->document_id = $document->document_id;
+				$personel->firstname = $request->firstname;
+				$personel->lastname = $request->lastname;
+				break;
+		}
+		$personel->save();
+
+		$createdShare = ShareableLink::create([
 			'token' => $token,
 			'url' => $shareableLink,
 			'model_type' => Document::class,
 			'model_id' => $document->document_id,
-			'expiration_date' => now()->addHours(24),
+			'custom_properties' => [
+				"type" => $request->type,
+				"id" => $personel->id
+			],
+			"sub_id" => $document->folder->sub_id,
+			'expiration_date' => now()->addDays(7),
 		]);
-		return response()->json(compact('shareableLink'));
+		return response()->json(compact('shareableLink', 'createdShare'));
 	}
 }

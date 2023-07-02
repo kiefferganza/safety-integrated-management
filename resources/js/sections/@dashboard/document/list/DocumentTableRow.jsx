@@ -21,6 +21,8 @@ import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import { CopyUrlDialog } from '@/Components/dialogs';
 import axiosInstance from '@/utils/axios';
+import ShareDialog from '../portal/ShareDialog';
+import { LinkList } from '../portal/LinkList';
 const { DocumentTableSubRow } = await import('./DocumentTableSubRow');
 const { DocumentFileList } = await import('../portal/DocumentFileList');
 const { ConfirmDialog } = await import('@/Components/confirm-dialog/ConfirmDialog');
@@ -41,12 +43,19 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 	const [openConfirm, setOpenConfirm] = useState(false);
 	const [openFileList, setOpenFileList] = useState(false);
 	const [openCopyURL, setOpenCopyURL] = useState(false);
+	const [openLinkList, setOpenLinkList] = useState(false);
+
+	// Shareable
+	const [firstname, setFirstname] = useState('');
+	const [lastname, setLastname] = useState('');
+	const [type, setType] = useState('approver');
+	// 
+
+	const [openShare, setOpenShare] = useState(false);
 
 	const [openPopover, setOpenPopover] = useState(null);
 
 	const [generatedUrl, setGeneratedUrl] = useState("");
-
-	console.log({ folder, row })
 
 	const handleOpenConfirm = () => {
 		setOpenConfirm(true);
@@ -77,13 +86,43 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 		setOpenCollapse((currState) => !currState);
 	}
 
-	const handleOpenCopy = async () => {
+	const handleOpenLinkList = () => {
 		setOpenPopover(null);
+		setOpenLinkList(true);
+	}
+
+	const handleOpenShare = () => {
+		// if (row.docStatus.statusText === "FOR APPROVAL") {
+		// 	setType('approver');
+		// } else {
+		// 	setType('reviewer');
+		// }
+		setOpenPopover(null);
+		setOpenShare(true);
+	}
+
+	const handleCloseShare = () => {
+		setType("reviewer");
+		setOpenShare(false);
+	}
+
+	const handleGenerateShareLink = () => {
+		if (firstname && lastname) {
+			handleCloseShare();
+			handleOpenCopy();
+		}
+	}
+
+	const handleOpenCopy = async () => {
 		load(true);
 
 		try {
 			const urlRoute = route('api.folder.generate-url', { document: row.document_id });
-			const { data } = await axiosInstance.post(urlRoute);
+			const { data } = await axiosInstance.post(urlRoute, {
+				firstname,
+				lastname,
+				type
+			});
 			console.log(data);
 			setGeneratedUrl(data.shareableLink);
 			load(false);
@@ -101,6 +140,7 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 
 
 	const canDeleteAndCanEdit = user?.emp_id === row.employee.employee_id;
+	console.log(row)
 	return (
 		<>
 			<TableRow hover selected={selected} sx={{ width: 1 }}>
@@ -173,10 +213,18 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 
 				<Divider sx={{ borderStyle: 'dashed' }} />
 
-				<MenuItem onClick={handleOpenCopy}>
+				<MenuItem onClick={handleOpenShare}>
 					<Iconify icon="material-symbols:share" />
 					Share
 				</MenuItem>
+
+				{row?.shareable_link?.length > 0 && (
+					<MenuItem onClick={handleOpenLinkList}>
+						<Iconify icon="material-symbols:link" />
+						External Links
+					</MenuItem>
+				)}
+
 
 				{canDeleteAndCanEdit && (
 					<>
@@ -219,10 +267,43 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 				title={`${row.form_number} File List`}
 			/>
 
+			<ShareDialog
+				open={openShare}
+				onClose={handleCloseShare}
+				firstname={firstname}
+				setFirstname={setFirstname}
+				lastname={lastname}
+				setLastname={setLastname}
+				status={row.docStatus}
+				formNumber={row.form_number}
+				reviewers={row.reviewer_employees}
+				approver={row.approval_employee}
+				type={type}
+				setType={setType}
+				action={
+					<Button
+						disabled={!firstname || !lastname}
+						variant="contained"
+						color="primary"
+						onClick={handleGenerateShareLink}
+					>
+						Generate Link
+					</Button>
+				}
+			/>
+
 			<CopyUrlDialog
 				open={openCopyURL}
 				onClose={handleCloseCopy}
 				value={generatedUrl}
+			/>
+
+			<LinkList
+				open={openLinkList}
+				onClose={() => setOpenLinkList(false)}
+				shareable_link={row.shareable_link}
+				external_approver={row.external_approver}
+				external_reviewer={row.external_reviewer}
 			/>
 
 		</>

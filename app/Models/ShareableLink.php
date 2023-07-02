@@ -9,5 +9,9 @@ class ShareableLink extends Model
 {
     use HasFactory;
 
+	protected $casts = [
+		'custom_properties' => 'array',
+	];
+
 	protected $guarded = [];
 }

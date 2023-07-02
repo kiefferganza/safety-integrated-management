@@ -119,6 +119,12 @@ class Document extends Model
 		]);
 	}
 
+
+	public function shareableLink()
+    {
+        return $this->morphMany(ShareableLink::class, 'model');
+    }
+
 	public function comments()
 	{
 		return $this->hasMany(DocumentCommentReplies::class, "document_id");
@@ -149,6 +155,7 @@ class Document extends Model
 		return $this->hasMany(DocumentReviewerSign::class, "document_id");
 	}
 
+
 	public function approval_employee()
 	{
 		return $this->hasOne(Employee::class, "employee_id", "approval_id");
@@ -157,6 +164,16 @@ class Document extends Model
 	public function reviewer_employees()
 	{
 		return $this->belongsToMany(Employee::class, "tbl_document_reviewer", "document_id", "reviewer_id")->withPivot(['review_status', 'review_document_id', 'remarks']);
+	}
+
+	public function external_approver()
+	{
+		return $this->hasMany(DocumentExternalApprover::class, 'document_id');
+	}
+
+	public function external_reviewer()
+	{
+		return $this->hasMany(DocumentExternalReviewer::class, "document_id");
 	}
 
 	public function employee()

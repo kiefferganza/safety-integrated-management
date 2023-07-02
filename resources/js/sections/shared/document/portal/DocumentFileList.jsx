@@ -30,7 +30,7 @@ export const DocumentFileList = ({ title = "File List", open, onClose, document,
 							<TableBody>
 								<TableRow>
 									<TableCell align="left">
-										{currentFile?.src && <FileLinkThumbnail fullSrc={currentFile?.fullSrc} src={currentFile?.src || ""} />}
+										{currentFile?.src && <FileLinkThumbnail src={currentFile?.src || ""} />}
 									</TableCell>
 									<TableCell align="left">
 										{reviewer_employees.length > 0 ? (
@@ -68,11 +68,11 @@ export const DocumentFileList = ({ title = "File List", open, onClose, document,
 	)
 }
 
-function FileLinkThumbnail ({ fullSrc, src }) {
+function FileLinkThumbnail ({ src }) {
 	return (
 		<MuiLink
 			component="a"
-			href={fullSrc || `/storage/media/docs/${src}`}
+			href={`/storage/media/docs/${src}`}
 			sx={{
 				color: "text.primary"
 			}}
@@ -85,7 +85,7 @@ function FileLinkThumbnail ({ fullSrc, src }) {
 				alignItems="center"
 			>
 				<Avatar variant="rounded" sx={{ bgcolor: 'background.neutral', width: 36, height: 36, borderRadius: "9px" }}>
-					<Box component="img" src={fileThumb(fileFormat(fullSrc || src))} sx={{ width: 24, height: 24 }} />
+					<Box component="img" src={fileThumb(fileFormat(src))} sx={{ width: 24, height: 24 }} />
 				</Avatar>
 
 				<Stack spacing={0.5} flexGrow={1}>

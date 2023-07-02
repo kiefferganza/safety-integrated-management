@@ -15,7 +15,7 @@ export const DocumentTableSubRow = ({ row, open }) => {
 				<Collapse in={open} timeout="auto" unmountOnExit>
 					<Box sx={{ margin: 1 }}>
 						<Table size="small">
-							<caption><span style={{ textTransform: "uppercase" }}>{row.formNumber}</span> - Reviewers and Approval Personels</caption>
+							<caption><span style={{ textTransform: "uppercase" }}>{row.formNumber}</span> - Reviewers and Approver Personels</caption>
 							<TableHead>
 								<TableRow>
 									<TableCell>Reviewers</TableCell>
@@ -69,11 +69,54 @@ export const DocumentTableSubRow = ({ row, open }) => {
 									</TableRow>
 								)}
 							</TableBody>
+							{row?.external_reviewer?.length > 0 && (
+								<>
+									<TableHead>
+										<TableRow>
+											<TableCell>External Reviewers</TableCell>
+											<TableCell colSpan={2}>Remarks</TableCell>
+											<TableCell>Signed File</TableCell>
+											<TableCell>Status</TableCell>
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										{row.external_reviewer.map(revEmp => {
+											const stat = getDocumentReviewStatus(revEmp?.pivot?.review_status);
+											return (
+												<TableRow key={revEmp.id}>
+													<TableCell>
+														{revEmp?.firstname} {revEmp?.lastname}
+													</TableCell>
+													<TableCell colSpan={2}>{revEmp?.remarks || "N/A"}</TableCell>
+													<TableCell>
+														{revEmp?.src ? (
+															<Tooltip title={revEmp.src}>
+																<a href={`/storage/media/docs/${revEmp.src}`} target="_blank">{excerpt(revEmp.src, 16)}</a>
+															</Tooltip>
+														) : (
+															<Box component="span" sx={{ color: "text.disabled" }}>No signed files yet</Box>
+														)}
+													</TableCell>
+													<TableCell>
+														<Label
+															variant="soft"
+															color={stat.statusClass}
+															sx={{ textTransform: "none" }}
+														>
+															{stat.statusText}
+														</Label>
+													</TableCell>
+												</TableRow>
+											);
+										})}
+									</TableBody>
+								</>
+							)}
 							{row.approval_employee && (
 								<>
 									<TableHead>
 										<TableRow>
-											<TableCell>Approval</TableCell>
+											<TableCell>Approver</TableCell>
 											<TableCell>Position</TableCell>
 											<TableCell>Remarks</TableCell>
 											<TableCell>Signed File</TableCell>
@@ -109,6 +152,53 @@ export const DocumentTableSubRow = ({ row, open }) => {
 											</TableCell>
 										</TableRow>
 									</TableBody>
+								</>
+							)}
+							{row.external_approver?.length > 0 && (
+								<>
+									<TableHead>
+										<TableRow>
+											<TableCell>External Approver</TableCell>
+											<TableCell colSpan={2}>Remarks</TableCell>
+											<TableCell>Signed File</TableCell>
+											<TableCell>Status</TableCell>
+										</TableRow>
+									</TableHead>
+									<TableBody>
+
+										{row.external_approver.map(app => {
+											console.log(app);
+											return (
+												<TableRow>
+													<TableCell>
+														{app?.firstname} {app?.lastname}
+													</TableCell>
+													<TableCell colSpan={2}>{app?.remarks || "N/A"}</TableCell>
+													<TableCell>
+														{app?.src ? (
+															<Tooltip title={app.src}>
+																<a href={app?.media[0]?.original_url} target="_blank">{excerpt(app.src, 16)}</a>
+															</Tooltip>
+														) : (
+															<Box component="span" sx={{ color: "text.disabled" }}>No signed files yet</Box>
+														)}
+													</TableCell>
+													<TableCell>
+														<Label
+															variant="soft"
+															color={
+																(app.status === '0' && 'warning') || (app.status === 'A' && 'success') || (app.status === 'C' && 'error') || 'warning'
+															}
+															sx={{ textTransform: 'capitalize' }}
+														>
+															{(app.status === '0' && 'PENDING') || (app.status === 'A' && 'APPROVED') || (app.status === 'C' && 'FAIL/NOT APPROVED') || 'PENDING'}
+														</Label>
+													</TableCell>
+												</TableRow>
+											)
+										})}
+									</TableBody>
+
 								</>
 							)}
 						</Table>

@@ -14,9 +14,8 @@ import { TableEmptyRows } from '@/Components/table';
 const { DocumentApproveFailDialog } = await import('../portal/DocumentApproveFailDialog');
 const { DocumentCommentDialog } = await import('../portal/DocumentCommentDialog');
 
-const DocumentDetailBody = ({ document, docType, user, positions }) => {
+const DocumentDetailBody = ({ document, positions, customUser }) => {
 	const { load, stop } = useSwal();
-	const [customDocType, setCustomDocType] = useState(null);
 	const [openComment, setOpenComment] = useState(false);
 	const [openAction, setOpenAction] = useState(false);
 	const [openUpdateFile, setOpenUpdateFile] = useState(false);
@@ -26,10 +25,11 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 
 	const docStat = document.approval_sign ? getDocumentReviewStatus(document.status) : getDocumentStatus(document.status);
 	// reviewer
-	const canReviewStatus = checkCanReview({ docType, document, user });
+	// const canReviewStatus = checkCanReview({ customUser, document });
+	const canReviewStatus = false;
 	// approval
 	const approvalPos = document.approval_employee ? positions.find(pos => pos.position_id === document.approval_employee.position).position : null;
-	const canApprove = checkCanApprove({ docType, document });
+	const canApprove = customUser.type === "approver";
 
 	const handleOpenUpdateFile = (info) => {
 		setOpenUpdateFile(true);
@@ -56,7 +56,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 	}
 
 	const handleDeleteComment = (commentId) => {
-		const commentLength = document.comments.filter(com => com.reviewer_id === user?.employee?.employee_id).length;
+		const commentLength = document.comments.length;
 		Inertia.post(PATH_DASHBOARD.fileManager.deleteComment(commentId), { commentLength }, {
 			preserveScroll: true,
 			onStart () {
@@ -67,9 +67,8 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 			}
 		});
 	}
-	const canComment = document.approval_sign !== null ? false : typeof docType === "string" ? docType === "review" : true;
-	const reviewerStatus = document.reviewer_employees.find(revEmp => revEmp.employee_id === user?.employee?.employee_id)?.pivot?.review_status;
 
+	const canComment = false;
 	return (
 		<>
 			<Stack>
@@ -160,7 +159,6 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 												docType={typeof docType === "string" ? docType : "review"}
 												onDelete={() => handleDeleteComment(row.response_id)}
 												onAction={handleAction}
-												user={user}
 											/>
 										)
 									})
@@ -187,7 +185,6 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 						borderRight={1}
 						borderBottom={1}
 						canReviewStatus={canReviewStatus}
-						isSelected={(reviewerStatus || "").toLowerCase() === "a"}
 					>A.  Approved</ReviewStatus>
 					<ReviewStatus
 						onClick={() => {
@@ -197,7 +194,6 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 						borderRight={1}
 						borderBottom={1}
 						canReviewStatus={canReviewStatus}
-						isSelected={(reviewerStatus || "").toLowerCase() === "b"}
 					>B.  SONO</ReviewStatus>
 					<ReviewStatus
 						onClick={() => {
@@ -206,7 +202,6 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 						}}
 						borderBottom={1}
 						canReviewStatus={canReviewStatus}
-						isSelected={(reviewerStatus || "").toLowerCase() === "c"}
 					>C.  Fail / Not approved</ReviewStatus>
 					<ReviewStatus
 						onClick={() => {
@@ -215,7 +210,6 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 						}}
 						borderRight={1}
 						canReviewStatus={canReviewStatus}
-						isSelected={(reviewerStatus || "").toLowerCase() === "d"}
 					>D.  Approved with comments</ReviewStatus>
 					<ReviewStatus
 						onClick={() => {
@@ -224,7 +218,6 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 						}}
 						borderRight={1}
 						canReviewStatus={canReviewStatus}
-						isSelected={(reviewerStatus || "").toLowerCase() === "e"}
 					>E.  NOWC: No Objection with comments</ReviewStatus>
 					<ReviewStatus
 						onClick={() => {
@@ -232,7 +225,6 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 							handleAction({ status: "F" });
 						}}
 						canReviewStatus={canReviewStatus}
-						isSelected={(reviewerStatus || "").toLowerCase() === "f"}
 					>F.  Responded / Reviewed / Actioned</ReviewStatus>
 				</Box>
 				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
@@ -364,7 +356,15 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 											<TableCell align="left">{document?.remarks || "N/A"}</TableCell>
 
 											<TableCell align="left">
-												<Label color={app.status === "A" ? "success" : "error"}>{app.status === "A" ? "APPROVED" : "FAILED"}</Label>
+												<Label
+													variant="soft"
+													color={
+														(app.status === '0' && 'warning') || (app.status === 'A' && 'success') || (app.status === 'C' && 'error') || 'warning'
+													}
+													sx={{ textTransform: 'capitalize' }}
+												>
+													{(app.status === '0' && 'PENDING') || (app.status === 'A' && 'APPROVED') || (app.status === 'C' && 'FAIL/NOT APPROVED') || 'PENDING'}
+												</Label>
 											</TableCell>
 										</TableRow>
 									))}
@@ -374,35 +374,39 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 					</Grid>
 				</Grid>
 				{canApprove && (
-					document.approval_sign !== null ? (
+					customUser.status !== "0" ? (
 						<>
 							<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 							<Grid container spacing={3}>
 								<Grid item md={4} xs={12}>
 									<Button
+										disabled={customUser.status === "0"}
 										fullWidth
 										size="large"
 										variant="contained"
 										color="secondary"
-										onClick={() => handleOpenUpdateFile({ name: "update-approval-file", id: document.approval_sign.approval_sign_id })}
+										onClick={() => handleOpenUpdateFile(route('shared.document.reuploadApprovalFile', {
+											docApprover: customUser.id,
+											_query: {
+												token: customUser.token
+											}
+										}))}
 									>Re-upload File</Button>
 								</Grid>
 								<Grid item md={4} xs={12}>
-									{document?.status === "A" ? (
+									{customUser.status === "A" ? (
 										<Button fullWidth size="large" variant="contained" color="success" disabled>Approved</Button>
 									) : (
 										<Button fullWidth size="large" variant="contained" color="success" onClick={() => {
-											setCustomDocType("approve");
 											handleAction({ status: "A" });
 										}}>Approved</Button>
 									)}
 								</Grid>
 								<Grid item md={4} xs={12}>
-									{document?.status === "C" ? (
+									{customUser.status === "C" ? (
 										<Button fullWidth size="large" variant="contained" color="error" disabled>Fail/Not approved</Button>
 									) : (
 										<Button fullWidth size="large" variant="contained" color="error" onClick={() => {
-											setCustomDocType("approve");
 											handleAction({ status: "C" });
 										}}>Fail/Not approved</Button>
 									)}
@@ -415,13 +419,11 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 							<Grid container spacing={3}>
 								<Grid item md={6} xs={12}>
 									<Button fullWidth size="large" variant="contained" color="success" onClick={() => {
-										setCustomDocType("approve");
 										handleAction({ status: "A" });
 									}}>Approved</Button>
 								</Grid>
 								<Grid item md={6} xs={12}>
 									<Button fullWidth size="large" variant="contained" color="error" onClick={() => {
-										setCustomDocType("approve");
 										handleAction({ status: "C" });
 									}}>Fail/Not approved</Button>
 								</Grid>
@@ -440,9 +442,10 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 				open={openAction}
 				onClose={handleCloseAction}
 				selectedStatus={selectedStatus}
-				actionResponseId={actionResponseId}
 				documentId={document.document_id}
-				docType={customDocType}
+				docType={customUser.type}
+				token={customUser.token}
+				id={customUser.id}
 			/>
 			<DocumentUpdateFileDialog
 				open={openUpdateFile}
@@ -479,22 +482,16 @@ function ReviewStatus ({ canReviewStatus, onClick, isSelected = false, children,
 	)
 }
 
-function checkCanReview ({ docType, document, user }) {
-	console.log(document)
-	const type = typeof docType === "string" ? docType : "review";
-	const currReviewSign = document?.reviewer_sign?.find(revS => revS?.user_id === user?.emp_id);
-	if (type === "review" && currReviewSign) return false;
-	if (document.approval_sign !== null) return false;
-	if (type !== "review") return false;
-	const reviewerComments = document.comments.filter(com => com.reviewer_id === user?.employee?.employee_id);
-	if (reviewerComments.length === 0) return true;
-	return reviewerComments.every(com => com.comment_status === 1);
-}
+// function checkCanReview ({ customUser, document }) {
+// 	const type = typeof docType === "string" ? docType : "review";
+// 	if (type === "review" && currReviewSign) return false;
+// 	if (document.approval_sign !== null) return false;
+// 	if (type !== "review") return false;
+// 	return reviewerComments.every(com => com.comment_status === 1);
+// }
 
-function checkCanApprove ({ docType, document }) {
-	const type = typeof docType === "string" ? docType : "approve";
-	if (type !== "approve") return false;
-	return document.reviewer_sign.length === document.reviewer_employees.length;
-}
+// function checkCanApprove ({ docType, document }) {
+// 	return false;
+// }
 
 export default DocumentDetailBody

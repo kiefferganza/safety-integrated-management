@@ -20,6 +20,7 @@ return new class extends Migration
 			$table->string('model_type');
             $table->unsignedBigInteger('model_id');
             $table->unsignedBigInteger('sub_id');
+			$table->json('custom_properties')->nullable();
             $table->timestamp('expiration_date');
             $table->timestamps();
         });
