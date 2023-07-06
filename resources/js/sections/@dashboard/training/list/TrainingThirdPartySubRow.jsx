@@ -1,3 +1,4 @@
+
 import { Box, Collapse, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import Label from "@/Components/label";
 import { capitalCase } from 'change-case';
@@ -32,10 +33,10 @@ export const TrainingThirdPartySubRow = ({ participants, external_details, exter
 											<Label
 												variant="filled"
 												color={
-													(external_status.review_status === 'pending' && 'warning') || (external_status.review_status === 'commented' && 'info') || ((external_status.review_status === 'fail' || external_status.review_status === 'for_revision') && 'error') || (external_status.review_status === 'accepted' && 'success') || 'default'
+													(external_status?.review_status === 'pending' && 'warning') || (external_status?.review_status === 'commented' && 'info') || ((external_status?.review_status === 'fail' || external_status?.review_status === 'for_revision') && 'error') || (external_status?.review_status === 'accepted' && 'success') || 'default'
 												}
 											>
-												{capitalCase(external_status.review_status)}
+												{capitalCase(external_status?.review_status || "")}
 											</Label>
 										</TableCell>
 									</TableRow>
@@ -70,10 +71,10 @@ export const TrainingThirdPartySubRow = ({ participants, external_details, exter
 												<Label
 													variant="soft"
 													color={
-														(external_status.approval_status === 'in_review' && 'default') || (external_status.approval_status === 'rejected' && 'error') || (external_status.approval_status === 'approved' && 'success') || 'default'
+														(external_status?.approval_status === 'in_review' && 'default') || (external_status?.approval_status === 'rejected' && 'error') || (external_status?.approval_status === 'approved' && 'success') || 'default'
 													}
 												>
-													{capitalCase(external_status.approval_status)}
+													{capitalCase(external_status?.approval_status || "")}
 												</Label>
 											</TableCell>
 										</TableRow>

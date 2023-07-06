@@ -7,6 +7,7 @@ use App\Models\Employee;
 use App\Models\Training;
 use App\Models\TrainingExternal;
 use App\Models\TrainingExternalComment;
+use App\Models\TrainingExternalStatus;
 use App\Models\TrainingFiles;
 use App\Models\TrainingTrainees;
 use App\Services\TrainingService;
@@ -123,6 +124,8 @@ class TrainingController extends Controller
 			$training_external->date_requested = date("Y-m-d H:i:s");
 
 			$training_external->save();
+
+			TrainingExternalStatus::create(["training_id" => $training->training_id]);
 		}
 
 		if(!empty($request->trainees)) {

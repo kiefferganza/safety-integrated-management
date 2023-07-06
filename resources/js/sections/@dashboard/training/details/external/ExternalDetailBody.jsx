@@ -14,13 +14,13 @@ const { ExternalApproveFailDialog } = await import('../../portal/ExternalApprove
 const { ExternalCommentDialog } = await import('../../portal/ExternalCommentDialog');
 
 const ExternalDetailBody = ({ external_details, external_comments, external_status, training_id, type = "action" }) => {
-	const { load, stop } = useSwal();
+	// const { load, stop } = useSwal();
 	const { approval, reviewer } = external_details;
 	const [actionType, setActionType] = useState(null);
 	const [statusType, setStatusType] = useState("");
 	const [openComment, setOpenComment] = useState(false);
 	const [openAction, setOpenAction] = useState(false);
-	const [actionResponseId, setActionResponseId] = useState(null);
+	// const [actionResponseId, setActionResponseId] = useState(null);
 
 
 	const handleActionApprove = ({ type, action }) => {
@@ -181,7 +181,7 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 										<TableCell align="left">{external_status?.review_remark || "N/A"}</TableCell>
 
 										<TableCell align="left">
-											<Label variant="filled" sx={{ color: "#fff" }} color={getTrainingActionStatus(external_status?.review_status).color}>{capitalCase(external_status?.review_status)}</Label>
+											<Label variant="filled" sx={{ color: "#fff" }} color={getTrainingActionStatus(external_status?.review_status).color}>{capitalCase(external_status?.review_status || "")}</Label>
 										</TableCell>
 									</TableRow>
 								</TableBody>
@@ -217,7 +217,7 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 										<TableCell align="left">{external_status?.approval_remark || "N/A"}</TableCell>
 
 										<TableCell align="left">
-											<Label variant="filled" color={getTrainingActionStatus(external_status?.approval_status).color}>{capitalCase(external_status?.approval_status)}</Label>
+											<Label variant="filled" color={getTrainingActionStatus(external_status?.approval_status).color}>{capitalCase(external_status?.approval_status || "")}</Label>
 										</TableCell>
 									</TableRow>
 								</TableBody>
@@ -235,7 +235,7 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 									size="large"
 									variant="contained"
 									color="success"
-									disabled={!canReviewStatus || external_status.review_status === "accepted" || external_status.approval_status !== "in_review"}
+									disabled={!canReviewStatus || external_status?.review_status === "accepted" || external_status?.approval_status !== "in_review"}
 									onClick={() => {
 										handleActionFail({ type: "review", action: "accepted" })
 									}}
@@ -249,7 +249,7 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 									size="large"
 									variant="contained"
 									color="error"
-									disabled={!canReviewStatus || external_status.review_status === "failed" || external_status.approval_status !== "in_review"}
+									disabled={!canReviewStatus || external_status?.review_status === "failed" || external_status?.approval_status !== "in_review"}
 									onClick={() => {
 										handleActionFail({ type: "review", action: "failed" })
 									}}
@@ -261,7 +261,7 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 						<FormHelperText sx={{ mb: 1.5 }}>Must closed all comments before taking action.</FormHelperText>
 					</>
 				)}
-				{type === "approve" && external_status.review_status === "accepted" && (
+				{type === "approve" && external_status?.review_status === "accepted" && (
 					<>
 						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 						<Grid container spacing={3}>
@@ -271,7 +271,7 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 									size="large"
 									variant="contained"
 									color="success"
-									disabled={external_status.approval_status === "approved"}
+									disabled={external_status?.approval_status === "approved"}
 									onClick={() => {
 										handleActionApprove({ type: "approve", action: "approved" })
 									}}>Approved</Button>
@@ -282,7 +282,7 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 									size="large"
 									variant="contained"
 									color="error"
-									disabled={external_status.approval_status === "rejected"}
+									disabled={external_status?.approval_status === "rejected"}
 									onClick={() => {
 										handleActionFail({ type: "approve", action: "rejected" })
 									}}>Fail/Rejected</Button>
