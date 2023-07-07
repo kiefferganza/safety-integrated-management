@@ -165,6 +165,20 @@ export const PATH_DASHBOARD = {
 		deleteComment: (commentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${commentId}/delete-comment`),
 	},
 
+	store: {
+		root: route('store.management.index'),
+		create: route('store.management.create'),
+		store: route('store.management.store'),
+		edit: (id) => route('store.management.edit', id),
+		update: (id) => route('store.management.update', id),
+		show: (formNumber) => route('store.management.show', formNumber),
+		destroy: (id) => route('store.management.destroy', id),
+
+		// Report
+		createReport: route('store.management.create_report'),
+		report: route('store.management.report')
+	}
+
 	// invoice: {
 	// 	root: path(ROOTS_DASHBOARD, '/invoice'),
 	// 	list: path(ROOTS_DASHBOARD, '/invoice/list'),

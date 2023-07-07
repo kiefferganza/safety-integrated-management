@@ -53,7 +53,7 @@ const navConfig = [
 	// MANAGEMENT
 	// ----------------------------------------------------------------------
 	{
-		subheader: 'management',
+		subheader: 'hse',
 		items: [
 			// USER
 			{
@@ -222,6 +222,45 @@ const navConfig = [
 				],
 			},
 
+			// Operation
+			{
+				title: 'Operation',
+				icon: ICONS.cart,
+				routeNames: [
+					'store.management.index',
+					'store.management.create',
+					'store.management.store',
+					'store.management.edit',
+					'store.management.update',
+					'store.management.show',
+				],
+				children: [
+					{
+						title: 'Store',
+						routeNames: [
+							'store.management.index',
+							'store.management.create',
+							'store.management.edit',
+							'store.management.show',
+							'store.management.report',
+							'store.management.create_report',
+						],
+						children: [
+							{ title: 'create', path: PATH_DASHBOARD.store.create, routeNames: ["store.management.create"] },
+							{ title: 'list', path: PATH_DASHBOARD.store.root, routeNames: ["store.management.index"] },
+							{
+								title: 'report',
+								routeNames: ["store.management.index"],
+								children: [
+									{ title: 'create', path: PATH_DASHBOARD.store.createReport, routeNames: ["store.management.create_report"] },
+									{ title: 'list', path: PATH_DASHBOARD.store.report, routeNames: ["store.management.report"] },
+								]
+							}
+						]
+					}
+				]
+			},
+
 			// Incident
 			{
 				title: 'Incident',
@@ -240,6 +279,8 @@ const navConfig = [
 					{ title: 'report', path: PATH_DASHBOARD.incident.report, routeNames: ["incident.management.report"] },
 				]
 			},
+
+			// File Manager
 			{
 				title: 'File manager',
 				gate: 'folder_show',

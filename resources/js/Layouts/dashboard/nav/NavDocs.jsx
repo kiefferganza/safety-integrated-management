@@ -1,15 +1,14 @@
 // @mui
-import { usePage } from '@inertiajs/inertia-react';
-import { Stack, Button, Typography, Box } from '@mui/material';
+// import { usePage } from '@inertiajs/inertia-react';
+import { Stack, Box } from '@mui/material';
 // locales
-import { useLocales } from '../../../locales';
+// import { useLocales } from '../../../locales';
 
 // ----------------------------------------------------------------------
 
 export default function NavDocs () {
-	const { auth: { user } } = usePage().props;
 
-	const { translate } = useLocales();
+	// const { translate } = useLocales();
 
 	return (
 		<Stack
