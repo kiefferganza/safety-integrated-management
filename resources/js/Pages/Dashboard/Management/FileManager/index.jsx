@@ -37,8 +37,7 @@ const index = ({ folders, externalTraining }) => {
 			disableDrag: true
 		});
 		setData(mutatedFolders);
-	}, [folders]);
-	console.log({ folders, data })
+	}, [folders])
 
 	return (
 		<Suspense fallback={<LoadingScreen />}>

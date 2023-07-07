@@ -21,10 +21,11 @@ return new class extends Migration
 			$table->foreign('employee_id')->references('employee_id')->on('tbl_employees');
 			$table->integer('subscriber_id');
 			$table->string('slug')->unique('slug');
-			$table->string('name');
+			$table->string('name')->unique();
 			$table->text('description')->nullable();
 			$table->decimal('price')->default(0);
 			$table->string('currency', 16);
+			$table->enum('unit', ['Box', 'Meter', 'Pcs.', 'Kgs', 'Grams'])->default('Pcs.');
 			$table->integer('qty')->default(0);
 			$table->integer('min_qty')->default(0);
             $table->timestamps();
