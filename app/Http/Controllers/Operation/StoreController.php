@@ -13,9 +13,15 @@ class StoreController extends Controller
     public function index()
     {
 		$user = auth()->user();
-        return Inertia::render('Dashboard/Management/Operation/Store/index', [
-			'stores' => Store::where('subscriber_id', $user->subscriber_id)->with(['history', 'media'])
-		]);
+
+		$stores = Store::where('subscriber_id', $user->subscriber_id)
+			->with('history')
+			->get()
+			->map(function(Store $store) {
+				$thumbnail = $store->getFirstMediaUrl('images', 'thumbnail') ?? '/storage/assets/placeholder.svg';
+				return $store->setAttribute('thumbnail', $thumbnail);
+			});
+        return Inertia::render('Dashboard/Management/Operation/Store/index', compact('stores'));
     }
 
     public function create()

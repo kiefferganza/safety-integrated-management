@@ -169,9 +169,9 @@ export const PATH_DASHBOARD = {
 		root: route('store.management.index'),
 		create: route('store.management.create'),
 		store: route('store.management.store'),
-		edit: (id) => route('store.management.edit', id),
+		edit: (slug) => route('store.management.edit', slug),
 		update: (id) => route('store.management.update', id),
-		show: (formNumber) => route('store.management.show', formNumber),
+		show: (slug) => route('store.management.show', slug),
 		destroy: (id) => route('store.management.destroy', id),
 
 		// Report
