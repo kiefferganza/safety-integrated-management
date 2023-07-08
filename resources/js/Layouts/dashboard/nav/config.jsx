@@ -34,7 +34,8 @@ const ICONS = {
 	training: icon('mingcute_certificate_2'),
 	toolboxTalks: icon('mingcute_clipboard'),
 	incident: icon('ion_accessibility'),
-	inspection: icon('heroicons_document_magnifying_glass')
+	inspection: icon('heroicons_document_magnifying_glass'),
+	operation: icon('ic_blank'),
 };
 
 const navConfig = [
@@ -225,7 +226,7 @@ const navConfig = [
 			// Operation
 			{
 				title: 'Operation',
-				icon: ICONS.cart,
+				icon: ICONS.operation,
 				routeNames: [
 					'store.management.index',
 					'store.management.create',

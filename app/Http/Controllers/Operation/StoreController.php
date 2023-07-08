@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Operation;
 
 use App\Http\Controllers\Controller;
 use App\Models\Operation\Store\Store;
+use App\Services\MediaLibrary\MediaService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class StoreController extends Controller
 {
@@ -62,9 +65,14 @@ class StoreController extends Controller
     }
 
 
-    public function show($id)
+    public function show(Store $store)
     {
-        //
+		$store = $store->load(
+			'history.creator:employee_id,firstname,lastname'
+		);
+		$mediaService = new MediaService();
+		$store->setAttribute('images', $mediaService->getAndTransformMedia($store, 'images'));
+		return Inertia::render('Dashboard/Management/Operation/Store/Detail/index', compact('store'));
     }
 
 

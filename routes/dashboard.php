@@ -354,18 +354,20 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	});
 
 
-	Route::prefix('store')->as('store.management.')->group(function() {
-		Route::get('/', [StoreController::class, 'index'])->name('index');
-		Route::get('/view/{store:form_number}', [StoreController::class, 'show'])->name('show');
-		Route::get('/create', [StoreController::class, 'create'])->name('create');
-		Route::post('/store', [StoreController::class, 'store'])->name('store');
-		Route::get('/edit/{store:form_number}', [StoreController::class, 'edit'])->name('edit');
-		Route::put('/update/{store}', [StoreController::class, 'update'])->name('update');
-		Route::delete('/destroy/{store}', [StoreController::class, 'destroy'])->name('destroy');
-		// Report
-		Route::get('/report/list', [StoreController::class, 'report'])->name('report');
-		Route::get('/create/report', [StoreController::class, 'createReport'])->name('create_report');
-		Route::post('/store/report', [StoreController::class, 'storeReport'])->name('store_report');
+	Route::prefix('operation')->group(function() {
+		Route::prefix('store')->as('store.management.')->group(function() {
+			Route::get('/', [StoreController::class, 'index'])->name('index');
+			Route::get('/view/{store:slug}', [StoreController::class, 'show'])->name('show');
+			Route::get('/create', [StoreController::class, 'create'])->name('create');
+			Route::post('/store', [StoreController::class, 'store'])->name('store');
+			Route::get('/edit/{store:slug}', [StoreController::class, 'edit'])->name('edit');
+			Route::put('/update/{store}', [StoreController::class, 'update'])->name('update');
+			Route::delete('/destroy/{store}', [StoreController::class, 'destroy'])->name('destroy');
+			// Report
+			Route::get('/report/list', [StoreController::class, 'report'])->name('report');
+			Route::get('/create/report', [StoreController::class, 'createReport'])->name('create_report');
+			Route::post('/store/report', [StoreController::class, 'storeReport'])->name('store_report');
+		});
 	});
 
 });

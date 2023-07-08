@@ -16,10 +16,10 @@ return new class extends Migration
         Schema::create('store_histories', function (Blueprint $table) {
             $table->id();
 			$table->foreignId('store_id')->references('id')->on('stores')->cascadeOnDelete();
-			$table->string('type', 16);
+			$table->enum('type', ['add', 'remove']);
 			$table->unsignedInteger('qty');
 			$table->unsignedInteger('prev_qty');
-			$table->unsignedInteger('requested_by');
+			$table->unsignedInteger('requested_by')->nullable();
 			$table->foreign('requested_by')->references('employee_id')->on('tbl_employees');
 			$table->string('location')->nullable();
             $table->timestamps();

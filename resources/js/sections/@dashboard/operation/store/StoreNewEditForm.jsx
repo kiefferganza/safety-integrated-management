@@ -82,6 +82,7 @@ export function StoreNewEditForm ({ isEdit, currentProduct }) {
 		getValues,
 		handleSubmit,
 		setError,
+		clearErrors,
 		formState: { isSubmitting, isDirty },
 	} = methods;
 
@@ -95,9 +96,11 @@ export function StoreNewEditForm ({ isEdit, currentProduct }) {
 		} else {
 			if (isEdit && currentProduct) {
 				reset(defaultValues);
+				clearErrors()
 			}
 			if (!isEdit) {
 				reset(defaultValues);
+				clearErrors()
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
