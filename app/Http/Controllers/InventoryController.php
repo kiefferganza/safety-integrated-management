@@ -216,7 +216,7 @@ class InventoryController extends Controller
 
 			
 			$inventoryBound->type = "inbound";
-			$inventoryBound->requested_by_employee = (string)$user->user_id;
+			$inventoryBound->requested_by_employee = (string)$user->emp_id;
 			$inventoryBound->requested_by_location = NULL;
 
 			$inventory->current_stock_qty = $newQty;

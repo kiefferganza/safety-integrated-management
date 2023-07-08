@@ -363,6 +363,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/edit/{store:slug}', [StoreController::class, 'edit'])->name('edit');
 			Route::post('/update/{store}', [StoreController::class, 'update'])->name('update');
 			Route::delete('/destroy/{store}', [StoreController::class, 'destroy'])->name('destroy');
+			// Stock
+			Route::post('/add-remove-stock/{store}', [StoreController::class, "add_remove_stock"])->name('add_remove_stock');
 			// Report
 			Route::get('/report/list', [StoreController::class, 'report'])->name('report');
 			Route::get('/create/report', [StoreController::class, 'createReport'])->name('create_report');

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Operation;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\Operation\Store\Store;
+use App\Models\Operation\Store\StoreHistory;
 use App\Services\MediaLibrary\MediaService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -26,7 +28,13 @@ class StoreController extends Controller
 				}
 				return $store->setAttribute('thumbnail', $thumbnail);
 			});
-        return Inertia::render('Dashboard/Management/Operation/Store/index', compact('stores'));
+
+		$employee = Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
+			->where("is_deleted", 0)
+			->where("is_active", 0)
+			->where("sub_id", auth()->user()->subscriber_id)
+			->get();
+        return Inertia::render('Dashboard/Management/Operation/Store/index', compact('stores', 'employee'));
     }
 
     public function create()
@@ -74,7 +82,14 @@ class StoreController extends Controller
 		);
 		$mediaService = new MediaService();
 		$store->setAttribute('images', $mediaService->getAndTransformMedia($store, 'images'));
-		return Inertia::render('Dashboard/Management/Operation/Store/Detail/index', compact('store'));
+
+		$employee = Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
+			->where("is_deleted", 0)
+			->where("is_active", 0)
+			->where("sub_id", auth()->user()->subscriber_id)
+			->get();
+
+		return Inertia::render('Dashboard/Management/Operation/Store/Detail/index', compact('store', 'employee'));
     }
 
 
@@ -130,10 +145,60 @@ class StoreController extends Controller
     }
 
 
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $request->validate(["ids" => 'array|min:1']);
+
+		Store::whereIn("id", $request->ids)->delete();
+
+		return redirect()->back()
+		->with("message", count($request->ids) . " items deleted successfully!")
+		->with("type", "success");
     }
+
+	public function add_remove_stock(Store $store, Request $request)
+	{
+		$request->validate([
+			"qty" => 'required|integer',
+			"type" => 'required|string'
+		]);
+
+		$storeHistory = new StoreHistory();
+		$storeHistory->store_id = $store->id;
+		$storeHistory->prev_qty = $store->qty;
+		$storeHistory->qty = $request->qty;
+
+		if($request->type === "add") {
+			$user = auth()->user();
+			$newQty = $store->qty + $request->qty;
+
+			
+			$storeHistory->type = "add";
+			$storeHistory->requested_by = (string)$user->emp_id;
+			$storeHistory->location = NULL;
+
+			$store->qty = $newQty;
+		}else if($request->type === "remove" && ($request->employee_id !== null || $request->location !== null)) {
+			$newQty = $store->qty - $request->qty;
+
+			$storeHistory->type = "remove";
+			$storeHistory->requested_by = $request->employee_id ? (string)$request->employee_id : null;
+			$storeHistory->location = $request->location;
+
+			$store->qty = $newQty;
+		}else {
+			abort(500);
+		}
+
+		$storeHistory->save();
+		$store->save();
+
+
+		return redirect()->back()
+		->with("message", $request->type === "add" ? "Re-stocked successfully!" : "Unstocked successfully!")
+		->with("type", "success");
+
+	}
 
 	// REPORT
 	public function report() {

@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Inertia } from "@inertiajs/inertia";
-import { PATH_DASHBOARD } from "@/routes/paths";
 import { useSwal } from "@/hooks/useSwal";
 // mui
 const { Autocomplete, Button, Dialog, DialogContent, DialogTitle, Divider, Grid, Stack, TextField, Typography } = await import("@mui/material");
@@ -13,7 +12,8 @@ import { RHFRadioGroup, RHFTextField } from "@/Components/hook-form";
 const { Image } = await import("@/Components/image/Image");
 import FormProvider from "@/Components/hook-form/FormProvider";
 
-export const AddRemoveStockDialog = ({ open, onClose, type = "add", inventory, ...other }) => {
+export const AddRemoveStockDialog = ({ open, onClose, type = "add", store, ...other }) => {
+	const { id, name, price, qty, images = [] } = store;
 	const { load, stop } = useSwal();
 	const { employee, auth: { user } } = usePage().props;
 
@@ -22,7 +22,7 @@ export const AddRemoveStockDialog = ({ open, onClose, type = "add", inventory, .
 			.min(1, 'Please provide a valid quantity number.')
 			.test('qty_max', 'Must be less than or equal to the current quantity.', (val) => {
 				if (type === "add") return true;
-				return val <= +inventory?.current_stock_qty
+				return val <= +qty
 			}),
 		rqstType: Yup.string().nullable(),
 		employee_id: Yup.string().nullable().when("rqstType", (rqstType, schema) => {
@@ -49,7 +49,7 @@ export const AddRemoveStockDialog = ({ open, onClose, type = "add", inventory, .
 	const onSubmit = (data) => {
 		data.type = type;
 		data.location = data.location || null;
-		Inertia.post(PATH_DASHBOARD.ppe.addRemoveStock(inventory.inventory_id), data, {
+		Inertia.post(route('store.management.add_remove_stock', id), data, {
 			preserveScroll: true,
 			onStart () {
 				handleClose();
@@ -80,9 +80,9 @@ export const AddRemoveStockDialog = ({ open, onClose, type = "add", inventory, .
 	return (
 		<Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose} {...other}>
 			<Stack direction="row" justifyContent="space-between" alignItems="center">
-				<DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>{inventory?.item}</DialogTitle>
+				<DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>{name}</DialogTitle>
 				<DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>
-					Quantity After Update: {type === "add" ? +inventory?.current_stock_qty + getValues("qty") : +inventory?.current_stock_qty - getValues("qty")}
+					Quantity After Update: {type === "add" ? +qty + getValues("qty") : +qty - getValues("qty")}
 				</DialogTitle>
 			</Stack>
 			<DialogContent dividers sx={{ pt: 1, pb: 0, border: 'none' }}>
@@ -91,8 +91,8 @@ export const AddRemoveStockDialog = ({ open, onClose, type = "add", inventory, .
 						<Image
 							disabledEffect
 							visibleByDefault
-							alt={inventory?.item}
-							src={inventory?.img_src ? `/storage/media/photos/inventory/${inventory.img_src}` : '/storage/assets/placeholder.svg'}
+							alt={name}
+							src={images[0]?.small || null}
 							sx={{ borderRadius: 1.5, width: 62, height: 62, margin: 'auto' }}
 						/>
 					</Grid>
@@ -100,11 +100,15 @@ export const AddRemoveStockDialog = ({ open, onClose, type = "add", inventory, .
 						<Stack direction="row" justifyContent="space-between" alignItems="center">
 							<Stack width={1}>
 								<Typography variant="subtitle2">Product Name</Typography>
-								<Typography variant="subtitle2" sx={{ textTransform: "capitalize", color: 'text.secondary' }}>{inventory?.item}</Typography>
+								<Typography variant="subtitle2" sx={{ textTransform: "capitalize", color: 'text.secondary' }}>{name}</Typography>
 							</Stack>
 							<Stack width={1}>
 								<Typography variant="subtitle2" textAlign="center">Quantity</Typography>
-								<Typography variant="subtitle2" sx={{ color: 'text.secondary' }} textAlign="center">{inventory?.current_stock_qty}</Typography>
+								<Typography variant="subtitle2" sx={{ color: 'text.secondary' }} textAlign="center">{qty}</Typography>
+							</Stack>
+							<Stack width={1}>
+								<Typography variant="subtitle2" textAlign="center">Price</Typography>
+								<Typography variant="subtitle2" sx={{ color: 'text.secondary' }} textAlign="center">{price}</Typography>
 							</Stack>
 						</Stack>
 					</Grid>

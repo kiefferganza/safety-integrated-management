@@ -9,7 +9,7 @@ import { fDate } from '@/utils/formatTime';
 // components
 import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
-// const { AddRemoveStockDialog } = await import('../portal/AddRemoveStockDialog');
+const { AddRemoveStockDialog } = await import('../portal/AddRemoveStockDialog');
 
 // ----------------------------------------------------------------------
 
@@ -132,7 +132,7 @@ export default function StoreDetailsSummary ({ store, ...other }) {
 						variant="contained"
 						startIcon={<Iconify icon="eva:plus-fill" />}
 						sx={{ whiteSpace: 'nowrap' }}
-					// onClick={handleAddStock}
+						onClick={handleAddStock}
 					>
 						Add Stock
 					</Button>
@@ -143,18 +143,18 @@ export default function StoreDetailsSummary ({ store, ...other }) {
 						color="warning"
 						variant="contained"
 						startIcon={<Iconify icon="eva:minus-fill" />}
-					// onClick={handleRemoveStock}
+						onClick={handleRemoveStock}
 					>
 						Pull out Stock
 					</Button>
 				</Stack>
 			</Stack>
-			{/* <AddRemoveStockDialog
+			<AddRemoveStockDialog
 				open={openStock}
 				onClose={handleCloseStock}
-				inventory={inventory}
+				store={store}
 				type={stockType}
-			/> */}
+			/>
 		</>
 	);
 }
