@@ -54,17 +54,17 @@ export function StoreNewEditForm ({ isEdit, currentProduct }) {
 		unit: Yup.string().required('Unit is required').oneOf(['Box', 'Meter', 'Pcs.', 'Kgs', 'Grams'], "Please select one of 'Box', 'Meter', 'Pcs.', 'Kgs', 'Grams', unit types.")
 	});
 
-
 	const defaultValues = useMemo(
 		() => ({
 			name: currentProduct?.name || '',
 			description: currentProduct?.description || '',
-			images: currentProduct?.images || [],
+			images: currentProduct?.images?.map(img => img.thumbnail) || [],
 			qty: currentProduct?.qty || 0,
 			min_qty: currentProduct?.min_qty || 0,
 			currency: currentProduct?.currency || 'IQD',
 			price: currentProduct?.price || 0,
 			unit: currentProduct?.unit || TYPE_OPTIONS[2].value,
+			removedImages: []
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[currentProduct]
@@ -83,7 +83,7 @@ export function StoreNewEditForm ({ isEdit, currentProduct }) {
 		handleSubmit,
 		setError,
 		clearErrors,
-		formState: { isSubmitting, isDirty },
+		formState: { isSubmitting, isDirty, dirtyFields },
 	} = methods;
 
 	const values = watch();
@@ -109,7 +109,12 @@ export function StoreNewEditForm ({ isEdit, currentProduct }) {
 	const onSubmit = async (data) => {
 		data.images = data.images.filter(img => (img instanceof File));
 		if (isEdit && currentProduct) {
-			Inertia.post(route("store.management.update", currentProduct?.id), data, {
+			const newData = Object.keys(dirtyFields).reduce((acc, fieldName) => {
+				acc[fieldName] = data[fieldName];
+				return acc;
+			}, {});
+			newData.removedImages = data.removedImages.filter(img => img);
+			Inertia.post(route("store.management.update", { store: currentProduct?.id }), newData, {
 				preserveScroll: true,
 				onStart () {
 					load("Updating product", "please wait...");
@@ -119,6 +124,7 @@ export function StoreNewEditForm ({ isEdit, currentProduct }) {
 				}
 			});
 		} else {
+			delete data.removedImages;
 			Inertia.post(route("store.management.store"), data, {
 				preserveScroll: true,
 				onStart () {
@@ -141,18 +147,31 @@ export function StoreNewEditForm ({ isEdit, currentProduct }) {
 				})
 			);
 
-			setValue('images', [...files, ...newFiles]);
+			setValue('images', [...files, ...newFiles], { shouldDirty: true });
 		},
 		[setValue, values.images]
 	);
 
 	const handleRemoveFile = (inputFile) => {
 		const filtered = values.images && values.images?.filter((file) => file !== inputFile);
-		setValue('images', filtered);
+		if (currentProduct && currentProduct?.images?.length > 0) {
+			const removedFile = currentProduct.images.find(img => img.thumbnail === inputFile);
+			if (removedFile) {
+				setValue('removedImages', [
+					...values.removedImages,
+					removedFile.id
+				], { shouldDirty: true });
+			}
+		}
+
+		setValue('images', filtered, { shouldDirty: true });
 	};
 
 	const handleRemoveAllFiles = () => {
-		setValue('images', []);
+		if (currentProduct) {
+			setValue('removedImages', currentProduct?.images?.map(img => img?.id), { shouldDirty: true });
+		}
+		setValue('images', [], { shouldDirty: true });
 	};
 
 	return (

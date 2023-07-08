@@ -5,7 +5,6 @@ import { Head } from '@inertiajs/inertia-react';
 const StoreListPage = lazy(() => import("./StoreListPage"));
 
 const index = ({ stores }) => {
-	console.log(stores);
 
 	return (
 		<>

@@ -27,7 +27,6 @@ export default function StoreDetailPage ({ store }) {
 		{
 			value: 'history',
 			label: 'History',
-			// component: store ? <PpeDetailsHistory bound={store?.bound} filterName={filterName} setFilterName={setFilterName} /> : null,
 			component: <StoreDetailsHistory history={store.history} filterName={filterName} setFilterName={setFilterName} />
 		},
 		{
@@ -58,7 +57,7 @@ export default function StoreDetailPage ({ store }) {
 						<Button
 							variant="outlined"
 							component={Link}
-							href={PATH_DASHBOARD.ppe.edit(store.slug)}
+							href={PATH_DASHBOARD.store.edit(store.slug)}
 							startIcon={<Iconify icon="eva:edit-fill" />}
 						>Edit</Button>
 					}

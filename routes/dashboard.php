@@ -361,7 +361,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/create', [StoreController::class, 'create'])->name('create');
 			Route::post('/store', [StoreController::class, 'store'])->name('store');
 			Route::get('/edit/{store:slug}', [StoreController::class, 'edit'])->name('edit');
-			Route::put('/update/{store}', [StoreController::class, 'update'])->name('update');
+			Route::post('/update/{store}', [StoreController::class, 'update'])->name('update');
 			Route::delete('/destroy/{store}', [StoreController::class, 'destroy'])->name('destroy');
 			// Report
 			Route::get('/report/list', [StoreController::class, 'report'])->name('report');
