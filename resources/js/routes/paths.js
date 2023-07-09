@@ -175,8 +175,9 @@ export const PATH_DASHBOARD = {
 		destroy: (id) => route('operation.store.destroy', id),
 
 		// Report
-		createReport: route('operation.store.create_report'),
-		report: route('operation.store.report')
+		createReport: route('operation.store.report.create'),
+		reportShow: (slug) => route('operation.store.report.show', slug),
+		report: route('operation.store.report.index')
 	}
 
 	// invoice: {

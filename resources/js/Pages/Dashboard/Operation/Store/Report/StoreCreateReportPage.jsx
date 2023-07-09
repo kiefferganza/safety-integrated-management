@@ -44,23 +44,23 @@ import { fCurrencyNumberAndSymbol } from "@/utils/formatNumber";
 import { sentenceCase } from "change-case";
 import Image from "@/Components/image/Image";
 import Iconify from "@/Components/iconify/Iconify";
-import PpePDF from "@/sections/@dashboard/ppe/details/PpePDF";
+// import PpePDF from "@/sections/@dashboard/ppe/details/PpePDF";
 import { getInventoryStatus } from "@/utils/formatStatuses";
-const { NewPpeReport } = await import("@/sections/@dashboard/ppe/portal/NewPpeReport");
-const { PpeAnalytic } = await import("@/sections/@dashboard/ppe/PpeAnalytic");
-const { PpeReportTableToolbar } = await import("@/sections/@dashboard/ppe/details/PpeReportTableToolbar");
+const { NewStoreReport } = await import("@/sections/@dashboard/operation/store/portal/NewStoreReport");
+const { StoreAnalytic } = await import("@/sections/@dashboard/operation/store/StoreAnalytic");
+const { StoreReportTableToolbar } = await import("@/sections/@dashboard/operation/store/report/StoreReportTableToolbar");
 
 const TABLE_HEAD = [
-	{ id: 'item', label: 'Product', align: 'left' },
-	{ id: 'inboundTotalQty', label: 'Quantity Received', align: 'center' },
-	{ id: 'outboundTotalQty', label: 'Quantity Issued', align: 'center' },
-	{ id: 'current_stock_qty', label: 'Remaining Quantity', align: 'center' },
+	{ id: 'name', label: 'Product', align: 'left' },
+	{ id: 'total_add_qty', label: 'Quantity Received', align: 'center' },
+	{ id: 'total_remove_qty', label: 'Quantity Issued', align: 'center' },
+	{ id: 'qty', label: 'Remaining Quantity', align: 'center' },
 	{ id: 'min_qty', label: 'Reorder Level', align: 'center' },
-	{ id: 'item_price', label: 'Price', align: 'left' },
+	{ id: 'price', label: 'Price', align: 'left' },
 	{ id: 'status', label: 'Status', align: 'center' },
 ];
 
-const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) => {
+const StoreCreateReportPage = ({ stores, employees, sequence_no, submittedDates }) => {
 	const {
 		dense,
 		page,
@@ -81,7 +81,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 		onChangeRowsPerPage,
 	} = useTable({
 		defaultDense: true,
-		defaultRowsPerPage: inventories.length || 5
+		defaultRowsPerPage: stores.length || 5
 	});
 	const theme = useTheme();
 	const { themeStretch } = useSettingsContext();
@@ -119,14 +119,14 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 
 
 	useEffect(() => {
-		if (inventories) {
-			const data = inventories.map((inv) => ({
+		if (stores) {
+			const data = stores.map((inv) => ({
 				...inv,
-				status: getInventoryStatus(inv.current_stock_qty, inv.min_qty)
+				status: getInventoryStatus(inv.qty, inv.min_qty)
 			}))
 			setTableData(data || []);
 		}
-	}, [inventories]);
+	}, [stores]);
 
 	const dataFiltered = applyFilter({
 		inputData: tableData,
@@ -166,27 +166,27 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 	};
 
 	const totals = dataFiltered.reduce((acc, curr) => ({
-		totalOrder: acc.totalOrder + (curr?.outboundTotalQty || 0),
-		totalReceived: acc.totalReceived + (curr?.inboundTotalQty || 0),
-		subtotal: acc.subtotal + (curr.item_price * curr?.min_qty || 0)
+		totalOrder: acc.totalOrder + (curr?.total_remove_qty || 0),
+		totalReceived: acc.totalReceived + (curr?.total_add_qty || 0),
+		subtotal: acc.subtotal + (curr.price * curr?.min_qty || 0)
 	}), {
 		totalOrder: 0,
 		totalReceived: 0,
 		subtotal: 0
 	});
 
-	const list = tableData.filter(data => selected.includes(data.inventory_id));
+	const list = tableData.filter(data => selected.includes(data.id));
 
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Generate PPE Report"
+					heading="Generate Store Report"
 					links={[
 						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{
-							name: 'PPE',
-							href: PATH_DASHBOARD.ppe.root,
+							name: 'Store',
+							href: PATH_DASHBOARD.store.root,
 						},
 						{ name: 'Report' },
 					]}
@@ -199,7 +199,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 							divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
 							sx={{ py: 2 }}
 						>
-							<PpeAnalytic
+							<StoreAnalytic
 								title="Total"
 								total={dataFiltered.length}
 								percent={100}
@@ -207,7 +207,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 								color={theme.palette.info.main}
 							/>
 
-							<PpeAnalytic
+							<StoreAnalytic
 								title="Order Quantity"
 								total={totals.totalOrder}
 								percent={100}
@@ -215,7 +215,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 								color={theme.palette.success.main}
 							/>
 
-							<PpeAnalytic
+							<StoreAnalytic
 								title="Received Quantity"
 								total={totals.totalReceived}
 								percent={100}
@@ -223,7 +223,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 								color={theme.palette.info.main}
 							/>
 
-							<PpeAnalytic
+							<StoreAnalytic
 								title="Subtotal"
 								rawTotal={`IQD ${(totals?.subtotal || 0)?.toLocaleString()}`}
 								percent={100}
@@ -231,7 +231,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 								color={theme.palette.success.main}
 							/>
 
-							<PpeAnalytic
+							<StoreAnalytic
 								title="In Stock"
 								total={getLengthByStatus("in_stock")}
 								percent={getPercentByStatus("in_stock")}
@@ -239,7 +239,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 								color={theme.palette.info.main}
 							/>
 
-							<PpeAnalytic
+							<StoreAnalytic
 								title="Need Reorder"
 								total={getLengthByStatus("need_reorder")}
 								percent={getPercentByStatus("need_reorder")}
@@ -247,7 +247,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 								color={theme.palette.info.main}
 							/>
 
-							<PpeAnalytic
+							<StoreAnalytic
 								title="Low Stock"
 								total={getLengthByStatus("low_stock")}
 								percent={getPercentByStatus("low_stock")}
@@ -255,7 +255,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 								color={theme.palette.warning.main}
 							/>
 
-							<PpeAnalytic
+							<StoreAnalytic
 								title="Out Of Stock"
 								total={getLengthByStatus("out_of_stock")}
 								percent={getPercentByStatus("out_of_stock")}
@@ -267,7 +267,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 				</Card>
 
 				<Card>
-					<PpeReportTableToolbar
+					<StoreReportTableToolbar
 						filterName={filterName}
 						filterStatus={filterStatus}
 						onFilterName={handleFilterName}
@@ -294,7 +294,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 							onSelectAllRows={(checked) =>
 								onSelectAllRows(
 									checked,
-									tableData.map((row) => row.inventory_id)
+									tableData.map((row) => row.id)
 								)
 							}
 							action={
@@ -327,7 +327,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 									onSelectAllRows={(checked) =>
 										onSelectAllRows(
 											checked,
-											dataFiltered.map((row) => row.inventory_id)
+											dataFiltered.map((row) => row.id)
 										)
 									}
 								/>
@@ -335,15 +335,15 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 								<TableBody>
 									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) =>
 										<TableRow
-											key={row.inventory_id}
+											key={row.id}
 											sx={{
 												borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
 											}}
 										>
 											<TableCell padding="checkbox">
 												<Checkbox
-													checked={selected.includes(row.inventory_id)}
-													onClick={() => onSelectRow(row.inventory_id)}
+													checked={selected.includes(row.id)}
+													onClick={() => onSelectRow(row.id)}
 												/>
 											</TableCell>
 											<TableCell>
@@ -351,18 +351,21 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 													<Image
 														disabledEffect
 														visibleByDefault
-														alt={row.item}
-														src={row.img_src ? `/storage/media/photos/inventory/${row.img_src}` : '/storage/assets/placeholder.svg'}
+														alt={row.name}
+														src={row.thumbnail}
 														sx={{ borderRadius: 1.5, width: 48, height: 48 }}
 													/>
-													<Link href={PATH_DASHBOARD.ppe.view(row.slug)} component={InertiaLink} noWrap variant="subtitle2" sx={{ cursor: 'pointer', textTransform: 'capitalize' }}>{row.item}</Link>
+
+													<Link component={InertiaLink} href={PATH_DASHBOARD.store.show(row.slug)} noWrap color="inherit" variant="subtitle2" sx={{ cursor: 'pointer', textTransform: 'capitalize' }}>
+														{row.name}
+													</Link>
 												</Stack>
 											</TableCell>
-											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.inboundTotalQty || 0).toLocaleString()}</TableCell>
-											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.outboundTotalQty || 0).toLocaleString()}</TableCell>
-											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.current_stock_qty || 0).toLocaleString()}</TableCell>
+											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.total_add_qty || 0).toLocaleString()}</TableCell>
+											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.total_remove_qty || 0).toLocaleString()}</TableCell>
+											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{(row?.qty || 0).toLocaleString()}</TableCell>
 											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{row.min_qty}</TableCell>
-											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{fCurrencyNumberAndSymbol(row.item_price, row.item_currency)}</TableCell>
+											<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{fCurrencyNumberAndSymbol(row.price, row.currency)}</TableCell>
 											<TableCell align="center">
 												<Label
 													variant="soft"
@@ -394,7 +397,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 						//
 						dense={dense}
 						onChangeDense={onChangeDense}
-						rowsPerPageOptions={[5, 10, 25, inventories.length || 30]}
+						rowsPerPageOptions={[5, 10, 25, stores?.length || 30]}
 					/>
 				</Card>
 			</Container>
@@ -416,15 +419,15 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 
 					<Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
 						<PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-							<PpePDF report={{ inventories: list }} />
+							{/* <PpePDF report={{ inventories: list }} /> */}
 						</PDFViewer>
 					</Box>
 				</Box>
 			</Dialog>
-			<NewPpeReport
+			<NewStoreReport
 				open={openNewReport}
 				onClose={handleCloseNewReport}
-				inventories={list}
+				stores={list}
 				employees={employees}
 				sequence_no={sequence_no}
 				submittedDates={submittedDates}
@@ -445,7 +448,7 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 	inputData = stabilizedThis.map((el) => el[0]);
 
 	if (filterName) {
-		inputData = inputData.filter((product) => product.item.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
+		inputData = inputData.filter((product) => product.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
 	}
 
 	if (filterStatus.length) {
@@ -454,7 +457,7 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 
 	if (filterStartDate && !filterEndDate) {
 		const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
-		inputData = inputData.filter(product => fTimestamp(new Date(product.date_updated)) >= startDateTimestamp);
+		inputData = inputData.filter(product => fTimestamp(new Date(product.created_at)) >= startDateTimestamp);
 	}
 
 	if (filterStartDate && filterEndDate) {
@@ -462,12 +465,12 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 		const endDateTimestamp = filterEndDate.setHours(0, 0, 0, 0);
 		inputData = inputData.filter(
 			(product) =>
-				fTimestamp(product.date_updated) >= startDateTimestamp &&
-				fTimestamp(product.date_updated) <= endDateTimestamp
+				fTimestamp(product.created_at) >= startDateTimestamp &&
+				fTimestamp(product.created_at) <= endDateTimestamp
 		);
 	}
 
 	return inputData;
 }
 
-export default PPEReportPage
+export default StoreCreateReportPage

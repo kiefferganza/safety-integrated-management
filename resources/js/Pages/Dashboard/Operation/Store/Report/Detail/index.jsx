@@ -6,10 +6,10 @@ import Container from "@mui/material/Container";
 import { Head } from "@inertiajs/inertia-react";
 import { useSettingsContext } from "@/Components/settings";
 import { PATH_DASHBOARD } from "@/routes/paths";
+import { StoreReportDetailToolbar } from "@/sections/@dashboard/operation/store/details";
 const CustomBreadcrumbs = lazy(() => import("@/Components/custom-breadcrumbs/CustomBreadcrumbs"));
-const PpeReportDetailToolbar = lazy(() => import("@/sections/@dashboard/ppe/details/PpeReportDetailToolbar"));
 const ReportDetailHead = lazy(() => import("@/sections/@dashboard/ppe/details/ReportDetailHead"));
-const ReportDetailPage = lazy(() => import("./ReportDetailPage"));
+const ReportDetailPage = lazy(() => import("./StoreReportDetailPage"));
 
 const index = ({ report }) => {
 	const { themeStretch } = useSettingsContext();
@@ -27,22 +27,22 @@ const index = ({ report }) => {
 							links={[
 								{
 									name: 'PPE',
-									href: PATH_DASHBOARD.ppe.root,
+									href: PATH_DASHBOARD.store.report,
 								},
 								{
 									name: "New Report",
-									href: PATH_DASHBOARD.ppe.report,
+									href: PATH_DASHBOARD.store.report,
 								},
 								{
 									name: "Report List",
-									href: PATH_DASHBOARD.ppe.reportList,
+									href: PATH_DASHBOARD.store.reportList,
 								},
 								{
 									name: report?.form_number?.toUpperCase()
 								},
 							]}
 						/>
-						<PpeReportDetailToolbar inventoryReport={report} />
+						<StoreReportDetailToolbar inventoryReport={report} />
 						<Card sx={{ p: 3 }}>
 							<ReportDetailHead inventoryReport={report} title="Monthly HSE Inventory Report & Budget Forecast" />
 							<ReportDetailPage inventoryReport={report} />

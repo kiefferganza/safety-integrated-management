@@ -154,8 +154,6 @@ class StoreController extends Controller
 		foreach ($stores as $store) {
 			/** @var Store $store */
 			$store->clearMediaCollection('images');
-			// if($store->hasMedia('images')){
-			// }
 		}
 
 		Store::whereIn("id", $request->ids)->delete();

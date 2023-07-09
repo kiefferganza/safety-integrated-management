@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Inertia } from "@inertiajs/inertia";
-import { usePage } from "@inertiajs/inertia-react";
 import { fCurrencyNumberAndSymbol, fNumber } from "@/utils/formatNumber";
 import { sentenceCase } from "change-case";
 import { useSwal } from "@/hooks/useSwal";
@@ -32,13 +31,12 @@ const newBudgetForecastSchema = Yup.object().shape({
 	budget_forcast_date: Yup.date().nullable().required("Forcast date is required"),
 	submitted_date: Yup.date().nullable().required("Submitted date is required"),
 	reviewer_id: Yup.number().nullable().required("Reviewer personel is required"),
-	approval_id: Yup.number().nullable().required("Approval personel is required"),
+	approver_id: Yup.number().nullable().required("Approver personel is required"),
 	remarks: Yup.string().max(255),
-	inventories: Yup.array().min(1)
+	items: Yup.array().min(1)
 });
 
-export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_no, submittedDates, ...other }) => {
-	const { auth: { user } } = usePage().props
+export const NewStoreReport = ({ open, onClose, stores, employees, sequence_no, submittedDates, ...other }) => {
 	const { load, stop } = useSwal();
 	const {
 		startDate,
@@ -70,12 +68,12 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 		contract_no: "",
 		conducted_by: "",
 		reviewer_id: null,
-		approval_id: null,
+		approver_id: null,
 		remarks: "",
-		inventories: inventories.map(inv => ({
+		items: stores.map(inv => ({
 			...inv,
 			minOrder: inv.min_qty,
-			maxOrder: 0,
+			order: 0,
 			baseNum: 10,
 			inventoryStatus: inv.status
 		}))
@@ -86,15 +84,15 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 		defaultValues
 	});
 
-	const { setValue, watch, handleSubmit, reset, formState: { errors }, control } = methods;
+	const { setValue, watch, handleSubmit, reset, formState: { errors } } = methods;
 
 	const values = watch();
 
 	useEffect(() => {
-		if (inventories?.length > 0) {
+		if (stores?.length > 0) {
 			reset(defaultValues);
 		}
-	}, [inventories])
+	}, [stores])
 
 	const handleChangeStartDate = (newValue) => {
 		setValue("inventory_start_date", newValue, { shouldValidate: true });
@@ -107,7 +105,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 	};
 
 	const onSubmit = (data) => {
-		Inertia.post(route("ppe.management.report.store"), data, {
+		Inertia.post(route("operation.store.report.store"), data, {
 			preserveScroll: true,
 			onStart () {
 				handleClose();
@@ -134,15 +132,15 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 	}
 
 	const handleBaseNumChange = (idx, val) => {
-		setValue(`inventories.${idx}.baseNum`, val);
+		setValue(`items.${idx}.baseNum`, val);
 	}
 
 	const handleMaxOrderChange = (idx, val) => {
-		setValue(`inventories.${idx}.maxOrder`, val);
-		const inventory = values.inventories[idx];
-		const newStatus = getStatus((inventory.current_stock_qty + inventory.maxOrder), inventory.min_qty);
+		setValue(`items.${idx}.order`, val);
+		const inventory = values.items[idx];
+		const newStatus = getStatus((inventory.qty + inventory.order), inventory.min_qty);
 		if (newStatus !== inventory.inventoryStatus) {
-			setValue(`inventories.${idx}.inventoryStatus`, newStatus);
+			setValue(`items.${idx}.inventoryStatus`, newStatus);
 		}
 	}
 
@@ -315,18 +313,18 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 									error={errors?.reviewer_id?.message}
 								/>
 								<PersonelAutocomplete
-									value={getAutocompleteValue(values.approval_id)}
+									value={getAutocompleteValue(values.approver_id)}
 									onChange={(_event, newValue) => {
 										if (newValue) {
-											setValue('approval_id', newValue.id, { shouldValidate: true, shouldDirty: true });
+											setValue('approver_id', newValue.id, { shouldValidate: true, shouldDirty: true });
 										} else {
-											setValue('approval_id', null, { shouldValidate: true, shouldDirty: true });
+											setValue('approver_id', null, { shouldValidate: true, shouldDirty: true });
 										}
 									}}
 									isOptionEqualToValue={(option, value) => option.label === value}
 									options={options}
 									label="Approved By"
-									error={errors?.approval_id?.message}
+									error={errors?.approver_id?.message}
 								/>
 								<Box width={1} />
 							</Stack>
@@ -341,7 +339,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 					</Typography>
 
 					<NewProductList
-						inventories={values.inventories}
+						stores={values.items}
 						handleBaseNumChange={handleBaseNumChange}
 						handleMaxOrderChange={handleMaxOrderChange}
 					/>
@@ -353,7 +351,7 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 }
 
 
-function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChange }) {
+function NewProductList ({ stores, handleBaseNumChange, handleMaxOrderChange }) {
 
 	return (
 		<Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3} sx={{ paddingX: { xs: 0, md: 2 }, width: 1 }}>
@@ -377,19 +375,19 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 
 								<TableCell align="left">Min Order</TableCell>
 
-								<TableCell align="left">Order</TableCell>
+								<TableCell align="center">Order</TableCell>
 
 								<TableCell align="left">Status</TableCell>
 							</TableRow>
 						</TableHead>
 
 						<TableBody>
-							{inventories.map((inv, idx) => (
+							{stores.map((inv, idx) => (
 								<TableRow
 									sx={{
 										borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
 									}}
-									key={inv.inventory_id}
+									key={inv.id}
 								>
 									<TableCell>{idx + 1}</TableCell>
 
@@ -398,8 +396,8 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 											<Image
 												disabledEffect
 												visibleByDefault
-												alt={inv.item}
-												src={inv.img_src ? `/storage/media/photos/inventory/${inv.img_src}` : '/storage/assets/placeholder.svg'}
+												alt={inv.name}
+												src={inv.thumbnail}
 												sx={{ borderRadius: 1.5, width: 48, height: 48 }}
 											/>
 											<Typography variant="subtitle2">{inv.item}</Typography>
@@ -407,11 +405,11 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 									</TableCell>
 
 									<TableCell align="left">
-										{fCurrencyNumberAndSymbol(inv.item_price, inv.item_currency)}
+										{fCurrencyNumberAndSymbol(inv.price, inv.currency)}
 									</TableCell>
 
 									<TableCell align="left">
-										{fNumber(inv.current_stock_qty)}
+										{fNumber(inv.qty)}
 									</TableCell>
 
 									<TableCell align="left">
@@ -420,12 +418,12 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 
 									<TableCell align="left">
 										<Stack spacing={1} direction="row" alignItems="center" justifyContent="center">
-											<span>{inv.maxOrder}</span>
+											<span>{inv.order}</span>
 											<Iconify
 												icon="ic:baseline-minus"
 												width={14}
 												sx={{ cursor: "pointer" }}
-												onClick={() => handleMaxOrderChange(idx, inv.maxOrder - inv.baseNum)}
+												onClick={() => handleMaxOrderChange(idx, inv.order - inv.baseNum)}
 											/>
 											<Stack alignItems="center">
 												<Iconify
@@ -443,7 +441,7 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 											<Iconify icon="material-symbols:add"
 												width={14}
 												sx={{ cursor: "pointer" }}
-												onClick={() => handleMaxOrderChange(idx, inv.maxOrder + inv.baseNum)}
+												onClick={() => handleMaxOrderChange(idx, inv.order + inv.baseNum)}
 											/>
 										</Stack>
 									</TableCell>

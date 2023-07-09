@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use App\Models\Inventory;
 use App\Models\InventoryBound;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class InventoryController extends Controller

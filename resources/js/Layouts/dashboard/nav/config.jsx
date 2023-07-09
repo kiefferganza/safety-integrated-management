@@ -218,8 +218,18 @@ const navConfig = [
 				children: [
 					{ title: 'create', gate: 'inventory_create', path: PATH_DASHBOARD.ppe.new, routeNames: ['ppe.management.create'] },
 					{ title: 'list', gate: 'inventory_show', path: PATH_DASHBOARD.ppe.root, routeNames: ['ppe.management.index', 'ppe.management.show', 'ppe.management.edit'] },
-					{ title: 'report', path: PATH_DASHBOARD.ppe.report, routeNames: ['ppe.management.report'] },
-					{ title: 'report list', path: PATH_DASHBOARD.ppe.reportList, routeNames: ['ppe.management.report.list', 'ppe.management.report.show'] }
+					{
+						title: 'report',
+						routeNames: [
+							'ppe.management.report',
+							'ppe.management.report.list',
+							'ppe.management.report.show'
+						],
+						children: [
+							{ title: 'new', path: PATH_DASHBOARD.ppe.report, routeNames: ['ppe.management.report'] },
+							{ title: 'list', path: PATH_DASHBOARD.ppe.reportList, routeNames: ['ppe.management.report.list', 'ppe.management.report.show'] }
+						]
+					},
 				],
 			},
 
@@ -270,8 +280,9 @@ const navConfig = [
 					'operation.store.create',
 					'operation.store.edit',
 					'operation.store.show',
-					'operation.store.report',
-					'operation.store.create_report',
+					'operation.store.report.index',
+					'operation.store.report.create',
+					'operation.store.report.show',
 				],
 				icon: ICONS.store,
 				children: [
@@ -280,12 +291,13 @@ const navConfig = [
 					{
 						title: 'report',
 						routeNames: [
-							'operation.store.create_report',
-							'operation.store.report',
+							'operation.store.report.index',
+							'operation.store.report.create',
+							'operation.store.report.show',
 						],
 						children: [
-							{ title: 'create', path: PATH_DASHBOARD.store.createReport, routeNames: ['operation.store.create_report'] },
-							{ title: 'list', path: PATH_DASHBOARD.store.report, routeNames: ['operation.store.report'] },
+							{ title: 'new', path: PATH_DASHBOARD.store.createReport, routeNames: ['operation.store.report.create'] },
+							{ title: 'list', path: PATH_DASHBOARD.store.report, routeNames: ['operation.store.report.index', 'operation.store.report.show'] },
 						]
 					}
 				]

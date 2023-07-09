@@ -13,6 +13,7 @@ use App\Http\Controllers\InspectionReportController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\Operation\StoreController;
+use App\Http\Controllers\Operation\StoreReportController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ToolboxTalkController;
@@ -374,9 +375,20 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			// Stock
 			Route::post('/add-remove-stock/{store}', [StoreController::class, "add_remove_stock"])->name('add_remove_stock');
 			// Report
-			Route::get('/report/list', [StoreController::class, 'report'])->name('report');
-			Route::get('/create/report', [StoreController::class, 'createReport'])->name('create_report');
-			Route::post('/store/report', [StoreController::class, 'storeReport'])->name('store_report');
+			Route::prefix('report')->as('report.')->group(function() {
+				Route::get('/list', [StoreReportController::class, 'index'])->name('index');
+				Route::get('/view/{storeReport}', [StoreReportController::class, 'show'])->name('show');
+				Route::get('/new/report', [StoreReportController::class, 'create'])->name('create');
+				Route::post('/store', [StoreReportController::class, 'store'])->name('store');
+				Route::post('/comment/{storeReport}', [InventoryReportController::class, "postComment"])->name('report.comment');
+				Route::delete('/comment/{reportComment}', [InventoryReportController::class, "destroyComment"])->name('report.destroyComment');
+				Route::put('/comment/{reportComment}', [InventoryReportController::class, "changeCommentStatus"])->name('report.changeCommentStatus');
+				Route::post('/reply/{reportComment}', [InventoryReportController::class, "replyComment"])->name('report.reply');
+				Route::post('/review/{storeReport}', [InventoryReportController::class, "review"])->name('report.review');
+				Route::post('/approve-review/{storeReport}', [InventoryReportController::class, "approveReview"])->name('report.approveReview');
+				Route::get('/{storeReport}', [InventoryReportController::class, "show"])->name('report.show');
+				Route::delete('/{storeReport}', [InventoryReportController::class, "destroy"])->name('report.destroy');
+			});
 		});
 	});
 

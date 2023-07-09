@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Inertia } from "@inertiajs/inertia";
-import { usePage } from "@inertiajs/inertia-react";
 import { fCurrencyNumberAndSymbol, fNumber } from "@/utils/formatNumber";
 import { sentenceCase } from "change-case";
 import { useSwal } from "@/hooks/useSwal";
@@ -38,7 +37,6 @@ const newBudgetForecastSchema = Yup.object().shape({
 });
 
 export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_no, submittedDates, ...other }) => {
-	const { auth: { user } } = usePage().props
 	const { load, stop } = useSwal();
 	const {
 		startDate,
@@ -377,7 +375,7 @@ function NewProductList ({ inventories, handleBaseNumChange, handleMaxOrderChang
 
 								<TableCell align="left">Min Order</TableCell>
 
-								<TableCell align="left">Order</TableCell>
+								<TableCell align="center">Order</TableCell>
 
 								<TableCell align="left">Status</TableCell>
 							</TableRow>

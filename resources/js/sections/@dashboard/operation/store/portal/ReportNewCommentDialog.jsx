@@ -59,7 +59,7 @@ export default function ReportNewCommentDialog ({
 			status: closeComment && data.comment_code === "2" ? "closed" : "open"
 			// src: file
 		};
-		Inertia.post(route("ppe.management.report.comment", inventoryReportId), newData, {
+		Inertia.post(route("operation.store.report.comment", inventoryReportId), newData, {
 			preserveScroll: true,
 			onStart () {
 				handleClose();

@@ -19,8 +19,8 @@ import {
 } from '@/Components/table';
 import Scrollbar from '@/Components/scrollbar';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
-// sections
-import { ReportTableRow, ReportTableToolbar } from '@/sections/@dashboard/ppe/list';
+// sections;
+import { ReportTableRow, ReportTableToolbar } from '@/sections/@dashboard/operation/store/list';
 import { Divider, Stack, Tab, Tabs } from '@mui/material';
 import Label from '@/Components/label/Label';
 import { usePage } from '@inertiajs/inertia-react';
@@ -42,7 +42,7 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
-const PPEReportListPage = ({ inventoryReports = [] }) => {
+const StoreReportListPage = ({ storeReports = [] }) => {
 	const { auth: { user } } = usePage().props;
 	const { load, stop } = useSwal();
 	const {
@@ -76,12 +76,12 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 
 
 	useEffect(() => {
-		const data = inventoryReports.map((report) => ({
+		const data = storeReports.map((report) => ({
 			...report,
 			type: getReportType(report)
 		}));
 		setTableData(data);
-	}, [inventoryReports]);
+	}, [storeReports]);
 
 
 	const getReportType = (report) => {
@@ -119,7 +119,7 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 		{ value: 'submitted', label: 'Submitted', color: 'default', count: getLengthByType('submitted') },
 		{ value: 'review', label: 'Review', color: 'warning', count: getLengthByType('review') },
 		{ value: 'approve', label: 'Verify & Approve', color: 'success', count: getLengthByType('approve') },
-		{ value: 'control', label: 'Control', color: 'error', count: inventoryReports.length },
+		{ value: 'control', label: 'Control', color: 'error', count: storeReports.length },
 	];
 
 
@@ -129,17 +129,17 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 	};
 
 	const handleDeleteRow = (id) => {
-		Inertia.delete(route('ppe.management.report.destroy', id), {
-			preserveScroll: true,
-			preserveState: true,
-			onStart () {
-				load("Deleting report", "please wait...")
-			},
-			onFinish () {
-				setPage(0);
-				stop();
-			}
-		});
+		// Inertia.delete(route('ppe.management.report.destroy', id), {
+		// 	preserveScroll: true,
+		// 	preserveState: true,
+		// 	onStart () {
+		// 		load("Deleting report", "please wait...")
+		// 	},
+		// 	onFinish () {
+		// 		setPage(0);
+		// 		stop();
+		// 	}
+		// });
 	};
 
 
@@ -159,16 +159,16 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="Report List"
+					heading="Store Report List"
 					links={[
 						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{
-							name: 'PPE',
-							href: PATH_DASHBOARD.ppe.root,
+							name: 'Store',
+							href: PATH_DASHBOARD.store.root,
 						},
 						{
-							name: 'Report',
-							href: PATH_DASHBOARD.ppe.report,
+							name: 'New Report',
+							href: PATH_DASHBOARD.store.createReport,
 						}
 					]}
 				/>
@@ -217,7 +217,7 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 					<TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
 						<TableSelectedAction
 							dense={dense}
-							rowCount={inventoryReports.length}
+							rowCount={storeReports.length}
 						/>
 
 						<Scrollbar>
@@ -226,7 +226,7 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 									order={order}
 									orderBy={orderBy}
 									headLabel={TABLE_HEAD}
-									rowCount={inventoryReports.length}
+									rowCount={storeReports.length}
 									onSort={onSort}
 									sx={{ whiteSpace: "nowrap" }}
 								/>
@@ -241,7 +241,7 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 											/>
 										)}
 
-									<TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, inventoryReports.length)} />
+									<TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, storeReports.length)} />
 
 									<TableNoData isNotFound={isNotFound} />
 								</TableBody>
@@ -304,4 +304,4 @@ function applyFilter ({ inputData, comparator, filterName, filterType, filterSta
 	return inputData;
 }
 
-export default PPEReportListPage
+export default StoreReportListPage

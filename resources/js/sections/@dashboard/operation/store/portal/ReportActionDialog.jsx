@@ -33,7 +33,7 @@ const ReportActionDialog = ({ open, onClose, inventoryReportId, submitText, titl
 	const { handleSubmit, reset } = methods;
 
 	const onSubmit = (data) => {
-		Inertia.post(route("ppe.management.report.approveReview", inventoryReportId), {
+		Inertia.post(route("operation.report.approveReview", inventoryReportId), {
 			...data,
 			status: type === "approval" ? status : data.status,
 			type

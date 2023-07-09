@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { Page, View, Text, Image, Document } from '@react-pdf/renderer';
 // utils
-import styles from './PpeStyle';
+import styles from './StoreReportStyles';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { useMemo } from 'react';
 import { useTheme } from '@mui/material';
@@ -12,24 +12,24 @@ import { getInventoryStatus } from '@/utils/formatStatuses';
 // ----------------------------------------------------------------------
 const PER_PAGE = 12;
 
-export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
+export default function StoreReportPDF ({ report, title = "STORE REPORT PREVIEW" }) {
 	const theme = useTheme();
 
 	const documents = useMemo(() => {
-		if (report?.inventories.length > PER_PAGE) {
+		if (report?.items.length > PER_PAGE) {
 			const chunkSize = PER_PAGE;
 			let arr = [];
-			for (let i = 0; i < report.inventories.length; i += chunkSize) {
-				const chunk = report.inventories.slice(i, i + chunkSize);
+			for (let i = 0; i < report.items.length; i += chunkSize) {
+				const chunk = report.items.slice(i, i + chunkSize);
 				arr.push(chunk)
 			}
 			return arr;
 		} else {
-			return [report.inventories];
+			return [report.items];
 		}
 	}, [report]);
 
-	const overallTotal = report?.inventories ? report.inventories.reduce((acc, curr) => acc + (curr?.max_order || 0) * (curr?.item_price || curr?.price), 0) : 0;
+	const overallTotal = report?.items ? report.items.reduce((acc, curr) => acc + (curr?.max_order || 0) * (curr?.item_price || curr?.price), 0) : 0;
 
 	const forcastMonth = report.budget_forcast_date ? `${fDate(startOfMonth(new Date(report.budget_forcast_date)), 'dd')} - ${fDate(endOfMonth(new Date(report.budget_forcast_date)), 'dd MMM yyyy')}` : "_______";
 	return (
@@ -163,7 +163,6 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 
 							<View style={styles.tableBody}>
 								{doc?.map((row, idx) => {
-									const requestStatus = getInventoryStatus((row?.max_order + (row?.qty || 0) || 0), (row?.level || 0));
 									return (
 										<View style={styles.tableRow} key={idx}>
 											<View style={styles.tableCell_1}>
@@ -171,19 +170,19 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 											</View>
 
 											<View style={styles.tableCell_2}>
-												<Text style={{ fontSize: 6, textTransform: 'capitalize', marginLeft: 8 }}>{row.item}</Text>
+												<Text style={{ fontSize: 6, textTransform: 'capitalize', marginLeft: 8 }}>{row.name}</Text>
 											</View>
 
 											<View style={styles.tableCell_2}>
-												<Text style={{ fontSize: 6, marginLeft: 16 }}>{(row?.inboundTotalQty || row?.inbound_total_qty || 0).toLocaleString()}</Text>
+												<Text style={{ fontSize: 6, marginLeft: 16 }}>{(row?.total_add_qty || 0).toLocaleString()}</Text>
 											</View>
 
 											<View style={styles.tableCell_2}>
-												<Text style={{ fontSize: 6 }}>{(row?.outboundTotalQty || row?.outbound_total_qty || 0).toLocaleString()}</Text>
+												<Text style={{ fontSize: 6 }}>{(row?.total_remove_qty || 0).toLocaleString()}</Text>
 											</View>
 
 											<View style={styles.tableCell_2}>
-												<Text style={{ fontSize: 6 }}>{(row?.current_stock_qty || row?.qty || 0).toLocaleString()}</Text>
+												<Text style={{ fontSize: 6 }}>{(row?.qty || row?.qty || 0).toLocaleString()}</Text>
 											</View>
 
 											<View style={styles.tableCell_2}>
@@ -191,7 +190,7 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 											</View>
 
 											<View style={styles.tableCell_2}>
-												<Text style={{ fontSize: 6 }}>{row?.try || ""}</Text>
+												<Text style={{ fontSize: 6 }}>{row?.unit || ""}</Text>
 											</View>
 
 											<View style={styles.tableCell_2}>
@@ -200,21 +199,21 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 
 											<View style={styles.tableCell_2}>
 												<View style={[styles.badge, {
-													backgroundColor: (row.status === 'out_of_stock' && theme.palette.error.light) || (row.status === 'low_stock' && theme.palette.warning.light) || (row.status === 'need_reorder' && theme.palette.info.main) || theme.palette.success.light,
+													backgroundColor: (row.old_status === 'out_of_stock' && theme.palette.error.light) || (row.old_status === 'low_stock' && theme.palette.warning.light) || (row.old_status === 'need_reorder' && theme.palette.info.main) || theme.palette.success.light,
 													width: '80%'
 												}]}>
-													<Text style={[styles.textDefault, { color: "#fff", textAlign: "center", fontSize: 6, lineHeight: 0, paddingRight: 1, paddingLeft: 1 }]}>{sentenceCase(row.status)}</Text>
+													<Text style={[styles.textDefault, { color: "#fff", textAlign: "center", fontSize: 6, lineHeight: 0, paddingRight: 1, paddingLeft: 1 }]}>{sentenceCase(row.old_status || "wew")}</Text>
 												</View>
 											</View>
 
 											<View style={styles.tableCell_2}>
-												<Text style={{ fontSize: 6 }}>{(row?.max_order || 0).toLocaleString()}</Text>
+												<Text style={{ fontSize: 6 }}>{(row?.order || 0).toLocaleString()}</Text>
 											</View>
 											<View style={styles.tableCell_3}>
 												<View style={[styles.badge, {
-													backgroundColor: (requestStatus === 'out_of_stock' && theme.palette.error.light) || (requestStatus === 'low_stock' && theme.palette.warning.light) || (requestStatus === 'need_reorder' && theme.palette.info.main) || theme.palette.success.light
+													backgroundColor: (row.new_status === 'out_of_stock' && theme.palette.error.light) || (row.new_status === 'low_stock' && theme.palette.warning.light) || (row.new_status === 'need_reorder' && theme.palette.info.main) || theme.palette.success.light
 												}]}>
-													<Text style={[styles.textDefault, { color: "#fff", textAlign: "center", fontSize: 6, lineHeight: 0, paddingRight: 1, paddingLeft: 1 }]}>{sentenceCase(requestStatus)}</Text>
+													<Text style={[styles.textDefault, { color: "#fff", textAlign: "center", fontSize: 6, lineHeight: 0, paddingRight: 1, paddingLeft: 1 }]}>{sentenceCase(row.new_status || "")}</Text>
 												</View>
 											</View>
 										</View>
@@ -314,10 +313,10 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 										)}
 									</View>
 									<View style={{ width: "50%" }}>
-										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.approval?.fullname}</Text>
+										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.approver?.fullname}</Text>
 										<Text style={[styles.body1, { borderTop: 1, width: 140, lineHeight: 0, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
-										{report?.approval && (
-											<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.approval?.position}</Text>
+										{report?.approver && (
+											<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.approver?.position}</Text>
 										)}
 									</View>
 									<View style={{ width: "25%" }}>
