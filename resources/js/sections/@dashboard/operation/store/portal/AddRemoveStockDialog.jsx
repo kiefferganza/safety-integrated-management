@@ -49,7 +49,7 @@ export const AddRemoveStockDialog = ({ open, onClose, type = "add", store, ...ot
 	const onSubmit = (data) => {
 		data.type = type;
 		data.location = data.location || null;
-		Inertia.post(route('store.management.add_remove_stock', id), data, {
+		Inertia.post(route('operation.store.add_remove_stock', id), data, {
 			preserveScroll: true,
 			onStart () {
 				handleClose();

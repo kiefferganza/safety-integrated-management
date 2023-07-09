@@ -114,7 +114,7 @@ export function StoreNewEditForm ({ isEdit, currentProduct }) {
 				return acc;
 			}, {});
 			newData.removedImages = data.removedImages.filter(img => img);
-			Inertia.post(route("store.management.update", { store: currentProduct?.id }), newData, {
+			Inertia.post(route("operation.store.update", { store: currentProduct?.id }), newData, {
 				preserveScroll: true,
 				onStart () {
 					load("Updating product", "please wait...");
@@ -125,7 +125,7 @@ export function StoreNewEditForm ({ isEdit, currentProduct }) {
 			});
 		} else {
 			delete data.removedImages;
-			Inertia.post(route("store.management.store"), data, {
+			Inertia.post(route("operation.store.store"), data, {
 				preserveScroll: true,
 				onStart () {
 					load("Creating product.", "please wait...");

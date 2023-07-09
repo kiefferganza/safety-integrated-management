@@ -157,27 +157,29 @@ export default function StoreListPage ({ stores }) {
 	};
 
 	const handleDeleteRow = (id) => {
-		Inertia.delete(route('store.management.destroy'), { ids: [id] }, {
+		Inertia.post(route('operation.store.destroy'), { ids: [id] }, {
 			preserveScroll: true,
 			preserveState: true,
 			onStart () {
 				load("Deleting item", "please wait...")
 			},
 			onFinish () {
+				setOpenConfirm(false);
 				setPage(0);
 				stop();
 			}
 		});
 	};
 
-	const handleDeleteRows = (selected) => {
-		Inertia.delete(route('store.management.destroy'), { ids: selected }, {
+	const handleDeleteRows = () => {
+		Inertia.post(route('operation.store.destroy'), { ids: selected }, {
 			preserveScroll: true,
 			preserveState: true,
 			onStart () {
 				load("Deleting item", "please wait...")
 			},
 			onFinish () {
+				setOpenConfirm(false);
 				setPage(0);
 				setSelected([]);
 				stop();
@@ -400,10 +402,7 @@ export default function StoreListPage ({ stores }) {
 					<Button
 						variant="contained"
 						color="error"
-						onClick={() => {
-							handleDeleteRows(selected);
-							handleCloseConfirm();
-						}}
+						onClick={handleDeleteRows}
 					>
 						Delete
 					</Button>

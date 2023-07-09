@@ -16,7 +16,7 @@ import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
 const { Image } = await import('@/Components/image/Image');
-// const { AddRemoveStockDialog } = await import('../portal/AddRemoveStockDialog');
+const { AddRemoveStockDialog } = await import('../portal/AddRemoveStockDialog');
 
 // ----------------------------------------------------------------------
 
@@ -195,12 +195,12 @@ export default function StoreTableRow ({ row, selected, onSelectRow, onDeleteRow
 					</Button>
 				}
 			/>
-			{/* <AddRemoveStockDialog
+			<AddRemoveStockDialog
 				open={openStock}
 				onClose={handleCloseStock}
 				type={stockType}
-				inventory={row}
-			/> */}
+				store={row}
+			/>
 		</>
 	);
 }

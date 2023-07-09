@@ -34,12 +34,12 @@ class StoreController extends Controller
 			->where("is_active", 0)
 			->where("sub_id", auth()->user()->subscriber_id)
 			->get();
-        return Inertia::render('Dashboard/Management/Operation/Store/index', compact('stores', 'employee'));
+        return Inertia::render('Dashboard/Operation/Store/index', compact('stores', 'employee'));
     }
 
     public function create()
     {
-        return Inertia::render('Dashboard/Management/Operation/Store/Create/index');
+        return Inertia::render('Dashboard/Operation/Store/Create/index');
     }
 	
 	
@@ -89,7 +89,7 @@ class StoreController extends Controller
 			->where("sub_id", auth()->user()->subscriber_id)
 			->get();
 
-		return Inertia::render('Dashboard/Management/Operation/Store/Detail/index', compact('store', 'employee'));
+		return Inertia::render('Dashboard/Operation/Store/Detail/index', compact('store', 'employee'));
     }
 
 
@@ -102,7 +102,7 @@ class StoreController extends Controller
 			];
 		});
 		
-        return Inertia::render('Dashboard/Management/Operation/Store/Edit/index', compact('store'));
+        return Inertia::render('Dashboard/Operation/Store/Edit/index', compact('store'));
     }
 
 
@@ -135,7 +135,7 @@ class StoreController extends Controller
 		$store->save();
 
 		if($isNameDirty) {
-			return redirect()->route('store.management.edit', $store->slug)
+			return redirect()->route('operation.store.edit', $store->slug)
 			->with("message", "Product created in store successfully!")
 			->with("type", "success");
 		}
@@ -148,6 +148,15 @@ class StoreController extends Controller
     public function destroy(Request $request)
     {
         $request->validate(["ids" => 'array|min:1']);
+
+		$stores = Store::whereIn('id', $request->ids)->get();
+
+		foreach ($stores as $store) {
+			/** @var Store $store */
+			$store->clearMediaCollection('images');
+			// if($store->hasMedia('images')){
+			// }
+		}
 
 		Store::whereIn("id", $request->ids)->delete();
 

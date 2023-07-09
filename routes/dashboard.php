@@ -354,15 +354,23 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	});
 
 
-	Route::prefix('operation')->group(function() {
-		Route::prefix('store')->as('store.management.')->group(function() {
+
+	/**
+	 * Operation
+	 * Name: operation.{page}.{action}
+	 */
+	Route::prefix('operation')->as('operation.')->group(function() {
+		/**
+		 * Operation - Store
+		 */
+		Route::prefix('store')->as('store.')->group(function() {
 			Route::get('/', [StoreController::class, 'index'])->name('index');
 			Route::get('/view/{store:slug}', [StoreController::class, 'show'])->name('show');
 			Route::get('/create', [StoreController::class, 'create'])->name('create');
 			Route::post('/store', [StoreController::class, 'store'])->name('store');
 			Route::get('/edit/{store:slug}', [StoreController::class, 'edit'])->name('edit');
 			Route::post('/update/{store}', [StoreController::class, 'update'])->name('update');
-			Route::delete('/destroy/{store}', [StoreController::class, 'destroy'])->name('destroy');
+			Route::post('/destroy', [StoreController::class, 'destroy'])->name('destroy');
 			// Stock
 			Route::post('/add-remove-stock/{store}', [StoreController::class, "add_remove_stock"])->name('add_remove_stock');
 			// Report

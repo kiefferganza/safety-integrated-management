@@ -166,17 +166,17 @@ export const PATH_DASHBOARD = {
 	},
 
 	store: {
-		root: route('store.management.index'),
-		create: route('store.management.create'),
-		store: route('store.management.store'),
-		edit: (slug) => route('store.management.edit', slug),
-		update: (id) => route('store.management.update', id),
-		show: (slug) => route('store.management.show', slug),
-		destroy: (id) => route('store.management.destroy', id),
+		root: route('operation.store.index'),
+		create: route('operation.store.create'),
+		store: route('operation.store.store'),
+		edit: (slug) => route('operation.store.edit', slug),
+		update: (id) => route('operation.store.update', id),
+		show: (slug) => route('operation.store.show', slug),
+		destroy: (id) => route('operation.store.destroy', id),
 
 		// Report
-		createReport: route('store.management.create_report'),
-		report: route('store.management.report')
+		createReport: route('operation.store.create_report'),
+		report: route('operation.store.report')
 	}
 
 	// invoice: {

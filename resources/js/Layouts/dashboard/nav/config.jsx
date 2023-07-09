@@ -35,7 +35,7 @@ const ICONS = {
 	toolboxTalks: icon('mingcute_clipboard'),
 	incident: icon('ion_accessibility'),
 	inspection: icon('heroicons_document_magnifying_glass'),
-	operation: icon('ic_blank'),
+	store: icon('ic_store'),
 };
 
 const navConfig = [
@@ -223,48 +223,6 @@ const navConfig = [
 				],
 			},
 
-			// Operation
-			{
-				title: 'Operation',
-				icon: ICONS.operation,
-				routeNames: [
-					'store.management.index',
-					'store.management.create',
-					'store.management.store',
-					'store.management.edit',
-					'store.management.update',
-					'store.management.show',
-				],
-				children: [
-					{
-						title: 'Store',
-						routeNames: [
-							'store.management.index',
-							'store.management.create',
-							'store.management.edit',
-							'store.management.show',
-							'store.management.report',
-							'store.management.create_report',
-						],
-						children: [
-							{ title: 'create', path: PATH_DASHBOARD.store.create, routeNames: ['store.management.create'] },
-							{ title: 'list', path: PATH_DASHBOARD.store.root, routeNames: ['store.management.index'] },
-							{
-								title: 'report',
-								routeNames: [
-									'store.management.create_report',
-									'store.management.report',
-								],
-								children: [
-									{ title: 'create', path: PATH_DASHBOARD.store.createReport, routeNames: ['store.management.create_report'] },
-									{ title: 'list', path: PATH_DASHBOARD.store.report, routeNames: ['store.management.report'] },
-								]
-							}
-						]
-					}
-				]
-			},
-
 			// Incident
 			{
 				title: 'Incident',
@@ -299,6 +257,40 @@ const navConfig = [
 				icon: ICONS.folder
 			},
 		],
+	},
+
+	// Operation
+	{
+		subheader: 'operation',
+		items: [
+			{
+				title: 'Store',
+				routeNames: [
+					'operation.store.index',
+					'operation.store.create',
+					'operation.store.edit',
+					'operation.store.show',
+					'operation.store.report',
+					'operation.store.create_report',
+				],
+				icon: ICONS.store,
+				children: [
+					{ title: 'create', path: PATH_DASHBOARD.store.create, routeNames: ['operation.store.create'] },
+					{ title: 'list', path: PATH_DASHBOARD.store.root, routeNames: ['operation.store.index'] },
+					{
+						title: 'report',
+						routeNames: [
+							'operation.store.create_report',
+							'operation.store.report',
+						],
+						children: [
+							{ title: 'create', path: PATH_DASHBOARD.store.createReport, routeNames: ['operation.store.create_report'] },
+							{ title: 'list', path: PATH_DASHBOARD.store.report, routeNames: ['operation.store.report'] },
+						]
+					}
+				]
+			}
+		]
 	},
 
 	// APP
