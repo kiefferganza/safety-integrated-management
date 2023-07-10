@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class InventoryReport extends Model
+class InventoryReport extends Model implements HasMedia
 {
-	use HasFactory;
-
+	use HasFactory, InteractsWithMedia;
+	
 	protected $guarded = [];
 
 	protected $appends = ['form_number'];
