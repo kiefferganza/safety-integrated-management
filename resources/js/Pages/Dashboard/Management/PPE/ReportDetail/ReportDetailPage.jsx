@@ -73,7 +73,7 @@ const ReportDetailPage = ({ inventoryReport }) => {
 					<Typography variant="h6" sx={{ color: 'text.disabled' }}>
 						Reviewer's comments
 					</Typography>
-					{isReviewer && inventoryReport.status !== "closed" && (
+					{isReviewer && inventoryReport.status === "for_review" && (
 						<Button
 							variant="text"
 							startIcon={<Iconify icon="eva:plus-fill" />}
