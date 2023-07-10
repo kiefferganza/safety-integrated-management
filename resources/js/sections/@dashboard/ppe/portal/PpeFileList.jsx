@@ -35,7 +35,7 @@ const PpeFileList = ({ title = "File List", open, onClose, files = [], ...other 
 		name: files.at(-1).name,
 		fileName: files.at(-1).file_name,
 		url: files.at(-1).original_url
-	} : 0;
+	} : null;
 	return (
 		<Dialog fullWidth maxWidth="lg" open={open} onClose={onClose} {...other}>
 			<DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>{title}</DialogTitle>
@@ -61,7 +61,7 @@ const PpeFileList = ({ title = "File List", open, onClose, files = [], ...other 
 							<TableBody>
 								<TableRow>
 									<TableCell align="left">
-										{current && <FileLinkThumbnail {...current} />}
+										{current ? <FileLinkThumbnail {...current} /> : <Typography sx={{ color: "text.disabled" }}>No signed file yet.</Typography>}
 									</TableCell>
 									<TableCell align="left">
 										{reviewer.length > 0 ? (
