@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogTitle, Table, TableBody, TableCell, TableC
 
 const PpeFileList = ({ title = "File List", open, onClose, files = [], ...other }) => {
 	const { reviewer, approver } = files.reduce((acc, curr) => {
-		console.log(acc.reviewer);
 		if (curr.custom_properties.type === 'review') {
 			acc.reviewer = [
 				...acc.reviewer,

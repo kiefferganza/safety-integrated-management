@@ -240,7 +240,7 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 						handleClosePopover();
 					}}
 					sx={{ color: 'error.main' }}
-					disabled={user?.emp_id !== submitted.employee_id}
+					disabled={user?.emp_id !== submitted?.employee_id}
 				>
 					<Iconify icon="eva:trash-2-outline" />
 					Delete

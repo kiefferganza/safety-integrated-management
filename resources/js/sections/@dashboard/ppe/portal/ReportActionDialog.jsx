@@ -43,12 +43,14 @@ const STATUS_OPTIONS = [
 
 const ReportActionDialog = ({ open, onClose, inventoryReportId, submitText, remarks = '', title = "Finish Review", status = "", type = "review", ...other }) => {
 	const { load, stop } = useSwal();
+	const defaultValues = {
+		status,
+		remarks
+	}
+
 	const methods = useForm({
 		resolver: yupResolver(changeStatusSchema),
-		defaultValues: {
-			status,
-			remarks
-		}
+		defaultValues
 	});
 	const { handleSubmit, reset, setValue, watch, formState: { errors } } = methods;
 	const { file } = watch();
