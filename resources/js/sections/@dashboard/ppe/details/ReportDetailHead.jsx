@@ -15,7 +15,7 @@ const ReportDetailHead = ({ inventoryReport, title = "" }) => {
 		new Date(inventoryReport.inventory_start_date),
 		new Date(inventoryReport.inventory_end_date)
 	);
-	console.log(inventoryReport)
+
 	const forcastDate = new Date(inventoryReport.budget_forcast_date);
 	const forcastMonth = `${fDate(startOfMonth(forcastDate), 'dd')} - ${fDate(endOfMonth(forcastDate), 'dd MMM yyyy')}`;
 	return (

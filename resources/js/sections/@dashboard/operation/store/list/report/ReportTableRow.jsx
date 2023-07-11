@@ -18,6 +18,7 @@ import ReportTableSubRow from './ReportTableSubrow';
 import { sentenceCase } from 'change-case';
 import Label from '@/Components/label/Label';
 import { PATH_DASHBOARD } from '@/routes/paths';
+import PpeFileList from '@/sections/@dashboard/ppe/portal/PpeFileList';
 
 // ----------------------------------------------------------------------
 
@@ -53,6 +54,17 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [openPopover, setOpenPopover] = useState(null);
+
+	const [openFileList, setOpenFileList] = useState(false);
+
+	const handleOpenFileList = () => {
+		handleClosePopover();
+		setOpenFileList(true);
+	}
+
+	const handleCloseFileList = () => {
+		setOpenFileList(false);
+	}
 
 	const handleOpen = () => {
 		setOpen(true);
@@ -162,6 +174,12 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 					View
 				</MenuItem>
 				<MenuItem
+					onClick={handleOpenFileList}
+				>
+					<Iconify icon="heroicons:document-magnifying-glass-20-solid" />
+					View Files
+				</MenuItem>
+				<MenuItem
 					disabled={row.type !== "review"}
 					component={Link}
 					href={PATH_DASHBOARD.store.reportShow(row.id)}
@@ -228,6 +246,14 @@ export default function ReportTableRow ({ row, onDeleteRow }) {
 					Delete
 				</MenuItem>
 			</MenuPopover>
+
+			<PpeFileList
+				open={openFileList}
+				onClose={handleCloseFileList}
+				files={row.media}
+				title={`${row.form_number} File List`}
+			/>
+
 
 			<ConfirmDialog
 				open={openConfirm}

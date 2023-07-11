@@ -8,7 +8,7 @@ import { useSwal } from "@/hooks/useSwal";
 import { RHFRadioGroup, RHFTextField } from "@/Components/hook-form";
 import { MultiFilePreview, UploadBox } from "@/Components/upload";
 import Iconify from "@/Components/iconify/Iconify";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 const changeStatusSchema = Yup.object().shape({
 	status: Yup.string().nullable(),
@@ -52,6 +52,10 @@ const ReportActionDialog = ({ open, onClose, inventoryReportId, submitText, rema
 	});
 	const { handleSubmit, reset, setValue, watch, formState: { errors } } = methods;
 	const { file } = watch();
+
+	useEffect(() => {
+		reset(defaultValues);
+	}, [status, remarks]);
 
 	const onSubmit = (data) => {
 		Inertia.post(route("ppe.management.report.approveReview", inventoryReportId), {

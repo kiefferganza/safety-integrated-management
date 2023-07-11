@@ -11,6 +11,8 @@ import { usePage } from '@inertiajs/inertia-react';
 import ReportActionDialog from '@/sections/@dashboard/operation/store/portal/ReportActionDialog';
 import ReportNewCommentDialog from '@/sections/@dashboard/operation/store/portal/ReportNewCommentDialog';
 import ReportComments from '@/sections/@dashboard/operation/store/details/ReportComments';
+import { FormHelperText } from '@mui/material';
+import { ReUploadFile } from '@/Components/dialogs/ReUploadFile';
 
 const StoreReportDetailPage = ({ inventoryReport }) => {
 	const { auth: { user } } = usePage().props;
@@ -21,6 +23,14 @@ const StoreReportDetailPage = ({ inventoryReport }) => {
 	const [openComment, setOpenComment] = useState(false);
 
 	const [approveStatus, setApproveStatus] = useState(null);
+
+	const [openReupload, setOpenReupload] = useState(false);
+	const [reuploadFileInfo, setReuploadFileInfo] = useState({
+		routeName: null,
+		remarks: "",
+		data: null
+	});
+
 
 	const handleDeleteComment = (commentId) => {
 		Inertia.delete(route("operation.store.report.destroyComment", commentId), {
@@ -52,6 +62,43 @@ const StoreReportDetailPage = ({ inventoryReport }) => {
 		setApproveStatus(null);
 	}
 
+	const handleApproverAction = (status = "approved") => {
+		setApproveStatus(status);
+		handleOpenApproveAction();
+	}
+
+	const handleOpenUpdateReviewerFile = () => {
+		setReuploadFileInfo({
+			routeName: route('operation.store.report.reupload_file', inventoryReport.id),
+			remarks: inventoryReport.reviewer_remarks || "",
+			data: {
+				type: 'review'
+			}
+		});
+		setOpenReupload(true);
+	}
+
+	const handleOpenUpdateApprovalFile = () => {
+		setReuploadFileInfo({
+			routeName: route('operation.store.report.reupload_file', inventoryReport.id),
+			remarks: inventoryReport.approver_remarks || "",
+			data: {
+				type: 'approver'
+			}
+		});
+		setOpenReupload(true);
+	}
+
+
+	const handleCloseReupload = () => {
+		setOpenReupload(false);
+		setReuploadFileInfo({
+			routeName: null,
+			remarks: "",
+			data: null
+		});
+	}
+
 
 
 	const isAllCommentsClosed = inventoryReport.comments.every(com => com.status === "closed");
@@ -66,6 +113,111 @@ const StoreReportDetailPage = ({ inventoryReport }) => {
 		inventoryReport.comments.length === 0 ? true : isAllCommentsClosed
 	) : false;
 	const canApprove = (inventoryReport.status !== "for_review" && inventoryReport.status !== "closed") && isApproval;
+
+	let ActionButtons = <></>;
+
+	switch (inventoryReport.status) {
+		case 'for_approval':
+			if (canApprove && isReviewer) {
+				ActionButtons = (
+					<>
+						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+						<FormHelperText sx={{ marginLeft: "16px !important", marginTop: "0 !important", mb: 1 }}>Re-upload File for Reviewer</FormHelperText>
+						<Button
+							fullWidth
+							size="large"
+							variant="contained"
+							color="secondary"
+							onClick={handleOpenUpdateReviewerFile}
+						>Re-upload Reviewer File</Button>
+						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+						<FormHelperText sx={{ marginLeft: "16px !important", marginTop: "0 !important", mb: 1 }}>Approver Actions:</FormHelperText>
+						<Grid container spacing={3}>
+							<Grid item md={6} xs={12}>
+								<Button fullWidth size="large" variant="contained" color="success" onClick={() => {
+									handleApproverAction("approved")
+								}}>Approved</Button>
+							</Grid>
+							<Grid item md={6} xs={12}>
+								<Button fullWidth size="large" variant="contained" color="error" onClick={() => {
+									handleApproverAction("fail");
+								}}>Fail/Not approved</Button>
+							</Grid>
+						</Grid>
+					</>
+				)
+			} else if (canApprove) {
+				ActionButtons = (
+					<>
+						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+						<Grid container spacing={3}>
+							<Grid item md={6} xs={12}>
+								<Button fullWidth size="large" variant="contained" color="success" onClick={() => {
+									handleApproverAction("approved")
+								}}>Approved</Button>
+							</Grid>
+							<Grid item md={6} xs={12}>
+								<Button fullWidth size="large" variant="contained" color="error" onClick={() => {
+									handleApproverAction("fail");
+								}}>Fail/Not approved</Button>
+							</Grid>
+						</Grid>
+					</>
+				)
+			} else if (isReviewer) {
+				ActionButtons = (
+					<>
+						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+						<Button
+							fullWidth
+							size="large"
+							variant="contained"
+							color="secondary"
+							onClick={handleOpenUpdateReviewerFile}
+						>Re-upload Reviewer File</Button>
+					</>
+				)
+			}
+			break;
+		case 'closed':
+			if (isApproval) {
+				ActionButtons = (
+					<>
+						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+						<Grid container spacing={3}>
+							<Grid item md={4} xs={12}>
+								<Button
+									fullWidth
+									size="large"
+									variant="contained"
+									color="secondary"
+									onClick={handleOpenUpdateApprovalFile}
+								>Re-upload File</Button>
+							</Grid>
+							<Grid item md={4} xs={12}>
+								{inventoryReport?.approver_status === "approved" ? (
+									<Button fullWidth size="large" variant="contained" color="success" disabled>Approved</Button>
+								) : (
+									<Button fullWidth size="large" variant="contained" color="success" onClick={handleApproverAction}>Approved</Button>
+								)}
+							</Grid>
+							<Grid item md={4} xs={12}>
+								{inventoryReport?.approver_status === "fail" ? (
+									<Button fullWidth size="large" variant="contained" color="error" disabled>Fail/Not approved</Button>
+								) : (
+									<Button fullWidth size="large" variant="contained" color="error" onClick={() => {
+										handleApproverAction("fail")
+									}}>Fail/Not approved</Button>
+								)}
+							</Grid>
+						</Grid>
+					</>
+				)
+			}
+			break;
+		default:
+			break;
+	}
 	return (
 		<>
 			<Stack>
@@ -313,25 +465,7 @@ const StoreReportDetailPage = ({ inventoryReport }) => {
 						</TableContainer>
 					</Grid>
 				</Grid>
-				{canApprove && (
-					<>
-						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
-						<Grid container spacing={3}>
-							<Grid item md={6} xs={12}>
-								<Button fullWidth size="large" variant="contained" color="success" onClick={() => {
-									setApproveStatus("approved");
-									handleOpenApproveAction();
-								}}>Approved</Button>
-							</Grid>
-							<Grid item md={6} xs={12}>
-								<Button fullWidth size="large" variant="contained" color="error" onClick={() => {
-									setApproveStatus("fail");
-									handleOpenApproveAction();
-								}}>Fail/Not approved</Button>
-							</Grid>
-						</Grid>
-					</>
-				)}
+				{ActionButtons}
 			</Stack>
 
 			<ReportNewCommentDialog
@@ -343,18 +477,27 @@ const StoreReportDetailPage = ({ inventoryReport }) => {
 			<ReportActionDialog
 				open={openReviewAction}
 				onClose={handleCloseReviewAction}
-				inventoryReportId={inventoryReport.id}
+				reportId={inventoryReport.id}
 				status="A"
+				remarks={inventoryReport?.reviewer_remarks}
 			/>
 
 			<ReportActionDialog
 				open={openApproveAction}
 				onClose={handleCloseApproveAction}
-				inventoryReportId={inventoryReport.id}
+				reportId={inventoryReport.id}
 				status={approveStatus}
 				submitText={approveStatus === "approved" ? "Approved" : "Fail/Not Approved"}
 				title={approveStatus === "approved" ? "Approved" : "Fail/Not Approved"}
 				type="approver"
+				remarks={inventoryReport?.approval_remarks}
+			/>
+			<ReUploadFile
+				open={openReupload}
+				onClose={handleCloseReupload}
+				remarks={reuploadFileInfo.remarks}
+				routeName={reuploadFileInfo.routeName}
+				additionalData={reuploadFileInfo.data}
 			/>
 		</>
 	)

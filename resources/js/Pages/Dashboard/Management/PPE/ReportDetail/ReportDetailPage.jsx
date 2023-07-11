@@ -62,7 +62,6 @@ const ReportDetailPage = ({ inventoryReport }) => {
 	}
 
 	const handleApproverAction = (status = "approved") => {
-		console.log(status);
 		setApproveStatus(status);
 		handleOpenApproveAction();
 	}
@@ -151,7 +150,9 @@ const ReportDetailPage = ({ inventoryReport }) => {
 						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 						<Grid container spacing={3}>
 							<Grid item md={6} xs={12}>
-								<Button fullWidth size="large" variant="contained" color="success" onClick={handleApproverAction}>Approved</Button>
+								<Button fullWidth size="large" variant="contained" color="success" onClick={() => {
+									handleApproverAction("approved")
+								}}>Approved</Button>
 							</Grid>
 							<Grid item md={6} xs={12}>
 								<Button fullWidth size="large" variant="contained" color="error" onClick={() => {

@@ -17,7 +17,7 @@ const PpeFileList = ({ title = "File List", open, onClose, files = [], ...other 
 				}
 			];
 		}
-		if (curr.custom_properties.type === 'approval') {
+		if (curr.custom_properties.type === 'approval' || curr.custom_properties.type === 'approver') {
 			acc.approver = [
 				...acc.approver,
 				{

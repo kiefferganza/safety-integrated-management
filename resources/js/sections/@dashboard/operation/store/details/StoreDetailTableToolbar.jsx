@@ -4,7 +4,6 @@ import {
 	Stack,
 	Button,
 	TextField,
-	InputAdornment,
 	Select,
 	FormControl,
 	InputLabel,
@@ -17,7 +16,7 @@ import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 
-PpeDetailTableToolbar.propTypes = {
+StoreDetailDetailTableToolbar.propTypes = {
 	isFiltered: PropTypes.bool,
 	onResetFilter: PropTypes.func,
 	filterStartDate: PropTypes.instanceOf(Date),
@@ -36,7 +35,7 @@ const STATUS_OPTION = [
 	{ value: "outbound", label: "Outbound" },
 ];
 
-export function PpeDetailTableToolbar ({
+export function StoreDetailDetailTableToolbar ({
 	isFiltered,
 	onResetFilter,
 	filterType,

@@ -185,7 +185,7 @@ class InventoryReportController extends Controller
 				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 		]);
 		if($inventoryReport->hasMedia('actions')) {
-			$currentFile = $inventoryReport->getFirstMedia('actions');
+			$currentFile = $inventoryReport->getMedia('actions')->last();
 			$inventoryReport->setAttribute('currentFile', [
 				'name' => $currentFile->name,
 				'fileName' => $currentFile->file_name,
@@ -225,7 +225,6 @@ class InventoryReportController extends Controller
 					];
 				}
 				if($approverLastFile) {
-					// dd($approverLastFile);
 					$report->approverLatestFile = [
 						'name' => $approverLastFile->name,
 						'fileName' => $approverLastFile->file_name,
@@ -314,7 +313,7 @@ class InventoryReportController extends Controller
 		$request->validate([
 			"status" => ["string", "required"],
 			"type" => ["string", "required"],
-			"file" => ["file", "max:3072"]
+			"file" => ["file", "max:3072", "required"]
 		]);
 		
 		switch ($request->type) {
@@ -353,12 +352,12 @@ class InventoryReportController extends Controller
 	public function reuploadActionFile(Request $request, InventoryReport $inventoryReport) {
 		$request->validate([
 			"type" => ["string", "required"],
-			"file" => ["file", "max:3072"],
+			"file" => ["file", "max:3072", "required"],
 			"remarks" => ["string"]
 		]);
 
 		if($inventoryReport->hasMedia('actions', ['type' => $request->type])) {
-			$media = $inventoryReport->getFirstMedia('actions', ['type' => $request->type]);
+			$media = $inventoryReport->getFirstMedia('actions', ['type' => $request->type])->last();
 			$inventoryReport->deleteMedia($media);
 			switch ($request->type) {
 				case 'review':

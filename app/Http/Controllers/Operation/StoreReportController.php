@@ -8,11 +8,9 @@ use App\Models\Operation\Store\Store;
 use App\Models\Operation\Store\StoreHistory;
 use App\Models\Operation\Store\StoreReport;
 use App\Models\Operation\Store\StoreReportComment;
-use App\Models\Operation\Store\StoreReportList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class StoreReportController extends Controller
 {
@@ -31,6 +29,29 @@ class StoreReportController extends Controller
 		])
 		->where('subscriber_id', auth()->user()->subscriber_id)
 		->get();
+
+		foreach ($storeReports as $report) {
+			/** @var StoreReport $report */
+			if($report->hasMedia('actions')) {
+				$reviewerLastFile = $report->getFirstMedia('actions', ['type' => 'review']);
+				$approverLastFile = $report->getFirstMedia('actions', ['type' => 'approver']);
+				if($reviewerLastFile) {
+					$report->reviewerLatestFile = [
+						'name' => $reviewerLastFile->name,
+						'fileName' => $reviewerLastFile->file_name,
+						'url' => $reviewerLastFile->originalUrl
+					];
+				}
+				if($approverLastFile) {
+					$report->approverLatestFile = [
+						'name' => $approverLastFile->name,
+						'fileName' => $approverLastFile->file_name,
+						'url' => $approverLastFile->originalUrl
+					];
+				}
+
+			}
+		}
 		
 		return Inertia::render("Dashboard/Operation/Store/Report/List/index", compact('storeReports'));
     }
@@ -164,6 +185,17 @@ class StoreReportController extends Controller
 			"approver" => fn($q) =>
 				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 		]);
+
+		if($storeReport->hasMedia('actions')) {
+			$currentFile = $storeReport->getMedia('actions')->last();
+			$storeReport->setAttribute('currentFile', [
+				'name' => $currentFile->name,
+				'fileName' => $currentFile->file_name,
+				'url' => $currentFile->originalUrl
+			]);
+			unset($storeReport->media);
+		}
+
 		return Inertia::render("Dashboard/Operation/Store/Report/Detail/index", [
 			"report" => $storeReport
 		]);
@@ -253,38 +285,80 @@ class StoreReportController extends Controller
 	}
 
 
-	public function approveReview(Request $request, StoreReport $inventoryReport) {
+	public function approveReview(Request $request, StoreReport $storeReport) {
 		$request->validate([
 			"status" => ["string", "required"],
 			"type" => ["string", "required"],
+			"file" => ["file", "max:3072", 'required'],
 		]);
-
+		
 		switch ($request->type) {
 			case 'review':
 				if($request->remarks) {
-					$inventoryReport->reviewer_remarks = $request->remarks;
+					$storeReport->reviewer_remarks = $request->remarks;
 				}
-				$inventoryReport->reviewer_status = $request->status;
-				$inventoryReport->status = "for_approval";
+				$storeReport->reviewer_status = $request->status;
+				$storeReport->status = "for_approval";
 				// if($request->status === "A" || $request->status === "D") {
-				// 	$inventoryReport->status = "for_approval";
+				// 	$storeReport->status = "for_approval";
 				// }else {
-				// 	$inventoryReport->status = "for_revision";
+				// 	$storeReport->status = "for_revision";
 				// }
 				break;
-			case 'approval':
+			case 'approver':
 				if($request->remarks) {
-					$inventoryReport->approval_remarks = $request->remarks;
+					$storeReport->approver_remarks = $request->remarks;
 				}
-				$inventoryReport->approval_status = $request->status;
-				$inventoryReport->status = "closed";
+				$storeReport->approver_status = $request->status;
+				$storeReport->status = "closed";
 				break;
 		}
-		$inventoryReport->increment("revision_no");
-		$inventoryReport->save();
+
+		$storeReport
+		->addMediaFromRequest('file')
+		->withCustomProperties([
+			'type' => $request->type
+		])
+		->toMediaCollection('actions');
+
+		$storeReport->increment("revision_no");
+		$storeReport->save();
 
 		return redirect()->back()
 		->with("message", "Status updated successfully!")
+		->with("type", "success");
+	}
+
+
+	public function reuploadActionFile(Request $request, StoreReport $storeReport) {
+		$request->validate([
+			"type" => ["string", "required"],
+			"file" => ["file", "max:3072", 'required'],
+			"remarks" => ["string"]
+		]);
+
+		if($storeReport->hasMedia('actions', ['type' => $request->type])) {
+			$media = $storeReport->getFirstMedia('actions', ['type' => $request->type]);
+			$storeReport->deleteMedia($media);
+			switch ($request->type) {
+				case 'review':
+					$storeReport->reviewer_remarks = $request->remarks ?? "";
+					break;
+				case 'approver':
+					$storeReport->approver_remarks = $request->remarks ?? "";
+					break;
+			}
+			$storeReport->save();
+		}
+		$storeReport
+		->addMediaFromRequest('file')
+		->withCustomProperties([
+			'type' => $request->type
+		])
+		->toMediaCollection('actions');
+
+		return redirect()->back()
+		->with("message", "File updated successfully!")
 		->with("type", "success");
 	}
 }
