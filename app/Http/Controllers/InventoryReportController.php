@@ -357,18 +357,18 @@ class InventoryReportController extends Controller
 		]);
 
 		if($inventoryReport->hasMedia('actions', ['type' => $request->type])) {
-			$media = $inventoryReport->getFirstMedia('actions', ['type' => $request->type])->last();
+			$media = $inventoryReport->getFirstMedia('actions', ['type' => $request->type]);
 			$inventoryReport->deleteMedia($media);
-			switch ($request->type) {
-				case 'review':
-					$inventoryReport->reviewer_remarks = $request->remarks ?? "";
-					break;
-				case 'approval':
-					$inventoryReport->approval_remarks = $request->remarks ?? "";
-					break;
-			}
-			$inventoryReport->save();
 		}
+		switch ($request->type) {
+			case 'review':
+				$inventoryReport->reviewer_remarks = $request->remarks ?? "";
+				break;
+			case 'approval':
+				$inventoryReport->approval_remarks = $request->remarks ?? "";
+				break;
+		}
+		$inventoryReport->save();
 		$inventoryReport
 		->addMediaFromRequest('file')
 		->withCustomProperties([
