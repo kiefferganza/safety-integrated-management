@@ -52,7 +52,6 @@ const ReportActionDialog = ({ open, onClose, reportId, submitText, remarks = '',
 		resolver: yupResolver(changeStatusSchema),
 		defaultValues
 	});
-	console.log(status);
 	const { handleSubmit, reset, watch, setValue, formState: { errors } } = methods;
 	const { file } = watch();
 
@@ -61,7 +60,6 @@ const ReportActionDialog = ({ open, onClose, reportId, submitText, remarks = '',
 	}, [status, remarks]);
 
 	const onSubmit = (data) => {
-		console.log({ status, data })
 		Inertia.post(route("operation.store.report.approveReview", reportId), {
 			...data,
 			status: type === "approval" ? status : data.status,

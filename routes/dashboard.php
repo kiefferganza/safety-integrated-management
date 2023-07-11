@@ -388,7 +388,6 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 				Route::post('/reply/{reportComment}', [StoreReportController::class, "replyComment"])->name('reply');
 				Route::post('/review/{storeReport}', [StoreReportController::class, "review"])->name('review');
 				Route::post('/approve-review/{storeReport}', [StoreReportController::class, "approveReview"])->name('approveReview');
-				Route::get('/{storeReport}', [StoreReportController::class, "show"])->name('show');
 				Route::delete('/{storeReport}', [StoreReportController::class, "destroy"])->name('destroy');
 				Route::post('/re-upload/{storeReport}', [StoreReportController::class, "reuploadActionFile"])->name('reupload_file');
 			});
