@@ -284,6 +284,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/report/approve-review/{inventoryReport}', [InventoryReportController::class, "approveReview"])->name('report.approveReview');
 		Route::get('/report/{inventoryReport}', [InventoryReportController::class, "show"])->name('report.show');
 		Route::delete('/report/{inventoryReport}', [InventoryReportController::class, "destroy"])->name('report.destroy');
+
+		Route::post('/report/re-upload/{inventoryReport}', [InventoryReportController::class, "reuploadActionFile"])->name('report.reupload_file');
 	});
 
 

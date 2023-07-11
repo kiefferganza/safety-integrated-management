@@ -316,8 +316,7 @@ class InventoryReportController extends Controller
 			"type" => ["string", "required"],
 			"file" => ["file", "max:3072"]
 		]);
-		$user = auth()->user();
-		// dd($request->all());
+		
 		switch ($request->type) {
 			case 'review':
 				if($request->remarks) {
@@ -338,9 +337,7 @@ class InventoryReportController extends Controller
 		$inventoryReport
 		->addMediaFromRequest('file')
 		->withCustomProperties([
-			'type' => $request->type,
-			'user_id' => $user->user_id,
-			'employee_id' => $user->emp_id
+			'type' => $request->type
 		])
 		->toMediaCollection('actions');
 
@@ -352,5 +349,37 @@ class InventoryReportController extends Controller
 		->with("type", "success");
 	}
 
+
+	public function reuploadActionFile(Request $request, InventoryReport $inventoryReport) {
+		$request->validate([
+			"type" => ["string", "required"],
+			"file" => ["file", "max:3072"],
+			"remarks" => ["string"]
+		]);
+
+		if($inventoryReport->hasMedia('actions', ['type' => $request->type])) {
+			$media = $inventoryReport->getFirstMedia('actions', ['type' => $request->type]);
+			$inventoryReport->deleteMedia($media);
+			switch ($request->type) {
+				case 'review':
+					$inventoryReport->reviewer_remarks = $request->remarks ?? "";
+					break;
+				case 'approval':
+					$inventoryReport->approval_remarks = $request->remarks ?? "";
+					break;
+			}
+			$inventoryReport->save();
+		}
+		$inventoryReport
+		->addMediaFromRequest('file')
+		->withCustomProperties([
+			'type' => $request->type
+		])
+		->toMediaCollection('actions');
+
+		return redirect()->back()
+		->with("message", "File updated successfully!")
+		->with("type", "success");
+	}
 
 }

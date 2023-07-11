@@ -185,7 +185,11 @@ const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) 
 					links={[
 						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{
-							name: 'PPE',
+							name: 'New PPE',
+							href: PATH_DASHBOARD.ppe.report,
+						},
+						{
+							name: 'PPE List',
 							href: PATH_DASHBOARD.ppe.root,
 						},
 						{ name: 'Report' },

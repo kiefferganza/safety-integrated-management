@@ -1,6 +1,7 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Inertia } from '@inertiajs/inertia';
+import { PATH_DASHBOARD } from '@/routes/paths';
 import { useSwal } from '@/hooks/useSwal';
 // form
 import * as Yup from 'yup';
@@ -16,30 +17,61 @@ import { RHFTextField } from '@/Components/hook-form';
 
 // ----------------------------------------------------------------------
 const approveFailSchema = Yup.object().shape({
-	remarks: Yup.string(),
-	file: Yup.string().required("Please attach a file for the document.")
+	remarks: Yup.string().nullable(),
+	file: Yup.mixed().required('Please attached signed file.').test('file', 'Invalid file format', function (value) {
+		if (!value) {
+			// No file selected, validation passes
+			return true;
+		}
+
+		// Check if the file meets your validation criteria
+		const validFileTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+		if (!validFileTypes.includes(value.type)) {
+			// Invalid file type, validation fails
+			return false;
+		}
+
+		// File is valid, validation passes
+		return true;
+	}),
 });
 
-export const DocumentUpdateFileDialog = ({
+export const ReUploadFile = ({
 	title = 'Update File',
 	open,
 	onClose,
-	documentId,
-	updateFileInfo,
+	routeName,
+	additionalData = {},
+	remarks = '',
 	...other
 }) => {
 	const { load, stop } = useSwal();
-	const [file, setFile] = useState(null);
+
+	const defaultValues = {
+		remarks,
+		file: null
+	};
+
 	const methods = useForm({
-		resolver: yupResolver(approveFailSchema)
+		resolver: yupResolver(approveFailSchema),
+		defaultValues
 	});
-	const { setValue, handleSubmit, reset, formState: { errors } } = methods;
+
+	const { setValue, handleSubmit, reset, watch, formState: { errors } } = methods;
+	const { file } = watch();
+
+	useEffect(() => {
+		if (remarks) {
+			reset(defaultValues)
+		} else {
+			reset();
+		}
+	}, [remarks]);
 
 	const handleDrop = useCallback(
 		(acceptedFiles) => {
 			const newFile = acceptedFiles[0];
-			setFile(newFile);
-			setValue("file", URL.createObjectURL(newFile), { shouldValidate: true });
+			setValue("file", newFile, { shouldValidate: true });
 		},
 		[file]
 	);
@@ -47,12 +79,9 @@ export const DocumentUpdateFileDialog = ({
 	const updateFile = (data) => {
 		const newData = {
 			...data,
-			src: file,
+			...additionalData
 		};
-		const routeName = route(`files.management.document.${updateFileInfo.name}`, {
-			document: documentId,
-			signedFile: updateFileInfo.id
-		});
+
 		Inertia.post(routeName, newData, {
 			preserveScroll: true,
 			onStart () {
@@ -68,7 +97,6 @@ export const DocumentUpdateFileDialog = ({
 	const handleClose = () => {
 		onClose();
 		reset();
-		setFile(null);
 	}
 
 	return (
@@ -102,7 +130,7 @@ export const DocumentUpdateFileDialog = ({
 							<MultiFilePreview
 								files={[file]}
 								onRemove={() => {
-									setValue("file", "", { shouldValidate: true });
+									setValue("file", null, { shouldValidate: true });
 									setFile(null);
 								}}
 							/>
@@ -125,10 +153,10 @@ export const DocumentUpdateFileDialog = ({
 	);
 }
 
-DocumentUpdateFileDialog.propTypes = {
+ReUploadFile.propTypes = {
 	open: PropTypes.bool,
 	onClose: PropTypes.func,
 	title: PropTypes.string,
-	documentId: PropTypes.number,
-	updateFileInfo: PropTypes.object
+	routeName: PropTypes.string,
+	remarks: PropTypes.string
 };

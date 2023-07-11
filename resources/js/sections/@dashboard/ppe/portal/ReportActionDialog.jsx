@@ -41,12 +41,13 @@ const STATUS_OPTIONS = [
 	{ label: 'F.Responded / Reviewed / Actioned', value: 'F' },
 ];
 
-const ReportActionDialog = ({ open, onClose, inventoryReportId, submitText, title = "Finish Review", status = "", type = "review", ...other }) => {
+const ReportActionDialog = ({ open, onClose, inventoryReportId, submitText, remarks = '', title = "Finish Review", status = "", type = "review", ...other }) => {
 	const { load, stop } = useSwal();
 	const methods = useForm({
 		resolver: yupResolver(changeStatusSchema),
 		defaultValues: {
-			status
+			status,
+			remarks
 		}
 	});
 	const { handleSubmit, reset, setValue, watch, formState: { errors } } = methods;
