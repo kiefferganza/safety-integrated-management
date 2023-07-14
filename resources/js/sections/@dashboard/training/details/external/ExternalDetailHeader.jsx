@@ -4,12 +4,17 @@ import {
 	Grid,
 	Typography,
 	Stack,
+	Avatar,
+	Tooltip,
+	Link as MuiLink
 } from '@mui/material';
 // utils
 import { fDate } from '@/utils/formatTime';
 // components
 import Image from '@/Components/image';
 import { getTrainingStatus } from '@/utils/formatDates';
+import { fileFormat, fileThumb } from '@/Components/file-thumbnail';
+import { ellipsis } from '@/utils/exercpt';
 
 const ExternalDetailHead = ({ training }) => {
 	training.status = getTrainingStatus(training.date_expired || new Date);
@@ -139,6 +144,44 @@ const ExternalDetailHead = ({ training }) => {
 						</Box>
 						<Box>
 							<Typography variant="body1" color={training?.status?.rawColor}>{training?.status?.text}</Typography>
+						</Box>
+					</Box>
+					<Box sx={{ mb: 1 }}>
+						<Box>
+							<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Current File</Typography>
+						</Box>
+						<Box minHeight={24}>
+							{training.external_status?.currentFile ? (
+								<Tooltip title={training.external_status.currentFile.fileName}>
+									<MuiLink
+										component="a"
+										href={training.external_status.currentFile.url}
+										sx={{
+											color: "text.primary"
+										}}
+										target="_file"
+										rel="noopener noreferrer"
+									>
+										<Stack
+											spacing={2}
+											direction="row"
+											alignItems="center"
+										>
+											<Avatar variant="rounded" sx={{ bgcolor: 'background.neutral', width: 36, height: 36, borderRadius: "9px" }}>
+												<Box component="img" src={fileThumb(fileFormat(training.external_status.currentFile.url))} sx={{ width: 24, height: 24 }} />
+											</Avatar>
+
+											<Stack spacing={0.5} flexGrow={1}>
+												<Typography variant="subtitle2" sx={{ textDecoration: "none" }}>{ellipsis(training.external_status.currentFile.name || "", 24)}</Typography>
+											</Stack>
+										</Stack>
+									</MuiLink>
+								</Tooltip>
+							) : (
+								<Box minHeight={24}>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>No signed file yet.</Typography>
+								</Box>
+							)}
 						</Box>
 					</Box>
 				</Grid>

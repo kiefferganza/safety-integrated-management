@@ -41,8 +41,33 @@ class TrainingController extends Controller
 
 	public function external() {
 
+		$trainings =  (new TrainingService())->getTrainingByType(3);
+
+		foreach ($trainings as $training) {
+			/** @var Training $training */
+			if($training->external_status->hasMedia('actions')) {
+				$reviewerLastFile = $training->external_status->getFirstMedia('actions', ['type' => 'review']);
+				$approverLastFile = $training->external_status->getFirstMedia('actions', ['type' => 'approver']);
+				if($reviewerLastFile) {
+					$training->external_status->reviewerLatestFile = [
+						'name' => $reviewerLastFile->name,
+						'fileName' => $reviewerLastFile->file_name,
+						'url' => $reviewerLastFile->originalUrl
+					];
+				}
+				if($approverLastFile) {
+					$training->external_status->approverLatestFile = [
+						'name' => $approverLastFile->name,
+						'fileName' => $approverLastFile->file_name,
+						'url' => $approverLastFile->originalUrl
+					];
+				}
+
+			}
+		}
+
 		return Inertia::render("Dashboard/Management/Training/List/index", [
-			"trainings" => (new TrainingService)->getTrainingByType(3),
+			"trainings" => $trainings,
 			"module" => "Third Party",
 			"url" => "third-party",
 			"type" => 3
@@ -477,33 +502,20 @@ class TrainingController extends Controller
 			return redirect()->back();
 		}
 
+		if($training->external_status->hasMedia('actions')) {
+			$currentFile = $training->external_status->getMedia('actions')->last();
+			$training->external_status->setAttribute('currentFile', [
+				'name' => $currentFile->name,
+				'fileName' => $currentFile->file_name,
+				'url' => $currentFile->originalUrl
+			]);
+			unset($training->external_status->media);
+		}
+
 		return Inertia::render("Dashboard/Management/Training/View/ThirdParty/index", [
 			"training" => $training,
 		]);
 		
-	}
-
-	public function external_approve_or_deny(Training $training, Request $request) {
-		$request->validate([
-			"type" => ["string", "required"],
-			"statusType" => ["string", "required"],
-			"remarks" => ["string", "max:255", "nullable"]
-		]);
-		$statuses = $training->external_status;
-		
-		if($request->type === "review" && $statuses->approval_status === "in_review") {
-			$statuses->review_status = $request->statusType;
-			$statuses->review_remark = $request->remarks;
-		}
-		if($request->type === "approve") {
-			$statuses->approval_status = $request->statusType;
-			$statuses->approval_remark = $request->remarks;
-		}
-		$statuses->save();
-		
-		return redirect()->back()
-		->with("message", "External training updated successfully!")
-		->with("type", "success");
 	}
 
 	public function external_review(Training $training) {
@@ -515,6 +527,16 @@ class TrainingController extends Controller
 		
 		if($user->emp_id !== $training->external_details->reviewed_by) {
 			return redirect()->back();
+		}
+
+		if($training->external_status->hasMedia('actions')) {
+			$currentFile = $training->external_status->getMedia('actions')->last();
+			$training->external_status->setAttribute('currentFile', [
+				'name' => $currentFile->name,
+				'fileName' => $currentFile->file_name,
+				'url' => $currentFile->originalUrl
+			]);
+			unset($training->external_status->media);
 		}
 
 		return Inertia::render("Dashboard/Management/Training/View/ThirdParty/index", [
@@ -532,6 +554,17 @@ class TrainingController extends Controller
 		
 		if($user->emp_id !== $training->external_details->approved_by) {
 			return redirect()->back();
+		}
+
+		$training = $trainingService->loadTraining($training)->load(["external_status", "external_comments"]);
+		if($training->external_status->hasMedia('actions')) {
+			$currentFile = $training->external_status->getMedia('actions')->last();
+			$training->external_status->setAttribute('currentFile', [
+				'name' => $currentFile->name,
+				'fileName' => $currentFile->file_name,
+				'url' => $currentFile->originalUrl
+			]);
+			unset($training->external_status->media);
 		}
 
 		return Inertia::render("Dashboard/Management/Training/View/ThirdParty/index", [
@@ -603,6 +636,95 @@ class TrainingController extends Controller
 
 		return redirect()->back()
 		->with("message", "Reply posted successfully!")
+		->with("type", "success");
+	}
+
+	public function approveReview(Request $request, Training $training) {
+		$request->validate([
+			"status" => ["string", "required"],
+			"type" => ["string", "required"],
+			"file" => ["file", "max:3072", "required"]
+		]);
+
+		/** @var TrainingExternalStatus $statuses */
+		$statuses = $training->external_status;
+
+		
+		switch ($request->type) {
+			case 'review':
+				if($request->remarks) {
+					$statuses->review_remark = $request->remarks;
+				}
+				$statuses->status = 'for_approval';
+				$statuses->review_status = $request->status;
+				$statuses->approval_status = 'pending';
+				// if($request->status === 'A') {
+				// 	$statuses->status = 'for_approval';
+				// 	$statuses->review_status = $request->status;
+				// 	$statuses->approval_status = 'pending';
+				// }else {
+				// 	$statuses->review_status = $request->status;
+				// 	$statuses->status = 'for_revision';
+				// }
+				break;
+			case 'approver':
+				if($request->remarks) {
+					$statuses->approval_remark = $request->remarks;
+				}
+				$statuses->approval_status = $request->status;
+				$statuses->status = "closed";
+				break;
+		}
+
+		$statuses
+		->addMediaFromRequest('file')
+		->withCustomProperties([
+			'type' => $request->type
+		])
+		->toMediaCollection('actions');
+
+		$statuses->save();
+		$training->increment('revision_no');
+		$training->save();
+
+		return redirect()->back()
+		->with("message", "Status updated successfully!")
+		->with("type", "success");
+	}
+
+
+	public function reuploadActionFile(Request $request, Training $training) {
+		$request->validate([
+			"type" => ["string", "required"],
+			"file" => ["file", "max:3072", "required"],
+			"remarks" => ["string"]
+		]);
+
+		/** @var TrainingExternalStatus $statuses */
+		$statuses = $training->external_status;
+
+		if($statuses->hasMedia('actions', ['type' => $request->type])) {
+			$media = $statuses->getFirstMedia('actions', ['type' => $request->type]);
+			$statuses->deleteMedia($media);
+		}
+		switch ($request->type) {
+			case 'review':
+				$statuses->review_remark = $request->remarks ?? "";
+				break;
+			case 'approval':
+				$statuses->approval_remark = $request->remarks ?? "";
+				break;
+		}
+		$statuses->save();
+		$statuses
+		->addMediaFromRequest('file')
+		->withCustomProperties([
+			'type' => $request->type
+		])
+		->toMediaCollection('actions');
+
+		return redirect()->back()
+		->with("message", "File updated successfully!")
 		->with("type", "success");
 	}
 

@@ -111,7 +111,6 @@ export default function TrainingThirdPartyList ({ trainings, url, type }) {
 				id: training.training_id,
 				cms: training?.project_code ? `${training?.project_code}-${training?.originator}-${training?.discipline}-${training?.document_type}-${training?.document_zone ? training?.document_zone + "-" : ""}${training?.document_level ? training?.document_level + "-" : ""}${training?.sequence_no}` : "N/A",
 				status: getTrainingStatus(training.date_expired),
-				actionStatus: getTrainingActionStatus(training.external_status),
 				completed: checkTrainingComplete(training.trainees_count, training.training_files_count)
 			})));
 		}

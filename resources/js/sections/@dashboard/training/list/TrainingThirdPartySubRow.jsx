@@ -1,10 +1,10 @@
 
 import { Box, Collapse, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import Label from "@/Components/label";
-import { capitalCase } from 'change-case';
+import { getDocumentReviewStatus } from "@/utils/formatStatuses";
 
-export const TrainingThirdPartySubRow = ({ participants, external_details, external_status, actionStatus, open }) => {
-
+export const TrainingThirdPartySubRow = ({ participants, external_details, external_status, open }) => {
+	const reviewerStatus = getDocumentReviewStatus(external_status.review_status);
 	return (
 		<TableRow>
 			<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
@@ -32,11 +32,10 @@ export const TrainingThirdPartySubRow = ({ participants, external_details, exter
 										<TableCell>
 											<Label
 												variant="filled"
-												color={
-													(external_status?.review_status === 'pending' && 'warning') || (external_status?.review_status === 'commented' && 'info') || ((external_status?.review_status === 'fail' || external_status?.review_status === 'for_revision') && 'error') || (external_status?.review_status === 'accepted' && 'success') || 'default'
-												}
+												color={reviewerStatus.statusClass}
+												sx={{ textTransform: "capitalize" }}
 											>
-												{capitalCase(external_status?.review_status || "")}
+												{reviewerStatus.statusText.toLowerCase()}
 											</Label>
 										</TableCell>
 									</TableRow>
@@ -69,12 +68,13 @@ export const TrainingThirdPartySubRow = ({ participants, external_details, exter
 											<TableCell>{external_status?.approval_remark || "N/A"}</TableCell>
 											<TableCell>
 												<Label
-													variant="soft"
+													variant="filled"
 													color={
-														(external_status?.approval_status === 'in_review' && 'default') || (external_status?.approval_status === 'rejected' && 'error') || (external_status?.approval_status === 'approved' && 'success') || 'default'
+														(external_status.approval_status === 'fail' && 'error') || (external_status.approval_status === 'approved' && 'success') || 'warning'
 													}
+													sx={{ textTransform: "Capitalize" }}
 												>
-													{capitalCase(external_status?.approval_status || "")}
+													{external_status.approval_status}
 												</Label>
 											</TableCell>
 										</TableRow>

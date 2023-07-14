@@ -62,6 +62,29 @@ export function getDocumentReviewStatus (status) {
 }
 
 
+export function getStatusColor (status) {
+	let statusColor = "warning";
+	switch (status) {
+		case "for_review":
+			statusColor = "warning";
+			break;
+		case "for_approval":
+			statusColor = "info";
+			break;
+		case "approved":
+		case "closed":
+			statusColor = "success";
+			break;
+		case "fail":
+			statusColor = "error";
+			break;
+		default:
+			break;
+	}
+	return statusColor;
+}
+
+
 export function getInventoryStatus (qty, minQty) {
 	// if (qty <= 0) return "out_of_stock";
 	// if (minQty > qty) return "low_stock"

@@ -11,6 +11,9 @@ import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
 import { Link, usePage } from '@inertiajs/inertia-react';
 import { TrainingThirdPartySubRow } from './TrainingThirdPartySubRow';
+import { getStatusColor } from '@/utils/formatStatuses';
+import { sentenceCase } from 'change-case';
+import PpeFileList from '../../ppe/portal/PpeFileList';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +26,7 @@ TrainingThirdPartyRow.propTypes = {
 };
 
 export default function TrainingThirdPartyRow ({ row, selected, onSelectRow, onDeleteRow, canEdit, canDelete }) {
-	const { training_id, cms, title, trainees_count, training_date, date_expired, status, completed, external_details, external_status, actionStatus } = row;
+	const { training_id, cms, title, trainees_count, training_date, date_expired, status, completed, external_details, external_status } = row;
 	const { auth: { user } } = usePage().props;
 
 	const [openCollapse, setOpenCollapse] = useState(false);
@@ -31,6 +34,17 @@ export default function TrainingThirdPartyRow ({ row, selected, onSelectRow, onD
 	const [openConfirm, setOpenConfirm] = useState(false);
 
 	const [openPopover, setOpenPopover] = useState(null);
+
+	const [openFileList, setOpenFileList] = useState(false);
+
+	const handleOpenFileList = () => {
+		handleClosePopover();
+		setOpenFileList(true);
+	}
+
+	const handleCloseFileList = () => {
+		setOpenFileList(false);
+	}
 
 	const handleOpenConfirm = () => {
 		setOpenConfirm(true);
@@ -90,10 +104,10 @@ export default function TrainingThirdPartyRow ({ row, selected, onSelectRow, onD
 				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap" }} align="center">
 					<Label
 						variant="filled"
-						color={actionStatus.color}
-						sx={{ color: "#fff" }}
+						color={getStatusColor(external_status.status)}
+						sx={{ textTransform: "capitalize" }}
 					>
-						{actionStatus.status}
+						{sentenceCase(external_status.status)}
 					</Label>
 				</TableCell>
 
@@ -113,7 +127,7 @@ export default function TrainingThirdPartyRow ({ row, selected, onSelectRow, onD
 				</TableCell>
 			</TableRow>
 
-			<TrainingThirdPartySubRow participants={trainees_count} external_details={external_details} external_status={external_status} open={openCollapse} actionStatus={actionStatus} />
+			<TrainingThirdPartySubRow participants={trainees_count} external_details={external_details} external_status={external_status} open={openCollapse} />
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 140 }}>
 				<MenuItem
@@ -145,6 +159,12 @@ export default function TrainingThirdPartyRow ({ row, selected, onSelectRow, onD
 					Verify
 				</MenuItem>
 				<Divider sx={{ borderStyle: 'dashed' }} />
+				<MenuItem
+					onClick={handleOpenFileList}
+				>
+					<Iconify icon="heroicons:document-magnifying-glass-20-solid" />
+					View Files
+				</MenuItem>
 				<MenuItem
 					component={Link}
 					href={`/dashboard/training/third-party/${row.id}`}
@@ -179,6 +199,13 @@ export default function TrainingThirdPartyRow ({ row, selected, onSelectRow, onD
 					</>
 				)}
 			</MenuPopover>
+
+			<PpeFileList
+				open={openFileList}
+				onClose={handleCloseFileList}
+				files={external_status?.media || []}
+				title={`${cms} File List`}
+			/>
 
 			<ConfirmDialog
 				open={openConfirm}

@@ -1,12 +1,9 @@
-import { excerpt } from "@/utils/exercpt";
 import { getDocumentReviewStatus } from "@/utils/formatStatuses";
-import { usePage } from "@inertiajs/inertia-react";
-import { Box, Collapse, Table, TableBody, TableCell, TableHead, TableRow, Tooltip } from "@mui/material";
+import { Box, Collapse, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import Label from "@/Components/label";
 
 
 const ReportTableSubRow = ({ row, open }) => {
-	const { positions } = usePage().props;
 
 	const reviewerStatus = getDocumentReviewStatus(row.reviewer_status);
 	return (
