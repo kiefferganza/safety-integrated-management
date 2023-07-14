@@ -183,7 +183,7 @@ export function convertTbtByYear ({ tbt = [] }) {
 
 function getPositionParticipant (participants = [], defaultValue = {}) {
 	return participants.reduce((participantObj, currParticipant) => {
-		const position = currParticipant?.raw_position?.trim();
+		const position = currParticipant?.position?.trim();
 		if (position in participantObj) {
 			participantObj[position] += 1;
 		} else {

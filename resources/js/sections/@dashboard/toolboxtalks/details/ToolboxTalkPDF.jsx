@@ -171,7 +171,7 @@ export default function ToolboxTalkPDF ({ tbt, cms }) {
 									</View>
 
 									<View style={[styles.tableCell_2]}>
-										<Text style={{ textTransform: 'capitalize', marginLeft: 32 }}>{item.position.position}</Text>
+										<Text style={{ textTransform: 'capitalize', marginLeft: 32 }}>{item?.position?.position}</Text>
 									</View>
 
 									<View style={styles.tableCell_2}>

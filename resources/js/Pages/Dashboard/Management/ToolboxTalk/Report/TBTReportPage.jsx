@@ -20,6 +20,9 @@ import EmptyContent from '@/Components/empty-content';
 import ToolboxTalkAnalytic from '@/sections/@dashboard/toolboxtalks/ToolboxTalkAnalytic';
 import TBTReportTable from './TBTReportTable';
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import axiosInstance from '@/utils/axios';
+import axios from 'axios';
 
 const MONTH_NAMES = {
 	1: 'January',
@@ -46,7 +49,7 @@ const TYPES = {
 };
 
 const TBTReportPage = () => {
-	const { toolboxTalks, tbtByYear, tbtYearTotalByPosition, totalTbtByYear, isLoading } = useSelector(state => state.toolboxtalk);
+	const { toolboxTalks, tbtByYear, tbtYearTotalByPosition, isLoading, totalTbtByYear } = useSelector(state => state.toolboxtalk);
 	const { themeStretch } = useSettingsContext();
 	const theme = useTheme();
 
@@ -67,6 +70,27 @@ const TBTReportPage = () => {
 		'Camp',
 		'Office',
 	]);
+
+	useEffect(() => {
+		// if (tbtByYear === null || tbtYearTotalByPosition === null || toolboxTalks === null) {
+		// 	dispatch(getTbts());
+		// }
+		if (tbtByYear !== null) {
+			const y = Object.keys(tbtByYear).at(0) ? new Date(Object.keys(tbtByYear).at(0), 0, 1) : 0;
+			setStartDate(y);
+			setStartDateHandler(y);
+			setEndDate(y);
+			setEndDateHandler(y);
+			const tbtData = Object.entries(tbtByYear).reduce((acc, curr) => {
+				const monthsData = Object.entries(curr[1]);
+				monthsData.forEach(d => d.push(curr[0]));
+				acc.push(...monthsData);
+				return acc;
+			}, []);
+			setData(tbtData);
+			setFilteredData([tbtData[0]]);
+		}
+	}, [tbtByYear, tbtYearTotalByPosition, totalTbtByYear]);
 
 	const filterTbtBySelectedDate = (start, end) => {
 		const selStartYear = getYear(start);
@@ -144,27 +168,6 @@ const TBTReportPage = () => {
 		}
 		setFilterType(newVal);
 	};
-
-	useEffect(() => {
-		if (tbtByYear === null || tbtYearTotalByPosition === null || toolboxTalks === null) {
-			dispatch(getTbts());
-		}
-		if (tbtByYear !== null) {
-			const y = Object.keys(tbtByYear).at(0) ? new Date(Object.keys(tbtByYear).at(0), 0, 1) : 0;
-			setStartDate(y);
-			setStartDateHandler(y);
-			setEndDate(y);
-			setEndDateHandler(y);
-			const tbtData = Object.entries(tbtByYear).reduce((acc, curr) => {
-				const monthsData = Object.entries(curr[1]);
-				monthsData.forEach(d => d.push(curr[0]));
-				acc.push(...monthsData);
-				return acc;
-			}, []);
-			setData(tbtData);
-			setFilteredData([tbtData[0]]);
-		}
-	}, [tbtByYear, tbtYearTotalByPosition, totalTbtByYear]);
 
 	const analytic = useMemo(() => filteredData?.reduce((acc, curr) => {
 		const total = totalTbtByYear[curr[2]][curr[0]];
