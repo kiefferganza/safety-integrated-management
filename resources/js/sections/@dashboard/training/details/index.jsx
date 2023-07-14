@@ -23,6 +23,7 @@ import Image from '@/Components/image';
 import Scrollbar from '@/Components/scrollbar';
 //
 import TrainingToolbar from './TrainingToolbar';
+import { getTrainingStatus } from '@/utils/formatDates';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +37,8 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 	if (!training || !trainings) {
 		return null;
 	}
+
+	training.status = getTrainingStatus(training.date_expired || new Date);
 
 	const getTotalAmmount = training?.external_details && training?.type === 3 ? training?.trainees?.length * (parseInt(training?.external_details?.course_price)) : 0;
 

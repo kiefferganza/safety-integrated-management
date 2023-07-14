@@ -41,7 +41,7 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 	return (
 		<Document title={training.cms ? training.cms.toUpperCase() : module + " Training"}>
 			{pages.map((trainees, pageIndex) => (
-				<Page size="A4" style={styles.page}>
+				<Page size="A4" style={styles.page} key={pageIndex}>
 					<View style={styles.mb16}>
 						<View style={styles.gridContainer}>
 							<Image source="/logo/Fiafi-logo.png" style={{ height: 32, padding: 2 }} />

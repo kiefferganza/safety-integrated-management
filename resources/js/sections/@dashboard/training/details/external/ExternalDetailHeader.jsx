@@ -9,9 +9,10 @@ import {
 import { fDate } from '@/utils/formatTime';
 // components
 import Image from '@/Components/image';
+import { getTrainingStatus } from '@/utils/formatDates';
 
 const ExternalDetailHead = ({ training }) => {
-
+	training.status = getTrainingStatus(training.date_expired || new Date);
 	return (
 		<>
 			<Box sx={{ mb: 2 }}>
@@ -138,14 +139,6 @@ const ExternalDetailHead = ({ training }) => {
 						</Box>
 						<Box>
 							<Typography variant="body1" color={training?.status?.rawColor}>{training?.status?.text}</Typography>
-						</Box>
-					</Box>
-					<Box sx={{ mb: 1 }}>
-						<Box>
-							<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Requested By</Typography>
-						</Box>
-						<Box>
-							<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training?.external_details?.requested?.fullname}</Typography>
 						</Box>
 					</Box>
 				</Grid>
