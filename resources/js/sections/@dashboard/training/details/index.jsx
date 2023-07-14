@@ -240,19 +240,8 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 								</Box>
 							</Box>
 							<Grid container spacing={{ xs: 2, md: 8 }}>
-								<Grid item xs={12} sm={4}>
-									<Box sx={{ mb: 3 }}>
-										<Box borderBottom={1}>
-											<Typography variant="body1" textAlign="center">
-												{`${training?.external_details?.requested?.firstname?.trim()} ${training?.external_details?.requested?.lastname?.trim()}`}
-											</Typography>
-										</Box>
-										<Box>
-											<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Requested by</Typography>
-										</Box>
-									</Box>
-								</Grid>
-								<Grid item xs={12} sm={4}>
+								<Grid item xs={12} md={2}></Grid>
+								<Grid item xs={12} md={4}>
 									<Box sx={{ mb: 3 }}>
 										<Box borderBottom={1}>
 											<Typography variant="body1" textAlign="center">
@@ -264,7 +253,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 										</Box>
 									</Box>
 								</Grid>
-								<Grid item xs={12} sm={4}>
+								<Grid item xs={12} md={4}>
 									<Box sx={{ mb: 3 }}>
 										<Box borderBottom={1}>
 											<Typography variant="body1" textAlign="center">
@@ -276,6 +265,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 										</Box>
 									</Box>
 								</Grid>
+								<Grid item xs={12} md={2}></Grid>
 							</Grid>
 						</Box>
 

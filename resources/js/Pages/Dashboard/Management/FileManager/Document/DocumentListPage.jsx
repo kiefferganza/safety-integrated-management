@@ -272,21 +272,20 @@ const DocumentListPage = ({ folder, user }) => {
 
 	const open = Boolean(anchorLegendEl);
 
-	const folderName = capitalCase(folder.folder_name);
 	const canCreate = hasPermission("file_create");
 	const canView = hasPermission("file_show");
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'} sx={{ pb: 16 }}>
 				<CustomBreadcrumbs
-					heading={`${folderName} Document List`}
+					heading={`${folder.folder_name} Document List`}
 					links={[
 						{
 							name: 'File Manager',
 							href: PATH_DASHBOARD.fileManager.root,
 						},
 						{
-							name: folderName
+							name: folder.folder_name
 						},
 						{
 							name: 'List',
