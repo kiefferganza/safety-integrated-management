@@ -35,7 +35,7 @@ class DocumentController extends Controller
 
 	public function create(FolderModel $folder) {
 		$user = auth()->user();
-		// dd($folder);
+
 		return Inertia::render("Dashboard/Management/FileManager/Document/Create/index", [
 			"folder" => $folder,
 			"sequence_no" => (new DocumentService)->sequence_no($folder->folder_id),
@@ -499,6 +499,43 @@ class DocumentController extends Controller
 			->with("type",  "success");
 	}
 
+	public function reupload_submitter_file(Document $document, Request $request) {
+		$request->validate([
+			'file' => ['required', 'file']
+		]);
+
+
+		$document = $document->load('files');
+
+		if($request->remarks) {
+			$document->remarks = $request->remarks;
+			$document->save();
+		}
+
+		if($request->hasFile('file')) {
+			$documentService = new DocumentService;
+			$file_name = "";
+			$file_name = $documentService->upload_file($request->file("file"));
+			$file = $document->files[0];
+			$file->src = $file_name;
+			$file->save();
+		}else {
+			abort(500);
+		}
+
+		// FileModel::insert([
+		// 	'user_id' => $user->emp_id,
+		// 	'document_id' => $document_id,
+		// 	'src' => $file_name,
+		// 	'uploader_type' => $user->user_type,
+		// 	'folder_id' => $folder->folder_id,
+		// 	'is_deleted' => 0,
+		// 	'upload_date' => $date_today
+		// ]);
+		return redirect()->back()
+			->with("message", "File updated successfuly!")
+			->with("type",  "success");
+	}
 
 	public function reupload_approval_file(Document $document, DocumentApprovalSign $signedFile, Request $request) {
 		$request->validate([

@@ -11,6 +11,7 @@ import { PATH_DASHBOARD } from '@/routes/paths';
 import { useSwal } from '@/hooks/useSwal';
 import { DocumentUpdateFileDialog } from '../portal/DocumentUpdateFileDialog';
 import { TableEmptyRows } from '@/Components/table';
+import { ReUploadFile } from '@/Components/dialogs/ReUploadFile';
 const { DocumentApproveFailDialog } = await import('../portal/DocumentApproveFailDialog');
 const { DocumentCommentDialog } = await import('../portal/DocumentCommentDialog');
 
@@ -21,6 +22,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 	const [openAction, setOpenAction] = useState(false);
 	const [openUpdateFile, setOpenUpdateFile] = useState(false);
 	const [updateFileInfo, setUpdateFileInfo] = useState(null);
+	const [openUpdateSubmitterFileInfo, setOpenUpdateSubmitterFileInfo] = useState(false);
 	const [selectedStatus, setSelectedStatus] = useState("");
 	const [actionResponseId, setActionResponseId] = useState(null);
 
@@ -30,6 +32,14 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 	// approval
 	const approvalPos = document.approval_employee ? positions.find(pos => pos.position_id === document.approval_employee.position).position : null;
 	const canApprove = checkCanApprove({ docType, document });
+
+	const handleOpenReuploadSubmitterFile = () => {
+		setOpenUpdateSubmitterFileInfo(true);
+	}
+
+	const handleCloseReuploadSubmitterFile = () => {
+		setOpenUpdateSubmitterFileInfo(false);
+	}
 
 	const handleOpenUpdateFile = (info) => {
 		setOpenUpdateFile(true);
@@ -373,6 +383,18 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 						</TableContainer>
 					</Grid>
 				</Grid>
+				{document.status === "0" && (
+					<>
+						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+						<Button
+							fullWidth
+							size="large"
+							variant="contained"
+							color="secondary"
+							onClick={handleOpenReuploadSubmitterFile}
+						>Re-upload Reviewer File</Button>
+					</>
+				)}
 				{canApprove && (
 					document.approval_sign !== null ? (
 						<>
@@ -450,6 +472,13 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 				documentId={document.document_id}
 				updateFileInfo={updateFileInfo}
 			/>
+
+			<ReUploadFile
+				open={openUpdateSubmitterFileInfo}
+				onClose={handleCloseReuploadSubmitterFile}
+				remarks={document?.remarks || ''}
+				routeName={route('files.management.document.reupload_submitter_file', document.document_id)}
+			/>
 		</>
 	)
 }
@@ -480,7 +509,6 @@ function ReviewStatus ({ canReviewStatus, onClick, isSelected = false, children,
 }
 
 function checkCanReview ({ docType, document, user }) {
-	console.log(document)
 	const type = typeof docType === "string" ? docType : "review";
 	const currReviewSign = document?.reviewer_sign?.find(revS => revS?.user_id === user?.emp_id);
 	if (type === "review" && currReviewSign) return false;

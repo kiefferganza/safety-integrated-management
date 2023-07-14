@@ -348,11 +348,19 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			->middleware("permission:file_delete")
 			->name('document.delete');
 		Route::middleware("permission:file_edit")->group(function() {
+
 			Route::post('/document/{document}/action', [DocumentController::class, "approve_or_fail_document"]);
+
+			Route::post('/document/{document}/reupload-approval-file', [DocumentController::class, "reupload_submitter_file"])->name('document.reupload_submitter_file');
+
 			Route::post('/document/{document}/{signedFile}/reupload-approval-file', [DocumentController::class, "reupload_approval_file"])->name('document.update-approval-file');
+			
 			Route::post('/document/{document}/{signedFile}/reupload-reviewer-file', [DocumentController::class, "reupload_reviewer_file"])->name('document.update-reviewer-file');
+
 			Route::post('/document/{document}/add-comment', [DocumentController::class, "add_comment"]);
+
 			Route::post('/document/{comment}/reply-comment', [DocumentController::class, "reply_comment"]);
+
 			Route::post('/document/{comment}/delete-comment', [DocumentController::class, "delete_comment"]);
 		});
 		
