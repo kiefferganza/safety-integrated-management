@@ -392,7 +392,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 							variant="contained"
 							color="secondary"
 							onClick={handleOpenReuploadSubmitterFile}
-						>Re-upload Reviewer File</Button>
+						>Re-upload File</Button>
 					</>
 				)}
 				{canApprove && (
