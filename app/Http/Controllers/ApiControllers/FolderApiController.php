@@ -32,20 +32,10 @@ class FolderApiController extends Controller
 
 		$shareableLink = URL::route('shared.document.show', ['folder' => $document->folder->folder_name, 'document' => $document->form_number, 'token' => $token]);
 
-		switch ($request->type) {
-			case 'reviewer':
-				$personel = new DocumentExternalReviewer();
-				$personel->document_id = $document->document_id;
-				$personel->firstname = $request->firstname;
-				$personel->lastname = $request->lastname;
-				break;
-			case 'approver':
-				$personel = new DocumentExternalApprover();
-				$personel->document_id = $document->document_id;
-				$personel->firstname = $request->firstname;
-				$personel->lastname = $request->lastname;
-				break;
-		}
+		$personel = new DocumentExternalApprover();
+		$personel->document_id = $document->document_id;
+		$personel->firstname = $request->firstname;
+		$personel->lastname = $request->lastname;
 		$personel->save();
 
 		$createdShare = ShareableLink::create([
@@ -54,7 +44,6 @@ class FolderApiController extends Controller
 			'model_type' => Document::class,
 			'model_id' => $document->document_id,
 			'custom_properties' => [
-				"type" => $request->type,
 				"id" => $personel->id
 			],
 			"sub_id" => $document->folder->sub_id,

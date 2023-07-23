@@ -1,16 +1,12 @@
 import Label from "@/Components/label/Label";
-import { Dialog, TextField, DialogActions, DialogContent, DialogTitle, Button, Stack, FormHelperText, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { Dialog, TextField, DialogActions, DialogContent, DialogTitle, Button, Stack, FormHelperText } from "@mui/material";
 // components
 
 const ShareDialog = (props) => {
-	const { type, setType, firstname, setFirstname, lastname, setLastname, reviewers = [], approver, open, onClose, action, title = "Generate Sharable Link", status, formNumber, ...other } = props;
+	const { setType, firstname, setFirstname, lastname, setLastname, open, onClose, action, title = "Generate Sharable Link", status, formNumber, ...other } = props;
 
 	const handleOnClose = () => {
 		onClose();
-	}
-
-	const handleTypeChange = (e) => {
-		setType(e.target.value)
 	}
 
 	return (
@@ -36,16 +32,8 @@ const ShareDialog = (props) => {
 						<TextField fullWidth label="First Name" onChange={(e) => { setFirstname(e.currentTarget.value) }} required />
 						<TextField fullWidth label="Last Name" onChange={(e) => { setLastname(e.currentTarget.value) }} required />
 					</Stack>
-					<RadioGroup sx={{ flexDirection: 'row' }} value={type} onChange={handleTypeChange}>
-						<FormControlLabel control={<Radio />} value="reviewer" label="Reviewer" />
-						<FormControlLabel control={<Radio />} value="approver" label="Approver" />
-					</RadioGroup>
 					<Stack>
-						{type === "approver" ? (
-							<FormHelperText>Generate Link for <strong>APPROVING</strong> this document.</FormHelperText>
-						) : (
-							<FormHelperText>Generate Link for <strong>REVIEWING</strong> this document.</FormHelperText>
-						)}
+						<FormHelperText>Generate External Link for this document.</FormHelperText>
 					</Stack>
 				</Stack>
 			</DialogContent>

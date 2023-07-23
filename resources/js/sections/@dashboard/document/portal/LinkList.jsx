@@ -4,12 +4,11 @@ import Scrollbar from '@/Components/scrollbar'
 import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 import { ellipsis } from '@/utils/exercpt';
 import { Button, Dialog, DialogContent, DialogTitle, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@mui/material';
-import { sentenceCase } from 'change-case';
 import { differenceInMilliseconds } from 'date-fns';
 import { useSnackbar } from 'notistack';
 
 const CURRENT_DATE = new Date();
-export const LinkList = ({ title = "External Link List", open, onClose, shareable_link = [], external_approver = [], external_reviewer = [], ...other }) => {
+export const LinkList = ({ title = "External Link List", open, onClose, shareable_link = [], external_approver = [], ...other }) => {
 
 	const { copy } = useCopyToClipboard();
 	const { enqueueSnackbar } = useSnackbar()
@@ -33,8 +32,6 @@ export const LinkList = ({ title = "External Link List", open, onClose, shareabl
 								}}
 							>
 								<TableRow>
-									<TableCell align="left">Type</TableCell>
-
 									<TableCell align="left">Name</TableCell>
 
 									<TableCell align="left">Link</TableCell>
@@ -47,28 +44,14 @@ export const LinkList = ({ title = "External Link List", open, onClose, shareabl
 
 							<TableBody>
 								{shareable_link.map(link => {
-									const { type, id } = link.custom_properties;
+									const id = link.custom_properties?.id;
 									let personel;
-									switch (type) {
-										case "reviewer":
-											personel = external_reviewer.find(rev => rev.id === id);
-											break;
-										case "approver":
-											personel = external_approver.find(rev => rev.id === id);
-											break;
-										default:
-											personel = null;
-											break;
-									}
-
+									personel = external_approver.find(rev => rev.id === id);
 									const differenceInMs = differenceInMilliseconds(new Date(link.expiration_date), CURRENT_DATE);
 									const remainingDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
 									const remainingHours = Math.floor((differenceInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 									return (
 										<TableRow key={link.id}>
-											<TableCell align="left">
-												{sentenceCase(type)}
-											</TableCell>
 											<TableCell align="left">
 												{personel?.firstname} {personel?.lastname}
 											</TableCell>
@@ -76,7 +59,7 @@ export const LinkList = ({ title = "External Link List", open, onClose, shareabl
 											<TableCell align="left">
 												<Stack direction="row" gap={1} alignItems="center">
 													<Tooltip title={link.url}>
-														<Typography variant="subtitle2">{ellipsis(link.url, 24)}</Typography>
+														<Typography variant="subtitle2">{ellipsis(link.url, 36)}</Typography>
 													</Tooltip>
 													<Tooltip title="Copy">
 														<IconButton onClick={() => handleCopy(link.url)}>

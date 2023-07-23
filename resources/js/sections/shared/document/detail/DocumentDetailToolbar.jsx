@@ -56,18 +56,6 @@ const DocumentDetailToolbar = ({ cms, document, latestUploadedFile, positions, s
 							<Iconify icon="eva:printer-fill" />
 						</IconButton>
 					</Tooltip>
-
-					<Tooltip title="Send">
-						<IconButton>
-							<Iconify icon="ic:round-send" />
-						</IconButton>
-					</Tooltip>
-
-					<Tooltip title="Share">
-						<IconButton>
-							<Iconify icon="eva:share-fill" />
-						</IconButton>
-					</Tooltip>
 				</Stack>
 				<Label
 					variant="soft"

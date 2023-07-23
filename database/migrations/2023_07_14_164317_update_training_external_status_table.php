@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('training_external_status', function (Blueprint $table) {
-			$table->string('status', 16)->default('for_review');
+			// $table->string('status', 16)->default('for_review');
 			$table->string('review_status')->nullable()->default(null)->change();
 			$table->string('approval_status')->nullable()->default('pending')->change();
 		});

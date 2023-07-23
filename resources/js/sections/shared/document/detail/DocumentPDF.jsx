@@ -33,9 +33,10 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 		document_level,
 		employee,
 		comments,
-		external_reviewer,
 		approval_employee,
 		reviewer_employees,
+		external_comments,
+		external_approver
 	} = document;
 
 	const approvalPos = approval_employee ? positions.find(pos => pos.position_id === approval_employee?.position) : null;
@@ -308,6 +309,93 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 
 				<View style={{ borderBottom: "1px solid #000", borderLeft: "1px solid #000", borderRight: "1px solid #000" }}>
 					<View style={styles.gridContainer}>
+						<View style={styles.col6}>
+							<View style={styles.gridContainer}>
+								<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+									<Text style={styles.textDefault}>No</Text>
+								</View>
+								<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+									<Text style={styles.textDefault}>Initial</Text>
+								</View>
+								<View style={{ width: "15%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+									<Text style={styles.textDefault}>Page/ Section</Text>
+								</View>
+								<View style={{ width: "15%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+									<Text style={styles.textDefault}>Comment Code</Text>
+								</View>
+								<View style={{ width: "50%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
+									<Text style={styles.textDefault}>EXTERNAL's COMMENTS</Text>
+								</View>
+							</View>
+						</View>
+						<View style={[styles.col6, { borderLeft: "1px solid #000" }]}>
+							<View style={styles.gridContainer}>
+								<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+									<Text style={styles.textDefault}>Reply Code</Text>
+								</View>
+								<View style={{ width: "60%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+									<Text style={styles.textDefault}>ORIGINATOR REPLY</Text>
+								</View>
+								<View style={{ width: "20%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
+									<Text style={styles.textDefault}>Reply Status</Text>
+								</View>
+							</View>
+						</View>
+					</View>
+					{external_comments.map((comment, idx) => {
+						const currReviewer = external_approver.find(app => app.id === comment.approver);
+						const commentPages = comment.comment_page_section.split(",");
+						return (
+							<View style={[styles.gridContainer, { borderTop: "1px solid #000" }]} key={comment.id}>
+								<View style={styles.col6}>
+									<View style={styles.gridContainer}>
+										<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+											<Text style={styles.textDefault}>{idx + 1}</Text>
+										</View>
+										<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+											<Text style={[styles.textDefault, { textTransform: "uppercase" }]}>{`${currReviewer?.firstname?.charAt(0)}. ${currReviewer?.lastname?.charAt(0)}.`}</Text>
+										</View>
+										<View style={{ width: "15%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+											{commentPages.map(p => (
+												<Text style={styles.textDefault} key={p}>{p.trim()}</Text>
+											))}
+										</View>
+										<View style={{ width: "15%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+											<Text style={styles.textDefault}>{comment.comment_code}</Text>
+										</View>
+										<View style={{ width: "50%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
+											<Text style={styles.textDefault}>{comment.comment}</Text>
+										</View>
+									</View>
+								</View>
+								<View style={[styles.col6, { borderLeft: "1px solid #000" }]}>
+									<View style={[styles.gridContainer, { borderBottom: "1px solid #000" }]}>
+										<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+											<Text style={styles.textDefault}>{comment.reply_code}</Text>
+										</View>
+										<View style={{ width: "60%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+											<Text style={styles.textDefault}>{comment.reply}</Text>
+										</View>
+										<View style={{ width: "20%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
+											{comment.status === 0 ? (
+												<View style={[styles.badge, { backgroundColor: theme.palette.info.main }]}>
+													<Text style={[styles.textDefault, { color: "#fff", textAlign: "center" }]}>Open</Text>
+												</View>
+											) : (
+												<View style={[styles.badge, { backgroundColor: theme.palette.error.main }]}>
+													<Text style={[styles.textDefault, { color: "#fff", textAlign: "center" }]}>Closed</Text>
+												</View>
+											)}
+										</View>
+									</View>
+								</View>
+							</View>
+						)
+					})}
+				</View>
+
+				<View style={{ borderBottom: "1px solid #000", borderLeft: "1px solid #000", borderRight: "1px solid #000" }}>
+					<View style={styles.gridContainer}>
 						<View style={{ width: "17.5%", borderRight: "1px solid #000" }}>
 							<Text style={[styles.textDefault, { paddingLeft: 4 }]}>Document Review</Text>
 							<Text style={[styles.textDefault, { paddingLeft: 4 }]}>Status Code</Text>
@@ -345,7 +433,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 							<View>
 								<Text style={[styles.textDefault, { textAlign: "center" }]}>Reviewer Comments Status</Text>
 							</View>
-							<View style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
+							<View style={[styles.gridContainer, { borderTop: "1px solid #000", borderBottom: "1px solid #000" }]}>
 								<View style={{ width: "8%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
 									<Text style={styles.textDefault}>No</Text>
 								</View>
@@ -375,30 +463,6 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 										</View>
 										<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
 											<Text style={styles.textDefault}>{pos.position}</Text>
-										</View>
-										<View style={{ width: "40%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={styles.textDefault}>{revEmp?.remarks || "N/A"}</Text>
-										</View>
-										<View style={{ width: "24%", alignItems: "center", justifyContent: "center" }}>
-											<View style={[styles.badge, { paddingVertical: 1, paddingHorizontal: 2, backgroundColor: theme.palette[revStatus.statusClass].main, marginVertical: 2 }]}>
-												<Text style={[styles.textDefault, { fontSize: 6, color: "#fff", textAlign: "center" }]}>{revStatus.statusText}</Text>
-											</View>
-										</View>
-									</View>
-								)
-							})}
-							{external_reviewer.map((revEmp, idx) => {
-								const revStatus = getDocumentReviewStatus(revEmp?.status);
-								return (
-									<View key={revEmp.id} style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
-										<View style={{ width: "8%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={styles.textDefault}>{(reviewer_employees?.length || 0) + (idx + 1)}</Text>
-										</View>
-										<View style={{ width: "8%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={[styles.textDefault, { textTransform: "uppercase" }]}>{`${revEmp?.firstname?.charAt(0)}. ${revEmp?.lastname?.charAt(0)}.`}</Text>
-										</View>
-										<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={styles.textDefault}>External Reviewer</Text>
 										</View>
 										<View style={{ width: "40%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
 											<Text style={styles.textDefault}>{revEmp?.remarks || "N/A"}</Text>
@@ -463,7 +527,6 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 						<Text style={{ fontSize: 9, textAlign: 'right' }}>{format(new Date(), 'MM/dd/yy')} Page {`1 / 1`}</Text>
 					</View>
 				</View>
-
 			</Page >
 		</Document >
 	);

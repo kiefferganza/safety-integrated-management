@@ -38,6 +38,7 @@ export function DocumentCommentDialog ({
 	open,
 	onClose,
 	documentId,
+	sharedLink,
 	...other
 }) {
 	const { load, stop } = useSwal();
@@ -63,7 +64,13 @@ export function DocumentCommentDialog ({
 			pages: data.pages.join(","),
 			src: file
 		};
-		Inertia.post(PATH_DASHBOARD.fileManager.addComment(documentId), newData, {
+		Inertia.post(route('shared.document.post_comment', {
+			document: documentId,
+			docExternal: sharedLink.id,
+			_query: {
+				token: sharedLink.token
+			}
+		}), newData, {
 			preserveScroll: true,
 			onStart () {
 				handleClose();

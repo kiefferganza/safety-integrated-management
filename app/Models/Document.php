@@ -130,6 +130,10 @@ class Document extends Model
 		return $this->hasMany(DocumentCommentReplies::class, "document_id");
 	}
 
+	public function external_comments() {
+		return $this->hasMany(DocumentExternalComment::class, "document_id");
+	}
+
 	public function folder()
 	{
 		return $this->belongsTo(FolderModel::class, "folder_id");
@@ -171,11 +175,6 @@ class Document extends Model
 		return $this->hasMany(DocumentExternalApprover::class, 'document_id');
 	}
 
-	public function external_reviewer()
-	{
-		return $this->hasMany(DocumentExternalReviewer::class, "document_id");
-	}
-
 	public function employee()
 	{
 		return $this->belongsTo(Employee::class, "user_id", "employee_id");
@@ -185,4 +184,5 @@ class Document extends Model
 	{
 		return $this->belongsTo(User::class, "user_id");
 	}
+
 }

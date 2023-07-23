@@ -7,7 +7,7 @@ import DocumentDetailBody from '@/sections/shared/document/detail/DocumentDetail
 import DocumentDetailHeader from '@/sections/shared/document/detail/DocumentDetailHeader';
 import DocumentDetailToolbar from '@/sections/shared/document/detail/DocumentDetailToolbar';
 
-const DocumentPage = ({ document, positions, customUser }) => {
+const DocumentPage = ({ document, positions, customUser, sharedLink }) => {
 	const {
 		currentFile,
 		form_number
@@ -15,7 +15,7 @@ const DocumentPage = ({ document, positions, customUser }) => {
 
 	const latestUploadedFile = currentFile;
 
-	const docStatus = getDocumentStatus(customUser.status);
+	const appStatus = getDocumentReviewStatus(customUser.status);
 	return (
 		<>
 			<DocumentDetailToolbar cms={form_number} document={document} latestUploadedFile={latestUploadedFile} positions={positions} status={customUser.status} />
@@ -26,7 +26,7 @@ const DocumentPage = ({ document, positions, customUser }) => {
 					document={document}
 					latestUploadedFile={latestUploadedFile}
 				/>
-				<DocumentDetailBody document={document} positions={positions} customUser={customUser} />
+				<DocumentDetailBody document={document} positions={positions} customUser={customUser} sharedLink={sharedLink} appStatus={appStatus} />
 			</Card >
 		</>
 	)

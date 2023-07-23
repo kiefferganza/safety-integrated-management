@@ -69,49 +69,6 @@ export const DocumentTableSubRow = ({ row, open }) => {
 									</TableRow>
 								)}
 							</TableBody>
-							{row?.external_reviewer?.length > 0 && (
-								<>
-									<TableHead>
-										<TableRow>
-											<TableCell>External Reviewers</TableCell>
-											<TableCell colSpan={2}>Remarks</TableCell>
-											<TableCell>Signed File</TableCell>
-											<TableCell>Status</TableCell>
-										</TableRow>
-									</TableHead>
-									<TableBody>
-										{row.external_reviewer.map(revEmp => {
-											const stat = getDocumentReviewStatus(revEmp?.pivot?.review_status);
-											return (
-												<TableRow key={revEmp.id}>
-													<TableCell>
-														{revEmp?.firstname} {revEmp?.lastname}
-													</TableCell>
-													<TableCell colSpan={2}>{revEmp?.remarks || "N/A"}</TableCell>
-													<TableCell>
-														{revEmp?.src ? (
-															<Tooltip title={revEmp.src}>
-																<a href={`/storage/media/docs/${revEmp.src}`} target="_blank">{excerpt(revEmp.src, 16)}</a>
-															</Tooltip>
-														) : (
-															<Box component="span" sx={{ color: "text.disabled" }}>No signed files yet</Box>
-														)}
-													</TableCell>
-													<TableCell>
-														<Label
-															variant="soft"
-															color={stat.statusClass}
-															sx={{ textTransform: "none" }}
-														>
-															{stat.statusText}
-														</Label>
-													</TableCell>
-												</TableRow>
-											);
-										})}
-									</TableBody>
-								</>
-							)}
 							{row.approval_employee && (
 								<>
 									<TableHead>
@@ -167,7 +124,6 @@ export const DocumentTableSubRow = ({ row, open }) => {
 									<TableBody>
 
 										{row.external_approver.map(app => {
-											console.log(app);
 											return (
 												<TableRow>
 													<TableCell>

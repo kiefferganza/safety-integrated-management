@@ -48,7 +48,6 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 	// Shareable
 	const [firstname, setFirstname] = useState('');
 	const [lastname, setLastname] = useState('');
-	const [type, setType] = useState('approver');
 	// 
 
 	const [openShare, setOpenShare] = useState(false);
@@ -102,7 +101,6 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 	}
 
 	const handleCloseShare = () => {
-		setType("reviewer");
 		setOpenShare(false);
 	}
 
@@ -120,10 +118,8 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 			const urlRoute = route('api.folder.generate-url', { document: row.document_id });
 			const { data } = await axiosInstance.post(urlRoute, {
 				firstname,
-				lastname,
-				type
+				lastname
 			});
-			console.log(data);
 			setGeneratedUrl(data.shareableLink);
 			load(false);
 			setOpenCopyURL(true);
@@ -276,10 +272,6 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 				setLastname={setLastname}
 				status={row.docStatus}
 				formNumber={row.form_number}
-				reviewers={row.reviewer_employees}
-				approver={row.approval_employee}
-				type={type}
-				setType={setType}
 				action={
 					<Button
 						disabled={!firstname || !lastname}
@@ -303,7 +295,6 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 				onClose={() => setOpenLinkList(false)}
 				shareable_link={row.shareable_link}
 				external_approver={row.external_approver}
-				external_reviewer={row.external_reviewer}
 			/>
 
 		</>

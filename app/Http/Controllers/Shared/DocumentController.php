@@ -6,11 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\CompanyModel;
 use App\Models\Document;
 use App\Models\DocumentExternalApprover;
-use App\Models\DocumentExternalReviewer;
+use App\Models\DocumentExternalComment;
 use App\Models\FolderModel;
 use App\Models\Position;
-use App\Models\ShareableLink;
+use App\Services\DocumentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 
@@ -41,26 +42,16 @@ class DocumentController extends Controller
 			"approval_employee",
 			"reviewer_employees",
 			"external_approver",
-			"external_reviewer"
+			"external_comments"
 		)->findOrFail($sharedLink->model_id);
-
-		$customUser = null;
 
 		$personId = $sharedLink->custom_properties['id'];
 
-		if($sharedLink->custom_properties['type'] === 'reviewer') {
-			$customUser = $document->external_reviewer->first(function($app) use($personId) {
-				return $app->id === $personId;
-			});
-			$customUser->type = "reviewer";
-		}else {
-			$customUser = $document->external_approver->first(function($app) use($personId) {
-				return $app->id === $personId;
-			});
-			$customUser->type = "approver";
-		}
+		// dd($sharedLink->token);
 
-		$customUser->token = $sharedLink->token;
+		$customUser = $document->external_approver->first(function($app) use($personId) {
+			return $app->id === $personId;
+		});
 		
 		$folder = FolderModel::select('sub_id')->findOrFail($document->folder_id);
 
@@ -93,15 +84,6 @@ class DocumentController extends Controller
 			}
 		}
 
-		if(count($document->external_reviewer) > 0) {
-			foreach ($document->external_reviewer as $externalReviewer) {
-				if($externalReviewer->src) {
-					$media = $externalReviewer->getFirstMedia();
-					$files->push(["fullSrc" => $media->getFullUrl(), "src" => $media->name, "date" => $media->created_at]);
-				}
-			}
-		}
-
 		if(count($document->external_approver) > 0) {
 			foreach ($document->external_approver as $externalApprover) {
 				if($externalApprover->src) {
@@ -119,27 +101,96 @@ class DocumentController extends Controller
 			"document" => $document,
 			"companies" => CompanyModel::where("sub_id", $folder->sub_id)->get(),
 			"positions" => Position::select("position_id", "position")->where("user_id", $folder->sub_id)->get(),
-			"customUser" => $customUser
+			"customUser" => $customUser,
+			"sharedLink" => $sharedLink
 		]);
 	}
 
-	public function approve_or_fail_document(Document $document, Request $request) {
+
+	public function post_comment(Document $document, DocumentExternalApprover $docExternal, Request $request) {
+		$body = $request->input();
+		$documentService = new DocumentService;
+
+		if($request->hasFile('src')) {
+			if(Storage::exists("public/media/docs/" . $document->files[0]->src)) {
+				Storage::delete("public/media/docs/" . $document->files[0]->src);
+			}
+
+			$file_name = $documentService->upload_file($request->file("src"));
+			$document->files[0]->update([
+				"src" => $file_name,
+			]);
+		}
+
+		DocumentExternalComment::create([
+			"document_id" => $document->document_id,
+			"approver" => $docExternal->id,
+			"comment" => $body["comment"],
+			"comment_page_section" => $body["pages"],
+			"comment_code" => $body["comment_code"],
+			"status" =>  $body["comment_code"] === "2" ? 1 : 0,
+		]);
+		return redirect()->back()
+			->with("message", "Comment added successfully!")
+			->with("type", "success");
+	}
+
+
+	public function delete_comment(DocumentExternalComment $comment) {
+		$comment->delete();
+		return redirect()->back()
+			->with('message', 'Comment deleted successfully.')
+			->with('type', 'success');
+	}
+
+
+	public function reply_comment(DocumentExternalComment $comment, Document $doc, Request $request) {
+		$req_body = $request->validate([
+			"reply" => "required|string",
+			"reply_code" => "required|string|max:2",
+			"src" => "required|mimes:ppt,pptx,doc,docx,pdf,xls,xlsx,jpeg,jpg,png|max:204800"
+		]);
+
+		$date_today = date('Y-m-d');
+
+		$doc->increment("rev");
+
+		$comment->reply = $req_body["reply"];
+		$comment->reply_code = $req_body["reply_code"];
+		$comment->reply_date = $date_today;
+		$comment->response_status = 2;
+		$comment->save();
+		
+		// Add file to response file and upload to storage
+		if($request->hasFile('src')) {
+			$file_name = time(). '-' . $req_body['src']->getClientOriginalName();
+			$req_body['src']->storeAs('media/docs', $file_name, 'public');
+			if(Storage::exists("public/media/docs/" . $doc->files[0]->src)) {
+				Storage::delete("public/media/docs/" . $doc->files[0]->src);
+			}
+			$doc->files[0]->update([
+				"src" => $file_name,
+			]);
+		}
+
+		return redirect()->back()
+			->with('message', 'Replied to comment successfully.')
+			->with("type", "success");
+	}
+
+
+	public function approve_or_fail_document(Document $document, DocumentExternalApprover $docExternal, Request $request) {
 		$request->validate([
-			'src' => ['required', 'file'],
+			'file' => ['required', 'file'],
 			'status' => ['required', 'string'],
-			'remarks' => ['string']
+			'remarks' => ['string', 'nullable']
 		]);
 		
-		if($request->hasFile('src')) {
-			if($request->docType === "approver") {
-				$docExternal = DocumentExternalApprover::findOrFail($request->id);
-			}else {
-				$docExternal = DocumentExternalReviewer::findOrFail($request->id);
-			}
+		if($request->hasFile('file')) {
 			$docExternal->clearMediaCollection();
-			$docExternal->addMediaFromRequest('src')->toMediaCollection();
-			$docExternal->remarks = $request->remarks ? $request->remarks : NULL;
-			$docExternal->src = $request->file('src')->getClientOriginalName();
+			$docExternal->addMediaFromRequest('file')->toMediaCollection();
+			$docExternal->remarks = $request->remarks;
+			$docExternal->src = $request->file('file')->getClientOriginalName();
 			$docExternal->status = $request->status;
 			$docExternal->save();
 
