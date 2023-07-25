@@ -307,26 +307,6 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 											</TableRow>
 										)
 									})}
-									{document.external_reviewer?.map((rev, idx) => {
-										const revStat = getDocumentReviewStatus(rev?.status);
-										return (
-											<TableRow key={rev.id}>
-												<TableCell width={40}>{(document?.reviewer_employees?.length) + (idx + 1)}</TableCell>
-
-												<TableCell align="left">{rev?.firstname} {rev?.lastname}</TableCell>
-
-												<TableCell align="left">External Reviewer</TableCell>
-
-												<TableCell align="left">{rev?.remarks}</TableCell>
-
-												<TableCell align="left">
-													<Label color={revStat.statusClass}>
-														{revStat.statusText}
-													</Label>
-												</TableCell>
-											</TableRow>
-										)
-									})}
 								</TableBody>
 							</Table>
 						</TableContainer>

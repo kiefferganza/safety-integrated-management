@@ -154,8 +154,7 @@ class DocumentController extends Controller
 				"files",
 				"approval_employee",
 				"reviewer_employees",
-				"external_approver",
-				"external_reviewer"
+				"external_approver"
 			)->firstOrFail();
 
 		// Submitter Profile
@@ -184,15 +183,6 @@ class DocumentController extends Controller
 		if(count($document->reviewer_sign) > 0) {
 			foreach ($document->reviewer_sign as $revSign) {
 				$files->push(["src" => $revSign->src, "date" => $revSign->upload_date]);
-			}
-		}
-
-		if(count($document->external_reviewer) > 0) {
-			foreach ($document->external_reviewer as $externalReviewer) {
-				if($externalReviewer->src) {
-					$media = $externalReviewer->getFirstMedia();
-					$files->push(["fullSrc" => $media->getFullUrl(), "src" => $media->name, "date" => $media->created_at]);
-				}
 			}
 		}
 

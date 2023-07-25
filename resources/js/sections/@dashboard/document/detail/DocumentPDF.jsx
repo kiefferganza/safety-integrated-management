@@ -33,7 +33,6 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 		document_level,
 		employee,
 		comments,
-		external_reviewer,
 		external_approver,
 		approval_employee,
 		reviewer_employees,
@@ -376,30 +375,6 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 										</View>
 										<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
 											<Text style={styles.textDefault}>{pos.position}</Text>
-										</View>
-										<View style={{ width: "40%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={styles.textDefault}>{revEmp?.remarks || "N/A"}</Text>
-										</View>
-										<View style={{ width: "24%", alignItems: "center", justifyContent: "center" }}>
-											<View style={[styles.badge, { paddingVertical: 1, paddingHorizontal: 2, backgroundColor: theme.palette[revStatus.statusClass].main, marginVertical: 2 }]}>
-												<Text style={[styles.textDefault, { fontSize: 6, color: "#fff", textAlign: "center" }]}>{revStatus.statusText}</Text>
-											</View>
-										</View>
-									</View>
-								)
-							})}
-							{external_reviewer.map((revEmp, idx) => {
-								const revStatus = getDocumentReviewStatus(revEmp?.status);
-								return (
-									<View key={revEmp.id} style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
-										<View style={{ width: "8%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={styles.textDefault}>{(reviewer_employees?.length || 0) + (idx + 1)}</Text>
-										</View>
-										<View style={{ width: "8%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={[styles.textDefault, { textTransform: "uppercase" }]}>{`${revEmp?.firstname?.charAt(0)}. ${revEmp?.lastname?.charAt(0)}.`}</Text>
-										</View>
-										<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={styles.textDefault}>External Reviewer</Text>
 										</View>
 										<View style={{ width: "40%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
 											<Text style={styles.textDefault}>{revEmp?.remarks || "N/A"}</Text>
