@@ -15,7 +15,7 @@ const STATUSES = [
 	{ label: "F. Responded / Reviewed / Actioned", code: "F" },
 ];
 
-const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus, onDelete, onAction }) => {
+const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus, onDelete, onAction, shareableLink }) => {
 	const [openPopover, setOpenPopover] = useState(null);
 	const [openDelete, setOpenDelete] = useState(false);
 	const [openReply, setOpenReply] = useState(false);
@@ -46,6 +46,7 @@ const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus,
 	}
 
 	const canDeleteComment = false;
+	console.log(reviewer);
 	return (
 		<>
 			<TableRow
@@ -141,7 +142,14 @@ const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus,
 			<DocumentReplyDialog
 				open={openReply}
 				onClose={handleCloseReply}
-				response_id={row.response_id}
+				response_id={row.id}
+				routeName={shareableLink ? route('shared.document.reply_comment', {
+					doc: shareableLink.model_id,
+					comment: row.id,
+					_query: {
+						token: shareableLink.token
+					}
+				}) : null}
 			/>
 		</>
 	)

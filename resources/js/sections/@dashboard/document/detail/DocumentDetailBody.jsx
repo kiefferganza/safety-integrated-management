@@ -12,6 +12,7 @@ import { useSwal } from '@/hooks/useSwal';
 import { DocumentUpdateFileDialog } from '../portal/DocumentUpdateFileDialog';
 import { TableEmptyRows } from '@/Components/table';
 import { ReUploadFile } from '@/Components/dialogs/ReUploadFile';
+import DocumentExternalComment from '@/sections/shared/document/detail/DocumentExternalComment';
 const { DocumentApproveFailDialog } = await import('../portal/DocumentApproveFailDialog');
 const { DocumentCommentDialog } = await import('../portal/DocumentCommentDialog');
 
@@ -79,7 +80,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 	}
 	const canComment = document.approval_sign !== null ? false : typeof docType === "string" ? docType === "review" : true;
 	const reviewerStatus = document.reviewer_employees.find(revEmp => revEmp.employee_id === user?.employee?.employee_id)?.pivot?.review_status;
-
+	console.log(document);
 	return (
 		<>
 			<Stack>
@@ -181,6 +182,81 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 						</Table>
 					</Scrollbar>
 				</TableContainer>
+				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+				<Stack direction="row" justifyContent="space-between" alignItems="center">
+					<Typography variant="h6" sx={{ color: 'text.disabled' }}>
+						External comments
+					</Typography>
+					{canComment && (
+						<Button
+							variant="text"
+							startIcon={<Iconify icon="eva:plus-fill" />}
+							onClick={() => { setOpenComment(true); }}
+						>
+							New Comment
+						</Button>
+					)}
+				</Stack>
+				{document.external_comments.length > 0 && (
+					<>
+						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+						<TableContainer sx={{ overflow: 'unset' }}>
+							<Scrollbar>
+								<Table sx={{ minWidth: 960 }}>
+									<TableHead
+										sx={{
+											borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
+											'& th': { backgroundColor: 'transparent' },
+										}}
+									>
+										<TableRow>
+											<TableCell width={40}>#</TableCell>
+
+											<TableCell align="left">Full name</TableCell>
+
+											<TableCell align="left">
+												<Box>Page/</Box>
+												<Box>Section</Box>
+											</TableCell>
+
+											<TableCell align="left">
+												<Box>Comment</Box>
+												<Box>Code</Box>
+											</TableCell>
+
+											<TableCell align="left">REVIEWER's COMMENTS</TableCell>
+
+											<TableCell align="left">Reply Code</TableCell>
+
+											<TableCell align="left">ORIGINATOR REPLY</TableCell>
+
+											<TableCell align="left">Status</TableCell>
+										</TableRow>
+									</TableHead>
+
+									<TableBody>
+										{document.external_comments.map((row, index) => {
+											const commentStatus = row.status == 0 ? { text: "Open", color: "success" } : { text: "Closed", color: "error" }
+											const shareableLink = (document?.shareable_link || []).find(link => (document.external_approver || []).findIndex(app => app.id === link.custom_properties?.id) !== -1);
+											return (
+												<DocumentExternalComment
+													key={row.id}
+													row={row}
+													index={index}
+													reviewer={document.external_approver[0]}
+													commentStatus={commentStatus}
+													docType={typeof docType === "string" ? docType : ""}
+													onDelete={() => handleDeleteComment(row.id)}
+													shareableLink={shareableLink}
+												/>
+											)
+										})}
+									</TableBody>
+								</Table>
+							</Scrollbar>
+						</TableContainer>
+					</>
+				)}
 				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 				<Typography variant="h6" sx={{ color: 'text.disabled' }}>
 					Document Review Status Code
@@ -345,24 +421,72 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 											</TableCell>
 										</TableRow>
 									)}
-									{document?.external_approver?.map((app) => (
-										<TableRow key={app.id}>
-											<TableCell align="left">{app?.firstname} {app?.lastname}</TableCell>
-
-											<TableCell align="left">External Approver</TableCell>
-
-											<TableCell align="left">{document?.remarks || "N/A"}</TableCell>
-
-											<TableCell align="left">
-												<Label color={app.status === "A" ? "success" : "error"}>{app.status === "A" ? "APPROVED" : "FAILED"}</Label>
-											</TableCell>
-										</TableRow>
-									))}
 								</TableBody>
 							</Table>
 						</TableContainer>
 					</Grid>
 				</Grid>
+				{document.external_approver?.length > 0 && (
+					<>
+						<Divider sx={{ borderStyle: "dashed", my: 3 }} />
+						<Grid container spacing={3}>
+							<Grid item xs={12}>
+								<Stack alignItems="center">
+									<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
+										External Comments Status
+									</Typography>
+								</Stack>
+							</Grid>
+							<Grid item xs={12}>
+								<TableContainer sx={{ overflow: 'unset' }}>
+									<Table>
+										<TableHead
+											sx={{
+												borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
+												'& th': { backgroundColor: 'transparent' },
+											}}
+										>
+											<TableRow>
+												<TableCell align="left">Full name</TableCell>
+
+												<TableCell align="left">Type</TableCell>
+
+												<TableCell align="left">Remarks</TableCell>
+
+												<TableCell align="left">Status</TableCell>
+											</TableRow>
+										</TableHead>
+
+										<TableBody>
+											{document?.external_approver?.map((app) => {
+												const appStatus = getDocumentReviewStatus(app.status);
+												return (
+													<TableRow key={app.id}>
+														<TableCell align="left">{app?.firstname} {app?.lastname}</TableCell>
+
+														<TableCell align="left">External Approver</TableCell>
+
+														<TableCell align="left">{app?.remarks || "N/A"}</TableCell>
+
+														<TableCell align="left">
+															<Label
+																variant="soft"
+																color={appStatus?.statusClass}
+																sx={{ textTransform: 'capitalize' }}
+															>
+																{appStatus?.statusText}
+															</Label>
+														</TableCell>
+													</TableRow>
+												)
+											})}
+										</TableBody>
+									</Table>
+								</TableContainer>
+							</Grid>
+						</Grid>
+					</>
+				)}
 				{document.status === "0" && (
 					<>
 						<Divider sx={{ borderStyle: "dashed", my: 2 }} />

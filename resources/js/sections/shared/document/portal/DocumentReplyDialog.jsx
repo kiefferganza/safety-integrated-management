@@ -36,6 +36,7 @@ export function DocumentReplyDialog ({
 	open,
 	onClose,
 	response_id,
+	routeName = null,
 	...other
 }) {
 	const { load, stop } = useSwal();
@@ -59,7 +60,7 @@ export function DocumentReplyDialog ({
 			...data,
 			src: file
 		};
-		Inertia.post(PATH_DASHBOARD.fileManager.replyComment(response_id), newData, {
+		Inertia.post(routeName || PATH_DASHBOARD.fileManager.replyComment(response_id), newData, {
 			preserveScroll: true,
 			onStart () {
 				handleClose();

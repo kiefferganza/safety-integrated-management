@@ -7,6 +7,7 @@ use App\Models\CompanyModel;
 use App\Models\Document;
 use App\Models\DocumentExternalApprover;
 use App\Models\DocumentExternalComment;
+use App\Models\DocumentExternalHistory;
 use App\Models\FolderModel;
 use App\Models\Position;
 use App\Services\DocumentService;
@@ -34,7 +35,7 @@ class DocumentController extends Controller
 				"department",
 				"user"
 			])
-		)->with(
+		)->with([
 			"comments",
 			"reviewer_sign",
 			"approval_sign",
@@ -42,8 +43,9 @@ class DocumentController extends Controller
 			"approval_employee",
 			"reviewer_employees",
 			"external_approver",
-			"external_comments"
-		)->findOrFail($sharedLink->model_id);
+			"external_comments",
+			"external_history" => fn($q) => $q->with("approver"),
+		])->findOrFail($sharedLink->model_id);
 
 		$personId = $sharedLink->custom_properties['id'];
 
@@ -115,10 +117,17 @@ class DocumentController extends Controller
 			if(Storage::exists("public/media/docs/" . $document->files[0]->src)) {
 				Storage::delete("public/media/docs/" . $document->files[0]->src);
 			}
-
+			
 			$file_name = $documentService->upload_file($request->file("src"));
 			$document->files[0]->update([
-				"src" => $file_name,
+				"src" => $file_name
+			]);
+
+			DocumentExternalHistory::create([
+				"document_id" => $document->document_id,
+				"approver" => $docExternal->id,
+				"type" => "commented",
+				"src" => $file_name
 			]);
 		}
 
@@ -130,6 +139,7 @@ class DocumentController extends Controller
 			"comment_code" => $body["comment_code"],
 			"status" =>  $body["comment_code"] === "2" ? 1 : 0,
 		]);
+
 		return redirect()->back()
 			->with("message", "Comment added successfully!")
 			->with("type", "success");
@@ -151,14 +161,11 @@ class DocumentController extends Controller
 			"src" => "required|mimes:ppt,pptx,doc,docx,pdf,xls,xlsx,jpeg,jpg,png|max:204800"
 		]);
 
-		$date_today = date('Y-m-d');
-
 		$doc->increment("rev");
 
 		$comment->reply = $req_body["reply"];
 		$comment->reply_code = $req_body["reply_code"];
-		$comment->reply_date = $date_today;
-		$comment->response_status = 2;
+		$comment->status = 2;
 		$comment->save();
 		
 		// Add file to response file and upload to storage
@@ -193,6 +200,13 @@ class DocumentController extends Controller
 			$docExternal->src = $request->file('file')->getClientOriginalName();
 			$docExternal->status = $request->status;
 			$docExternal->save();
+			
+			DocumentExternalHistory::create([
+				"document_id" => $document->document_id,
+				"approver" => $docExternal->id,
+				"type" => "reviewed",
+				"src" => $request->file('file')->getClientOriginalName()
+			]);
 
 			$document->status = $request->status;
 			$document->increment('rev');
@@ -220,6 +234,20 @@ class DocumentController extends Controller
 			$docApprover->save();
 
 			$document = Document::find($docApprover->document_id);
+
+			$docExtHistory = DocumentExternalHistory::where([
+				"document_id" => $document->document_id,
+				"approver" => $docApprover->id,
+				"type" => "reviewed"
+			])
+			->latest()
+			->first();
+
+			if($docExtHistory) {
+				$docExtHistory->src = $request->file('src')->getClientOriginalName();
+				$docExtHistory->save();
+			}
+
 			$document->increment('rev');
 			$document->save();
 		}else {

@@ -6,7 +6,7 @@ const { Box, Stack, Dialog, Tooltip, IconButton, DialogActions, CircularProgress
 import Iconify from '@/Components/iconify';
 import Label from '@/Components/label';
 import { getDocumentReviewStatus } from '@/utils/formatStatuses';
-const { DocumentPDF } = await import('./DocumentPDF');
+import { DocumentPDF } from '@/sections/@dashboard/document/detail/DocumentPDF';
 
 const DocumentDetailToolbar = ({ cms, document, latestUploadedFile, positions, status }) => {
 	const [open, setOpen] = useState(false);

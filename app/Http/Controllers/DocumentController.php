@@ -147,16 +147,19 @@ class DocumentController extends Controller
 					"department",
 					"user"
 				])
-			)->with(
+			)->with([
 				"comments",
 				"reviewer_sign",
 				"approval_sign",
 				"files",
 				"approval_employee",
 				"reviewer_employees",
-				"external_approver"
-			)->firstOrFail();
-
+				"external_approver",
+				"external_comments",
+				"shareableLink",
+				"external_history" => fn($q) => $q->with("approver"),
+			])->firstOrFail();
+			
 		// Submitter Profile
 		$document->employee->profile = null;
 		if($document->employee->user) {

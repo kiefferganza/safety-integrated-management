@@ -10,7 +10,7 @@ Route::middleware('shared')->prefix('shared')->as('shared.')->group(function() {
 	// Comments
 	Route::post('/document/{document}/{docExternal}/add-comment', [DocumentController::class, 'post_comment'])->name('document.post_comment');
 
-	Route::post('/document/{comment}/{doc}/reply-comment', [DocumentController::class, 'document.reply_comment'])->name('reply_comment');
+	Route::post('/document/{comment}/{doc}/reply-comment', [DocumentController::class, 'reply_comment'])->name('document.reply_comment');
 
-	Route::post('/document/{comment}/delete-comment', [DocumentController::class, 'document.delete_comment'])->name('delete_comment');
+	Route::post('/document/{comment}/delete-comment', [DocumentController::class, 'delete_comment'])->name('delete_comment');
 });

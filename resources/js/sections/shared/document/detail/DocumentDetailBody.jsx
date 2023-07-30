@@ -6,17 +6,13 @@ import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar/Scrollbar';
 import Label from '@/Components/label/Label';
 import DocumentComments from './DocumentComments';
-import { Inertia } from '@inertiajs/inertia';
-import { PATH_DASHBOARD } from '@/routes/paths';
 import { useSwal } from '@/hooks/useSwal';
 import { DocumentUpdateFileDialog } from '../portal/DocumentUpdateFileDialog';
-import { TableEmptyRows } from '@/Components/table';
 import ReportActionDialog from '@/Components/dialogs/ReportActionDialog';
 import DocumentExternalComment from './DocumentExternalComment';
 const { DocumentCommentDialog } = await import('../portal/DocumentCommentDialog');
 
 const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appStatus }) => {
-	const { load, stop } = useSwal();
 	const [openComment, setOpenComment] = useState(false);
 	const [openUpdateFile, setOpenUpdateFile] = useState(false);
 	const [updateFileInfo, setUpdateFileInfo] = useState(null);
@@ -50,16 +46,16 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 
 
 	const handleDeleteComment = (commentId) => {
-		const commentLength = document.comments.length;
-		Inertia.post(PATH_DASHBOARD.fileManager.deleteComment(commentId), { commentLength }, {
-			preserveScroll: true,
-			onStart () {
-				load("Deleting comment", "please wait...");
-			},
-			onFinish () {
-				stop();
-			}
-		});
+		// const commentLength = document.comments.length;
+		// Inertia.post(PATH_DASHBOARD.fileManager.deleteComment(commentId), { commentLength }, {
+		// 	preserveScroll: true,
+		// 	onStart () {
+		// 		load("Deleting comment", "please wait...");
+		// 	},
+		// 	onFinish () {
+		// 		stop();
+		// 	}
+		// });
 	}
 
 	const canComment = customUser?.status === "0";
@@ -167,64 +163,64 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 						</Button>
 					)}
 				</Stack>
-				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
-				<TableContainer sx={{ overflow: 'unset' }}>
-					<Scrollbar>
-						<Table sx={{ minWidth: 960 }}>
-							<TableHead
-								sx={{
-									borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
-									'& th': { backgroundColor: 'transparent' },
-								}}
-							>
-								<TableRow>
-									<TableCell width={40}>#</TableCell>
+				{document.external_comments.length > 0 && (
+					<>
+						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+						<TableContainer sx={{ overflow: 'unset' }}>
+							<Scrollbar>
+								<Table sx={{ minWidth: 960 }}>
+									<TableHead
+										sx={{
+											borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
+											'& th': { backgroundColor: 'transparent' },
+										}}
+									>
+										<TableRow>
+											<TableCell width={40}>#</TableCell>
 
-									<TableCell align="left">Full name</TableCell>
+											<TableCell align="left">Full name</TableCell>
 
-									<TableCell align="left">
-										<Box>Page/</Box>
-										<Box>Section</Box>
-									</TableCell>
+											<TableCell align="left">
+												<Box>Page/</Box>
+												<Box>Section</Box>
+											</TableCell>
 
-									<TableCell align="left">
-										<Box>Comment</Box>
-										<Box>Code</Box>
-									</TableCell>
+											<TableCell align="left">
+												<Box>Comment</Box>
+												<Box>Code</Box>
+											</TableCell>
 
-									<TableCell align="left">REVIEWER's COMMENTS</TableCell>
+											<TableCell align="left">REVIEWER's COMMENTS</TableCell>
 
-									<TableCell align="left">Reply Code</TableCell>
+											<TableCell align="left">Reply Code</TableCell>
 
-									<TableCell align="left">ORIGINATOR REPLY</TableCell>
+											<TableCell align="left">ORIGINATOR REPLY</TableCell>
 
-									<TableCell align="left">Status</TableCell>
-								</TableRow>
-							</TableHead>
+											<TableCell align="left">Status</TableCell>
+										</TableRow>
+									</TableHead>
 
-							<TableBody>
-								{document.external_comments.length > 0 ? (
-									document.external_comments.map((row, index) => {
-										const commentStatus = row.status == 0 ? { text: "Open", color: "success" } : { text: "Closed", color: "error" }
-										return (
-											<DocumentExternalComment
-												key={row.id}
-												row={row}
-												index={index}
-												reviewer={customUser}
-												commentStatus={commentStatus}
-												docType={typeof docType === "string" ? docType : "review"}
-												onDelete={() => handleDeleteComment(row.response_id)}
-											/>
-										)
-									})
-								) : (
-									<TableEmptyRows height={8} emptyRows={8} />
-								)}
-							</TableBody>
-						</Table>
-					</Scrollbar>
-				</TableContainer>
+									<TableBody>
+										{document.external_comments.map((row, index) => {
+											const commentStatus = row.status == 0 ? { text: "Open", color: "success" } : { text: "Closed", color: "error" }
+											return (
+												<DocumentExternalComment
+													key={row.id}
+													row={row}
+													index={index}
+													reviewer={customUser}
+													commentStatus={commentStatus}
+													docType={"review"}
+													onDelete={() => handleDeleteComment(row.id)}
+												/>
+											)
+										})}
+									</TableBody>
+								</Table>
+							</Scrollbar>
+						</TableContainer>
+					</>
+				)}
 				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 				<Typography variant="h6" sx={{ color: 'text.disabled' }}>
 					Status Codes

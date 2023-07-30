@@ -125,7 +125,7 @@ export const DocumentTableSubRow = ({ row, open }) => {
 
 										{row.external_approver.map(app => {
 											return (
-												<TableRow>
+												<TableRow key={app.id}>
 													<TableCell>
 														{app?.firstname} {app?.lastname}
 													</TableCell>

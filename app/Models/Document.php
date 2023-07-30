@@ -185,4 +185,8 @@ class Document extends Model
 		return $this->belongsTo(User::class, "user_id");
 	}
 
+	public function external_history() {
+		return $this->hasMany(DocumentExternalHistory::class, 'document_id');
+	}
+
 }
