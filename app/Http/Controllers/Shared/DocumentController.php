@@ -132,6 +132,8 @@ class DocumentController extends Controller
 				"src" => $file_name
 			]);
 		}
+		$document->increment('rev');
+		$document->save();
 
 		DocumentExternalComment::create([
 			"document_id" => $document->document_id,
@@ -211,7 +213,6 @@ class DocumentController extends Controller
 			]);
 
 			$document->status = $request->status;
-			$document->increment('rev');
 			$document->save();
 		}else {
 			abort(500);
@@ -250,7 +251,6 @@ class DocumentController extends Controller
 				$docExtHistory->save();
 			}
 
-			$document->increment('rev');
 			$document->save();
 		}else {
 			abort(500);

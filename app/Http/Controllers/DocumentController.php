@@ -379,6 +379,8 @@ class DocumentController extends Controller
 				"src" => $file_name,
 			]);
 		}
+		$document->increment('rev');
+		$document->save();
 
 		DocumentCommentReplies::create([
 			"document_id" => $document->document_id,
