@@ -36,6 +36,9 @@ class FolderApiController extends Controller
 		$personel->document_id = $document->document_id;
 		$personel->firstname = $request->firstname;
 		$personel->lastname = $request->lastname;
+		if($request->position) {
+			$personel->position = $request->position;
+		}
 		$personel->save();
 
 		$createdShare = ShareableLink::create([
@@ -47,7 +50,7 @@ class FolderApiController extends Controller
 				"id" => $personel->id
 			],
 			"sub_id" => $document->folder->sub_id,
-			'expiration_date' => now()->addDays(7),
+			'expiration_date' => now()->addWeeks(3),
 		]);
 		return response()->json(compact('shareableLink', 'createdShare'));
 	}

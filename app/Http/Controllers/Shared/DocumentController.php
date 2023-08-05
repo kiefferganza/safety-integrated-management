@@ -10,7 +10,9 @@ use App\Models\DocumentExternalComment;
 use App\Models\DocumentExternalHistory;
 use App\Models\FolderModel;
 use App\Models\Position;
+use App\Models\ShareableLink;
 use App\Services\DocumentService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -256,6 +258,29 @@ class DocumentController extends Controller
 		
 		return redirect()->back()
 			->with("message", "File updated successfuly!")
+			->with("type",  "success");
+	}
+
+
+	public function refreshExpiration(ShareableLink $shareableLink) {
+		$shareableLink->expiration_date = now()->addWeeks(3);
+		$shareableLink->save();
+		return redirect()->back()
+			->with("message", "Expiration date refreshed successfuly!")
+			->with("type",  "success");
+	}
+
+	public function deleteSharedLink(ShareableLink $shareableLink) {
+		$approver = DocumentExternalApprover::find($shareableLink->custom_properties["id"]);
+		if($approver) {
+			$approver->delete();
+			DocumentExternalHistory::where([
+				"approver" => $shareableLink->custom_properties["id"]
+			])->delete();
+		}
+		$shareableLink->delete();
+		return redirect()->back()
+			->with("message", "Expiration date refreshed successfuly!")
 			->with("type",  "success");
 	}
 	
