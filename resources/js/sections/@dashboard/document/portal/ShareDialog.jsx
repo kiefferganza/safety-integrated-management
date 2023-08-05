@@ -3,7 +3,7 @@ import { Dialog, TextField, DialogActions, DialogContent, DialogTitle, Button, S
 // components
 
 const ShareDialog = (props) => {
-	const { setType, firstname, setFirstname, lastname, setLastname, open, onClose, action, title = "Generate Sharable Link", status, formNumber, ...other } = props;
+	const { setType, setFirstname, setLastname, setPosition, open, onClose, action, title = "Generate Sharable Link", status, formNumber, ...other } = props;
 
 	const handleOnClose = () => {
 		onClose();
@@ -31,6 +31,7 @@ const ShareDialog = (props) => {
 					<Stack gap={1} direction='row'>
 						<TextField fullWidth label="First Name" onChange={(e) => { setFirstname(e.currentTarget.value) }} required />
 						<TextField fullWidth label="Last Name" onChange={(e) => { setLastname(e.currentTarget.value) }} required />
+						<TextField fullWidth label="Position" onChange={(e) => { setPosition(e.currentTarget.value) }} />
 					</Stack>
 					<Stack>
 						<FormHelperText>Generate External Link for this document.</FormHelperText>

@@ -48,6 +48,7 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 	// Shareable
 	const [firstname, setFirstname] = useState('');
 	const [lastname, setLastname] = useState('');
+	const [position, setPosition] = useState('');
 	// 
 
 	const [openShare, setOpenShare] = useState(false);
@@ -118,7 +119,8 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 			const urlRoute = route('api.folder.generate-url', { document: row.document_id });
 			const { data } = await axiosInstance.post(urlRoute, {
 				firstname,
-				lastname
+				lastname,
+				position
 			});
 			setGeneratedUrl(data.shareableLink);
 			load(false);
@@ -209,15 +211,15 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 
 				<Divider sx={{ borderStyle: 'dashed' }} />
 
-				<MenuItem onClick={handleOpenShare}>
-					<Iconify icon="material-symbols:share" />
-					Share
-				</MenuItem>
-
-				{row?.shareable_link?.length > 0 && (
+				{row?.shareable_link?.length > 0 ? (
 					<MenuItem onClick={handleOpenLinkList}>
 						<Iconify icon="material-symbols:link" />
 						External Links
+					</MenuItem>
+				) : (
+					<MenuItem onClick={handleOpenShare}>
+						<Iconify icon="material-symbols:share" />
+						Share
 					</MenuItem>
 				)}
 
@@ -266,10 +268,9 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 			<ShareDialog
 				open={openShare}
 				onClose={handleCloseShare}
-				firstname={firstname}
 				setFirstname={setFirstname}
-				lastname={lastname}
 				setLastname={setLastname}
+				setPosition={setPosition}
 				status={row.docStatus}
 				formNumber={row.form_number}
 				action={
