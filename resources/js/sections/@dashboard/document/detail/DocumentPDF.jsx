@@ -523,10 +523,9 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 
 				{external_approver && external_approver?.length > 0 && (
 					<View style={styles.gridContainer}>
-						<View style={styles.col6}></View>
-						<View style={[styles.col6, { borderLeft: "1px solid #000", borderRight: "1px solid #000" }]}>
+						<View style={{ borderLeft: "1px solid #000", borderRight: "1px solid #000" }}>
 							<View>
-								<Text style={[styles.textDefault, { textAlign: "center" }]}>External Comments Status</Text>
+								<Text style={[styles.textDefault, { textAlign: "center", width: "100%" }]}>External Comments Status</Text>
 								<View style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
 									<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
 										<Text style={styles.textDefault}>Initial</Text>
