@@ -516,37 +516,17 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 										</View>
 									</View>
 								)}
-								{external_approver?.length > 0 && (
-									external_approver.map((app) => (
-										<View key={app.id} style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
-											<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-												<Text style={[styles.textDefault, { textTransform: "uppercase" }]}>{`${app?.firstname?.charAt(0)}. ${app?.lastname?.charAt(0)}.`}</Text>
-											</View>
-											<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-												<Text style={styles.textDefault}>External</Text>
-											</View>
-											<View style={{ width: "45%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-												<Text style={styles.textDefault}>{app?.remarks || "N/A"}</Text>
-											</View>
-											<View style={{ width: "25%", alignItems: "center", justifyContent: "center" }}>
-												<View style={[styles.badge, { paddingVertical: 1, paddingHorizontal: 2, backgroundColor: theme.palette[docStatus.statusClass].main, marginVertical: 2 }]}>
-													<Text style={[styles.textDefault, { fontSize: 6, color: "#fff", textAlign: "center" }]}>{docStatus.statusText}</Text>
-												</View>
-											</View>
-										</View>
-									))
-								)}
 							</View>
 						</View>
 					</View>
 				</View>
 
-				{external_history && external_history?.length > 0 && (
+				{external_approver && external_approver?.length > 0 && (
 					<View style={styles.gridContainer}>
 						<View style={styles.col6}></View>
 						<View style={[styles.col6, { borderLeft: "1px solid #000", borderRight: "1px solid #000" }]}>
 							<View>
-								<Text style={[styles.textDefault, { textAlign: "center" }]}>Author Comments Status</Text>
+								<Text style={[styles.textDefault, { textAlign: "center" }]}>External Comments Status</Text>
 								<View style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
 									<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
 										<Text style={styles.textDefault}>Initial</Text>
@@ -554,37 +534,34 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 									<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
 										<Text style={styles.textDefault}>Position</Text>
 									</View>
-									<View style={{ width: "22%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
+									<View style={{ width: "45%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
 										<Text style={styles.textDefault}>Remarks</Text>
 									</View>
-									<View style={{ width: "22%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-										<Text style={styles.textDefault}>Revisions</Text>
-									</View>
-									<View style={{ width: "26%", alignItems: "center", justifyContent: "center" }}>
+									<View style={{ width: "25%", alignItems: "center", justifyContent: "center" }}>
 										<Text style={styles.textDefault}>Status</Text>
 									</View>
 								</View>
-								{external_history.map((ext, idx) => (
-									<View key={ext.id} style={[styles.gridContainer, { borderTop: "1px solid #000", borderBottom: "1px solid #000" }]}>
-										<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={[styles.textDefault, { textTransform: "uppercase" }]}>{`${ext?.approver?.firstname?.charAt(0)}. ${ext?.approver?.lastname?.charAt(0)}.`}</Text>
-										</View>
-										<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={styles.textDefault}>External</Text>
-										</View>
-										<View style={{ width: "22%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={styles.textDefault}>{"N/A"}</Text>
-										</View>
-										<View style={{ width: "22%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
-											<Text style={styles.textDefault}>#{idx + 1}</Text>
-										</View>
-										<View style={{ width: "26%", alignItems: "center", justifyContent: "center" }}>
-											<View style={[styles.badge, { paddingVertical: 1, paddingHorizontal: 2, backgroundColor: theme.palette.success.main, marginVertical: 2 }]}>
-												<Text style={[styles.textDefault, { fontSize: 6, color: "#fff", textAlign: "center" }]}>Submitted</Text>
+								{external_approver.map((ext) => {
+									const extStatus = getDocumentReviewStatus(ext?.status);
+									return (
+										<View key={ext.id} style={[styles.gridContainer, { borderTop: "1px solid #000", borderBottom: "1px solid #000" }]}>
+											<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
+												<Text style={[styles.textDefault, { textTransform: "uppercase" }]}>{`${ext?.firstname?.charAt(0)}. ${ext?.lastname?.charAt(0)}.`}</Text>
+											</View>
+											<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
+												<Text style={styles.textDefault}>{ext?.position || "N/A"}</Text>
+											</View>
+											<View style={{ width: "45%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
+												<Text style={styles.textDefault}>{ext?.remarks || "N/A"}</Text>
+											</View>
+											<View style={{ width: "25%", alignItems: "center", justifyContent: "center" }}>
+												<View style={[styles.badge, { paddingVertical: 1, paddingHorizontal: 2, backgroundColor: theme.palette[extStatus.statusClass].main, marginVertical: 2 }]}>
+													<Text style={[styles.textDefault, { fontSize: 6, color: "#fff", textAlign: "center" }]}>{extStatus.statusText}</Text>
+												</View>
 											</View>
 										</View>
-									</View>
-								))}
+									)
+								})}
 							</View>
 						</View>
 					</View>

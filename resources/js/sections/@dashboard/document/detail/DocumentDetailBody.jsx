@@ -187,16 +187,30 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 					<Typography variant="h6" sx={{ color: 'text.disabled' }}>
 						External comments
 					</Typography>
-					{canComment && (
-						<Button
-							variant="text"
-							startIcon={<Iconify icon="eva:plus-fill" />}
-							onClick={() => { setOpenComment(true); }}
-						>
-							New Comment
-						</Button>
-					)}
 				</Stack>
+				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+				<Grid container spacing={3}>
+					<Grid item xs={6}>
+						<Stack alignItems="center">
+							<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
+								Reviewer Comment Code Legend:
+							</Typography>
+							<Typography variant="caption" sx={{ color: 'text.disabled' }}>
+								1 = action required on this issue, 2 = advisory comment
+							</Typography>
+						</Stack>
+					</Grid>
+					<Grid item xs={6}>
+						<Stack alignItems="center">
+							<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
+								Originator Reply Code Legend:
+							</Typography>
+							<Typography variant="caption" sx={{ color: 'text.disabled' }}>
+								i = Incorporated, ii = Evaluated and not incorporated for reason stated
+							</Typography>
+						</Stack>
+					</Grid>
+				</Grid>
 				{document.external_comments.length > 0 && (
 					<>
 						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
@@ -351,13 +365,13 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 									<TableRow>
 										<TableCell width={40}>#</TableCell>
 
-										<TableCell align="left">Full name</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Full name</TableCell>
 
-										<TableCell align="left">Position</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Position</TableCell>
 
-										<TableCell align="left">Remarks</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Remarks</TableCell>
 
-										<TableCell align="left">Status</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Status</TableCell>
 									</TableRow>
 								</TableHead>
 
@@ -397,13 +411,13 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 									}}
 								>
 									<TableRow>
-										<TableCell align="left">Full name</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Full name</TableCell>
 
-										<TableCell align="left">Position</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Position</TableCell>
 
-										<TableCell align="left">Remarks</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Remarks</TableCell>
 
-										<TableCell align="left">Status</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Status</TableCell>
 									</TableRow>
 								</TableHead>
 
@@ -447,13 +461,13 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 											}}
 										>
 											<TableRow>
-												<TableCell align="left">Full name</TableCell>
+												<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Full name</TableCell>
 
-												<TableCell align="left">Type</TableCell>
+												<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Position</TableCell>
 
-												<TableCell align="left">Remarks</TableCell>
+												<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Remarks</TableCell>
 
-												<TableCell align="left">Status</TableCell>
+												<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Status</TableCell>
 											</TableRow>
 										</TableHead>
 
@@ -464,7 +478,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 													<TableRow key={app.id}>
 														<TableCell align="left">{app?.firstname} {app?.lastname}</TableCell>
 
-														<TableCell align="left">External Approver</TableCell>
+														<TableCell align="left">{app?.position || "N/A"}</TableCell>
 
 														<TableCell align="left">{app?.remarks || "N/A"}</TableCell>
 

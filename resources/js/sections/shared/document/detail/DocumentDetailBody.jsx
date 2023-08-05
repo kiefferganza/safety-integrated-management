@@ -6,7 +6,6 @@ import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar/Scrollbar';
 import Label from '@/Components/label/Label';
 import DocumentComments from './DocumentComments';
-import { useSwal } from '@/hooks/useSwal';
 import { DocumentUpdateFileDialog } from '../portal/DocumentUpdateFileDialog';
 import ReportActionDialog from '@/Components/dialogs/ReportActionDialog';
 import DocumentExternalComment from './DocumentExternalComment';
@@ -24,7 +23,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 	const canReviewStatus = false;
 	// approval
 	const approvalPos = document.approval_employee ? positions.find(pos => pos.position_id === document.approval_employee.position).position : null;
-	const canApprove = !customUser.src;
+	const canApprove = customUser.firstname;
 
 	const handleOpenUpdateFile = (info) => {
 		setOpenUpdateFile(true);
@@ -59,6 +58,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 	}
 
 	const canComment = customUser?.status === "0";
+	console.log(customUser)
 	return (
 		<>
 			<Stack>
@@ -163,6 +163,29 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 						</Button>
 					)}
 				</Stack>
+				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+				<Grid container spacing={3}>
+					<Grid item xs={6}>
+						<Stack alignItems="center">
+							<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
+								Reviewer Comment Code Legend:
+							</Typography>
+							<Typography variant="caption" sx={{ color: 'text.disabled' }}>
+								1 = action required on this issue, 2 = advisory comment
+							</Typography>
+						</Stack>
+					</Grid>
+					<Grid item xs={6}>
+						<Stack alignItems="center">
+							<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
+								Originator Reply Code Legend:
+							</Typography>
+							<Typography variant="caption" sx={{ color: 'text.disabled' }}>
+								i = Incorporated, ii = Evaluated and not incorporated for reason stated
+							</Typography>
+						</Stack>
+					</Grid>
+				</Grid>
 				{document.external_comments.length > 0 && (
 					<>
 						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
@@ -291,13 +314,13 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 									<TableRow>
 										<TableCell width={40}>#</TableCell>
 
-										<TableCell align="left">Full name</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Full name</TableCell>
 
-										<TableCell align="left">Position</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Position</TableCell>
 
-										<TableCell align="left">Remarks</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Remarks</TableCell>
 
-										<TableCell align="left">Status</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Status</TableCell>
 									</TableRow>
 								</TableHead>
 
@@ -337,13 +360,13 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 									}}
 								>
 									<TableRow>
-										<TableCell align="left">Full name</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Full name</TableCell>
 
-										<TableCell align="left">Position</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Position</TableCell>
 
-										<TableCell align="left">Remarks</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Remarks</TableCell>
 
-										<TableCell align="left">Status</TableCell>
+										<TableCell align="left" sx={{ whiteSpace: "nowrap" }}>Status</TableCell>
 									</TableRow>
 								</TableHead>
 
@@ -387,7 +410,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 									<TableRow>
 										<TableCell align="left">Full name</TableCell>
 
-										<TableCell align="left">Type</TableCell>
+										<TableCell align="left">Position</TableCell>
 
 										<TableCell align="left">Remarks</TableCell>
 
@@ -401,7 +424,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 											<TableRow key={app.id}>
 												<TableCell align="left">{app?.firstname} {app?.lastname}</TableCell>
 
-												<TableCell align="left">External Approver</TableCell>
+												<TableCell align="left">{customUser?.position || 'N/A'}</TableCell>
 
 												<TableCell align="left">{customUser?.remarks || "N/A"}</TableCell>
 
@@ -439,7 +462,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 										onClick={() => handleOpenUpdateFile(route('shared.document.reuploadApprovalFile', {
 											docApprover: customUser.id,
 											_query: {
-												token: customUser.token
+												token: sharedLink.token
 											}
 										}))}
 									>Re-upload File</Button>
