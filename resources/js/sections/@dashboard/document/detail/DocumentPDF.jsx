@@ -516,6 +516,29 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 										</View>
 									</View>
 								)}
+								{external_approver?.length > 0 && (
+									external_approver.map((app) => {
+										const appStatus = getDocumentReviewStatus(app.status);
+										return (
+											<View key={app.id} style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
+												<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
+													<Text style={[styles.textDefault, { textTransform: "uppercase" }]}>{`${app?.firstname?.charAt(0)}. ${app?.lastname?.charAt(0)}.`}</Text>
+												</View>
+												<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
+													<Text style={styles.textDefault}>External</Text>
+												</View>
+												<View style={{ width: "45%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
+													<Text style={styles.textDefault}>{app?.remarks || "N/A"}</Text>
+												</View>
+												<View style={{ width: "25%", alignItems: "center", justifyContent: "center" }}>
+													<View style={[styles.badge, { paddingVertical: 1, paddingHorizontal: 2, backgroundColor: theme.palette[appStatus.statusClass].main, marginVertical: 2 }]}>
+														<Text style={[styles.textDefault, { fontSize: 6, color: "#fff", textAlign: "center" }]}>{appStatus.statusText}</Text>
+													</View>
+												</View>
+											</View>
+										)
+									})
+								)}
 							</View>
 						</View>
 					</View>
