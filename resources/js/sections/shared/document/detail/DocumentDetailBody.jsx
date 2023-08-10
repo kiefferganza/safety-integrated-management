@@ -58,7 +58,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 	}
 
 	const canComment = customUser?.status === "0";
-	console.log(customUser)
+	const isAlreadySigned = document.external_comments.findIndex(extCom => extCom.approver === customUser.id) !== -1;
 	return (
 		<>
 			<Stack>
@@ -235,6 +235,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 													commentStatus={commentStatus}
 													docType={"review"}
 													onDelete={() => handleDeleteComment(row.id)}
+													isAlreadySigned={isAlreadySigned}
 												/>
 											)
 										})}
@@ -486,12 +487,14 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 				}}
 				status="A"
 				remarks={customUser?.remarks}
+				isAlreadySigned={isAlreadySigned}
 			/>
 			<DocumentCommentDialog
 				sharedLink={sharedLink}
 				open={openComment}
 				onClose={() => { setOpenComment(false); }}
 				documentId={document.document_id}
+				isAlreadySigned={isAlreadySigned}
 			/>
 			<DocumentUpdateFileDialog
 				open={openUpdateFile}

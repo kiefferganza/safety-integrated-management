@@ -10,27 +10,6 @@ import { MultiFilePreview, UploadBox } from "@/Components/upload";
 import Iconify from "@/Components/iconify/Iconify";
 import { useCallback, useEffect } from "react";
 
-const changeStatusSchema = Yup.object().shape({
-	status: Yup.string().nullable(),
-	remarks: Yup.string().nullable(),
-	file: Yup.mixed().required('Please attached signed file.').test('file', 'Invalid file format', function (value) {
-		if (!value) {
-			// No file selected, validation passes
-			return true;
-		}
-
-		// Check if the file meets your validation criteria
-		const validFileTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-		if (!validFileTypes.includes(value.type)) {
-			// Invalid file type, validation fails
-			return false;
-		}
-
-		// File is valid, validation passes
-		return true;
-	}),
-});
-
 
 const STATUS_OPTIONS = [
 	{ label: 'A.Approved', value: 'A' },
@@ -41,13 +20,40 @@ const STATUS_OPTIONS = [
 	{ label: 'F.Responded / Reviewed / Actioned', value: 'F' },
 ];
 
-const ReportActionDialog = ({ open, onClose, submitText, actionInfo = {}, remarks = '', title = "Finish Review", status = "", type = "review", ...other }) => {
+const ReportActionDialog = ({ open, onClose, submitText, actionInfo = {}, remarks = '', title = "Finish Review", status = "", type = "review", isAlreadySigned = false, ...other }) => {
 	const { load, stop } = useSwal();
 	const defaultValues = {
 		status,
 		remarks,
 		file: null
 	};
+
+	const changeStatusSchema = Yup.object().shape({
+		status: Yup.string().nullable(),
+		remarks: Yup.string().nullable(),
+		file: Yup.mixed().test('file', 'Invalid file format', function (value) {
+			if (!value) {
+				// No file selected, validation passes
+				return true;
+			}
+
+			// Check if the file meets your validation criteria
+			const validFileTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+			if (!validFileTypes.includes(value.type)) {
+				// Invalid file type, validation fails
+				return false;
+			}
+
+			// File is valid, validation passes
+			return true;
+		}).test('isAlreadySigned', 'Please attach a file for the document.', function (value) {
+			if (!isAlreadySigned) {
+				return value !== undefined && value !== null && value !== '';
+			}
+			return true;
+		}),
+	});
+
 	const methods = useForm({
 		resolver: yupResolver(changeStatusSchema),
 		defaultValues
@@ -116,19 +122,23 @@ const ReportActionDialog = ({ open, onClose, submitText, actionInfo = {}, remark
 							</div>
 						)}
 						<RHFTextField name="remarks" label="Remarks (Optional)" multiline rows={2} />
-						<UploadBox
-							onDrop={handleDrop}
-							placeholder={
-								<Stack spacing={0.5} alignItems="center">
-									<Iconify icon="eva:cloud-upload-fill" width={40} />
-									<Typography variant="body2">Upload file</Typography>
-								</Stack>
-							}
-							sx={{ flexGrow: 1, height: 'auto', py: 2.5, mb: 3, width: 1 }}
-						/>
-						{file && <MultiFilePreview files={[file]} onRemove={handleRemoveFile} />}
-						{!!errors?.file?.message && (
-							<FormHelperText sx={{ marginLeft: "16px !important", marginTop: "0 !important" }} error>{errors?.file?.message}</FormHelperText>
+						{!isAlreadySigned && (
+							<>
+								<UploadBox
+									onDrop={handleDrop}
+									placeholder={
+										<Stack spacing={0.5} alignItems="center">
+											<Iconify icon="eva:cloud-upload-fill" width={40} />
+											<Typography variant="body2">Upload file</Typography>
+										</Stack>
+									}
+									sx={{ flexGrow: 1, height: 'auto', py: 2.5, mb: 3, width: 1 }}
+								/>
+								{file && <MultiFilePreview files={[file]} onRemove={handleRemoveFile} />}
+								{!!errors?.file?.message && (
+									<FormHelperText sx={{ marginLeft: "16px !important", marginTop: "0 !important" }} error>{errors?.file?.message}</FormHelperText>
+								)}
+							</>
 						)}
 					</Stack>
 					<Divider sx={{ borderStyle: 'dashed', my: 1 }} />

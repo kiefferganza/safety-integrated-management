@@ -192,7 +192,7 @@ class DocumentController extends Controller
 
 	public function approve_or_fail_document(Document $document, DocumentExternalApprover $docExternal, Request $request) {
 		$request->validate([
-			'file' => ['required', 'file'],
+			'file' => ['nullable', 'file'],
 			'status' => ['required', 'string'],
 			'remarks' => ['string', 'nullable']
 		]);
@@ -200,10 +200,7 @@ class DocumentController extends Controller
 		if($request->hasFile('file')) {
 			$docExternal->clearMediaCollection();
 			$docExternal->addMediaFromRequest('file')->toMediaCollection();
-			$docExternal->remarks = $request->remarks;
 			$docExternal->src = $request->file('file')->getClientOriginalName();
-			$docExternal->status = $request->status;
-			$docExternal->save();
 			
 			DocumentExternalHistory::create([
 				"document_id" => $document->document_id,
@@ -212,11 +209,12 @@ class DocumentController extends Controller
 				"src" => $request->file('file')->getClientOriginalName()
 			]);
 
-			$document->status = $request->status;
-			$document->save();
-		}else {
-			abort(500);
 		}
+		$docExternal->remarks = $request->remarks;
+		$docExternal->status = $request->status;
+		$docExternal->save();
+		$document->status = $request->status;
+		$document->save();
 		
 
 		return redirect()->back()

@@ -15,7 +15,7 @@ const STATUSES = [
 	{ label: "F. Responded / Reviewed / Actioned", code: "F" },
 ];
 
-const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus, onDelete, onAction, shareableLink }) => {
+const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus, onDelete, onAction, shareableLink, isAlreadySigned }) => {
 	const [openPopover, setOpenPopover] = useState(null);
 	const [openDelete, setOpenDelete] = useState(false);
 	const [openReply, setOpenReply] = useState(false);
@@ -46,7 +46,6 @@ const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus,
 	}
 
 	const canDeleteComment = false;
-	console.log(reviewer);
 	return (
 		<>
 			<TableRow
@@ -150,6 +149,7 @@ const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus,
 						token: shareableLink.token
 					}
 				}) : null}
+				isAlreadySigned={isAlreadySigned}
 			/>
 		</>
 	)

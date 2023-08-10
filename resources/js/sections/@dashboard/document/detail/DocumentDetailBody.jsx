@@ -79,8 +79,8 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 		});
 	}
 	const canComment = document.approval_sign !== null ? false : typeof docType === "string" ? docType === "review" : true;
+	const isAlreadySigned = document.comments.findIndex(com => document.reviewer_employees.findIndex(rev => rev.employee_id === com.reviewer_id) !== -1) !== -1;
 	const reviewerStatus = document.reviewer_employees.find(revEmp => revEmp.employee_id === user?.employee?.employee_id)?.pivot?.review_status;
-	console.log(document);
 	return (
 		<>
 			<Stack>
@@ -501,7 +501,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 						</Grid>
 					</>
 				)}
-				{document.status === "0" && (
+				{document.status === "0" && isAlreadySigned && (
 					<>
 						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 						<Button
@@ -575,6 +575,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 				open={openComment}
 				onClose={() => { setOpenComment(false); }}
 				documentId={document.document_id}
+				isAlreadySigned={isAlreadySigned}
 			/>
 			<DocumentApproveFailDialog
 				open={openAction}
