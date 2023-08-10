@@ -435,7 +435,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 							</View>
 						</View>
 						<View style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
-							<Text style={[styles.textDefault, { textAlign: 'center', width: '100%' }]}>No Comments</Text>
+							<Text style={[styles.textDefault, { textAlign: 'center', width: '100%' }]}>In Progress</Text>
 						</View>
 					</View>
 				)}

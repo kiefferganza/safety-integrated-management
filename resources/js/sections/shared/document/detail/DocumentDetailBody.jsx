@@ -324,7 +324,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 
 									<TableBody>
 										<TableRow>
-											<TableCell colSpan={8} align="center">No Comments</TableCell>
+											<TableCell colSpan={8} align="center">In Progress</TableCell>
 										</TableRow>
 									</TableBody>
 								</Table>
