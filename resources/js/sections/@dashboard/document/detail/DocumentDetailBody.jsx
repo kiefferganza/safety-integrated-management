@@ -176,7 +176,9 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 										)
 									})
 								) : (
-									<TableEmptyRows height={8} emptyRows={8} />
+									<TableRow>
+										<TableCell colSpan={8} align="center">No Comments</TableCell>
+									</TableRow>
 								)}
 							</TableBody>
 						</Table>
@@ -211,7 +213,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 						</Stack>
 					</Grid>
 				</Grid>
-				{document.external_comments.length > 0 && (
+				{document.external_comments.length > 0 ? (
 					<>
 						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 						<TableContainer sx={{ overflow: 'unset' }}>
@@ -265,6 +267,52 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 												/>
 											)
 										})}
+									</TableBody>
+								</Table>
+							</Scrollbar>
+						</TableContainer>
+					</>
+				) : (
+					<>
+						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
+						<TableContainer sx={{ overflow: 'unset' }}>
+							<Scrollbar>
+								<Table sx={{ minWidth: 960 }}>
+									<TableHead
+										sx={{
+											borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
+											'& th': { backgroundColor: 'transparent' },
+										}}
+									>
+										<TableRow>
+											<TableCell width={40}>#</TableCell>
+
+											<TableCell align="left">Full name</TableCell>
+
+											<TableCell align="left">
+												<Box>Page/</Box>
+												<Box>Section</Box>
+											</TableCell>
+
+											<TableCell align="left">
+												<Box>Comment</Box>
+												<Box>Code</Box>
+											</TableCell>
+
+											<TableCell align="left">REVIEWER's COMMENTS</TableCell>
+
+											<TableCell align="left">Reply Code</TableCell>
+
+											<TableCell align="left">ORIGINATOR REPLY</TableCell>
+
+											<TableCell align="left">Status</TableCell>
+										</TableRow>
+									</TableHead>
+
+									<TableBody>
+										<TableRow>
+											<TableCell colSpan={8} align="center">No Comments</TableCell>
+										</TableRow>
 									</TableBody>
 								</Table>
 							</Scrollbar>

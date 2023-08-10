@@ -37,7 +37,6 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 		approval_employee,
 		reviewer_employees,
 		external_comments,
-		external_history,
 	} = document;
 
 	const approvalPos = approval_employee ? positions.find(pos => pos.position_id === approval_employee?.position) : null;
@@ -256,7 +255,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 							</View>
 						</View>
 					</View>
-					{comments.map((comment, idx) => {
+					{comments.length > 0 ? comments.map((comment, idx) => {
 						const currReviewer = reviewer_employees.find(revEmp => revEmp.employee_id === comment.reviewer_id);
 						const commentPages = comment.pages.split(",");
 						return (
@@ -305,10 +304,14 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 								</View>
 							</View>
 						)
-					})}
+					}) : (
+						<View style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
+							<Text style={[styles.textDefault, { textAlign: 'center', width: '100%' }]}>No Comments</Text>
+						</View>
+					)}
 				</View>
 
-				{external_comments && external_comments?.length > 0 && (
+				{external_comments && external_comments?.length > 0 ? (
 					<View style={{ borderBottom: "1px solid #000", borderLeft: "1px solid #000", borderRight: "1px solid #000" }}>
 						<View style={styles.gridContainer}>
 							<View style={styles.col6}>
@@ -395,7 +398,46 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 							)
 						})}
 					</View>
-
+				) : (
+					<View style={{ borderBottom: "1px solid #000", borderLeft: "1px solid #000", borderRight: "1px solid #000" }}>
+						<View style={styles.gridContainer}>
+							<View style={styles.col6}>
+								<View style={styles.gridContainer}>
+									<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+										<Text style={styles.textDefault}>No</Text>
+									</View>
+									<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+										<Text style={styles.textDefault}>Initial</Text>
+									</View>
+									<View style={{ width: "15%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+										<Text style={styles.textDefault}>Page/ Section</Text>
+									</View>
+									<View style={{ width: "15%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+										<Text style={styles.textDefault}>Comment Code</Text>
+									</View>
+									<View style={{ width: "50%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
+										<Text style={styles.textDefault}>EXTERNAL's COMMENTS</Text>
+									</View>
+								</View>
+							</View>
+							<View style={[styles.col6, { borderLeft: "1px solid #000" }]}>
+								<View style={styles.gridContainer}>
+									<View style={{ width: "20%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+										<Text style={styles.textDefault}>Reply Code</Text>
+									</View>
+									<View style={{ width: "60%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000", height: "100%", minHeight: "24px" }}>
+										<Text style={styles.textDefault}>ORIGINATOR REPLY</Text>
+									</View>
+									<View style={{ width: "20%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
+										<Text style={styles.textDefault}>Reply Status</Text>
+									</View>
+								</View>
+							</View>
+						</View>
+						<View style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
+							<Text style={[styles.textDefault, { textAlign: 'center', width: '100%' }]}>No Comments</Text>
+						</View>
+					</View>
 				)}
 
 
