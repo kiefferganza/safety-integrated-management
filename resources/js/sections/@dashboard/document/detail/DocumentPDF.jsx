@@ -64,7 +64,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 						</View>
 						<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
 							<Text style={styles.subtitle2}>Rollout Date:</Text>
-							<Text></Text>
+							<Text style={[styles.body1, { fontWeight: 700 }]}>{fDate(date_uploaded)}</Text>
 						</View>
 					</View>
 				</View>
@@ -202,7 +202,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 				<View style={{ borderBottom: "1px solid #000", borderLeft: "1px solid #000", borderRight: "1px solid #000" }}>
 					<View style={styles.gridContainer}>
 						<View style={styles.col6}>
-							<Text style={[styles.textDefault, { paddingLeft: 4 }]}>Reviewer Comment Code Legend:</Text>
+							<Text style={[styles.textDefault, { paddingLeft: 4 }]}>Comment Code Legend:</Text>
 						</View>
 						<View style={[styles.col6, { borderLeft: "1px solid #000" }]}>
 							<Text style={[styles.textDefault, { paddingLeft: 4 }]}>Originator Reply Code Legend:</Text>
@@ -237,7 +237,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 									<Text style={styles.textDefault}>Comment Code</Text>
 								</View>
 								<View style={{ width: "50%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
-									<Text style={styles.textDefault}>REVIEWER's COMMENTS</Text>
+									<Text style={styles.textDefault}>INTERNAL COMMENTS</Text>
 								</View>
 							</View>
 						</View>
@@ -329,7 +329,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 										<Text style={styles.textDefault}>Comment Code</Text>
 									</View>
 									<View style={{ width: "50%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
-										<Text style={styles.textDefault}>EXTERNAL's COMMENTS</Text>
+										<Text style={styles.textDefault}>EXTERNAL COMMENTS</Text>
 									</View>
 								</View>
 							</View>
@@ -416,7 +416,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 										<Text style={styles.textDefault}>Comment Code</Text>
 									</View>
 									<View style={{ width: "50%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
-										<Text style={styles.textDefault}>EXTERNAL's COMMENTS</Text>
+										<Text style={styles.textDefault}>EXTERNAL COMMENTS</Text>
 									</View>
 								</View>
 							</View>
@@ -444,7 +444,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 				<View style={{ borderBottom: "1px solid #000", borderLeft: "1px solid #000", borderRight: "1px solid #000" }}>
 					<View style={styles.gridContainer}>
 						<View style={{ width: "17.5%", borderRight: "1px solid #000" }}>
-							<Text style={[styles.textDefault, { paddingLeft: 4 }]}>Document Review</Text>
+							<Text style={[styles.textDefault, { paddingLeft: 4 }]}>Document</Text>
 							<Text style={[styles.textDefault, { paddingLeft: 4 }]}>Status Code</Text>
 						</View>
 						<View style={{ width: "82.5%" }}>
@@ -478,7 +478,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 					<View style={styles.gridContainer}>
 						<View style={styles.col6}>
 							<View>
-								<Text style={[styles.textDefault, { textAlign: "center" }]}>Reviewer Comments Status</Text>
+								<Text style={[styles.textDefault, { textAlign: "center" }]}>Internal Reviewer Comments Status</Text>
 							</View>
 							<View style={[styles.gridContainer, { borderTop: "1px solid #000", borderBottom: "1px solid #000" }]}>
 								<View style={{ width: "8%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
@@ -525,7 +525,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 						</View>
 						<View style={[styles.col6, { borderLeft: "1px solid #000" }]}>
 							<View>
-								<Text style={[styles.textDefault, { textAlign: "center" }]}>Approval Comments Status</Text>
+								<Text style={[styles.textDefault, { textAlign: "center" }]}>Internal Approver Comments Status</Text>
 								<View style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
 									<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
 										<Text style={styles.textDefault}>Initial</Text>
@@ -609,13 +609,13 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 				)}
 
 				<View style={[styles.gridContainer, styles.footer]}>
-					<View style={styles.col3}>
+					<View style={styles.col4}>
 						<Text style={{ fontSize: 9, textAlign: 'left' }}>Uncontrolled Copy if Printed</Text>
 					</View>
-					<View style={styles.col3}>
+					<View style={styles.col6}>
 						<Text style={{ fontSize: 9, textAlign: 'center' }}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
 					</View>
-					<View style={styles.col3}>
+					<View style={styles.col4}>
 						<Text style={{ fontSize: 9, textAlign: 'right' }}>{format(new Date(), 'MM/dd/yy')} Page {`1 / 1`}</Text>
 					</View>
 				</View>

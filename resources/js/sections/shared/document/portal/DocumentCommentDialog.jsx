@@ -54,7 +54,6 @@ export function DocumentCommentDialog ({
 	});
 	const { watch, setValue, handleSubmit, reset, formState: { errors } } = methods;
 	const pagesVal = watch("pages");
-	console.log(errors)
 
 	const handleDrop = useCallback(
 		(acceptedFiles) => {

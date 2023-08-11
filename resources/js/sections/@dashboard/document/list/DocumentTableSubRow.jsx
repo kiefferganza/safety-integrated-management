@@ -116,7 +116,8 @@ export const DocumentTableSubRow = ({ row, open }) => {
 									<TableHead>
 										<TableRow>
 											<TableCell>External Approver</TableCell>
-											<TableCell colSpan={2}>Remarks</TableCell>
+											<TableCell>Position</TableCell>
+											<TableCell>Remarks</TableCell>
 											<TableCell>Signed File</TableCell>
 											<TableCell>Status</TableCell>
 										</TableRow>
@@ -129,7 +130,8 @@ export const DocumentTableSubRow = ({ row, open }) => {
 													<TableCell>
 														{app?.firstname} {app?.lastname}
 													</TableCell>
-													<TableCell colSpan={2}>{app?.remarks || "N/A"}</TableCell>
+													<TableCell>{app?.position || "N/A"}</TableCell>
+													<TableCell>{app?.remarks || "N/A"}</TableCell>
 													<TableCell>
 														{app?.src ? (
 															<Tooltip title={app.src}>

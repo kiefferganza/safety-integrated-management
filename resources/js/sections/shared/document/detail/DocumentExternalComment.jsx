@@ -3,7 +3,6 @@ const { Box, Button, IconButton, TableCell, TableRow, Tooltip, MenuItem } = awai
 import Label from '@/Components/label/Label';
 import Iconify from '@/Components/iconify/Iconify';
 import ConfirmDialog from '@/Components/confirm-dialog/ConfirmDialog';
-const { DocumentReplyDialog } = await import('../portal/DocumentReplyDialog');
 import MenuPopover from '@/Components/menu-popover';
 
 const STATUSES = [
@@ -15,27 +14,13 @@ const STATUSES = [
 	{ label: "F. Responded / Reviewed / Actioned", code: "F" },
 ];
 
-const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus, onDelete, onAction, shareableLink, isAlreadySigned }) => {
+const DocumentExternalComment = ({ row, index, reviewer, commentStatus, onDelete, onAction, shareableLink }) => {
 	const [openPopover, setOpenPopover] = useState(null);
 	const [openDelete, setOpenDelete] = useState(false);
-	const [openReply, setOpenReply] = useState(false);
-
-	const handleOpenPopover = (event) => {
-		setOpenPopover(event.currentTarget);
-	};
 
 	const handleClosePopover = () => {
 		setOpenPopover(null);
 	};
-
-
-	const handleOpenReply = () => {
-		setOpenReply(true);
-	}
-
-	const handleCloseReply = () => {
-		setOpenReply(false);
-	}
 
 	const handleOpenDelete = () => {
 		setOpenDelete(true);
@@ -45,7 +30,7 @@ const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus,
 		setOpenDelete(false);
 	}
 
-	const canDeleteComment = false;
+	const canDeleteComment = true;
 	return (
 		<>
 			<TableRow
@@ -76,18 +61,6 @@ const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus,
 						{commentStatus.text}
 					</Label>
 				</TableCell>
-				{(docType === "submitted" && !row?.reply_code) && (
-					<TableCell align="left">
-						<IconButton
-							color="info"
-							onClick={handleOpenReply}
-						>
-							<Tooltip title="Reply" arrow>
-								<Iconify icon="ic:outline-reply" />
-							</Tooltip>
-						</IconButton>
-					</TableCell>
-				)}
 				{canDeleteComment && (
 					<TableCell align="left">
 						<IconButton
@@ -95,16 +68,6 @@ const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus,
 							onClick={handleOpenDelete}
 						>
 							<Iconify icon="eva:trash-2-outline" />
-						</IconButton>
-					</TableCell>
-				)}
-				{(docType === "review" && row.reply !== null && row.comment_status === 0) && (
-					<TableCell align="left">
-						<IconButton
-							color="info"
-							onClick={handleOpenPopover}
-						>
-							<Iconify icon="material-symbols:library-add-check-outline-sharp" />
 						</IconButton>
 					</TableCell>
 				)}
@@ -137,19 +100,6 @@ const DocumentExternalComment = ({ row, index, docType, reviewer, commentStatus,
 						Delete
 					</Button>
 				}
-			/>
-			<DocumentReplyDialog
-				open={openReply}
-				onClose={handleCloseReply}
-				response_id={row.id}
-				routeName={shareableLink ? route('shared.document.reply_comment', {
-					doc: shareableLink.model_id,
-					comment: row.id,
-					_query: {
-						token: shareableLink.token
-					}
-				}) : null}
-				isAlreadySigned={isAlreadySigned}
 			/>
 		</>
 	)

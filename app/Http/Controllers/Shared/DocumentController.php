@@ -151,6 +151,11 @@ class DocumentController extends Controller
 
 
 	public function delete_comment(DocumentExternalComment $comment) {
+		DocumentExternalHistory::create([
+			"document_id" => $comment->document_id,
+			"approver" => $comment->approver,
+			"type" => "delete_comment"
+		]);
 		$comment->delete();
 		return redirect()->back()
 			->with('message', 'Comment deleted successfully.')

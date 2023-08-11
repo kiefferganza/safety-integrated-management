@@ -86,7 +86,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 			<Stack>
 				<Stack direction="row" justifyContent="space-between" alignItems="center">
 					<Typography variant="h6" sx={{ color: 'text.disabled' }}>
-						Reviewer's comments
+						Internal Comments
 					</Typography>
 					{canComment && (
 						<Button
@@ -103,7 +103,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 					<Grid item xs={6}>
 						<Stack alignItems="center">
 							<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-								Reviewer Comment Code Legend:
+								Comment Code Legend:
 							</Typography>
 							<Typography variant="caption" sx={{ color: 'text.disabled' }}>
 								1 = action required on this issue, 2 = advisory comment
@@ -146,7 +146,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 										<Box>Code</Box>
 									</TableCell>
 
-									<TableCell align="left">REVIEWER's COMMENTS</TableCell>
+									<TableCell align="left">INTERNAL COMMENTS</TableCell>
 
 									<TableCell align="left">Reply Code</TableCell>
 
@@ -187,7 +187,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 				<Stack direction="row" justifyContent="space-between" alignItems="center">
 					<Typography variant="h6" sx={{ color: 'text.disabled' }}>
-						External comments
+						External Comments
 					</Typography>
 				</Stack>
 				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
@@ -195,7 +195,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 					<Grid item xs={6}>
 						<Stack alignItems="center">
 							<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-								Reviewer Comment Code Legend:
+								Comment Code Legend:
 							</Typography>
 							<Typography variant="caption" sx={{ color: 'text.disabled' }}>
 								1 = action required on this issue, 2 = advisory comment
@@ -240,7 +240,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 												<Box>Code</Box>
 											</TableCell>
 
-											<TableCell align="left">REVIEWER's COMMENTS</TableCell>
+											<TableCell align="left">EXTERNAL COMMENTS</TableCell>
 
 											<TableCell align="left">Reply Code</TableCell>
 
@@ -299,7 +299,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 												<Box>Code</Box>
 											</TableCell>
 
-											<TableCell align="left">REVIEWER's COMMENTS</TableCell>
+											<TableCell align="left">REVIEWER COMMENTS</TableCell>
 
 											<TableCell align="left">Reply Code</TableCell>
 
@@ -321,7 +321,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 				)}
 				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 				<Typography variant="h6" sx={{ color: 'text.disabled' }}>
-					Document Review Status Code
+					Document Status Code
 				</Typography>
 				<Typography variant="caption" sx={{ color: 'text.disabled' }}>
 					Note: you can only choose status code when all of your comments as a reviewer is closed.
@@ -388,14 +388,14 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 					<Grid item xs={6}>
 						<Stack alignItems="center">
 							<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-								Reviewer Comments Status
+								Internal Reviewer Comments Status
 							</Typography>
 						</Stack>
 					</Grid>
 					<Grid item xs={6}>
 						<Stack alignItems="center">
 							<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-								Approval Comments Status
+								Internal Approver Comments Status
 							</Typography>
 						</Stack>
 					</Grid>

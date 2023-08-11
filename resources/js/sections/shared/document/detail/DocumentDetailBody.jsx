@@ -9,9 +9,12 @@ import DocumentComments from './DocumentComments';
 import { DocumentUpdateFileDialog } from '../portal/DocumentUpdateFileDialog';
 import ReportActionDialog from '@/Components/dialogs/ReportActionDialog';
 import DocumentExternalComment from './DocumentExternalComment';
+import { Inertia } from '@inertiajs/inertia';
+import { useSwal } from '@/hooks/useSwal';
 const { DocumentCommentDialog } = await import('../portal/DocumentCommentDialog');
 
 const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appStatus }) => {
+	const { load, stop } = useSwal();
 	const [openComment, setOpenComment] = useState(false);
 	const [openUpdateFile, setOpenUpdateFile] = useState(false);
 	const [updateFileInfo, setUpdateFileInfo] = useState(null);
@@ -45,16 +48,20 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 
 
 	const handleDeleteComment = (commentId) => {
-		// const commentLength = document.comments.length;
-		// Inertia.post(PATH_DASHBOARD.fileManager.deleteComment(commentId), { commentLength }, {
-		// 	preserveScroll: true,
-		// 	onStart () {
-		// 		load("Deleting comment", "please wait...");
-		// 	},
-		// 	onFinish () {
-		// 		stop();
-		// 	}
-		// });
+		Inertia.post(route('shared.document.delete_comment', {
+			comment: commentId,
+			_query: {
+				token: sharedLink.token
+			}
+		}), {}, {
+			preserveScroll: true,
+			onStart () {
+				load("Deleting comment", "please wait...");
+			},
+			onFinish () {
+				stop();
+			}
+		});
 	}
 
 	const canComment = customUser?.status === "0";
@@ -64,7 +71,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 			<Stack>
 				<Stack direction="row" justifyContent="space-between" alignItems="center">
 					<Typography variant="h6" sx={{ color: 'text.disabled' }}>
-						Internal comments
+						Internal Comments
 					</Typography>
 				</Stack>
 				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
@@ -72,7 +79,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 					<Grid item xs={6}>
 						<Stack alignItems="center">
 							<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-								Reviewer Comment Code Legend:
+								Comment Code Legend:
 							</Typography>
 							<Typography variant="caption" sx={{ color: 'text.disabled' }}>
 								1 = action required on this issue, 2 = advisory comment
@@ -115,7 +122,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 											<Box>Code</Box>
 										</TableCell>
 
-										<TableCell align="left">REVIEWER's COMMENTS</TableCell>
+										<TableCell align="left">INTERNAL COMMENTS</TableCell>
 
 										<TableCell align="left">Reply Code</TableCell>
 
@@ -136,8 +143,6 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 												index={index}
 												reviewer={reviewer}
 												commentStatus={commentStatus}
-												docType={typeof docType === "string" ? docType : "review"}
-												onDelete={() => handleDeleteComment(row.response_id)}
 											/>
 										)
 									})}
@@ -170,7 +175,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 											<Box>Code</Box>
 										</TableCell>
 
-										<TableCell align="left">REVIEWER's COMMENTS</TableCell>
+										<TableCell align="left">INTERNAL COMMENTS</TableCell>
 
 										<TableCell align="left">Reply Code</TableCell>
 
@@ -192,7 +197,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 				<Stack direction="row" justifyContent="space-between" alignItems="center">
 					<Typography variant="h6" sx={{ color: 'text.disabled' }}>
-						External comments
+						External Comments
 					</Typography>
 					{canComment && (
 						<Button
@@ -209,7 +214,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 					<Grid item xs={6}>
 						<Stack alignItems="center">
 							<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-								Reviewer Comment Code Legend:
+								Comment Code Legend:
 							</Typography>
 							<Typography variant="caption" sx={{ color: 'text.disabled' }}>
 								1 = action required on this issue, 2 = advisory comment
@@ -254,7 +259,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 												<Box>Code</Box>
 											</TableCell>
 
-											<TableCell align="left">REVIEWER's COMMENTS</TableCell>
+											<TableCell align="left">EXTERNAL COMMENTS</TableCell>
 
 											<TableCell align="left">Reply Code</TableCell>
 
@@ -312,7 +317,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 												<Box>Code</Box>
 											</TableCell>
 
-											<TableCell align="left">REVIEWER's COMMENTS</TableCell>
+											<TableCell align="left">EXTERNAL COMMENTS</TableCell>
 
 											<TableCell align="left">Reply Code</TableCell>
 
@@ -334,7 +339,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 				)}
 				<Divider sx={{ borderStyle: "dashed", my: 2 }} />
 				<Typography variant="h6" sx={{ color: 'text.disabled' }}>
-					Status Codes
+					Document Status Codes
 				</Typography>
 				<Typography variant="caption" sx={{ color: 'text.disabled' }}>
 					Note: you can only choose status code when all of your comments is closed.
@@ -377,14 +382,14 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 					<Grid item xs={6}>
 						<Stack alignItems="center">
 							<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-								Reviewer Comments Status
+								Internal Reviewer Comments Status
 							</Typography>
 						</Stack>
 					</Grid>
 					<Grid item xs={6}>
 						<Stack alignItems="center">
 							<Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-								Approval Comments Status
+								Internal Approval Comments Status
 							</Typography>
 						</Stack>
 					</Grid>
