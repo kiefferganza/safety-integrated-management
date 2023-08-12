@@ -51,7 +51,7 @@ const DocumentDetailHeader = ({ title, cms, document, latestUploadedFile }) => {
 						<Typography variant="body2" fontWeight={700}>Rollout Date:</Typography>
 					</Box>
 					<Box>
-						<Typography></Typography>
+						<Typography variant="body1" >{fDate(date_uploaded)}</Typography>
 					</Box>
 				</Stack>
 			</Stack>

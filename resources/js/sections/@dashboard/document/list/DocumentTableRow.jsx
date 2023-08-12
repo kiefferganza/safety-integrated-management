@@ -92,11 +92,6 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 	}
 
 	const handleOpenShare = () => {
-		// if (row.docStatus.statusText === "FOR APPROVAL") {
-		// 	setType('approver');
-		// } else {
-		// 	setType('reviewer');
-		// }
 		setOpenPopover(null);
 		setOpenShare(true);
 	}
