@@ -48,7 +48,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 
 				<View style={styles.mb16}>
 					<View style={styles.gridContainer}>
-						{/* <Image source="/logo/Fiafi-logo.png" style={{ height: 32, padding: 2 }} /> */}
+						<Image source="/logo/Fiafi-logo.png" style={{ height: 32, padding: 2 }} />
 					</View>
 					<View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
 						<Text style={styles.h3}>Document Review Sheet</Text>
