@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogTitle, Table, TableBody, TableCell, TableC
 
 export const DocumentFileList = ({ title = "File List", open, onClose, document, ...other }) => {
 	const { currentFile, reviewer_employees, reviewer_sign, approval_employee, approval_sign, external_medias = [], external_approver } = document;
-	console.log(document)
+
 	return (
 		<Dialog fullWidth maxWidth="lg" open={open} onClose={onClose} {...other}>
 			<DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>{title}</DialogTitle>
