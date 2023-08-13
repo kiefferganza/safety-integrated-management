@@ -159,6 +159,15 @@ class DocumentController extends Controller
 				"shareableLink",
 				"external_history" => fn($q) => $q->with("approver"),
 			])->firstOrFail();
+
+		$documentFirstUpload = Document::
+			select("date_uploaded")
+			->where([
+				"is_deleted" => 0,
+				"folder_id" => $request->folder
+			])
+			->orderBy('date_uploaded')
+			->first();
 			
 		// Submitter Profile
 		$document->employee->profile = null;
@@ -206,7 +215,8 @@ class DocumentController extends Controller
 			"folder" => $folder,
 			"document" => $document,
 			"companies" => CompanyModel::where("sub_id", $user->subscriber_id)->get(),
-			"positions" => Position::select("position_id", "position")->where("user_id", $user->subscriber_id)->get()
+			"positions" => Position::select("position_id", "position")->where("user_id", $user->subscriber_id)->get(),
+			"rolloutDate" => $documentFirstUpload->date_uploaded
 		]);
 	}
 
@@ -473,6 +483,7 @@ class DocumentController extends Controller
 
 	public function approve_or_fail_document(Document $document, Request $request) {
 		$user = auth()->user();
+		$document->load('reviewer_employees');
 		if($request->hasFile('src')) {
 			$documentService = new DocumentService;
 			$file_name = "";

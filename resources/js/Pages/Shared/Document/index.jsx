@@ -5,7 +5,7 @@ import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import { Head } from '@inertiajs/inertia-react';
 const DocumentPage = lazy(() => import("./DocumentPage"));
 
-const index = ({ document, positions, customUser, sharedLink }) => {
+const index = ({ document, positions, customUser, sharedLink, rolloutDate }) => {
 	return (
 		<>
 			<Head><title>{document.form_number}</title></Head>
@@ -18,7 +18,7 @@ const index = ({ document, positions, customUser, sharedLink }) => {
 							minHeight: 1,
 						}}
 					>
-						<DocumentPage sharedLink={sharedLink} document={document} positions={positions} customUser={customUser} />
+						<DocumentPage sharedLink={sharedLink} document={document} positions={positions} customUser={customUser} rolloutDate={rolloutDate} />
 					</Container>
 				</SimpleLayout>
 			</Suspense>

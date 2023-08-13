@@ -49,9 +49,16 @@ class DocumentController extends Controller
 			"external_history" => fn($q) => $q->with("approver"),
 		])->findOrFail($sharedLink->model_id);
 
-		$personId = $sharedLink->custom_properties['id'];
+		$documentFirstUpload = Document::
+		select("date_uploaded")
+		->where([
+			"is_deleted" => 0,
+			"folder_id" => $document->folder_id
+		])
+		->orderBy('date_uploaded')
+		->first();
 
-		// dd($sharedLink->token);
+		$personId = $sharedLink->custom_properties['id'];
 
 		$customUser = $document->external_approver->first(function($app) use($personId) {
 			return $app->id === $personId;
@@ -106,7 +113,8 @@ class DocumentController extends Controller
 			"companies" => CompanyModel::where("sub_id", $folder->sub_id)->get(),
 			"positions" => Position::select("position_id", "position")->where("user_id", $folder->sub_id)->get(),
 			"customUser" => $customUser,
-			"sharedLink" => $sharedLink
+			"sharedLink" => $sharedLink,
+			"rolloutDate" => $documentFirstUpload->date_uploaded
 		]);
 	}
 

@@ -17,7 +17,7 @@ DocumentPDF.propTypes = {
 };
 
 
-export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
+export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rolloutDate }) {
 	const theme = useTheme();
 	const {
 		title: documentTitle,
@@ -37,11 +37,11 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 		approval_employee,
 		reviewer_employees,
 		external_comments,
+		approval_status
 	} = document;
 
 	const approvalPos = approval_employee ? positions.find(pos => pos.position_id === approval_employee?.position) : null;
-	const docStatus = document.approval_sign ? getDocumentReviewStatus(status) : getDocumentStatus(status);
-
+	const approvalStatus = getDocumentReviewStatus(approval_status);
 	return (
 		<Document title={cms !== "N/A" ? cms : documentTitle}>
 			<Page size="A4" style={styles.page}>
@@ -64,7 +64,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 						</View>
 						<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
 							<Text style={styles.subtitle2}>Rollout Date:</Text>
-							<Text style={[styles.body1, { fontWeight: 700 }]}>{fDate(date_uploaded)}</Text>
+							<Text style={[styles.body1, { fontWeight: 700 }]}>{fDate(rolloutDate)}</Text>
 						</View>
 					</View>
 				</View>
@@ -526,7 +526,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 						<View style={[styles.col6, { borderLeft: "1px solid #000" }]}>
 							<View>
 								<Text style={[styles.textDefault, { textAlign: "center" }]}>Internal Approver Comments Status</Text>
-								<View style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
+								<View style={[styles.gridContainer, { borderTop: "1px solid #000", borderBottom: "1px solid #000" }]}>
 									<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
 										<Text style={styles.textDefault}>Initial</Text>
 									</View>
@@ -541,7 +541,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 									</View>
 								</View>
 								{approval_employee && (
-									<View style={[styles.gridContainer, { borderTop: "1px solid #000" }]}>
+									<View style={[styles.gridContainer]}>
 										<View style={{ width: "10%", alignItems: "center", justifyContent: "center", borderRight: "1px solid #000" }}>
 											<Text style={[styles.textDefault, { textTransform: "uppercase" }]}>{`${approval_employee?.firstname?.charAt(0)}. ${approval_employee?.lastname?.charAt(0)}.`}</Text>
 										</View>
@@ -552,8 +552,8 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions }) {
 											<Text style={styles.textDefault}>{document?.remarks || "N/A"}</Text>
 										</View>
 										<View style={{ width: "25%", alignItems: "center", justifyContent: "center" }}>
-											<View style={[styles.badge, { paddingVertical: 1, paddingHorizontal: 2, backgroundColor: theme.palette[docStatus.statusClass].main, marginVertical: 2 }]}>
-												<Text style={[styles.textDefault, { fontSize: 6, color: "#fff", textAlign: "center" }]}>{docStatus.statusText}</Text>
+											<View style={[styles.badge, { paddingVertical: 1, paddingHorizontal: 2, backgroundColor: theme.palette[approvalStatus.statusClass].main, marginVertical: 2 }]}>
+												<Text style={[styles.textDefault, { fontSize: 6, color: "#fff", textAlign: "center" }]}>{approvalStatus.statusText}</Text>
 											</View>
 										</View>
 									</View>

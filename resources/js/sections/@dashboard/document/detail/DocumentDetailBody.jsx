@@ -81,6 +81,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 	const canComment = document.approval_sign !== null ? false : typeof docType === "string" ? docType === "review" : true;
 	const isAlreadySigned = document.comments.findIndex(com => document.reviewer_employees.findIndex(rev => rev.employee_id === com.reviewer_id) !== -1) !== -1;
 	const reviewerStatus = document.reviewer_employees.find(revEmp => revEmp.employee_id === user?.employee?.employee_id)?.pivot?.review_status;
+	const approvalStatus = getDocumentReviewStatus(document.approval_status);
 	return (
 		<>
 			<Stack>
@@ -479,7 +480,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 											<TableCell align="left">{document?.remarks || "N/A"}</TableCell>
 
 											<TableCell align="left">
-												<Label color={docStat.statusClass}>{docStat.statusText}</Label>
+												<Label color={approvalStatus.statusClass}>{approvalStatus.statusText}</Label>
 											</TableCell>
 										</TableRow>
 									)}

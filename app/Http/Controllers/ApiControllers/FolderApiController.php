@@ -32,6 +32,9 @@ class FolderApiController extends Controller
 
 		$shareableLink = URL::route('shared.document.show', ['folder' => $document->folder->folder_name, 'document' => $document->form_number, 'token' => $token]);
 
+		$document->status = "0";
+		$document->save();
+
 		$personel = new DocumentExternalApprover();
 		$personel->document_id = $document->document_id;
 		$personel->firstname = $request->firstname;

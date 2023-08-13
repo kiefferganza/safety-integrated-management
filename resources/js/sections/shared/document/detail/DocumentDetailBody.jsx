@@ -66,6 +66,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 
 	const canComment = customUser?.status === "0";
 	const isAlreadySigned = document.external_comments.findIndex(extCom => extCom.approver === customUser.id) !== -1;
+	const approvalStatus = getDocumentReviewStatus(document.approval_status);
 	return (
 		<>
 			<Stack>
@@ -473,7 +474,7 @@ const DocumentDetailBody = ({ document, positions, customUser, sharedLink, appSt
 											<TableCell align="left">{document?.remarks || "N/A"}</TableCell>
 
 											<TableCell align="left">
-												<Label color={docStat.statusClass}>{docStat.statusText}</Label>
+												<Label color={approvalStatus.statusClass}>{approvalStatus.statusText}</Label>
 											</TableCell>
 										</TableRow>
 									)}

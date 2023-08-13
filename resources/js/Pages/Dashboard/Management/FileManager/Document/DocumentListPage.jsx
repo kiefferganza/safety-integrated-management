@@ -137,12 +137,12 @@ const DocumentListPage = ({ folder, user }) => {
 					const isForApproval = curr.reviewer_sign.length >= curr.reviewer_employees.length;
 					if (isForApproval || curr.external_approver.length > 0) {
 						const stat = curr?.reviewer_employees[0]?.pivot.review_status;
-						docObj.docStatus = curr.approval_employee || curr.external_approver?.length > 0 ? { statusText: "FOR APPROVAL", statusClass: "info" } : getDocumentStatus(stat);
+						docObj.docStatus = curr.approval_employee || curr.external_approver?.length > 0 ? { statusText: "PENDING FOR APPROVAL", statusClass: "info" } : getDocumentStatus(stat);
 					} else {
 						const isInReview = curr.reviewer_employees.some(rev => rev.pivot.review_status !== "0");
 						if (isInReview) {
 							docObj.docStatus = {
-								statusText: "FOR REVIEW",
+								statusText: "PENDING FOR REVIEW",
 								statusClass: "primary",
 							};
 						} else {
@@ -150,7 +150,12 @@ const DocumentListPage = ({ folder, user }) => {
 						}
 					}
 					if (curr.external_approver.length === 0) {
-						acc.push({ ...docObj, docType: "internal_review" });
+						const isInternalPending = curr.reviewer_employees.some(rev => rev.pivot.review_status === "0");
+						if (isInternalPending) {
+							acc.push({ ...docObj, docType: "internal_review" });
+						} else {
+							acc.push({ ...docObj, docType: "approve" });
+						}
 					} else {
 						acc.push({ ...docObj, docType: "external_review" });
 					}

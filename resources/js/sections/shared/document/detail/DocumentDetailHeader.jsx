@@ -5,7 +5,7 @@ const { Box, Stack, Typography, Grid, Card, Divider } = await import('@mui/mater
 const { DocEmployeeCard } = await import('./DocEmployeeCard');
 const { Image } = await import('@/Components/image/Image');
 
-const DocumentDetailHeader = ({ title, cms, document, latestUploadedFile }) => {
+const DocumentDetailHeader = ({ title, cms, document, latestUploadedFile, rolloutDate }) => {
 	const {
 		title: documentTitle,
 		originator,
@@ -51,7 +51,7 @@ const DocumentDetailHeader = ({ title, cms, document, latestUploadedFile }) => {
 						<Typography variant="body2" fontWeight={700}>Rollout Date:</Typography>
 					</Box>
 					<Box>
-						<Typography></Typography>
+						<Typography>{fDate(rolloutDate)}</Typography>
 					</Box>
 				</Stack>
 			</Stack>

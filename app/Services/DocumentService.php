@@ -94,6 +94,7 @@ class DocumentService {
 
 	public function approval_action(Request $request, Document $document, $file_name, $user) {
 		$document->status = $request->status;
+		$document->approval_status = $request->status;
 		if($request->remarks) {
 			$document->remarks = $request->remarks;
 		}
@@ -107,6 +108,12 @@ class DocumentService {
 	public function reviewer_action(Request $request, Document $document, $file_name, $user) {
 		$documentReviwer = DocumentReviewer::where(["document_id" => $document->document_id, "reviewer_id" => $user->emp_id])->first();
 		if($documentReviwer) {
+			$isAlreadyReviewed = $document->reviewer_employees->every(function($item) {
+				return $item->pivot->review_status !== "0";
+			});
+			if($isAlreadyReviewed) {
+				$document->status = $request->status;
+			}
 			if($request->remarks) {
 				$documentReviwer->remarks = $request->remarks;
 			}

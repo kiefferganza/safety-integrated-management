@@ -8,7 +8,7 @@ import Label from '@/Components/label';
 import { getDocumentReviewStatus } from '@/utils/formatStatuses';
 import { DocumentPDF } from '@/sections/@dashboard/document/detail/DocumentPDF';
 
-const DocumentDetailToolbar = ({ cms, document, latestUploadedFile, positions, status }) => {
+const DocumentDetailToolbar = ({ cms, document, latestUploadedFile, positions, status, rolloutDate }) => {
 	const [open, setOpen] = useState(false);
 
 	const handleOpen = () => {
@@ -38,7 +38,7 @@ const DocumentDetailToolbar = ({ cms, document, latestUploadedFile, positions, s
 					</Tooltip>
 
 					<PDFDownloadLink
-						document={<DocumentPDF document={document} cms={cms} latestUploadedFile={latestUploadedFile} positions={positions} />}
+						document={<DocumentPDF document={document} cms={cms} latestUploadedFile={latestUploadedFile} positions={positions} rolloutDate={rolloutDate} />}
 						fileName={cms !== "N/A" ? cms : document.title}
 						style={{ textDecoration: 'none' }}
 					>
@@ -84,7 +84,7 @@ const DocumentDetailToolbar = ({ cms, document, latestUploadedFile, positions, s
 
 					<Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
 						<PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-							<DocumentPDF document={document} cms={cms} latestUploadedFile={latestUploadedFile} positions={positions} />
+							<DocumentPDF document={document} cms={cms} latestUploadedFile={latestUploadedFile} positions={positions} rolloutDate={rolloutDate} />
 						</PDFViewer>
 					</Box>
 				</Box>

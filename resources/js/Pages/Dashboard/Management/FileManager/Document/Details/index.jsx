@@ -18,7 +18,7 @@ const DocumentDetailBody = lazy(() => import('@/sections/@dashboard/document/det
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 
 
-const index = ({ folder, document, positions, auth: { user } }) => {
+const index = ({ folder, document, positions, auth: { user }, rolloutDate }) => {
 	const {
 		status,
 		employee,
@@ -34,8 +34,7 @@ const index = ({ folder, document, positions, auth: { user } }) => {
 	const latestUploadedFile = currentFile;
 
 	const docType = getDocumentType({ employee, reviewer_employees, approval_employee, userEmpId: user.emp_id });
-	const docStatus = getStatus({ status, reviewer_sign, reviewer_employees, approval_sign });
-
+	const docStatus = getStatus({ status, reviewer_sign, reviewer_employees, approval_sign, approval_employee });
 	return (
 		<>
 			<Head>
@@ -61,7 +60,7 @@ const index = ({ folder, document, positions, auth: { user } }) => {
 								},
 							]}
 						/>
-						<DocumentDetailToolbar cms={cms} document={document} latestUploadedFile={latestUploadedFile} positions={positions} docStatus={docStatus} />
+						<DocumentDetailToolbar cms={cms} document={document} latestUploadedFile={latestUploadedFile} positions={positions} docStatus={docStatus} rolloutDate={rolloutDate} />
 						<Card sx={{ p: 3 }}>
 							<DocumentDetailHeader
 								title="Document Review Sheet"
@@ -69,6 +68,7 @@ const index = ({ folder, document, positions, auth: { user } }) => {
 								document={document}
 								user={user}
 								latestUploadedFile={latestUploadedFile}
+								rolloutDate={rolloutDate}
 							/>
 							<DocumentDetailBody document={document} docType={docType} user={user} positions={positions} />
 						</Card >
@@ -89,12 +89,12 @@ function getDocumentType ({ employee, reviewer_employees, approval_employee, use
 	return "documentControl";
 }
 
-function getStatus ({ status, reviewer_sign, reviewer_employees, approval_sign }) {
+function getStatus ({ status, reviewer_sign, reviewer_employees, approval_sign, approval_employee }) {
 	if (approval_sign) {
 		return getDocumentReviewStatus(status);
 	}
 	const isForApproval = reviewer_sign.length >= reviewer_employees.length;
-	if (isForApproval) {
+	if (isForApproval && approval_employee) {
 		return {
 			statusText: "FOR APPROVAL",
 			statusClass: "info",

@@ -8,7 +8,7 @@ import Label from "@/Components/label";
 export const DocumentTableSubRow = ({ row, open }) => {
 	const { positions } = usePage().props;
 
-	const approvalStatus = getDocumentReviewStatus(row.status);
+	const approvalStatus = getDocumentReviewStatus(row.approval_status);
 	return (
 		<TableRow>
 			<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
