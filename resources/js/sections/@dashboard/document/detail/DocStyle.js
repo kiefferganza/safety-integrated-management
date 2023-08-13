@@ -27,11 +27,18 @@ Font.register({
 });
 
 const styles = StyleSheet.create({
+	bt: { borderTop: '1px solid #000' },
+	bm: { borderBottom: '1px solid #000' },
+	bl: { borderLeft: '1px solid #000' },
+	br: { borderRight: '1px solid #000' },
 	col4: { width: '25%' },
 	col3: { width: '33.333%' },
 	col8: { width: '75%' },
 	col6: { width: '50%' },
 	textDefault: { fontSize: 8, paddingVertical: 2, lineHeight: 0 },
+	faded: { fontWeight: 500, color: '#637381' },
+	bold2: { fontWeight: 500, color: '#212B36' },
+	bold1: { fontWeight: 700 },
 	badge: { paddingVertical: 2, paddingHorizontal: 3, borderRadius: 4 },
 	mb8: { marginBottom: 8 },
 	mb40: { marginBottom: 40 },
