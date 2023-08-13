@@ -1,7 +1,6 @@
 import { Suspense, lazy } from 'react';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
-import capitalize from 'lodash/capitalize';
 import { useSettingsContext } from '@/Components/settings';
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { PATH_DASHBOARD } from "@/routes/paths";
@@ -27,7 +26,7 @@ const index = ({ folder, document }) => {
 									href: PATH_DASHBOARD.fileManager.root,
 								},
 								{
-									name: capitalize(folder.folder_name),
+									name: folder.folder_name,
 									href: PATH_DASHBOARD.fileManager.view(folder.folder_id),
 								},
 								{

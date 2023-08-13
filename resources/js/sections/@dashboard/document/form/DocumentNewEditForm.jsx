@@ -28,6 +28,7 @@ const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
 		title: Yup.string().required(),
 		src: isEdit ? Yup.string().notRequired() : Yup.string().required("Please attach a file for the document."),
 		reviewers: Yup.array().test('isRequired', 'Please select either reviewer or approval personel', function (item) {
+			if (isEdit) return true;
 			if (this.parent.approval_id === "" && item.length === 0) return false;
 			return true;
 		}),
@@ -125,6 +126,7 @@ const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
 	}
 
 	const options = personel.map((option) => ({ id: option.employee_id, label: option.fullname, user_id: option.user_id }));
+	console.log({ errors })
 	return (
 		<FormProvider methods={methods}>
 			<Card sx={{ p: 3 }}>
@@ -177,67 +179,69 @@ const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
 							<RHFTextField name="description" label="Description (Optional)" />
 							<Box width={1} />
 						</Stack>
-						<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-							<PersonelAutocomplete
-								value={values.reviewers || []}
-								multiple
-								disabled={isEdit ? !(currentDocument?.status === '0') : false}
-								onChange={(_event, newValue) => {
-									if (newValue) {
-										setValue('reviewers', newValue, { shouldValidate: true, shouldDirty: true });
-									} else {
-										setValue('reviewers', [], { shouldValidate: true, shouldDirty: true });
+						{!isEdit && (
+							<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
+								<PersonelAutocomplete
+									value={values.reviewers || []}
+									multiple
+									disabled={isEdit ? !(currentDocument?.status === '0') : false}
+									onChange={(_event, newValue) => {
+										if (newValue) {
+											setValue('reviewers', newValue, { shouldValidate: true, shouldDirty: true });
+										} else {
+											setValue('reviewers', [], { shouldValidate: true, shouldDirty: true });
+										}
+									}}
+									options={options}
+									isOptionEqualToValue={(option, value) => option.id === value.id}
+									label="Reviewer Personel"
+									renderTags={(value, getTagProps) =>
+										value.map((option, index) => (
+											<Chip {...getTagProps({ index })} key={index} size="small" label={option?.label || option} />
+										))
 									}
-								}}
-								options={options}
-								isOptionEqualToValue={(option, value) => option.id === value.id}
-								label="Reviewer Personel"
-								renderTags={(value, getTagProps) =>
-									value.map((option, index) => (
-										<Chip {...getTagProps({ index })} key={index} size="small" label={option?.label || option} />
-									))
-								}
-								error={errors?.reviewers?.message}
-							/>
-							<PersonelAutocomplete
-								value={getAutocompleteValue(values.approval_id)}
-								onChange={(_event, newValue) => {
-									if (newValue) {
-										setValue('approval_id', newValue.id, { shouldValidate: true, shouldDirty: true });
-									} else {
-										setValue('approval_id', '', { shouldValidate: true, shouldDirty: true });
+									error={errors?.reviewers?.message}
+								/>
+								<PersonelAutocomplete
+									value={getAutocompleteValue(values.approval_id)}
+									onChange={(_event, newValue) => {
+										if (newValue) {
+											setValue('approval_id', newValue.id, { shouldValidate: true, shouldDirty: true });
+										} else {
+											setValue('approval_id', '', { shouldValidate: true, shouldDirty: true });
+										}
+									}}
+									disabled={isEdit ? !(currentDocument?.status === '0') : false}
+									isOptionEqualToValue={(option, value) => option.label === value}
+									options={options}
+									label="Approval Personel"
+									error={errors?.approval_id?.message}
+								/>
+								<Autocomplete
+									multiple
+									freeSolo
+									fullWidth
+									value={cc}
+									onChange={(_event, newValue) => {
+										setCC(newValue);
+									}}
+									options={options}
+									renderOption={(props, option) => {
+										return (
+											<li {...props} key={props.id}>
+												{option.label}
+											</li>
+										);
+									}}
+									renderTags={(value, getTagProps) =>
+										value.map((option, index) => (
+											<Chip {...getTagProps({ index })} key={index} size="small" label={option?.label || option} />
+										))
 									}
-								}}
-								disabled={isEdit ? !(currentDocument?.status === '0') : false}
-								isOptionEqualToValue={(option, value) => option.label === value}
-								options={options}
-								label="Approval Personel"
-								error={errors?.approval_id?.message}
-							/>
-							<Autocomplete
-								multiple
-								freeSolo
-								fullWidth
-								value={cc}
-								onChange={(_event, newValue) => {
-									setCC(newValue);
-								}}
-								options={options}
-								renderOption={(props, option) => {
-									return (
-										<li {...props} key={props.id}>
-											{option.label}
-										</li>
-									);
-								}}
-								renderTags={(value, getTagProps) =>
-									value.map((option, index) => (
-										<Chip {...getTagProps({ index })} key={index} size="small" label={option?.label || option} />
-									))
-								}
-								renderInput={(params) => <TextField label="Add CC" {...params} fullWidth />}
-							/>
-						</Stack>
+									renderInput={(params) => <TextField label="Add CC" {...params} fullWidth />}
+								/>
+							</Stack>
+						)}
 					</Stack>
 
 
