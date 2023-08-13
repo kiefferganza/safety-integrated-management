@@ -198,7 +198,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 					</View>
 				</View>
 
-				<View style={[styles.bm, styles.br, styles.bl]}>
+				<View style={[styles.bm, styles.br, styles.bl, { backgroundColor: styles.primary, color: '#fff' }]}>
 					<View style={styles.gridContainer}>
 						<View style={styles.col6}>
 							<Text style={[styles.textDefault, styles.bold1, { paddingLeft: 4 }]}>Comment Code Legend:</Text>
@@ -211,10 +211,10 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 				<View style={[styles.bm, styles.br, styles.bl]}>
 					<View style={styles.gridContainer}>
 						<View style={styles.col6}>
-							<Text style={[styles.textDefault, styles.bold1, { paddingLeft: 4 }]}>1 = action required on this issue, 2 = advisory comment</Text>
+							<Text style={[styles.textDefault, styles.bold1, { paddingLeft: 4, color: styles.primary }]}>1 = action required on this issue, 2 = advisory comment</Text>
 						</View>
 						<View style={[styles.col6, styles.bl]}>
-							<Text style={[styles.textDefault, styles.bold1, { paddingLeft: 4 }]}>i = Incorporated, ii = Evaluated and not incorporated for reason stated</Text>
+							<Text style={[styles.textDefault, styles.bold1, { paddingLeft: 4, color: styles.primary }]}>i = Incorporated, ii = Evaluated and not incorporated for reason stated</Text>
 						</View>
 					</View >
 				</View >
@@ -305,7 +305,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 						)
 					}) : (
 						<View style={[styles.gridContainer, styles.bt]}>
-							<Text style={[styles.textDefault, styles.bold2, { textAlign: 'center', width: '100%' }]}>No Comments</Text>
+							<Text style={[styles.textDefault, styles.bold2, styles.faded, { textAlign: 'center', width: '100%' }]}>No Comments</Text>
 						</View>
 					)}
 				</View>
@@ -434,7 +434,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 							</View>
 						</View>
 						<View style={[styles.gridContainer, styles.bt]}>
-							<Text style={[styles.textDefault, styles.bold2, { textAlign: 'center', width: '100%' }]}>In Progress</Text>
+							<Text style={[styles.textDefault, styles.bold2, styles.faded, { textAlign: 'center', width: '100%' }]}>In Progress</Text>
 						</View>
 					</View>
 				)}
@@ -476,8 +476,8 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 				<View style={[styles.bm, styles.br, styles.bl]}>
 					<View style={styles.gridContainer}>
 						<View style={styles.col6}>
-							<View>
-								<Text style={[styles.textDefault, styles.bold2, { textAlign: "center" }]}>Internal Reviewer Comments Status</Text>
+							<View style={{ backgroundColor: styles.primary }}>
+								<Text style={[styles.textDefault, styles.bold2, { textAlign: "center", color: '#fff' }]}>Internal Reviewer Comments Status</Text>
 							</View>
 							<View style={[styles.gridContainer, styles.bt, styles.bm]}>
 								<View style={[styles.br, { width: "8%", alignItems: "center", justifyContent: "center" }]}>
@@ -524,7 +524,10 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 						</View>
 						<View style={[styles.col6, styles.bl]}>
 							<View>
-								<Text style={[styles.textDefault, styles.bold2, { textAlign: "center" }]}>Internal Approver Comments Status</Text>
+								<View style={{ backgroundColor: styles.primary }}>
+									<Text style={[styles.textDefault, styles.bold2, { textAlign: "center", color: '#fff' }]}>Internal Approver Comments Status</Text>
+								</View>
+
 								<View style={[styles.gridContainer, styles.bt, styles.bm]}>
 									<View style={[styles.br, { width: "10%", alignItems: "center", justifyContent: "center" }]}>
 										<Text style={[styles.textDefault, styles.bold2]}>Initial</Text>
@@ -566,7 +569,9 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 					<View style={styles.gridContainer}>
 						<View style={[styles.bl, styles.br]}>
 							<View>
-								<Text style={[styles.textDefault, styles.bold2, { textAlign: "center", width: "100%" }]}>External Comments Status</Text>
+								<View style={{ backgroundColor: styles.primary }}>
+									<Text style={[styles.textDefault, styles.bold2, { textAlign: "center", width: "100%", color: '#fff' }]}>External Comments Status</Text>
+								</View>
 								<View style={[styles.gridContainer, styles.bt]}>
 									<View style={[styles.br, { width: "10%", alignItems: "center", justifyContent: "center" }]}>
 										<Text style={[styles.textDefault, styles.bold2]}>Initial</Text>

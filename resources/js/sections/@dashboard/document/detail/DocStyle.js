@@ -27,6 +27,9 @@ Font.register({
 });
 
 const styles = StyleSheet.create({
+	primary: '#2e74b5',
+	primaryLight: '#8db4e2',
+	primaryDark: '#13304f',
 	bt: { borderTop: '1px solid #000' },
 	bm: { borderBottom: '1px solid #000' },
 	bl: { borderLeft: '1px solid #000' },
