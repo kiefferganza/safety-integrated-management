@@ -4,7 +4,8 @@ import { excerpt } from '@/utils/exercpt';
 import { Dialog, DialogContent, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Link as MuiLink, Typography, Stack, Avatar, Box } from '@mui/material';
 
 export const DocumentFileList = ({ title = "File List", open, onClose, document, ...other }) => {
-	const { currentFile, reviewer_employees, reviewer_sign, approval_employee, approval_sign } = document;
+	const { currentFile, reviewer_employees, reviewer_sign, approval_employee, approval_sign, external_medias = [], external_approver } = document;
+	console.log(document)
 	return (
 		<Dialog fullWidth maxWidth="lg" open={open} onClose={onClose} {...other}>
 			<DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>{title}</DialogTitle>
@@ -21,9 +22,11 @@ export const DocumentFileList = ({ title = "File List", open, onClose, document,
 								<TableRow>
 									<TableCell align="left">Current File</TableCell>
 
-									<TableCell align="left">Reviewer's File</TableCell>
+									<TableCell align="left">Internal Reviewer's File</TableCell>
 
-									<TableCell align="left">Verifier File</TableCell>
+									<TableCell align="left">Internal Approver File</TableCell>
+
+									<TableCell align="left">External File</TableCell>
 								</TableRow>
 							</TableHead>
 
@@ -54,6 +57,15 @@ export const DocumentFileList = ({ title = "File List", open, onClose, document,
 											) : (
 												<Typography sx={{ color: "text.disabled" }}>No signed file yet.</Typography>
 											)
+										) : (
+											<Typography sx={{ color: "text.disabled" }}>No approval assigned personel.</Typography>
+										)}
+									</TableCell>
+									<TableCell align="left">
+										{external_approver?.length > 0 ? external_medias.length > 0 ? external_medias.map((media) => (
+											<FileLinkThumbnail fullSrc={media?.original_url} src={media?.file_name || ""} />
+										)) : (
+											<Typography sx={{ color: "text.disabled" }}>No signed file yet.</Typography>
 										) : (
 											<Typography sx={{ color: "text.disabled" }}>No approval assigned personel.</Typography>
 										)}

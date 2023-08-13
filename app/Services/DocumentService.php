@@ -50,11 +50,14 @@ class DocumentService {
 	
 			if(count($document->external_approver) > 0) {
 				foreach ($document->external_approver as $externalApprover) {
+					$medias = [];
 					if($externalApprover->src) {
 						$media = $externalApprover->getFirstMedia();
 						$files->push(["fullSrc" => $media->getFullUrl(), "src" => $media->name, "date" => $media->created_at]);
+						$medias[] = $media;
 					}
 				}
+				$document->external_medias = $medias;
 			}
 
 			if($files->count() > 0) {
