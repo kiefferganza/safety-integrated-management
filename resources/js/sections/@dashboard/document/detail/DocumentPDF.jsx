@@ -108,7 +108,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 					<View style={[styles.col6, styles.bl]}>
 						<View style={[styles.gridContainer, styles.bm]}>
 							<View style={[styles.br, { width: "30%", paddingVertical: 3 }]}>
-								<Text style={{ textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }}>Project Code:</Text>
+								<Text style={[styles.bold2, { textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }]}>Project Code:</Text>
 							</View>
 							<View style={{ paddingVertical: 3, width: "70%" }}>
 								<Text style={{ fontSize: 8, paddingLeft: 4, lineHeight: 0 }}>{project_code}</Text>
@@ -117,7 +117,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 
 						<View style={[styles.gridContainer, styles.bm]}>
 							<View style={[styles.br, { width: "30%", paddingVertical: 3 }]}>
-								<Text style={{ textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }}>Originator:</Text>
+								<Text style={[styles.bold2, { textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }]}>Originator:</Text>
 							</View>
 							<View style={{ paddingVertical: 3, width: "70%" }}>
 								<Text style={{ fontSize: 8, paddingLeft: 4, lineHeight: 0 }}>{originator}</Text>
@@ -126,7 +126,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 
 						<View style={[styles.gridContainer, styles.bm]}>
 							<View style={[styles.br, { width: "30%", paddingVertical: 3 }]}>
-								<Text style={{ textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }}>Discipline:</Text>
+								<Text style={[styles.bold2, { textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }]}>Discipline:</Text>
 							</View>
 							<View style={{ paddingVertical: 3, width: "70%" }}>
 								<Text style={{ fontSize: 8, paddingLeft: 4, lineHeight: 0 }}>{discipline}</Text>
@@ -135,7 +135,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 
 						<View style={[styles.gridContainer, styles.bm]}>
 							<View style={[styles.br, { width: "30%", paddingVertical: 3 }]}>
-								<Text style={{ textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }}>Type:</Text>
+								<Text style={[styles.bold2, { textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }]}>Type:</Text>
 							</View>
 							<View style={{ paddingVertical: 3, width: "70%" }}>
 								<Text style={{ fontSize: 8, paddingLeft: 4, lineHeight: 0 }}>{document_type}</Text>
@@ -144,7 +144,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 
 						<View style={[styles.gridContainer, styles.bm]}>
 							<View style={[styles.br, { width: "30%", paddingVertical: 3 }]}>
-								<Text style={{ textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }}>Zone:</Text>
+								<Text style={[styles.bold2, { textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }]}>Zone:</Text>
 							</View>
 							<View style={{ paddingVertical: 3, width: "70%" }}>
 								<Text style={{ fontSize: 8, paddingLeft: 4, lineHeight: 0 }}>{document_zone || "N/A"}</Text>
@@ -153,7 +153,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 
 						<View style={[styles.gridContainer, styles.bm]}>
 							<View style={[styles.br, { width: "30%", paddingVertical: 3 }]}>
-								<Text style={{ textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }}>Level:</Text>
+								<Text style={[styles.bold2, { textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }]}>Level:</Text>
 							</View>
 							<View style={{ paddingVertical: 3, width: "70%" }}>
 								<Text style={{ fontSize: 8, paddingLeft: 4, lineHeight: 0 }}>{document_level || "N/A"}</Text>
@@ -162,7 +162,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 
 						<View style={[styles.gridContainer, styles.bm]}>
 							<View style={[styles.br, { width: "30%", paddingVertical: 3 }]}>
-								<Text style={{ textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }}>Sequence No.:</Text>
+								<Text style={[styles.bold2, { textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }]}>Sequence No.:</Text>
 							</View>
 							<View style={{ paddingVertical: 3, width: "70%" }}>
 								<Text style={{ fontSize: 8, paddingLeft: 4, lineHeight: 0 }}>{sequence_no}</Text>
@@ -171,7 +171,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 
 						<View style={[styles.gridContainer, styles.bm]}>
 							<View style={[styles.br, { width: "30%", paddingVertical: 3 }]}>
-								<Text style={{ textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }}>Rev No.:</Text>
+								<Text style={[styles.bold2, { textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }]}>Rev No.:</Text>
 							</View>
 							<View style={{ paddingVertical: 3, width: "70%" }}>
 								<Text style={{ fontSize: 8, paddingLeft: 4, lineHeight: 0 }}>{rev || 0}</Text>
@@ -180,7 +180,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 
 						<View style={[styles.gridContainer, styles.bm]}>
 							<View style={[styles.br, { width: "30%", paddingVertical: 3 }]}>
-								<Text style={{ textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }}>Transmittal Date:</Text>
+								<Text style={[styles.bold2, { textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }]}>Transmittal Date:</Text>
 							</View>
 							<View style={{ paddingVertical: 3, width: "70%" }}>
 								<Text style={{ fontSize: 8, paddingLeft: 4, lineHeight: 0 }}>{fDate(date_uploaded)}</Text>
@@ -189,7 +189,7 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 
 						<View style={styles.gridContainer}>
 							<View style={[styles.br, { width: "30%", paddingVertical: 3 }]}>
-								<Text style={{ textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }}>Document Title:</Text>
+								<Text style={[styles.bold2, { textAlign: "right", lineHeight: 0, paddingRight: 2, fontSize: 8 }]}>Document Title:</Text>
 							</View>
 							<View style={{ paddingVertical: 3, width: "70%" }}>
 								<Text style={{ fontSize: 8, paddingLeft: 4, lineHeight: 0 }}>{documentTitle}</Text>
@@ -224,32 +224,32 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 						<View style={styles.col6}>
 							<View style={[styles.gridContainer]}>
 								<View style={[styles.br, { width: "10%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-									<Text style={[styles.textDefault, styles.bold2]}>No</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>No</Text>
 								</View>
 								<View style={[styles.br, { width: "10%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-									<Text style={[styles.textDefault, styles.bold2]}>Initial</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Initial</Text>
 								</View>
 								<View style={[styles.br, { width: "15%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-									<Text style={[styles.textDefault, styles.bold2]}>Page/ Section</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Page/ Section</Text>
 								</View>
 								<View style={[styles.br, { width: "15%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-									<Text style={[styles.textDefault, styles.bold2]}>Comment Code</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Comment Code</Text>
 								</View>
 								<View style={{ width: "50%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
-									<Text style={[styles.textDefault, styles.bold2]}>INTERNAL COMMENTS</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>INTERNAL COMMENTS</Text>
 								</View>
 							</View>
 						</View>
 						<View style={[styles.col6, styles.bl]}>
 							<View style={styles.gridContainer}>
 								<View style={[styles.br, { width: "20%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-									<Text style={[styles.textDefault, styles.bold2]}>Reply Code</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Reply Code</Text>
 								</View>
 								<View style={[styles.br, { width: "60%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-									<Text style={[styles.textDefault, styles.bold2]}>ORIGINATOR REPLY</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>ORIGINATOR REPLY</Text>
 								</View>
 								<View style={{ width: "20%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
-									<Text style={[styles.textDefault, styles.bold2]}>Reply Status</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Reply Status</Text>
 								</View>
 							</View>
 						</View>
@@ -316,32 +316,32 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 							<View style={styles.col6}>
 								<View style={styles.gridContainer}>
 									<View style={[styles.br, { width: "10%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>No</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>No</Text>
 									</View>
 									<View style={[styles.br, { width: "10%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Initial</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Initial</Text>
 									</View>
 									<View style={[styles.br, { width: "15%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Page/ Section</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Page/ Section</Text>
 									</View>
 									<View style={[styles.br, { width: "15%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Comment Code</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Comment Code</Text>
 									</View>
 									<View style={{ width: "50%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
-										<Text style={[styles.textDefault, styles.bold2]}>EXTERNAL COMMENTS</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>EXTERNAL COMMENTS</Text>
 									</View>
 								</View>
 							</View>
 							<View style={[styles.col6, styles.bl]}>
 								<View style={styles.gridContainer}>
 									<View style={[styles.br, { width: "20%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-										<Text style={styles.textDefault}>Reply Code</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Reply Code</Text>
 									</View>
 									<View style={[styles.br, { width: "60%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-										<Text style={styles.textDefault}>ORIGINATOR REPLY</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>ORIGINATOR REPLY</Text>
 									</View>
 									<View style={{ width: "20%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
-										<Text style={styles.textDefault}>Reply Status</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Reply Status</Text>
 									</View>
 								</View>
 							</View>
@@ -403,32 +403,32 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 							<View style={styles.col6}>
 								<View style={styles.gridContainer}>
 									<View style={[styles.br, { width: "10%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>No</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>No</Text>
 									</View>
 									<View style={[styles.br, { width: "10%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Initial</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Initial</Text>
 									</View>
 									<View style={[styles.br, { width: "15%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Page/ Section</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Page/ Section</Text>
 									</View>
 									<View style={[styles.br, { width: "15%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Comment Code</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Comment Code</Text>
 									</View>
 									<View style={{ width: "50%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
-										<Text style={[styles.textDefault, styles.bold2]}>EXTERNAL COMMENTS</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>EXTERNAL COMMENTS</Text>
 									</View>
 								</View>
 							</View>
 							<View style={[styles.col6, styles.bl]}>
 								<View style={styles.gridContainer}>
 									<View style={[styles.br, { width: "20%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Reply Code</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Reply Code</Text>
 									</View>
 									<View style={[styles.br, { width: "60%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>ORIGINATOR REPLY</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>ORIGINATOR REPLY</Text>
 									</View>
 									<View style={{ width: "20%", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "24px" }}>
-										<Text style={[styles.textDefault, styles.bold2]}>Reply Status</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Reply Status</Text>
 									</View>
 								</View>
 							</View>
@@ -443,8 +443,8 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 				<View style={[styles.bm, styles.br, styles.bl]}>
 					<View style={styles.gridContainer}>
 						<View style={[styles.br, { width: "17.5%" }]}>
-							<Text style={[styles.textDefault, styles.bold2, { paddingLeft: 4 }]}>Document</Text>
-							<Text style={[styles.textDefault, styles.bold2, { paddingLeft: 4 }]}>Status Code</Text>
+							<Text style={[styles.textDefault, styles.bold2, { paddingLeft: 4, color: styles.primary }]}>Document</Text>
+							<Text style={[styles.textDefault, styles.bold2, { paddingLeft: 4, color: styles.primary }]}>Status Code</Text>
 						</View>
 						<View style={{ width: "82.5%" }}>
 							<View style={styles.gridContainer}>
@@ -481,19 +481,19 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 							</View>
 							<View style={[styles.gridContainer, styles.bt, styles.bm]}>
 								<View style={[styles.br, { width: "8%", alignItems: "center", justifyContent: "center" }]}>
-									<Text style={[styles.textDefault, styles.bold2]}>No</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>No</Text>
 								</View>
 								<View style={[styles.br, { width: "8%", alignItems: "center", justifyContent: "center" }]}>
-									<Text style={[styles.textDefault, styles.bold2]}>Initial</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Initial</Text>
 								</View>
 								<View style={[styles.br, { width: "20%", alignItems: "center", justifyContent: "center" }]}>
-									<Text style={[styles.textDefault, styles.bold2]}>Position</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Position</Text>
 								</View>
 								<View style={[styles.br, { width: "40%", alignItems: "center", justifyContent: "center" }]}>
-									<Text style={[styles.textDefault, styles.bold2]}>Remarks</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Remarks</Text>
 								</View>
 								<View style={{ width: "24%", alignItems: "center", justifyContent: "center" }}>
-									<Text style={[styles.textDefault, styles.bold2]}>Status</Text>
+									<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Status</Text>
 								</View>
 							</View>
 							{reviewer_employees.map((revEmp, idx) => {
@@ -530,16 +530,16 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 
 								<View style={[styles.gridContainer, styles.bt, styles.bm]}>
 									<View style={[styles.br, { width: "10%", alignItems: "center", justifyContent: "center" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Initial</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Initial</Text>
 									</View>
 									<View style={[styles.br, { width: "20%", alignItems: "center", justifyContent: "center" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Position</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Position</Text>
 									</View>
 									<View style={[styles.br, { width: "45%", alignItems: "center", justifyContent: "center" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Remarks</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Remarks</Text>
 									</View>
 									<View style={{ width: "25%", alignItems: "center", justifyContent: "center" }}>
-										<Text style={[styles.textDefault, styles.bold2]}>Status</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Status</Text>
 									</View>
 								</View>
 								{approval_employee && (
@@ -574,16 +574,16 @@ export function DocumentPDF ({ document, cms, latestUploadedFile, positions, rol
 								</View>
 								<View style={[styles.gridContainer, styles.bt]}>
 									<View style={[styles.br, { width: "10%", alignItems: "center", justifyContent: "center" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Initial</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Initial</Text>
 									</View>
 									<View style={[styles.br, { width: "20%", alignItems: "center", justifyContent: "center" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Position</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Position</Text>
 									</View>
 									<View style={[styles.br, { width: "45%", alignItems: "center", justifyContent: "center" }]}>
-										<Text style={[styles.textDefault, styles.bold2]}>Remarks</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Remarks</Text>
 									</View>
 									<View style={{ width: "25%", alignItems: "center", justifyContent: "center" }}>
-										<Text style={[styles.textDefault, styles.bold2]}>Status</Text>
+										<Text style={[styles.textDefault, styles.bold2, { color: styles.primary }]}>Status</Text>
 									</View>
 								</View>
 								{external_approver.map((ext) => {
