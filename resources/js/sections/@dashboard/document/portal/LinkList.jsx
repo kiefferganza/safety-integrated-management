@@ -8,7 +8,7 @@ import { ellipsis } from '@/utils/exercpt';
 import { Inertia } from '@inertiajs/inertia';
 import { LoadingButton } from '@mui/lab';
 import { Button, Dialog, DialogContent, DialogTitle, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@mui/material';
-import { differenceInMilliseconds } from 'date-fns';
+import { differenceInDays, differenceInHours, parseISO } from 'date-fns';
 import { useSnackbar } from 'notistack';
 import ConfirmDialog from '@/Components/confirm-dialog/ConfirmDialog';
 
@@ -109,9 +109,25 @@ export const LinkList = ({ title = "External Link List", open, onClose, shareabl
 										const id = link.custom_properties?.id;
 										let personel;
 										personel = external_approver.find(rev => rev.id === id);
-										const differenceInMs = differenceInMilliseconds(new Date(link.expiration_date), CURRENT_DATE);
-										const remainingDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
-										const remainingHours = Math.floor((differenceInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+										let expiryText = 'Expired';
+										const parsedDate = parseISO(link.expiration_date);
+
+										if (parsedDate < CURRENT_DATE) {
+											expiryText = 'Expired';
+										} else {
+											const daysDifference = differenceInDays(parsedDate, CURRENT_DATE);
+											const hoursDifference = differenceInHours(parsedDate, CURRENT_DATE) % 24;
+
+											if (daysDifference === 0 && hoursDifference === 0) {
+												expiryText = 'Expired';
+											} else if (daysDifference === 0) {
+												expiryText = `Expires in ${hoursDifference} hours`;
+											} else if (hoursDifference === 0) {
+												expiryText = `Expires in ${daysDifference} days`;
+											} else {
+												expiryText = `Expires in ${daysDifference} days and ${hoursDifference} hours`;
+											}
+										}
 										return (
 											<TableRow key={link.id}>
 												<TableCell align="left">
@@ -136,11 +152,7 @@ export const LinkList = ({ title = "External Link List", open, onClose, shareabl
 												</TableCell>
 												<TableCell align="left">
 													<Label color="error">
-														{remainingHours === 0 ? (
-															`${remainingDays} days`
-														) : (
-															`${remainingDays} days and ${remainingHours} hours`
-														)}
+														{expiryText}
 													</Label>
 												</TableCell>
 												<TableCell align="left">
