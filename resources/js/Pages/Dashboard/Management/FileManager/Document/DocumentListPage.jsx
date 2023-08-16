@@ -153,8 +153,6 @@ const DocumentListPage = ({ folder, user }) => {
 						const isInternalPending = curr.reviewer_employees.some(rev => rev.pivot.review_status === "0");
 						if (isInternalPending) {
 							acc.push({ ...docObj, docType: "internal_review" });
-						} else {
-							acc.push({ ...docObj, docType: "approve" });
 						}
 					} else {
 						acc.push({ ...docObj, docType: "external_review" });
