@@ -6,6 +6,7 @@ use App\Models\CompanyModel;
 use App\Models\Document;
 use App\Models\DocumentApprovalSign;
 use App\Models\DocumentCommentReplies;
+use App\Models\DocumentExternalApprover;
 use App\Models\DocumentResponseFile;
 use App\Models\DocumentReviewer;
 use App\Models\DocumentReviewerSign;
@@ -240,6 +241,7 @@ class DocumentController extends Controller
 				"files" => fn($q) => $q->orderByRaw('COALESCE(file_id, upload_date) desc'),
 				"approval_employee",
 				"reviewer_employees",
+				"external_approver" => fn($q) => $q->select('id', 'firstname', 'lastname', 'position', 'document_id')
 			])
 			->firstOrFail();
 		$document->file = $document->files[0] ?? "";
@@ -303,7 +305,17 @@ class DocumentController extends Controller
 			}
 		}
 
-		// $documentService = new DocumentService;
+		if(isset($request->external_approver)) {
+			foreach($request->external_approver as $extApprover) {
+				$externalApprover = DocumentExternalApprover::findOrFail($extApprover['id']);
+				$externalApprover->firstname = $extApprover['firstname'];
+				$externalApprover->lastname = $extApprover['lastname'];
+				$externalApprover->position = $extApprover['position'];
+				if($externalApprover->isDirty()) {
+					$externalApprover->save();
+				}
+			}
+		}
 
 		// Document Reviewers
 		$inReviewers = DocumentReviewer::select("reviewer_id")

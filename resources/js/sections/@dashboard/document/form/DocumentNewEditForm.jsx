@@ -20,6 +20,7 @@ const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
 	const [file, setFile] = useState([]);
 	const { errors: resErrors, folder, sequence_no, personel } = usePage().props;
 
+
 	const newDocumentSchema = Yup.object().shape({
 		project_code: Yup.string().required('Project Code is required'),
 		originator: Yup.string().required('Originator is required'),
@@ -33,6 +34,17 @@ const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
 			return true;
 		}),
 		approval_id: Yup.string().when("reviewers", (reviewers, schema) => reviewers.length > 0 ? schema.notRequired() : schema.required('Please select either reviewer or approval personel')),
+		external_approver: Yup.array().when([], {
+			is: () => currentDocument?.external_approver && currentDocument?.external_approver?.length > 0,
+			then: Yup.array().of(
+				Yup.object().shape({
+					firstname: Yup.string().required("First name is required"),
+					lastname: Yup.string().required("Last name is required"),
+					position: Yup.string().required("Position is required")
+				})
+			),
+			otherwise: Yup.array()
+		})
 	});
 
 	const defaultValues = {
@@ -48,8 +60,8 @@ const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
 		approval_id: currentDocument?.approval_id || '',
 		src: '',
 		reviewers: currentDocument?.reviewer_employees ? currentDocument?.reviewer_employees.map(rev => ({ id: rev.employee_id, label: rev.fullname, user_id: rev.user_id })) : [],
+		external_approver: currentDocument?.external_approver && currentDocument?.external_approver?.length > 0 ? currentDocument.external_approver : []
 	};
-	// console.log({ currentDocument, file })
 
 	const methods = useForm({
 		resolver: yupResolver(newDocumentSchema),
@@ -126,7 +138,7 @@ const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
 	}
 
 	const options = personel.map((option) => ({ id: option.employee_id, label: option.fullname, user_id: option.user_id }));
-	console.log({ errors })
+
 	return (
 		<FormProvider methods={methods}>
 			<Card sx={{ p: 3 }}>
@@ -243,6 +255,21 @@ const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
 							</Stack>
 						)}
 					</Stack>
+
+					{isEdit && currentDocument?.external_approver?.length > 0 && (
+						<Stack spacing={3}>
+							<Typography variant="h6" sx={{ color: 'text.disabled' }}>
+								External Approver
+							</Typography>
+							{currentDocument.external_approver.map((approver, index) => (
+								<Stack key={approver.id} direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
+									<RHFTextField name={`external_approver[${index}].firstname`} label="First name" />
+									<RHFTextField name={`external_approver[${index}].lastname`} label="Last name" />
+									<RHFTextField name={`external_approver[${index}].position`} label="Position" />
+								</Stack>
+							))}
+						</Stack>
+					)}
 
 
 					{!isEdit && (
