@@ -312,7 +312,7 @@ const DocumentDetailBody = ({ document, docType, user, positions }) => {
 
 									<TableBody>
 										<TableRow>
-											<TableCell colSpan={8} align="center">In Progress</TableCell>
+											<TableCell colSpan={8} align="center">No External Review</TableCell>
 										</TableRow>
 									</TableBody>
 								</Table>

@@ -159,9 +159,6 @@ const DocumentListPage = ({ folder, user }) => {
 					}
 
 				} else {
-					if (curr.external_approver.length > 0) {
-						acc.push({ ...docObj, docType: "external_review" });
-					}
 					if (curr.status === "A" || curr.status === "D") {
 						acc.push({ ...docObj, docType: "approve" });
 					}
