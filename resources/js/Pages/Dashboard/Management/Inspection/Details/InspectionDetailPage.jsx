@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react';
-const { Box, Grid, Stack, Typography, Tab, Tabs, Button } = await import("@mui/material");
+const { Box, Grid, Stack, Typography, Tab, Tabs } = await import("@mui/material");
 import { HeadingTH, TCell, TRow } from "@/sections/@dashboard/inspection/form/styledInspectionForm";
 import { getScoreColor } from "@/utils/inspection";
 import Image from "@/Components/image";
 import Iconify from "@/Components/iconify";
 import Findings from '@/sections/@dashboard/inspection/details/Findings';
-import { Link, usePage } from '@inertiajs/inertia-react';
-import { PATH_DASHBOARD } from '@/routes/paths';
+import { usePage } from '@inertiajs/inertia-react';
 import Edit from '@/sections/@dashboard/inspection/edit/Edit';
 import Review from '@/sections/@dashboard/inspection/edit/Review';
 import Verify from '@/sections/@dashboard/inspection/edit/Verify';
+import InspectionToolbar from '@/sections/@dashboard/inspection/details/InspectionToolbar';
 
 const InspectionDetailPage = ({ inspection }) => {
 	const { auth: { user } } = usePage().props;
@@ -82,6 +82,7 @@ const InspectionDetailPage = ({ inspection }) => {
 
 	return (
 		<Box>
+			<InspectionToolbar inspection={inspection} reports={items.sections} cms={inspection?.form_number} />
 			<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.5 }}>
 				<Tabs
 					value={currentTab}
