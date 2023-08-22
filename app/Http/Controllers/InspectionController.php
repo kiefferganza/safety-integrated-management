@@ -101,8 +101,24 @@ class InspectionController extends Controller
 			}
 			return $item;
 		});
+
+		$inspectionFirstUpload = Inspection::
+			select("date_issued")
+			->where([
+				"is_deleted" => 0
+			])
+			->orderBy('date_issued')
+			->first();
+		
+		if($inspectionFirstUpload) {
+			$rolloutDate = $inspectionFirstUpload->date_issued;
+		}else {
+			$rolloutDate = $inspection->date_issued;
+		}
+
 		return Inertia::render("Dashboard/Management/Inspection/Details/index", [
-			"inspection" =>  $inspection
+			"inspection" =>  $inspection,
+			"rolloutDate" => $rolloutDate
 		]);
 	}
 

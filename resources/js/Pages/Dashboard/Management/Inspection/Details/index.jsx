@@ -11,7 +11,7 @@ import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import Label from '@/Components/label';
 const InspectionDetailPage = lazy(() => import('./InspectionDetailPage'));
 
-const index = ({ inspection }) => {
+const index = ({ inspection, rolloutDate }) => {
 	const { themeStretch } = useSettingsContext();
 
 	const getInspectionStatus = (status) => {
@@ -81,7 +81,7 @@ const index = ({ inspection }) => {
 							}
 						/>
 
-						<InspectionDetailPage inspection={inspection} />
+						<InspectionDetailPage inspection={inspection} rolloutDate={rolloutDate} />
 					</Container>
 				</DashboardLayout>
 			</Suspense>

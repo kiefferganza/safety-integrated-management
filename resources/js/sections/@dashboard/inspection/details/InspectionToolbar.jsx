@@ -16,7 +16,7 @@ InspectionToolbar.propTypes = {
 	cms: PropTypes.string
 };
 
-export default function InspectionToolbar ({ inspection, cms, reports }) {
+export default function InspectionToolbar ({ inspection, cms, reports, findings, rolloutDate }) {
 	const [open, setOpen] = useState(false);
 
 	const handleOpen = () => {
@@ -44,7 +44,7 @@ export default function InspectionToolbar ({ inspection, cms, reports }) {
 					</Tooltip>
 
 					<PDFDownloadLink
-						document={<InspectionPDFStyle inspection={inspection} reports={reports} cms={cms} />}
+						document={<InspectionPDFStyle inspection={inspection} reports={reports} cms={cms} findings={findings} rolloutDate={rolloutDate} />}
 						fileName={cms !== "N/A" ? cms : "Toolbox Talk"}
 						style={{ textDecoration: 'none' }}
 					>
@@ -101,7 +101,7 @@ export default function InspectionToolbar ({ inspection, cms, reports }) {
 
 					<Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
 						<PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-							<InspectionPDFStyle inspection={inspection} reports={reports} cms={cms} />
+							<InspectionPDFStyle inspection={inspection} reports={reports} cms={cms} findings={findings} rolloutDate={rolloutDate} />
 						</PDFViewer>
 					</Box>
 				</Box>

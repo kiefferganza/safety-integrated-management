@@ -6,6 +6,7 @@ import { Page, View, Text, Image, Document } from '@react-pdf/renderer';
 
 import styles from './InspectionPDFStyle';
 import { format } from 'date-fns';
+import { fDate } from '@/utils/formatTime';
 
 // ----------------------------------------------------------------------
 
@@ -14,12 +15,49 @@ InspectionPDF.propTypes = {
 	cms: PropTypes.string,
 };
 
-export default function InspectionPDF ({ inspection, cms, reports }) {
+const PER_PAGE = 2;
+
+const getItemStatus = (status) => {
+	switch (status) {
+		case "1":
+			return {
+				text: "Approved",
+				start: "A",
+				statusClass: "textSuccess"
+			}
+		case "2":
+			return {
+				text: "Failed",
+				start: "F",
+				statusClass: "textError"
+			}
+		default:
+			return {
+				text: "Pending",
+				start: "P",
+				statusClass: "textSecondary"
+			}
+	}
+}
+
+export default function InspectionPDF ({ inspection, cms, reports, findings = [], rolloutDate }) {
 	const section_C_A = reports.sectionC.slice(0, 6);
 	const remainingC_A = reports.sectionC.slice(6);
 
 	reports.sectionC = section_C_A;
 	reports.sectionC_B = [...remainingC_A, ...reports.sectionC_B];
+
+	let findingsPages = [];
+
+	if (findings?.length > PER_PAGE) {
+		const chunkSize = PER_PAGE;
+		for (let i = 0; i < findings.length; i += chunkSize) {
+			const chunk = findings.slice(i, i + chunkSize);
+			findingsPages.push(chunk)
+		}
+	} else {
+		findingsPages = [findings];
+	}
 
 	return (
 		<Document title={cms !== "N/A" ? cms : "HSE Inspection & Closeout Report"}>
@@ -42,7 +80,7 @@ export default function InspectionPDF ({ inspection, cms, reports }) {
 						</View>
 						<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
 							<Text style={styles.subtitle2}>Rollout Date:</Text>
-							<Text></Text>
+							<Text style={[styles.body1, { fontWeight: 700 }]}>{fDate(rolloutDate)}</Text>
 						</View>
 					</View>
 				</View>
@@ -146,17 +184,142 @@ export default function InspectionPDF ({ inspection, cms, reports }) {
 						<Text style={[styles.bold, { fontSize: 9, textAlign: 'center' }]}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
 					</View>
 					<View style={styles.col4}>
-						<Text style={[styles.bold, { fontSize: 9, textAlign: 'right' }]}>{format(new Date(), 'MM/dd/yy')} Page {`${0 + 1} / ${1}`}</Text>
+						<Text style={[styles.bold, { fontSize: 9, textAlign: 'right' }]}>{format(new Date(), 'MM/dd/yy')} Page 1 / {findingsPages.length + 1}</Text>
 					</View>
 				</View>
 			</Page>
+
+			{findingsPages.map((findingsArr, pageIdx) => (
+				<Page key={pageIdx} size="A4" style={styles.page}>
+					<View style={styles.mb16}>
+						<View style={styles.gridContainer}>
+							<Image source="/logo/Fiafi-logo.png" style={{ height: 32, padding: 2 }} />
+						</View>
+						<View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+							<Text style={styles.h3}>Details of Unsatisfactory Items</Text>
+						</View>
+						<View style={styles.gridContainer}>
+							<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
+								<Text style={styles.subtitle2}>CMS Number:</Text>
+								<Text style={[styles.body1, { fontWeight: 700 }]}>{cms.toUpperCase()}</Text>
+							</View>
+							<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
+								<Text style={styles.subtitle2}>Revision:</Text>
+								<Text style={[styles.body1, { fontWeight: 700 }]}>{inspection.revision_no || 0}</Text>
+							</View>
+							<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
+								<Text style={styles.subtitle2}>Rollout Date:</Text>
+								<Text style={[styles.body1, { fontWeight: 700 }]}>{fDate(rolloutDate)}</Text>
+							</View>
+						</View>
+					</View>
+
+					<View style={[styles.gridContainer, styles.mb16]}>
+						<View style={[styles.col6, styles.w1]}>
+							<View style={[styles.textCenter]}>
+								<Text style={[styles.subtitle2, { textDecoration: 'underline' }]}>Nature of Defect, Risk, Hazard</Text>
+							</View>
+						</View>
+						<View style={[styles.col6]}>
+							<View style={[styles.textCenter]}>
+								<Text style={[styles.subtitle2, { textDecoration: 'underline' }]}>Actioned</Text>
+							</View>
+						</View>
+					</View>
+
+					{findingsArr.map((sec, idx) => {
+						const itemStatus = getItemStatus(sec.item_status);
+						const photoBefore = sec.photo_before || "/storage/media/inspection/blank.png";
+						const photoAfter = sec.photo_after || "/storage/media/inspection/blank.png";
+						const marginBottom = idx === (findingsArr.length - 1) ? styles.mb8 : styles.mb32
+						return (
+							<View key={idx} style={[styles.gridContainer, marginBottom]}>
+								<View style={[styles.col6, { paddingRight: 4 }]}>
+									<View style={[styles.gridContainer, styles.mb8]}>
+										<View style={[styles.col4]}>
+											<Text>Ref #</Text>
+											<View style={[styles.bm]}>
+												<Text style={styles.subtitle2}>{sec.ref_num}</Text>
+											</View>
+										</View>
+										<View style={[styles.col6]}>
+											<Text>Location</Text>
+											<View style={[styles.bm]}>
+												<Text style={styles.subtitle2}>{inspection?.location || 'N/A'}</Text>
+											</View>
+										</View>
+									</View>
+									<View style={[styles.bl, styles.bm, styles.bt, styles.br]}>
+										<View style={[styles.w1, styles.bm, { padding: 2 }]}>
+											<Text style={[styles.textError, styles.subtitle2, { marginBottom: -4 }]}>Photo (Before)</Text>
+										</View>
+										<View style={{ height: 160 }}>
+											<Image source={photoBefore} style={[styles.w1, { height: '100%', objectFit: 'fill' }]} />
+										</View>
+										<View style={[styles.bt, { minHeight: 60 }]}>
+											<View style={[styles.gridContainer, styles.bm, { padding: 2 }]}>
+												<View>
+													<Text style={[styles.subtitle2, styles.textError, { marginBottom: -4 }]}>Findings:</Text>
+												</View>
+												<View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+													<Text style={[styles.subtitle2, styles.textError, { marginBottom: -4 }]}>Date Submitted: </Text>
+													<Text style={[styles.subtitle2, styles.textError, { textDecoration: 'underline', marginBottom: -4 }]}>{format(new Date(inspection?.date_issued), "dd-MMM-yyyy")}</Text>
+												</View>
+											</View>
+											{!!sec?.findings && <View><Text style={[styles.subtitle4, { marginBottom: -4, padding: 2 }]}>{sec.findings}</Text></View>}
+										</View>
+									</View>
+								</View>
+								<View style={[styles.col6, { paddingLeft: 4 }]}>
+									<View style={[styles.w1, styles.mb8]}>
+										<Text>Company</Text>
+										<View style={[styles.bm]}>
+											<Text style={styles.subtitle2}>FIAFI Group</Text>
+										</View>
+									</View>
+									<View style={[styles.bl, styles.bm, styles.bt, styles.br]}>
+										<View style={[styles.w1, styles.bm, { padding: 2 }]}>
+											<Text style={[styles.textSuccess, styles.subtitle2, { marginBottom: -4 }]}>Photo (After)</Text>
+										</View>
+										<View style={{ height: 160 }}>
+											<Image source={photoAfter} style={[styles.w1, { height: '100%', objectFit: 'fill' }]} />
+										</View>
+										<View style={[styles.bt, { minHeight: 60 }]}>
+											<View style={[styles.gridContainer, styles.bm, { padding: 2 }]}>
+												<View>
+													<Text style={[styles.subtitle2, styles.textSuccess, { marginBottom: -4 }]}>Action Taken:</Text>
+												</View>
+												<View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+													<Text style={[styles.subtitle2, styles[itemStatus.statusClass], { marginBottom: -4 }]}>{itemStatus.text}</Text>
+												</View>
+											</View>
+											{!!sec?.action_taken && <View><Text style={[styles.subtitle4, { marginBottom: -4, padding: 2 }]}>{sec.action_taken}</Text></View>}
+										</View>
+									</View>
+								</View>
+							</View>
+						);
+					})}
+
+					<View style={[styles.gridContainer, styles.footer]}>
+						<View style={styles.col4}>
+							<Text style={[styles.bold, { fontSize: 9, textAlign: 'left' }]}>Uncontrolled Copy if Printed</Text>
+						</View>
+						<View style={styles.col6}>
+							<Text style={[styles.bold, { fontSize: 9, textAlign: 'center' }]}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
+						</View>
+						<View style={styles.col4}>
+							<Text style={[styles.bold, { fontSize: 9, textAlign: 'right' }]}>{format(new Date(), 'MM/dd/yy')} Page {`${pageIdx + 2} / ${findingsArr.length + 1}`}</Text>
+						</View>
+					</View>
+				</Page>
+			))}
 		</Document >
 	);
 }
 
 
 function ReportBoxes ({ reports, avgScore }) {
-	console.log(parseFloat(avgScore))
 	const isPassed = parseFloat(avgScore) <= 1.25;
 	return (
 		<View style={[styles.gridContainer]}>

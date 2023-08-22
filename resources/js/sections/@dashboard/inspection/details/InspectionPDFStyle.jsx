@@ -10,37 +10,59 @@ Font.register({
 const spacing = {
 	m8: { marginLeft: 8, marginRight: 8, marginTop: 8, marginBottom: 8 },
 	m16: { marginLeft: 16, marginRight: 16, marginTop: 16, marginBottom: 16 },
-	m40: { marginLeft: 40, marginRight: 40, marginTop: 40, marginBottom: 40 },
+	m24: { marginLeft: 24, marginRight: 24, marginTop: 24, marginBottom: 24 },
+	m32: { marginLeft: 32, marginRight: 24, marginTop: 24, marginBottom: 24 },
 
 	p8: { paddingLeft: 8, paddingRight: 8, paddingTop: 8, paddingBottom: 8 },
 	p16: { paddingLeft: 16, paddingRight: 16, paddingTop: 16, paddingBottom: 16 },
-	p40: { paddingLeft: 40, paddingRight: 40, paddingTop: 40, paddingBottom: 40 },
+	p24: { paddingLeft: 24, paddingRight: 24, paddingTop: 24, paddingBottom: 24 },
+	p24: { paddingLeft: 24, paddingRight: 24, paddingTop: 24, paddingBottom: 24 },
+	p24: { paddingLeft: 24, paddingRight: 24, paddingTop: 24, paddingBottom: 24 },
+	p24: { paddingLeft: 24, paddingRight: 24, paddingTop: 24, paddingBottom: 24 },
+	p24: { paddingLeft: 24, paddingRight: 24, paddingTop: 24, paddingBottom: 24 },
+	p32: { paddingLeft: 32, paddingRight: 32, paddingTop: 32, paddingBottom: 32 },
 
 	mt8: { marginTop: 8 },
 	mt16: { marginTop: 16 },
-	mt40: { marginTop: 40 },
+	mt24: { marginTop: 24 },
+	mt24: { marginTop: 24 },
+	mt32: { marginTop: 32 },
 	mb8: { marginBottom: 8 },
 	mb16: { marginBottom: 16 },
-	mb40: { marginBottom: 40 },
+	mb24: { marginBottom: 24 },
+	mb24: { marginBottom: 24 },
+	mb32: { marginBottom: 32 },
 	ml8: { marginLeft: 8 },
 	ml16: { marginLeft: 16 },
-	ml40: { marginLeft: 40 },
+	ml24: { marginLeft: 24 },
+	ml24: { marginLeft: 24 },
+	ml32: { marginLeft: 32 },
 	mr8: { marginRight: 8 },
 	mr16: { marginRight: 16 },
-	mr40: { marginRight: 40 },
+	mr24: { marginRight: 24 },
+	mr24: { marginRight: 24 },
+	mr32: { marginRight: 32 },
 
 	pt8: { paddingTop: 8 },
 	pt16: { paddingTop: 16 },
-	pt40: { paddingTop: 40 },
+	pt24: { paddingTop: 24 },
+	pt24: { paddingTop: 24 },
+	pt32: { paddingTop: 32 },
 	pb8: { paddingBottom: 8 },
 	pb16: { paddingBottom: 16 },
-	pb40: { paddingBottom: 40 },
+	pb24: { paddingBottom: 24 },
+	pb24: { paddingBottom: 24 },
+	pb32: { paddingBottom: 32 },
 	pl8: { paddingLeft: 8 },
 	pl16: { paddingLeft: 16 },
-	pl40: { paddingLeft: 40 },
+	pl24: { paddingLeft: 24 },
+	pl24: { paddingLeft: 24 },
+	pl32: { paddingLeft: 32 },
 	pr8: { paddingRight: 8 },
 	pr16: { paddingRight: 16 },
-	pr40: { paddingRight: 40 }
+	pr24: { paddingRight: 24 },
+	pr24: { paddingRight: 24 },
+	pr32: { paddingRight: 32 },
 };
 
 const colors = {
@@ -49,7 +71,8 @@ const colors = {
 	warning: "#ffc000",
 	error: "#c00000",
 	mute: "#edeff1",
-	offPrimary: "#d9e2f3"
+	offPrimary: "#d9e2f3",
+	secondary: "#00B8D9"
 };
 
 const colorStyles = {
@@ -59,6 +82,7 @@ const colorStyles = {
 	textWarning: { color: colors.warning },
 	textError: { color: colors.error },
 	textMute: { color: colors.mute },
+	textSecondary: { color: colors.secondary },
 
 	bgSuccess: { backgroundColor: colors.success, color: "#ffffff" },
 	bgGray: { backgroundColor: colors.gray, color: "#000000" },

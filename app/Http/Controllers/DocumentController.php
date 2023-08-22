@@ -169,6 +169,12 @@ class DocumentController extends Controller
 			])
 			->orderBy('date_uploaded')
 			->first();
+
+		if($documentFirstUpload) {
+			$rolloutDate = $documentFirstUpload->date_uploaded;
+		}else {
+			$rolloutDate = $document->date_uploaded;
+		}
 			
 		// Submitter Profile
 		$document->employee->profile = null;
@@ -217,7 +223,7 @@ class DocumentController extends Controller
 			"document" => $document,
 			"companies" => CompanyModel::where("sub_id", $user->subscriber_id)->get(),
 			"positions" => Position::select("position_id", "position")->where("user_id", $user->subscriber_id)->get(),
-			"rolloutDate" => $documentFirstUpload->date_uploaded
+			"rolloutDate" => $rolloutDate
 		]);
 	}
 
