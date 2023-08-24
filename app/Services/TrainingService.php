@@ -67,8 +67,14 @@ class TrainingService {
 
 
 	public function getSequenceNo($type) {
-		$count = Training::where([["is_deleted", false], ["type", $type]])->count() + 1;
-		return str_pad($count, 6, '0', STR_PAD_LEFT);
+		$lastSeq = Training::where([["is_deleted", false], ["type", $type]])
+		->select('sequence_no')->orderBy('sequence_no', 'desc')->first();
+		$sequence = 1;
+		if($lastSeq) {
+			$sequence = (int)ltrim($lastSeq->sequence_no, "0") + 1;
+		}
+		
+		return str_pad($sequence, 6, '0', STR_PAD_LEFT);
 	}
 
 

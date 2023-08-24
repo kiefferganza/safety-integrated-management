@@ -35,11 +35,9 @@ const spacing = {
 	ml8: { marginLeft: 8 },
 	ml16: { marginLeft: 16 },
 	ml24: { marginLeft: 24 },
-	ml24: { marginLeft: 24 },
 	ml32: { marginLeft: 32 },
 	mr8: { marginRight: 8 },
 	mr16: { marginRight: 16 },
-	mr24: { marginRight: 24 },
 	mr24: { marginRight: 24 },
 	mr32: { marginRight: 32 },
 
@@ -56,11 +54,9 @@ const spacing = {
 	pl8: { paddingLeft: 8 },
 	pl16: { paddingLeft: 16 },
 	pl24: { paddingLeft: 24 },
-	pl24: { paddingLeft: 24 },
 	pl32: { paddingLeft: 32 },
 	pr8: { paddingRight: 8 },
 	pr16: { paddingRight: 16 },
-	pr24: { paddingRight: 24 },
 	pr24: { paddingRight: 24 },
 	pr32: { paddingRight: 32 },
 };

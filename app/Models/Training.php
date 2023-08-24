@@ -22,7 +22,12 @@ class Training extends Model
 		parent::boot();
 
 		static::creating(function ($training) {
-			$sequence = Training::where([["is_deleted", false], ["type", $training->type]])->count() + 1;
+			$lastSeq = Training::where([["is_deleted", false], ["type", $training->type]])
+			->select('sequence_no')->orderBy('sequence_no', 'desc')->first();
+			$sequence = 1;
+			if($lastSeq) {
+				$sequence = (int)ltrim($lastSeq->sequence_no, "0") + 1;
+			}
 			$training->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
 		});
 	}

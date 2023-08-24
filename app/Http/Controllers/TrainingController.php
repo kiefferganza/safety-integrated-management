@@ -40,7 +40,7 @@ class TrainingController extends Controller
 	}
 
 	public function external() {
-
+		
 		$trainings =  (new TrainingService())->getTrainingByType(3);
 
 		foreach ($trainings as $training) {
@@ -150,7 +150,7 @@ class TrainingController extends Controller
 
 			$training_external->save();
 
-			TrainingExternalStatus::create(["training_id" => $training->training_id]);
+			TrainingExternalStatus::create(["training_id" => $training->training_id]); 
 		}
 
 		if(!empty($request->trainees)) {

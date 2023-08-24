@@ -284,7 +284,6 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 								sx={{ maxWidth: { md: 200 } }}
 								options={Object.keys(currencies)}
 								onChange={(_, newValue) => {
-									console.log(newValue);
 									if (newValue) {
 										setValue("currency", newValue, { shouldValidate: true, shouldDirty: true });
 									} else {
