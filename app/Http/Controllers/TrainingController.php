@@ -449,7 +449,16 @@ class TrainingController extends Controller
 		}
 		$trainingService = new TrainingService();
 		
-		$training = $trainingService->loadTraining($training);
+		$training = $trainingService->loadTraining($training)->load(["external_status"]);
+		if($training->external_status->hasMedia('actions')) {
+			$currentFile = $training->external_status->getMedia('actions')->last();
+			$training->external_status->setAttribute('currentFile', [
+				'name' => $currentFile->name,
+				'fileName' => $currentFile->file_name,
+				'url' => $currentFile->originalUrl
+			]);
+			unset($training->external_status->media);
+		}
 
 		$training->training_files = $trainingService->transformFiles($training->training_files);
 

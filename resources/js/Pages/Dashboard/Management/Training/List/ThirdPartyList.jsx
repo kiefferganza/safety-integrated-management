@@ -24,7 +24,7 @@ import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import ConfirmDialog from '@/Components/confirm-dialog';
 // sections
 import { Head, Link, usePage } from '@inertiajs/inertia-react';
-import { getTrainingStatus, getTrainingActionStatus } from '@/utils/formatDates';
+import { getTrainingStatus } from '@/utils/formatDates';
 import { TrainingThirdPartyRow, TrainingTableToolbar } from '@/sections/@dashboard/training/list';
 import TrainingAnalitic from '@/sections/@dashboard/training/TrainingAnalitic';
 import { fTimestamp } from '@/utils/formatTime';

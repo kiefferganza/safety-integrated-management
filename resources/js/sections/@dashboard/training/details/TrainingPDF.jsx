@@ -8,6 +8,7 @@ import { fDate } from '@/utils/formatTime';
 import styles from './TrainingStyle';
 import { format } from 'date-fns';
 import { fCurrencyNumber } from '@/utils/formatNumber';
+import { ellipsis } from '@/utils/exercpt';
 
 // ----------------------------------------------------------------------
 
@@ -141,6 +142,22 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 									</Text>
 								</View>
 							</View>
+							{training.type === 3 && (
+								<View style={{ flexDirection: 'column' }}>
+									<Text style={styles.subtitle2}>Signed File</Text>
+									<View style={{ width: '100%' }}>
+										{training?.external_status?.currentFile ? (
+											<Text style={{ color: 'blue' }}>
+												{ellipsis(training.external_status.currentFile.name || "", 24)}
+											</Text>
+										) : (
+											<Text style={[styles.faded, { fontWeight: 400 }]}>
+												No Signed File
+											</Text>
+										)}
+									</View>
+								</View>
+							)}
 						</View>
 					</View>
 

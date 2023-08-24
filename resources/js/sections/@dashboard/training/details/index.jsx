@@ -13,10 +13,13 @@ import {
 	TableContainer,
 	Stack,
 	Link,
+	Avatar,
+	Tooltip,
+	Link as MuiLink
 } from '@mui/material';
 // utils
 import { fDate } from '@/utils/formatTime';
-import { excerpt } from '@/utils/exercpt';
+import { ellipsis, excerpt } from '@/utils/exercpt';
 import { fCurrencyNumber } from '@/utils/formatNumber';
 // components
 import Image from '@/Components/image';
@@ -24,6 +27,7 @@ import Scrollbar from '@/Components/scrollbar';
 //
 import TrainingToolbar from './TrainingToolbar';
 import { getTrainingStatus } from '@/utils/formatDates';
+import { fileFormat, fileThumb } from '@/Components/file-thumbnail';
 
 // ----------------------------------------------------------------------
 
@@ -67,12 +71,16 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 					</Stack>
 
 					<Stack alignItems="center" flex={1}>
-						{/* <Box>
-							<Typography variant="body2" fontWeight={700} textAlign="center">Revision:</Typography>
-						</Box>
-						<Box>
-							<Typography variant="body1" >{training?.revision_no || 0}</Typography>
-						</Box> */}
+						{training.type === 3 && (
+							<>
+								<Box>
+									<Typography variant="body2" fontWeight={700} textAlign="center">Revision:</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" >{training?.revision_no || 0}</Typography>
+								</Box>
+							</>
+						)}
 					</Stack>
 
 					<Stack alignItems="center" flex={1}>
@@ -171,6 +179,44 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 							</Box>
 							<Box>
 								<Typography variant="body1" color={training?.status?.rawColor}>{training?.status?.text}</Typography>
+							</Box>
+						</Box>
+						<Box sx={{ mb: 1 }}>
+							<Box>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Current File</Typography>
+							</Box>
+							<Box minHeight={24}>
+								{training.external_status?.currentFile ? (
+									<Tooltip title={training.external_status.currentFile.fileName}>
+										<MuiLink
+											component="a"
+											href={training.external_status.currentFile.url}
+											sx={{
+												color: "text.primary"
+											}}
+											target="_file"
+											rel="noopener noreferrer"
+										>
+											<Stack
+												spacing={2}
+												direction="row"
+												alignItems="center"
+											>
+												<Avatar variant="rounded" sx={{ bgcolor: 'background.neutral', width: 36, height: 36, borderRadius: "9px" }}>
+													<Box component="img" src={fileThumb(fileFormat(training.external_status.currentFile.url))} sx={{ width: 24, height: 24 }} />
+												</Avatar>
+
+												<Stack spacing={0.5} flexGrow={1}>
+													<Typography variant="subtitle2" sx={{ textDecoration: "none" }}>{ellipsis(training.external_status.currentFile.name || "", 24)}</Typography>
+												</Stack>
+											</Stack>
+										</MuiLink>
+									</Tooltip>
+								) : (
+									<Box minHeight={24}>
+										<Typography variant="body1" sx={{ color: 'text.secondary' }}>No signed file yet.</Typography>
+									</Box>
+								)}
 							</Box>
 						</Box>
 					</Grid>

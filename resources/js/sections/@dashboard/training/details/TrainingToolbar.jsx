@@ -27,9 +27,9 @@ export default function TrainingToolbar ({ training, module }) {
 		setOpen(false);
 	};
 
-	const handleEdit = () => {
-		Inertia.visit(`/dashboard/training/${training?.id}/edit`);
-	};
+	// const handleEdit = () => {
+	// 	Inertia.visit(`/dashboard/training/${training?.id}/edit`);
+	// };
 
 	return (
 		<>
@@ -41,11 +41,11 @@ export default function TrainingToolbar ({ training, module }) {
 				sx={{ mb: 5 }}
 			>
 				<Stack direction="row" spacing={1}>
-					<Tooltip title="Edit">
+					{/* <Tooltip title="Edit">
 						<IconButton onClick={handleEdit}>
 							<Iconify icon="eva:edit-fill" />
 						</IconButton>
-					</Tooltip>
+					</Tooltip> */}
 
 					<Tooltip title="View">
 						<IconButton onClick={handleOpen}>

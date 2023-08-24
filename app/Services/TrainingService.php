@@ -23,6 +23,7 @@ class TrainingService {
 			"training_files",
 		];
 		if($training->type === 3) {
+			$relation[] = 'external_status';
 			$relation["external_details"] = fn($q) => $q->with([
 				"approval" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
 				"reviewer" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
