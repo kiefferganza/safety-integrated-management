@@ -16,7 +16,7 @@ const index = ({ training, type }) => {
 	return (
 		<>
 			<Head>
-				<title>External Training</title>
+				<title>Third Party Training</title>
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
@@ -26,7 +26,7 @@ const index = ({ training, type }) => {
 							links={[
 								{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 								{
-									name: 'External List',
+									name: 'Third Party List',
 									href: route('training.management.external'),
 								},
 								{ name: training?.title || '' },

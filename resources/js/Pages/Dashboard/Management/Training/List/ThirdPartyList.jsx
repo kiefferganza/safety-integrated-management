@@ -99,9 +99,8 @@ export default function TrainingThirdPartyList ({ trainings, url, type }) {
 	const [openConfirm, setOpenConfirm] = useState(false);
 
 
-	const checkTrainingComplete = (trainees, files) => {
-		if (trainees <= 0 || files <= 0) return false;
-		return trainees === files;
+	const checkTrainingComplete = (trainees, files = []) => {
+		return trainees.every((tr) => files.findIndex(f => f.emp_id === tr.employee_id) !== -1);
 	}
 
 	useEffect(() => {
@@ -111,7 +110,7 @@ export default function TrainingThirdPartyList ({ trainings, url, type }) {
 				id: training.training_id,
 				cms: training?.project_code ? `${training?.project_code}-${training?.originator}-${training?.discipline}-${training?.document_type}-${training?.document_zone ? training?.document_zone + "-" : ""}${training?.document_level ? training?.document_level + "-" : ""}${training?.sequence_no}` : "N/A",
 				status: getTrainingStatus(training.date_expired),
-				completed: checkTrainingComplete(training.trainees_count, training.training_files_count)
+				completed: checkTrainingComplete(training.trainees, training.training_files)
 			})));
 		}
 	}, [trainings]);

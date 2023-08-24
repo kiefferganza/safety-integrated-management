@@ -11,6 +11,28 @@ export const TrainingThirdPartySubRow = ({ participants, external_details, exter
 				<Collapse in={open} timeout="auto" unmountOnExit>
 					<Box sx={{ margin: 1 }}>
 						<Table size="small">
+							{external_details?.requested && (
+								<>
+									<TableHead>
+										<TableRow>
+											<TableCell>Submitted By</TableCell>
+											<TableCell>Position</TableCell>
+											<TableCell></TableCell>
+											<TableCell></TableCell>
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										<TableRow>
+											<TableCell>
+												{external_details.requested.fullname}
+											</TableCell>
+											<TableCell>
+												{external_details.requested?.position || "N/A"}
+											</TableCell>
+										</TableRow>
+									</TableBody>
+								</>
+							)}
 							<TableHead>
 								<TableRow>
 									<TableCell>Reviewer</TableCell>
@@ -81,45 +103,22 @@ export const TrainingThirdPartySubRow = ({ participants, external_details, exter
 									</TableBody>
 								</>
 							)}
-							{external_details?.requested && (
-								<>
-									<TableHead>
-										<TableRow>
-											<TableCell>Requested By</TableCell>
-											<TableCell>Position</TableCell>
-											<TableCell></TableCell>
-											<TableCell></TableCell>
-										</TableRow>
-									</TableHead>
-									<TableBody>
-										<TableRow>
-											<TableCell>
-												{external_details.requested.fullname}
-											</TableCell>
-											<TableCell>
-												{external_details.requested?.position || "N/A"}
-											</TableCell>
-										</TableRow>
-
-										<TableRow>
-											<TableCell rowSpan={3} />
-											<TableCell />
-											<TableCell sx={{ fontWeight: "bold" }}>Currency</TableCell>
-											<TableCell>{external_details.currency}</TableCell>
-										</TableRow>
-										<TableRow>
-											<TableCell />
-											<TableCell sx={{ fontWeight: "bold" }}>Price</TableCell>
-											<TableCell>{external_details.course_price.toLocaleString()}</TableCell>
-										</TableRow>
-										<TableRow>
-											<TableCell />
-											<TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
-											<TableCell>{(participants * external_details.course_price).toLocaleString()}</TableCell>
-										</TableRow>
-									</TableBody>
-								</>
-							)}
+							<TableRow>
+								<TableCell rowSpan={3} />
+								<TableCell />
+								<TableCell sx={{ fontWeight: "bold" }}>Currency</TableCell>
+								<TableCell>{external_details.currency}</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell />
+								<TableCell sx={{ fontWeight: "bold" }}>Price</TableCell>
+								<TableCell>{external_details.course_price.toLocaleString()}</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell />
+								<TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
+								<TableCell>{(participants * external_details.course_price).toLocaleString()}</TableCell>
+							</TableRow>
 						</Table>
 					</Box>
 				</Collapse>

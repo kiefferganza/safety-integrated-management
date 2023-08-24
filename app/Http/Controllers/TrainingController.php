@@ -236,7 +236,7 @@ class TrainingController extends Controller
 		$training->remarks = $request->remarks ? $request->remarks : null;
 		$training->type = (int)$request->type;
 		$training->training_center = $request->training_center;
-		$training->increment("revision_no");
+		// $training->increment("revision_no");
 
 		if($training->sequence_no === null) {
 			$training->sequence_no = $request->sequence_no;
@@ -462,7 +462,7 @@ class TrainingController extends Controller
 				["tbl_employees.is_active", 0],
 			])
 			->get(),
-			"module" => "External",
+			"module" => "Third Party",
 			"url" => "thirdParty"
 		]);
 	}
@@ -593,6 +593,8 @@ class TrainingController extends Controller
 		$statuses = $training->external_status;
 		$statuses->review_status = "commented";
 		$statuses->save();
+		$training->increment("revision_no");
+		$training->save();
 
 		return redirect()->back()
 		->with("message", "Comment posted successfully!")
@@ -627,7 +629,6 @@ class TrainingController extends Controller
 		]);
 
 		$training = $trainingComment->training;
-		$training->increment("revision_no");
 		$training->save();
 
 		$trainingComment->reply = $request->reply;
@@ -684,7 +685,6 @@ class TrainingController extends Controller
 		->toMediaCollection('actions');
 
 		$statuses->save();
-		$training->increment('revision_no');
 		$training->save();
 
 		return redirect()->back()

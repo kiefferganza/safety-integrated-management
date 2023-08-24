@@ -67,12 +67,12 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 					</Stack>
 
 					<Stack alignItems="center" flex={1}>
-						<Box>
+						{/* <Box>
 							<Typography variant="body2" fontWeight={700} textAlign="center">Revision:</Typography>
 						</Box>
 						<Box>
 							<Typography variant="body1" >{training?.revision_no || 0}</Typography>
-						</Box>
+						</Box> */}
 					</Stack>
 
 					<Stack alignItems="center" flex={1}>
@@ -240,7 +240,18 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 								</Box>
 							</Box>
 							<Grid container spacing={{ xs: 2, md: 8 }}>
-								<Grid item xs={12} md={2}></Grid>
+								<Grid item xs={12} md={4}>
+									<Box sx={{ mb: 3 }}>
+										<Box borderBottom={1}>
+											<Typography variant="body1" textAlign="center">
+												{`${training?.user_employee?.fullname}`}
+											</Typography>
+										</Box>
+										<Box>
+											<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Submitted by</Typography>
+										</Box>
+									</Box>
+								</Grid>
 								<Grid item xs={12} md={4}>
 									<Box sx={{ mb: 3 }}>
 										<Box borderBottom={1}>

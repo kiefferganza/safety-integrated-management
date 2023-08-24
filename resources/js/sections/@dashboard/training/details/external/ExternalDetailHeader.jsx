@@ -25,7 +25,7 @@ const ExternalDetailHead = ({ training }) => {
 					<Image disabledEffect alt="logo" src="/logo/Fiafi-logo.png" sx={{ maxWidth: 160, margin: { xs: '0px auto 8px auto', md: 0 } }} />
 				</Box>
 				<Box>
-					<Typography variant="h4" textAlign="center">External Training</Typography>
+					<Typography variant="h4" textAlign="center">Third Party Training</Typography>
 				</Box>
 			</Box>
 

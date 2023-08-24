@@ -38,7 +38,7 @@ const ExternalDetail = ({ training, type = "action" }) => {
 
 	return (
 		<>
-			<TrainingToolbar training={trainingData} module="External" />
+			<TrainingToolbar training={trainingData} module="Third Party" />
 			<Card sx={{ pt: { xs: 3, md: 5 }, px: { xs: 3, md: 8 } }}>
 				<ExternalDetailHead training={trainingData} />
 				<ExternalDetailBody

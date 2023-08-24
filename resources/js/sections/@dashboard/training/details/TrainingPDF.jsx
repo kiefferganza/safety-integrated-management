@@ -55,8 +55,8 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 								<Text style={[styles.body1, { fontWeight: 700 }]}>{training.cms ? training.cms.toUpperCase() : ""}</Text>
 							</View>
 							<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
-								<Text style={styles.subtitle2}>Revision:</Text>
-								<Text style={[styles.body1, { fontWeight: 700 }]}>{training.revision_no || 0}</Text>
+								{/* <Text style={styles.subtitle2}>Revision:</Text>
+								<Text style={[styles.body1, { fontWeight: 700 }]}>{training.revision_no || 0}</Text> */}
 							</View>
 							<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
 								<Text style={styles.subtitle2}>Rollout Date:</Text>
@@ -218,20 +218,22 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 						{training?.external_details || training.type === 3 ? (
 							<View>
 								<View style={[styles.gridContainer, styles.mb32]}>
-									<View style={styles.col4}></View>
-									<View style={styles.col6}>
+									<View style={styles.col3}>
+										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{training?.user_employee ? `${training?.user_employee?.firstname?.trim()} ${training?.user_employee?.lastname?.trim()}` : ''}</Text>
+										<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Submitted By</Text>
+									</View>
+									<View style={styles.col3}>
 										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
 											{training?.external_details?.reviewer ? `${training?.external_details?.reviewer?.firstname?.trim()} ${training?.external_details?.reviewer?.lastname?.trim()}` : ""}
 										</Text>
 										<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Reviewed By</Text>
 									</View>
-									<View style={styles.col6}>
+									<View style={styles.col3}>
 										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
 											{training?.external_details?.approval ? `${training?.external_details?.approval?.firstname?.trim()} ${training?.external_details?.approval?.lastname?.trim()}` : ""}
 										</Text>
 										<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
 									</View>
-									<View style={styles.col4}></View>
 								</View>
 								<View style={[styles.gridContainer, { flexDirection: "column" }]}>
 									<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
@@ -286,20 +288,20 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 						) : (
 							<View>
 								<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{training?.user_employee ? `${training?.user_employee?.firstname?.trim()} ${training?.user_employee?.lastname?.trim()}` : ''}</Text>
-								<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Requested By</Text>
+								<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Submitted By</Text>
 							</View>
 						)}
 					</View>
 
 					<View style={[styles.gridContainer, styles.footer]}>
-						<View style={styles.col3}>
-							<Text style={{ fontSize: 9, textAlign: 'left' }}>Uncontrolled Copy if Printed</Text>
+						<View style={styles.col4}>
+							<Text style={[styles.subtitle2, { fontSize: 9, textAlign: 'left' }]}>Uncontrolled Copy if Printed</Text>
 						</View>
-						<View style={styles.col3}>
-							<Text style={{ fontSize: 9, textAlign: 'center' }}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
+						<View style={styles.col6}>
+							<Text style={[styles.subtitle2, { fontSize: 9, textAlign: 'center' }]}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
 						</View>
-						<View style={styles.col3}>
-							<Text style={{ fontSize: 9, textAlign: 'right' }}>{format(new Date(), 'MM/dd/yy')} Page {page}</Text>
+						<View style={styles.col4}>
+							<Text style={[styles.subtitle2, { fontSize: 9, textAlign: 'right' }]}>{format(new Date(), 'MM/dd/yy')} Page {page}</Text>
 						</View>
 					</View>
 				</Page>

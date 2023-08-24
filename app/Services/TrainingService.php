@@ -34,7 +34,7 @@ class TrainingService {
 
 
 	public function getTrainingByType($type) {
-		$relation = [];
+		$relation = ["training_files", "trainees"];
 		if($type === 3) {
 			$relation[] = "external_status";
 			$relation["external_details"] = fn($q) => $q->select("approved_by", "reviewed_by", "requested_by", "course_price", "currency", "training_id", "training_ext_id")->with([
@@ -46,9 +46,13 @@ class TrainingService {
 		
 		return Training::where([["is_deleted", false], ["type", $type]])
 		->with($relation)
-		->withCount(["training_files", "trainees"])
 		->orderByDesc("date_created")
-		->get();
+		->get()
+		->transform(function($training) {
+			$training->training_files = $this->transformFiles($training->training_files);
+			$training->trainees_count = count($training->trainees);
+			return $training;
+		});
 
 	}
 
