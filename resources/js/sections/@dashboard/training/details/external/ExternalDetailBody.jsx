@@ -164,33 +164,13 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 				ActionButtons = (
 					<>
 						<Divider sx={{ borderStyle: "dashed", my: 2 }} />
-						<Grid container spacing={3}>
-							<Grid item md={4} xs={12}>
-								<Button
-									fullWidth
-									size="large"
-									variant="contained"
-									color="secondary"
-									onClick={handleOpenUpdateApprovalFile}
-								>Re-upload File</Button>
-							</Grid>
-							<Grid item md={4} xs={12}>
-								{external_status?.approval_status === "approved" ? (
-									<Button fullWidth size="large" variant="contained" color="success" disabled>Approved</Button>
-								) : (
-									<Button fullWidth size="large" variant="contained" color="success" onClick={handleApproverAction}>Approved</Button>
-								)}
-							</Grid>
-							<Grid item md={4} xs={12}>
-								{external_status?.approval_status === "fail" ? (
-									<Button fullWidth size="large" variant="contained" color="error" disabled>Fail/Not approved</Button>
-								) : (
-									<Button fullWidth size="large" variant="contained" color="error" onClick={() => {
-										handleApproverAction("fail")
-									}}>Fail/Not approved</Button>
-								)}
-							</Grid>
-						</Grid>
+						<Button
+							fullWidth
+							size="large"
+							variant="contained"
+							color="secondary"
+							onClick={handleOpenUpdateApprovalFile}
+						>Re-upload File</Button>
 					</>
 				)
 			}

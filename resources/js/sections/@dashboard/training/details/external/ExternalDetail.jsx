@@ -34,7 +34,7 @@ const ExternalDetail = ({ training, type = "action" }) => {
 				status: getTrainingStatus(training.training_date, training.date_expired),
 			});
 		}
-	}, []);
+	}, [training]);
 
 	return (
 		<>

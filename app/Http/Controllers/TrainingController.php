@@ -697,7 +697,7 @@ class TrainingController extends Controller
 		$request->validate([
 			"type" => ["string", "required"],
 			"file" => ["file", "max:3072", "required"],
-			"remarks" => ["string"]
+			"remarks" => ["string", "nullable"]
 		]);
 
 		/** @var TrainingExternalStatus $statuses */
