@@ -66,6 +66,8 @@ export default function TrainingThirdPartyRow ({ row, selected, onSelectRow, onD
 		setOpenCollapse((currState) => !currState);
 	}
 
+	const canEditFinal = canEdit ? (user.emp_id === 1 || row.employee_id === user.emp_id) : false;
+	const canDeleteFinal = canDelete ? (user.emp_id === 1 || row.employee_id === user.emp_id) : false;
 	return (
 		<>
 			<TableRow hover selected={selected}>
@@ -172,7 +174,7 @@ export default function TrainingThirdPartyRow ({ row, selected, onSelectRow, onD
 					<Iconify icon="eva:eye-fill" />
 					View
 				</MenuItem>
-				{canEdit && (
+				{canEditFinal && (
 					<MenuItem
 						component={Link}
 						href={`/dashboard/training/${row.id}/edit`}
@@ -183,7 +185,7 @@ export default function TrainingThirdPartyRow ({ row, selected, onSelectRow, onD
 
 				)}
 
-				{canDelete && (
+				{canDeleteFinal && (
 					<>
 						<Divider sx={{ borderStyle: 'dashed' }} />
 						<MenuItem

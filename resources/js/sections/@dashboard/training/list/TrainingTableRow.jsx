@@ -43,7 +43,6 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 	const handleClosePopover = () => {
 		setOpenPopover(null);
 	};
-
 	const canEditFinal = canEdit ? (user.emp_id === 1 || row.employee_id === user.emp_id) : false;
 	const canDeleteFinal = canDelete ? (user.emp_id === 1 || row.employee_id === user.emp_id) : false;
 	return (

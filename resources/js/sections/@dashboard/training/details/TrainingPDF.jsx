@@ -198,7 +198,7 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 									</View>
 
 									<View style={styles.tableCell_1}>
-										<Text style={[styles.subtitle2, { textAlign: 'center' }]}>{item?.src ? "Yes" : "No"}</Text>
+										<Text style={[styles.subtitle2, { textAlign: 'center' }]}>{training?.external_status?.currentFile ? "Yes" : (item?.src ? "Yes" : "No")}</Text>
 									</View>
 								</View>
 							))}

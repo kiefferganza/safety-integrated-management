@@ -7,7 +7,6 @@ import { Box, Stack, Dialog, Tooltip, IconButton, DialogActions, CircularProgres
 import Iconify from '@/Components/iconify';
 //
 import TrainingPDF from './TrainingPDF';
-import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
