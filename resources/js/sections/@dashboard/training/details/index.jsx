@@ -288,7 +288,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 							<Grid container spacing={{ xs: 2, md: 8 }}>
 								<Grid item xs={12} md={4}>
 									<Box sx={{ mb: 3 }}>
-										<Box borderBottom={1}>
+										<Box>
 											<Typography variant="body1" textAlign="center">
 												{`${training?.user_employee?.fullname}`}
 											</Typography>

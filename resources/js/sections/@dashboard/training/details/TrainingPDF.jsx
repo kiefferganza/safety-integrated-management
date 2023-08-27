@@ -237,7 +237,7 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 								<View style={[styles.gridContainer, styles.mb32]}>
 									<View style={styles.col3}>
 										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{training?.user_employee ? `${training?.user_employee?.firstname?.trim()} ${training?.user_employee?.lastname?.trim()}` : ''}</Text>
-										<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Submitted By</Text>
+										<Text style={[styles.body1, { width: 140, textAlign: 'center', paddingTop: 4 }]}>Submitted By</Text>
 									</View>
 									<View style={styles.col3}>
 										{training?.external_details?.reviewer && (
