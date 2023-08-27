@@ -39,11 +39,14 @@ Route::middleware('auth')->as('api.')->group(function ()
 	// Route::post('/user/follow/{user_id}', [UsersController::class, "followUser"]);
 
 	Route::prefix('user')->as('user.')->group(function() {
-		Route::get('/{user}', [UserApiController::class, 'profileImages'])->name('profile_images');
+		Route::get('/notifications', [UserApiController::class, 'notifications'])->name('notifications');
+		Route::post('/read-notifications', [UserApiController::class, 'readNotifications'])->name('read_notifications');
+
 		Route::get('/cover/{user}', [UserApiController::class, 'coverImages'])->name('cover_images');
 		Route::post('/cover/{user}', [UserApiController::class, 'addCoverImage'])->name('add_cover');
 		Route::post('/profile-image-update/{user}', [UserApiController::class, 'updateProfileImage'])->name('update_profile_image');
 		Route::post('/set-image/{media}', [UsersController::class, 'setProfilePic'])->name('set-profile');
+		Route::get('/{user}', [UserApiController::class, 'profileImages'])->name('profile_images');
 	});
 
 	Route::prefix('images')->as('images.')->group(function() {

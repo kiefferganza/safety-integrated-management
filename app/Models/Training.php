@@ -21,7 +21,7 @@ class Training extends Model
 	protected static function boot() {
 		parent::boot();
 
-		static::creating(function ($training) {
+		static::creating(function (Training $training) {
 			$lastSeq = Training::where([["is_deleted", false], ["type", $training->type]])
 			->select('sequence_no')->orderBy('sequence_no', 'desc')->first();
 			$sequence = 1;

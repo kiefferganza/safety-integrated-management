@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ApiControllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\API\UserApiService;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 
@@ -89,6 +90,31 @@ class UserApiController extends Controller
 		return redirect()->back()
 		->with("message", "Profile changed successfully!")
 		->with("type", "success");
+	}
+
+
+	public function notifications() {
+		$user = auth()->user();
+		$notifications = [];
+		if($user) {
+			try {
+				$notifications = $user->notifications()->get();
+			} catch (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e) {
+				info($e);
+				$notifications = [];
+			}
+		}
+		return response()->json([
+			'notifications' => $notifications
+		]);
+	}
+
+
+	public function readNotifications(Request $request) {
+		$request->validate(['ids' => ['array', 'required']]);
+		$user = auth()->user();
+		$user->notifications()->whereIn('id', $request->ids)->where('read_at', null)->update(['read_at' => new DateTime()]);
+		return redirect()->back();
 	}
 
 }

@@ -125,7 +125,6 @@ export default function TrainingThirdPartyList ({ trainings, url, type }) {
 		filterEndDate,
 		user
 	});
-	console.log({ tableData })
 
 
 	const denseHeight = dense ? 60 : 80;

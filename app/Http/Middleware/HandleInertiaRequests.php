@@ -40,7 +40,6 @@ class HandleInertiaRequests extends Middleware
 			$user = auth()->user();
 
 			$authData = [];
-
 			if($user) {
 				$authData = cache()->rememberForever("authUser:".$user->user_id, function() {
 					$user = auth()->user();
@@ -96,7 +95,6 @@ class HandleInertiaRequests extends Middleware
 				$authData["permissions"] = $user->permissions->pluck('name')->mapWithKeys(fn($item) => [$item => Str::title($item)]);
 				$authData["role"] = $user->roles->first()->name;
 			}
-
 			return array_merge(parent::share($request), [
 				'auth' => $authData,
 				'ziggy' => function () use ($request) {
