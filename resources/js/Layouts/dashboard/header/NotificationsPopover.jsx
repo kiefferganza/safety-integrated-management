@@ -30,6 +30,7 @@ import { IconButtonAnimate } from '@/Components/animate';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosInstance from '@/utils/axios';
 import { Inertia } from '@inertiajs/inertia';
+import { Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -163,9 +164,11 @@ function NotificationItem ({ notification, queryClient }) {
 	const { data, id, read_at, created_at } = notification;
 	const { avatar, title } = renderContent(notification);
 
-	const handleClickNotification = () => {
-		if (!!data?.routeName) {
-			const routeName = data?.id ? route(data.routeName, data.id) : route(data.routeName);
+	const routeName = data?.routeName ? data?.params ? route(data.routeName, data.params) : route(data.routeName) : '#';
+
+	const beforeRedirect = (e) => {
+		if (read_at === null && id) {
+			e.preventDefault();
 			Inertia.visit(routeName, {
 				onSuccess: function () {
 					if (read_at === null && id) {
@@ -190,7 +193,9 @@ function NotificationItem ({ notification, queryClient }) {
 					bgcolor: 'action.selected',
 				}),
 			}}
-			onClick={handleClickNotification}
+			LinkComponent={Link}
+			href={routeName}
+			onClick={beforeRedirect}
 		>
 			<ListItemAvatar>
 				<Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>

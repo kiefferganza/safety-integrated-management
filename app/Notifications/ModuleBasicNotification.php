@@ -2,15 +2,14 @@
 
 namespace App\Notifications;
 
-use App\Enums\CommentTypeEnums;
-use App\Models\Training;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
 
-class NewTrainingCommentNotification extends Notification
+class ModuleBasicNotification extends Notification
 {
     use Queueable;
 
@@ -19,7 +18,7 @@ class NewTrainingCommentNotification extends Notification
      *
      * @return void
      */
-    public function __construct(public Training $training, public CommentTypeEnums $type)
+    public function __construct(public string $title, public string|null $subtitle, public string $message, public string $routeName, public null|array $params, public User $creator)
     {
         //
     }
@@ -57,12 +56,9 @@ class NewTrainingCommentNotification extends Notification
      */
     public function toArray($notifiable)
     {
-		$training = $this->training;
-		$type = $this->type;
-		$user = auth()->user();
-		$userName = $user->firstname . ' ' . $user->lastname;
+        $creator = $this->creator;
 
-		$profile = $user->getFirstMedia("profile", ["primary" => true]);
+		$profile = $creator->getFirstMedia("profile", ["primary" => true]);
 		if($profile) {
 			$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
 			$profile = [
@@ -71,36 +67,18 @@ class NewTrainingCommentNotification extends Notification
 				"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
 			];
 		}
-		$form_number = sprintf("%s-%s-%s-%s", $training->project_code, $training->originator, $training->discipline, $training->document_type);
-		if($training->document_zone) {
-			$form_number .= "-".$training->document_zone;
-		}
-		if($training->document_level) {
-			$form_number .= "-".$training->document_level;
-		}
-		$form_number .= "-".$training->sequence_no;
-
-		$messageAndTitleAndRoute = match ($type) {
-			CommentTypeEnums::COMMENTED => [
-				'title' => 'New Comment CMS: '. strtoupper($form_number),
-				'message' => $userName . ' has posted a new comment',
-				'routeName' => 'training.management.external.external_action',
-			],
-			CommentTypeEnums::REPLIED => [
-				'title' => 'New Reply CMS: '. strtoupper($form_number),
-				'message' => $userName . ' has replied to your comment',
-				'routeName' => 'training.management.external.external_review',
-			],
-		};
 		
         return [
-			'params' => $training->training_id,
+			'params' => $this->params,
+			'title' => $this->title,
+			'subtitle' => $this->subtitle,
+			'message' => $this->message,
+			'routeName' => $this->routeName,
 			'creator' => [
-				'user_id' => $user->user_id,
-				'name' => $userName,
+				'user_id' => $creator->user_id,
+				'name' => $creator->firstname . ' ' . $creator->lastname,
 				'profile' => $profile
 			],
-			...$messageAndTitleAndRoute
         ];
     }
 }

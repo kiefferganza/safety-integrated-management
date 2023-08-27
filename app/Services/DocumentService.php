@@ -69,6 +69,17 @@ class DocumentService {
 		return $folder;
 	}
 
+	PUBLIC static function generateFormNumber(Document $doc) {
+		$form_number = sprintf("%s-%s-%s-%s", $doc->project_code, $doc->originator,$doc->discipline,$doc->document_type);
+		if($doc->document_zone) {
+			$form_number .= "-". $doc->document_zone;
+		}
+		if($doc->document_level) {
+			$form_number .= "-". $doc->document_level;
+		}
+		$form_number .= "-" . $doc->sequence_no;
+		return strtoupper($form_number);
+	}
 
 	public function sequence_no($folder_id) {
 		$sequence = Document::select("sequence_no")->where('is_deleted', 0)->where("folder_id", $folder_id)->orderByDesc("date_uploaded")->first();

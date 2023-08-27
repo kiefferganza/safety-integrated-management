@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Notifications\AdminNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 class Document extends Model
@@ -36,6 +38,23 @@ class Document extends Model
 		static::updating(function ($doc)
 		{
 			$doc->form_number = self::generateFormNumber($doc);
+		});
+
+		static::created(function(Document $doc) {
+			$user = auth()->user();
+			if($user->user_type !== 0) {
+				$admins = User::where('user_type', 0)->get();
+				Notification::send($admins, new AdminNotification(
+					title: 'New document created',
+					message: '',
+					routeName: 'files.management.show',
+					creator: $user,
+					params: [
+						'folder' => $doc->folder_id,
+						'document' => self::generateFormNumber($doc)
+					]
+				));
+			}
 		});
 	}
 

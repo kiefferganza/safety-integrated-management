@@ -104,7 +104,7 @@ class NewTrainingNotification extends Notification
 
 		$messageAndRoutes = match ($this->type) {
 			TrainingTypeNotificationEnums::APPROVER => [
-				'message' => $userName . ' added you as an approver',
+				'message' => $userName . ' added you as a approver',
 				'routeName' => 'training.management.external.external_approve'
 			],
 			TrainingTypeNotificationEnums::REVIEWER => [
@@ -122,7 +122,7 @@ class NewTrainingNotification extends Notification
 		};
 
         return [
-			'id' => $training->training_id,
+			'params' => $training->training_id,
 			'title' => 'Newly created Training in '. $moduleType['name'],
 			'subtitle' => 'CMS: '. strtoupper($form_number),
 			'creator' => [

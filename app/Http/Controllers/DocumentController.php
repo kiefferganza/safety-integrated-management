@@ -14,8 +14,11 @@ use App\Models\Employee;
 use App\Models\FileModel;
 use App\Models\FolderModel;
 use App\Models\Position;
+use App\Models\User;
+use App\Notifications\ModuleBasicNotification;
 use App\Services\DocumentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
@@ -74,7 +77,7 @@ class DocumentController extends Controller
 		$documentService = new DocumentService;
 		$sequence_no = $documentService->sequence_no($folder->folder_id);
 
-		$document_id = Document::create([
+		$document = Document::create([
 			'originator' => $fields['originator'],
 			'originator2' => $fields['originator'],
 			'sequence_no' => $sequence_no,
@@ -92,7 +95,8 @@ class DocumentController extends Controller
 			'is_deleted' => 0,
 			'rev' => 0,
 			'user_id' => $user->emp_id
-		])->document_id;
+		]);
+		$document_id = $document->document_id;
 
 		// Files
 		if($request->hasFile('src')) {
@@ -112,6 +116,7 @@ class DocumentController extends Controller
 		// Document Reviewers
 		if(isset($fields['reviewers'])) {
 			$reviewers = [];
+			$reviewersId = [];
 			foreach ($fields['reviewers'] as $reviewer) {
 				$reviewers[] = array(
 					"document_id" => $document_id,
@@ -121,8 +126,38 @@ class DocumentController extends Controller
 					"folder_id" => $folder->folder_id,
 					"is_deleted" => 0
 				);
+				$reviewersId[] = (int)$reviewer["id"];
 			}
 			DocumentReviewer::insert($reviewers);
+			$userReviewers = User::whereIn('emp_id', $reviewersId)->get();
+			Notification::send($userReviewers, new ModuleBasicNotification(
+				title: 'Newly created Document',
+				message: $user->firstname . ' ' . $user->lastname . ' added you as a reviewer',
+				routeName: 'files.management.show',
+				subtitle: null,
+				creator: $user,
+				params: [
+					'folder' => $document_id,
+					'document' => $documentService->generateFormNumber($document)
+				]
+			));
+		}
+
+		if(isset($fields['approval_id'])) {
+			$userApproval = User::where('emp_id', (int)$fields['approval_id'])->first();
+			if($userApproval) {
+				Notification::send($userApproval, new ModuleBasicNotification(
+					title: 'Newly created Document',
+					message: $user->firstname . ' ' . $user->lastname . ' added you as a approver',
+					routeName: 'files.management.show',
+					subtitle: null,
+					creator: $user,
+					params: [
+						'folder' => $$document->folder_id,
+						'document' => $documentService->generateFormNumber($document)
+					]
+				));
+			}
 		}
 
 		return redirect()->back()
@@ -430,6 +465,21 @@ class DocumentController extends Controller
 				"review_status" => "C"
 			]);
 		}
+		
+		$creator = User::where('emp_id', $document->user_id)->first();
+		if($creator) {
+			Notification::send($creator, new ModuleBasicNotification(
+				title: 'New Comment',
+				message: $user->firstname . ' ' . $user->lastname . ' commented on your documment',
+				subtitle: 'CMS: '. $document->form_number,
+				routeName: 'files.management.show',
+				creator: $user,
+				params: [
+					'folder' => $document->folder_id,
+					'document' => $document->form_number
+				]
+			));
+		}
 
 		// if($document->rev === null){
 		// 	$document->rev = 1;
@@ -469,7 +519,7 @@ class DocumentController extends Controller
 			"reply_code" => "required|string|max:2",
 			"src" => "required|mimes:ppt,pptx,doc,docx,pdf,xls,xlsx,jpeg,jpg,png|max:204800"
 		]);
-
+		$user = auth()->user();
 		$date_today = date('Y-m-d');
 
 		$doc = Document::find($comment->document_id);
@@ -491,6 +541,21 @@ class DocumentController extends Controller
 			$doc->files[0]->update([
 				"src" => $file_name,
 			]);
+		}
+
+		$creator = User::where('emp_id', $comment->reviewer_id)->first();
+		if($creator) {
+			Notification::send($creator, new ModuleBasicNotification(
+				title: 'New Reply',
+				message: $user->firstname . ' ' . $user->lastname . ' replied on your comment',
+				subtitle: 'CMS: '. $doc->form_number,
+				routeName: 'files.management.show',
+				creator: $user,
+				params: [
+					'folder' => $doc->folder_id,
+					'document' => $doc->form_number
+				]
+			));
 		}
 
 		return redirect()->back()
