@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\NewTrainingCommentEvent;
+use App\Events\NewTrainingEvent;
+use App\Listeners\NewTrainingCommentListener;
+use App\Listeners\NewTrainingListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -18,6 +22,12 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+		NewTrainingEvent::class => [
+			NewTrainingListener::class
+		],
+		NewTrainingCommentEvent::class => [
+			NewTrainingCommentListener::class
+		]
     ];
 
     /**

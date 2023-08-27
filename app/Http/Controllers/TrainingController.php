@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CommentTypeEnums;
+use App\Events\NewTrainingEvent;
 use App\Http\Requests\TrainingRequest;
 use App\Models\Employee;
 use App\Models\Training;
@@ -10,6 +12,8 @@ use App\Models\TrainingExternalComment;
 use App\Models\TrainingExternalStatus;
 use App\Models\TrainingFiles;
 use App\Models\TrainingTrainees;
+use App\Models\User;
+use App\Notifications\NewTrainingCommentNotification;
 use App\Services\TrainingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -186,7 +190,7 @@ class TrainingController extends Controller
 			}
 			TrainingTrainees::insert($trainees);
 		}
-		
+		event(new NewTrainingEvent($training));
 
 		return redirect()->back()
 		->with("message", "Training added successfully!")
@@ -605,6 +609,11 @@ class TrainingController extends Controller
 		$training->increment("revision_no");
 		$training->save();
 
+		$creator = User::find($training->user_id);
+		if($creator) {
+			$creator?->notify(new NewTrainingCommentNotification($training, CommentTypeEnums::COMMENTED));
+		}
+
 		return redirect()->back()
 		->with("message", "Comment posted successfully!")
 		->with("type", "success");
@@ -643,6 +652,11 @@ class TrainingController extends Controller
 		$trainingComment->reply = $request->reply;
 		$trainingComment->reply_code = $request->reply_code;
 		$trainingComment->save();
+
+		$reviewer = User::where('emp_id', $trainingComment->reviewer_id)->first();
+		if($reviewer) {
+			$reviewer?->notify(new NewTrainingCommentNotification($training, CommentTypeEnums::REPLIED));
+		}
 
 		return redirect()->back()
 		->with("message", "Reply posted successfully!")
