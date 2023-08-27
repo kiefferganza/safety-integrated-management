@@ -98,7 +98,7 @@ class UserApiController extends Controller
 		$notifications = [];
 		if($user) {
 			try {
-				$notifications = $user->notifications()->get();
+				$notifications = $user->notifications()->limit(25)->get();
 			} catch (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e) {
 				info($e);
 				$notifications = [];
