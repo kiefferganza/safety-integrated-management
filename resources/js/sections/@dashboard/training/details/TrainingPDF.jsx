@@ -240,16 +240,24 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 										<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Submitted By</Text>
 									</View>
 									<View style={styles.col3}>
-										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
-											{training?.external_details?.reviewer ? `${training?.external_details?.reviewer?.firstname?.trim()} ${training?.external_details?.reviewer?.lastname?.trim()}` : ""}
-										</Text>
-										<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Reviewed By</Text>
+										{training?.external_details?.reviewer && (
+											<>
+												<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
+													{training?.external_details?.reviewer ? `${training?.external_details?.reviewer?.firstname?.trim()} ${training?.external_details?.reviewer?.lastname?.trim()}` : ""}
+												</Text>
+												<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Reviewed By</Text>
+											</>
+										)}
 									</View>
 									<View style={styles.col3}>
-										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
-											{training?.external_details?.approval ? `${training?.external_details?.approval?.firstname?.trim()} ${training?.external_details?.approval?.lastname?.trim()}` : ""}
-										</Text>
-										<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
+										{training?.external_details?.approval && (
+											<>
+												<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
+													{training?.external_details?.approval ? `${training?.external_details?.approval?.firstname?.trim()} ${training?.external_details?.approval?.lastname?.trim()}` : ""}
+												</Text>
+												<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
+											</>
+										)}
 									</View>
 								</View>
 								<View style={[styles.gridContainer, { flexDirection: "column" }]}>

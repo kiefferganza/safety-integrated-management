@@ -37,8 +37,8 @@ class TrainingRequest extends FormRequest
 			"training_hrs" => "string|required",
 			"type" => "string|required",
 			"training_center" => "required_if:type,==,3",
-			"reviewed_by" => "required_if:type,==,3",
-			"approved_by" => "required_if:type,==,3",
+			"reviewed_by" => "nullable",
+			"approved_by" => "nullable",
 			"currency" => "required_if:type,==,3",
 			"course_price" => "required_if:type,==,3",
 		];

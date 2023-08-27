@@ -18,7 +18,7 @@ import { currencies } from '@/_mock/arrays/_currencies';
 const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 	const { personel } = usePage().props;
 	const [openParticipants, setOpenParticipants] = useState(false);
-	const { setValue, watch, formState: { errors } } = useFormContext();
+	const { setValue, watch, trigger, formState: { errors } } = useFormContext();
 	const values = watch();
 
 	const {
@@ -200,6 +200,7 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 								onChange={(_event, newValue) => {
 									if (newValue) {
 										setValue('reviewed_by', newValue.id, { shouldValidate: true, shouldDirty: true });
+										trigger('approved_by');
 									} else {
 										setValue('reviewed_by', '', { shouldValidate: true, shouldDirty: true });
 									}
@@ -212,7 +213,7 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 										</li>
 									);
 								}}
-								renderInput={(params) => <TextField label="Reviewed By:" {...params} />}
+								renderInput={(params) => <TextField label="Reviewed By:" {...params} error={!!errors?.reviewed_by?.message} helperText={errors?.reviewed_by?.message} />}
 							/>
 							<Autocomplete
 								fullWidth
@@ -220,6 +221,7 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 								onChange={(_event, newValue) => {
 									if (newValue) {
 										setValue('approved_by', newValue.id, { shouldValidate: true, shouldDirty: true });
+										trigger('reviewed_by');
 									} else {
 										setValue('approved_by', '', { shouldValidate: true, shouldDirty: true });
 									}
@@ -232,7 +234,7 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 										</li>
 									);
 								}}
-								renderInput={(params) => <TextField label="Approved By:" {...params} />}
+								renderInput={(params) => <TextField label="Approved By:" {...params} error={!!errors?.approved_by?.message} helperText={errors?.approved_by?.message} />}
 							/>
 
 							<RHFTextField name="training_center" label="Training Center" fullWidth />

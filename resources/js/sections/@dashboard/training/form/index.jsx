@@ -41,9 +41,27 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		training_date: Yup.string().required("Please add date range"),
 		date_expired: Yup.string().required("Please add date range"),
 		type: Yup.string().required("Please select course type"),
+		// reviewers: Yup.array().test('isRequired', 'Please select either reviewer or approval personel', function (item) {
+		// 	if (isEdit) return true;
+		// 	if (this.parent.approval_id === "" && item.length === 0) return false;
+		// 	return true;
+		// }),
+		// approval_id: Yup.string().when("reviewers", (reviewers, schema) => reviewers.length > 0 ? schema.notRequired() : schema.required('Please select either reviewer or approval personel'))
 		// External
-		reviewed_by: Yup.string().when("type", (type, schema) => type == "3" ? schema.required("Please select a reviwer") : schema.notRequired()),
-		approved_by: Yup.string().when("type", (type, schema) => type == "3" ? schema.required("Please select an approval") : schema.notRequired()),
+		reviewed_by: Yup.string().when("type", (type, schema) => {
+			if (type == "3") {
+				return schema.when("approved_by", (approved_by, schema) => !!approved_by ? schema.notRequired() : schema.required('Please select either reviewer or approval personel'));
+				// return schema.required("Please select a reviwer")
+			}
+			return schema.notRequired();
+		}),
+		approved_by: Yup.string().when("type", (type, schema) => {
+			if (type == "3") {
+				return schema.when("reviewed_by", (reviewed_by, schema) => !!reviewed_by ? schema.notRequired() : schema.required('Please select either reviewer or approval personel'))
+				// return schema.required("Please select an approval")
+			}
+			return schema.notRequired();
+		}),
 		currency: Yup.string().when("type", (type, schema) => type == "3" ? schema.required("Please select currency type") : schema.notRequired()),
 		course_price: Yup.string().when("type", (type, schema) => type == "3" ? schema.required("Please add a price") : schema.notRequired()),
 		training_center: Yup.string().when("type", (type, schema) => type == "3" ? schema.required("Training center is required") : schema.notRequired()),
@@ -83,8 +101,10 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		reset,
 		handleSubmit,
 		setError,
-		formState: { isDirty }
+		formState: { isDirty, errors }
 	} = methods;
+
+	console.log({ errors });
 
 	useEffect(() => {
 		if (isEdit && currentTraining) {

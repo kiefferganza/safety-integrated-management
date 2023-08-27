@@ -356,23 +356,25 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 								</TableHead>
 
 								<TableBody>
-									<TableRow>
-										<TableCell align="left">{reviewer?.fullname}</TableCell>
+									{reviewer && (
+										<TableRow>
+											<TableCell align="left">{reviewer?.fullname}</TableCell>
 
-										<TableCell align="left">{reviewer?.position}</TableCell>
+											<TableCell align="left">{reviewer?.position}</TableCell>
 
-										<TableCell align="left">{external_status?.review_remark || "N/A"}</TableCell>
+											<TableCell align="left">{external_status?.review_remark || "N/A"}</TableCell>
 
-										<TableCell align="left">
-											<Label
-												variant="filled"
-												color={reviewerStatus.statusClass}
-												sx={{ textTransform: "capitalize" }}
-											>
-												{reviewerStatus.statusText.toLowerCase()}
-											</Label>
-										</TableCell>
-									</TableRow>
+											<TableCell align="left">
+												<Label
+													variant="filled"
+													color={reviewerStatus.statusClass}
+													sx={{ textTransform: "capitalize" }}
+												>
+													{reviewerStatus.statusText.toLowerCase()}
+												</Label>
+											</TableCell>
+										</TableRow>
+									)}
 								</TableBody>
 							</Table>
 						</TableContainer>
@@ -398,17 +400,19 @@ const ExternalDetailBody = ({ external_details, external_comments, external_stat
 								</TableHead>
 
 								<TableBody>
-									<TableRow>
-										<TableCell align="left">{approval?.fullname}</TableCell>
+									{approval && (
+										<TableRow>
+											<TableCell align="left">{approval?.fullname}</TableCell>
 
-										<TableCell align="left">{approval?.position}</TableCell>
+											<TableCell align="left">{approval?.position}</TableCell>
 
-										<TableCell align="left">{external_status?.approval_remark || "N/A"}</TableCell>
+											<TableCell align="left">{external_status?.approval_remark || "N/A"}</TableCell>
 
-										<TableCell align="left">
-											<Label variant="filled" color={getTrainingActionStatus(external_status?.approval_status).color}>{capitalCase(external_status?.approval_status || "")}</Label>
-										</TableCell>
-									</TableRow>
+											<TableCell align="left">
+												<Label variant="filled" color={getTrainingActionStatus(external_status?.approval_status).color}>{capitalCase(external_status?.approval_status || "")}</Label>
+											</TableCell>
+										</TableRow>
+									)}
 								</TableBody>
 							</Table>
 						</TableContainer>

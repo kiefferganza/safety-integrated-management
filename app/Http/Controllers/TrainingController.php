@@ -45,7 +45,7 @@ class TrainingController extends Controller
 
 		foreach ($trainings as $training) {
 			/** @var Training $training */
-			if($training->external_status->hasMedia('actions')) {
+			if($training?->external_status?->hasMedia('actions')) {
 				$reviewerLastFile = $training->external_status->getFirstMedia('actions', ['type' => 'review']);
 				$approverLastFile = $training->external_status->getFirstMedia('actions', ['type' => 'approver']);
 				if($reviewerLastFile) {
@@ -144,8 +144,8 @@ class TrainingController extends Controller
 			$training_external->currency = $request->currency;
 			$training_external->course_price = (float)$request->course_price;
 			$training_external->requested_by = (int)$user->emp_id;
-			$training_external->reviewed_by = (int)$request->reviewed_by;
-			$training_external->approved_by = (int)$request->approved_by;
+			$training_external->reviewed_by = $request->reviewed_by ? (int)$request->reviewed_by : null;
+			$training_external->approved_by = $request->approved_by ? (int)$request->approved_by : null;
 			$training_external->date_requested = date("Y-m-d H:i:s");
 
 			$training_external->save();
@@ -655,6 +655,7 @@ class TrainingController extends Controller
 			"type" => ["string", "required"],
 			"file" => ["file", "max:3072", "required"]
 		]);
+		$training->load(['external_status', 'external_details']);
 
 		/** @var TrainingExternalStatus $statuses */
 		$statuses = $training->external_status;
@@ -665,9 +666,20 @@ class TrainingController extends Controller
 				if($request->remarks) {
 					$statuses->review_remark = $request->remarks;
 				}
-				$statuses->status = 'for_approval';
-				$statuses->review_status = $request->status;
-				$statuses->approval_status = 'pending';
+
+				if($training->external_details->approved_by === null) {
+					$statuses->status = 'closed';
+					$statuses->review_status = $request->status;
+					if($request->status === 'A' || $request->status === 'D') {
+						$statuses->approval_status = 'approved';
+					}else {
+						$statuses->approval_status = 'failed';
+					}
+				}else {
+					$statuses->status = 'for_approval';
+					$statuses->review_status = $request->status;
+					$statuses->approval_status = 'pending';
+				}
 				// if($request->status === 'A') {
 				// 	$statuses->status = 'for_approval';
 				// 	$statuses->review_status = $request->status;

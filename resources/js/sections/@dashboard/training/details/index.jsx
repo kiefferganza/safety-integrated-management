@@ -298,30 +298,34 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 										</Box>
 									</Box>
 								</Grid>
-								<Grid item xs={12} md={4}>
-									<Box sx={{ mb: 3 }}>
-										<Box borderBottom={1}>
-											<Typography variant="body1" textAlign="center">
-												{`${training?.external_details?.reviewer?.firstname?.trim()} ${training?.external_details?.reviewer?.lastname?.trim()}`}
-											</Typography>
+								{training?.external_details?.reviewer && (
+									<Grid item xs={12} md={4}>
+										<Box sx={{ mb: 3 }}>
+											<Box borderBottom={1}>
+												<Typography variant="body1" textAlign="center">
+													{`${training?.external_details?.reviewer?.firstname?.trim()} ${training?.external_details?.reviewer?.lastname?.trim()}`}
+												</Typography>
+											</Box>
+											<Box>
+												<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Reviewed by</Typography>
+											</Box>
 										</Box>
-										<Box>
-											<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Reviewed by</Typography>
+									</Grid>
+								)}
+								{training?.external_details?.approval && (
+									<Grid item xs={12} md={4}>
+										<Box sx={{ mb: 3 }}>
+											<Box borderBottom={1}>
+												<Typography variant="body1" textAlign="center">
+													{`${training?.external_details?.approval?.firstname?.trim()} ${training?.external_details?.approval?.lastname?.trim()}`}
+												</Typography>
+											</Box>
+											<Box>
+												<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Approved by</Typography>
+											</Box>
 										</Box>
-									</Box>
-								</Grid>
-								<Grid item xs={12} md={4}>
-									<Box sx={{ mb: 3 }}>
-										<Box borderBottom={1}>
-											<Typography variant="body1" textAlign="center">
-												{`${training?.external_details?.approval?.firstname?.trim()} ${training?.external_details?.approval?.lastname?.trim()}`}
-											</Typography>
-										</Box>
-										<Box>
-											<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Approved by</Typography>
-										</Box>
-									</Box>
-								</Grid>
+									</Grid>
+								)}
 								<Grid item xs={12} md={2}></Grid>
 							</Grid>
 						</Box>
