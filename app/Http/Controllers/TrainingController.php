@@ -7,6 +7,7 @@ use App\Events\NewTrainingEvent;
 use App\Http\Requests\TrainingRequest;
 use App\Models\Employee;
 use App\Models\Training;
+use App\Models\TrainingCourses;
 use App\Models\TrainingExternal;
 use App\Models\TrainingExternalComment;
 use App\Models\TrainingExternalStatus;
@@ -761,6 +762,64 @@ class TrainingController extends Controller
 		return redirect()->back()
 		->with("message", "File updated successfully!")
 		->with("type", "success");
+	}
+
+
+	public function courses() {
+		$courses = TrainingCourses::get();
+		return Inertia::render("Dashboard/Management/Training/Register/index", [
+			"courses" => $courses
+		]);
+	}
+
+	public function addCourses(Request $request) {
+		$request->validate([
+			'courses' => ['required', 'array']
+		]);
+		$user = Auth::user();
+		$courses = [];
+		foreach ($request->courses as $course) {
+			$courses[] = [
+				'course_name' => $course['course_name'],
+				'user_id' => $user->user_id,
+				'sub_id' => $user->subscriber_id,
+				'created_at' => now()
+			];
+		}
+		TrainingCourses::insert($courses);
+
+		return redirect()->back()
+		->with('message', 'Course added successfully')
+		->with('type', 'success');
+	}
+
+	public function updateCourse(Request $request, TrainingCourses $course) {
+		$request->validate([
+			'course_name' => ['required', 'string']
+		]);
+
+		$course->course_name = $request->course_name;
+
+		if(!$course->isDirty('course_name')) {
+			return redirect()->back();
+		}
+		
+		$course->save();
+		return redirect()->back()
+		->with('message', 'Course updated successfully')
+		->with('type', 'success');
+	}
+
+	public function deleteCourse(Request $request) {
+		$request->validate([
+			'ids' => ['array', 'required']
+		]);
+		
+		TrainingCourses::whereIn('id', $request->ids)->update(['deleted_at' => now()]);
+
+		return redirect()->back()
+		->with('message', count($request->ids) . ' items deleted sucessfully')
+		->with('type', 'success');
 	}
 
 }

@@ -146,6 +146,11 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	Route::prefix('training')->as('training.management.')->group(function() {
 		// Lists
 		Route::middleware("permission:training_show")->group(function() {
+			Route::get('/registered-courses', [TrainingController::class, 'courses'])->name('courses');
+			Route::post('/new-course', [TrainingController::class, 'addCourses'])->name('new_courses');
+			Route::post('/update-course/{course}', [TrainingController::class, 'updateCourse'])->name('update_course');
+			Route::post('/delete-course', [TrainingController::class, 'deleteCourse'])->name('delete_courses');
+
 			Route::get('/client', [TrainingController::class, 'index'])->name('client');
 			Route::get('/in-house', [TrainingController::class, 'in_house'])->name('in_house');
 			Route::get('/induction', [TrainingController::class, 'induction'])->name('induction');

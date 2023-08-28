@@ -109,6 +109,7 @@ export const PATH_DASHBOARD = {
 		inHouse: path(ROOTS_DASHBOARD, '/training/in-house'),
 		client: path(ROOTS_DASHBOARD, '/training/client'),
 		thirdParty: path(ROOTS_DASHBOARD, '/training/third-party'),
+		register: route('training.management.courses'),
 		new: (type) => path(ROOTS_DASHBOARD, `/training/new?type=${type || 2}`),
 	},
 

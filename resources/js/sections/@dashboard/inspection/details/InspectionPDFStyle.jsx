@@ -21,7 +21,6 @@ const spacing = {
 	mt8: { marginTop: 8 },
 	mt16: { marginTop: 16 },
 	mt24: { marginTop: 24 },
-	mt24: { marginTop: 24 },
 	mt32: { marginTop: 32 },
 	mb8: { marginBottom: 8 },
 	mb16: { marginBottom: 16 },

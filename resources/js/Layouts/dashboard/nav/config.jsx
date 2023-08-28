@@ -122,9 +122,11 @@ const navConfig = [
 					'training.management.external.show',
 					'training.management.create',
 					'training.management.edit',
+					'training.management.courses'
 				],
 				children: [
 					{ title: 'create', gate: 'training_create', path: PATH_DASHBOARD.training.new(2), routeNames: ['training.management.create'] },
+					{ title: 'register', gate: 'training_create', path: PATH_DASHBOARD.training.register, routeNames: ['training.management.courses'] },
 					{ title: 'client', gate: 'training_show', path: PATH_DASHBOARD.training.client, routeNames: ['training.management.client', 'training.management.client.show'] },
 					{ title: 'induction', gate: 'training_show', path: PATH_DASHBOARD.training.induction, routeNames: ['training.management.induction', 'training.management.induction.show'] },
 					{ title: 'in house', gate: 'training_show', path: PATH_DASHBOARD.training.inHouse, routeNames: ['training.management.in_house', 'training.management.in_house.show'] },
