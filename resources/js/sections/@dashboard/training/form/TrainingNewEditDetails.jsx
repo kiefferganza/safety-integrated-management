@@ -3,9 +3,9 @@ import { usePage } from '@inertiajs/inertia-react';
 // form
 import { useFormContext } from 'react-hook-form';
 // @mui
-import { Box, Stack, Button, Divider, Typography, TextField, Autocomplete, FormHelperText } from '@mui/material';
+import { Box, Stack, Button, Divider, Typography, TextField, Autocomplete, FormHelperText, MenuItem } from '@mui/material';
 // components
-import { RHFAutocomplete, RHFTextField } from '@/Components/hook-form';
+import { RHFAutocomplete, RHFMuiSelect, RHFTextField } from '@/Components/hook-form';
 import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
 import Iconify from '@/Components/iconify';
 import TrainingEmployeeDialog from './TrainingEmployeeDialog';
@@ -16,7 +16,7 @@ import { currencies } from '@/_mock/arrays/_currencies';
 // ----------------------------------------------------------------------
 
 const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
-	const { personel } = usePage().props;
+	const { personel, courses = [] } = usePage().props;
 	const [openParticipants, setOpenParticipants] = useState(false);
 	const { setValue, watch, trigger, formState: { errors } } = useFormContext();
 	const values = watch();
@@ -136,7 +136,8 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 				<Stack alignItems="flex-end" spacing={2}>
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-						<RHFTextField name="title" label="Course Title" fullWidth />
+						{/* <RHFTextField name="title" label="Course Title" fullWidth /> */}
+						<RHFMuiSelect name="title" label="Course Title" fullWidth options={courses.map(c => ({ label: c.course_name, value: c.id }))} />
 
 						<RHFTextField name="contract_no" label="Contract No." fullWidth />
 

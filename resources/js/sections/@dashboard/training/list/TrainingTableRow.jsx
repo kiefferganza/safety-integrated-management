@@ -23,7 +23,7 @@ TrainingTableRow.propTypes = {
 
 export default function TrainingTableRow ({ row, selected, onSelectRow, onDeleteRow, url, canEdit, canDelete }) {
 	const { auth: { user } } = usePage().props;
-	const { cms, title, trainees_count, training_date, date_expired, status, completed } = row;
+	const { cms, course, title, trainees_count, training_date, date_expired, status, completed } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -55,7 +55,7 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 
 				<TableCell sx={{ whiteSpace: "nowrap", textTransform: "uppercase" }}>{cms}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap" }}>{title}</TableCell>
+				<TableCell sx={{ whiteSpace: "nowrap" }}>{course ? course.course_name : title}</TableCell>
 
 				<TableCell sx={{ whiteSpace: "nowrap" }} align="center">{trainees_count}</TableCell>
 

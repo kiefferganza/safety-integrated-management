@@ -92,6 +92,7 @@ class TrainingController extends Controller
 
 	public function create(Request $request) {
 		$trainingService = new TrainingService();
+		$courses = TrainingCourses::get();
 		
 		return Inertia::render("Dashboard/Management/Training/Create/index",[
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
@@ -102,6 +103,7 @@ class TrainingController extends Controller
 				])
 				->get(),
 			"type" => $request->query('type') ? $request->query('type') : 2,
+			"courses" => $courses,
 			"sequences" => [
 				"1" => $trainingService->getSequenceNo(1),
 				"2" => $trainingService->getSequenceNo(2),
@@ -124,7 +126,8 @@ class TrainingController extends Controller
 		$training->document_type = $request->document_type;
 		$training->document_zone = $request->document_zone;
 		$training->document_level = $request->document_level;
-		$training->title = $request->title;
+		// $training->title = $request->title;
+		$training->course_id = $request->title;
 		$training->location = $request->location;
 		$training->contract_no = $request->contract_no;
 		$training->trainer = $request->trainer;
@@ -218,6 +221,7 @@ class TrainingController extends Controller
 				["tbl_employees.is_active", 0],
 			])
 			->get(),
+			"courses" => TrainingCourses::get(),
 			"details" => $trainingService->getTrainingType($training->type)
 		]);
 	}
@@ -231,7 +235,8 @@ class TrainingController extends Controller
 		$training->document_type = $request->document_type;
 		$training->document_zone = $request->document_zone;
 		$training->document_level = $request->document_level;
-		$training->title = $request->title;
+		// $training->title = $request->title;
+		$training->course = $request->title;
 		$training->location = $request->location;
 		$training->contract_no = $request->contract_no;
 		$training->trainer = $request->trainer;

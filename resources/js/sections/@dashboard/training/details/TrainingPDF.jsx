@@ -71,7 +71,7 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 							<View style={{ flexDirection: 'column' }}>
 								<Text style={styles.subtitle2}>Course Title</Text>
 								<View style={{ width: '100%' }}>
-									<Text style={[styles.underlineText, styles.body1]}>{training.title}</Text>
+									<Text style={[styles.underlineText, styles.body1]}>{training?.course ? training.course.course_name : training.title}</Text>
 								</View>
 							</View>
 

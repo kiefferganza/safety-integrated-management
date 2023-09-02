@@ -57,4 +57,8 @@ class Training extends Model
 		return $this->hasMany(TrainingExternalComment::class, "training_id", "training_id");
 	}
 
+	public function course() {
+		return $this->hasOne(TrainingCourses::class, 'id', 'course_id');
+	}
+
 }

@@ -451,7 +451,8 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 	if (filterName) {
 		inputData = inputData.filter((training) =>
 			training.cms.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
-			training.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+			(training?.course ? training.course?.course_name?.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 : false) ||
+			(training?.title ? training.title?.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 : false)
 		);
 	}
 

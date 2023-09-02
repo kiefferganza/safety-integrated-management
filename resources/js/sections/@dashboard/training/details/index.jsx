@@ -100,7 +100,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Course Title</Typography>
 							</Box>
 							<Box>
-								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training.title}</Typography>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training?.course ? training.course.course_name : training.title}</Typography>
 							</Box>
 						</Box>
 
@@ -388,7 +388,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 								</Typography>
 							</Box>
 							<Box>
-								<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Requested by</Typography>
+								<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Submitted by</Typography>
 							</Box>
 						</Box>
 					</Box>
