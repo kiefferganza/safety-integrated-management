@@ -65,7 +65,7 @@ const ExternalDetailHead = ({ training }) => {
 							<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Course Title</Typography>
 						</Box>
 						<Box>
-							<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training.title}</Typography>
+							<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training?.course?.course_name || training.title || ''}</Typography>
 						</Box>
 					</Box>
 

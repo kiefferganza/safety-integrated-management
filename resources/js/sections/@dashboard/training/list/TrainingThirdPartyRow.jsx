@@ -26,7 +26,7 @@ TrainingThirdPartyRow.propTypes = {
 };
 
 export default function TrainingThirdPartyRow ({ row, selected, onSelectRow, onDeleteRow, canEdit, canDelete }) {
-	const { training_id, cms, title, trainees_count, training_date, date_expired, status, completed, external_details, external_status } = row;
+	const { training_id, cms, course, title, trainees_count, training_date, date_expired, status, completed, external_details, external_status } = row;
 	const { auth: { user } } = usePage().props;
 
 	const [openCollapse, setOpenCollapse] = useState(false);
@@ -77,7 +77,7 @@ export default function TrainingThirdPartyRow ({ row, selected, onSelectRow, onD
 
 				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap", textTransform: "uppercase" }}>{cms}</TableCell>
 
-				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap" }}>{title}</TableCell>
+				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap" }}>{course?.course_name || title || ""}</TableCell>
 
 				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap" }} align="center">{trainees_count}</TableCell>
 
