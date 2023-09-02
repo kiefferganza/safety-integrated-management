@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Training;
+use App\Models\TrainingTrainees;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -52,10 +53,11 @@ class TrainingSeeder extends Seeder
 		// 	$inductionSeq += 1;
 		// }
 		// Training::where('is_deleted', true)->delete();
-		$externals = Training::where([["is_deleted", false], ["type", 3]])->with('external_comments')->get();
-		foreach ($externals as $external) {
-			$external->revision_no = $external->external_comments->count();
-			$external->save();
-		}
+		// $externals = Training::where([["is_deleted", false], ["type", 3]])->with('external_comments')->get();
+		// foreach ($externals as $external) {
+		// 	$external->revision_no = $external->external_comments->count();
+		// 	$external->save();
+		// }
+		TrainingTrainees::doesntHave('training')->delete();
     }
 }

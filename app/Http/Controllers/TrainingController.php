@@ -827,4 +827,26 @@ class TrainingController extends Controller
 		->with('type', 'success');
 	}
 
+
+	public function matrix() {
+		$user = auth()->user();
+
+		$employees = Employee::where('sub_id', $user->subscriber_id)->where('tbl_employees.is_deleted', 0)
+		->select('employee_id', 'firstname', 'lastname', 'tbl_position.position')
+		->has('participated_trainings')
+		->with('participated_trainings', function($q) {
+			return $q->select(['trainee_id','tbl_training_trainees.training_id', 'employee_id', 'tbl_trainings_files.src'])->leftJoin(
+				'tbl_trainings_files', function($joinQuery) {
+					return $joinQuery->on('tbl_trainings_files.training_id', '=', 'tbl_training_trainees.training_id')
+					->on('tbl_trainings_files.emp_id', '=', 'tbl_training_trainees.employee_id');
+				});
+		})
+		->leftJoin('tbl_position', 'tbl_position.position_id', 'tbl_employees.position')
+		->get();
+
+		return Inertia::render("Dashboard/Management/Training/Matrix/index", [
+			'employees' => $employees
+		]);
+	}
+
 }

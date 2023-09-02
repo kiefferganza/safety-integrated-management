@@ -13,4 +13,8 @@ class TrainingFiles extends Model
 	protected $primaryKey = 'training_files_id';
 
 	protected $guarded = [];
+
+	public function employee() {
+		$this->belongsTo(Employee::class, 'employee_id', 'employee_id');
+	}
 }

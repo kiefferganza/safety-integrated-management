@@ -55,6 +55,10 @@ class Employee extends Model
         return $this->hasMany(Training::class, "employee_id");
     }
 
+	// public function training_files($trainingId) {
+	// 	return $this->hasManyThrough(TrainingFiles::class, Training::class, 'emp_id', 'training_id')->where('tbl_trainings.training_id', $trainingId);
+	// }
+
     public function participated_trainings()
     {
         return $this->hasMany(TrainingTrainees::class, "employee_id", "employee_id");

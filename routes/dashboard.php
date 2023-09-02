@@ -144,6 +144,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 * Management - Training
 	 */
 	Route::prefix('training')->as('training.management.')->group(function() {
+		Route::get('/matrix', [TrainingController::class, 'matrix'])->name('matrix');
 		// Lists
 		Route::middleware("permission:training_show")->group(function() {
 			Route::get('/registered-courses', [TrainingController::class, 'courses'])->name('courses');

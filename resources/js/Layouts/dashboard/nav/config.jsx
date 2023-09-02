@@ -122,7 +122,8 @@ const navConfig = [
 					'training.management.external.show',
 					'training.management.create',
 					'training.management.edit',
-					'training.management.courses'
+					'training.management.courses',
+					'training.management.matrix'
 				],
 				children: [
 					{ title: 'create', gate: 'training_create', path: PATH_DASHBOARD.training.new(2), routeNames: ['training.management.create'] },
@@ -131,7 +132,7 @@ const navConfig = [
 					{ title: 'induction', gate: 'training_show', path: PATH_DASHBOARD.training.induction, routeNames: ['training.management.induction', 'training.management.induction.show'] },
 					{ title: 'in house', gate: 'training_show', path: PATH_DASHBOARD.training.inHouse, routeNames: ['training.management.in_house', 'training.management.in_house.show'] },
 					{ title: 'third party', gate: 'training_show', path: PATH_DASHBOARD.training.thirdParty, routeNames: ['training.management.external', 'training.management.external.show'] },
-					{ title: 'metrics report', path: '/#', disabled: true },
+					{ title: 'matrix report', path: PATH_DASHBOARD.training.matrix, routeNames: ['training.management.matrix'] },
 				]
 			},
 
