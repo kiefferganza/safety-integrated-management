@@ -15,7 +15,7 @@ class UpdateDocument extends Seeder
      */
     public function run()
     {
-        $documents = Document::where("is_deleted", 0)->where("folder_id", 11)->orderBy('date_uploaded')->get();
+        $documents = Document::where("is_deleted", 0)->where("folder_id", 11)->withWhereHas("employee")->orderBy('date_uploaded')->get();
 		$seq = 0;
 		foreach ($documents as $doc) {
 			$form_number = sprintf("%s-%s-%s-%s", $doc->project_code, $doc->originator,$doc->discipline,$doc->document_type);
