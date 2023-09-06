@@ -16,9 +16,11 @@ use App\Models\TrainingTrainees;
 use App\Models\User;
 use App\Notifications\NewTrainingCommentNotification;
 use App\Services\TrainingService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class TrainingController extends Controller
@@ -831,21 +833,109 @@ class TrainingController extends Controller
 	public function matrix() {
 		$user = auth()->user();
 
+		$courses = TrainingCourses::select('id', 'course_name')->withTrashed()->get();
+		$foundCourse = $courses->find(1);
+
 		$employees = Employee::where('sub_id', $user->subscriber_id)->where('tbl_employees.is_deleted', 0)
 		->select('employee_id', 'firstname', 'lastname', 'tbl_position.position')
 		->has('participated_trainings')
 		->with('participated_trainings', function($q) {
-			return $q->select(['trainee_id','tbl_training_trainees.training_id', 'employee_id', 'tbl_trainings_files.src'])->leftJoin(
-				'tbl_trainings_files', function($joinQuery) {
-					return $joinQuery->on('tbl_trainings_files.training_id', '=', 'tbl_training_trainees.training_id')
-					->on('tbl_trainings_files.emp_id', '=', 'tbl_training_trainees.employee_id');
+			return $q->select(['trainee_id', 'tbl_training_trainees.training_id',  'tbl_training_trainees.employee_id', 'tbl_trainings_files.src', 'tbl_trainings.training_date', 'tbl_trainings.course_id', 'tbl_trainings.title'])
+				->join('tbl_trainings', 'tbl_trainings.training_id', 'tbl_training_trainees.training_id')
+				->leftJoin(
+					'tbl_trainings_files', function($joinQuery) {
+						return $joinQuery->on('tbl_trainings_files.training_id', '=', 'tbl_training_trainees.training_id')
+						->on('tbl_trainings_files.emp_id', '=', 'tbl_training_trainees.employee_id');
 				});
 		})
 		->leftJoin('tbl_position', 'tbl_position.position_id', 'tbl_employees.position')
 		->get();
 
+		$years = collect([]);
+		$titles = [];
+		$storage = Storage::disk("public");
+
+		foreach ($employees as $employee) {
+			$employeeFullName = $employee->fullname;
+			$employeePosition = trim($employee->position);
+			$employeeId = $employee->employee_id;
+			foreach ($employee->participated_trainings as $parTraining) {
+				$year = Carbon::parse($parTraining->training_date)->year;
+				$existingYear = $years->get($year, collect([
+					[
+						'employee_id' => $employeeId,
+						'fullName' => $employeeFullName,
+						'position' => $employeePosition,
+						'data' => collect([])
+					]
+				]));
+
+				$employeeData = $existingYear->first(function ($val) use ($employeeId) {
+					return $val['employee_id'] === $employeeId;
+				});
+
+				if(!$employeeData) {
+					$existingYear->push([
+						'employee_id' => $employeeId,
+						'fullName' => $employeeFullName,
+						'position' => $employeePosition,
+						'data' => collect([])
+					]);
+				}
+				$years->put($year, $existingYear);
+				
+				$course = '';
+				if($parTraining->course_id) {
+					$foundCourse = $courses->find($parTraining->course_id);
+					if($foundCourse) {
+						$course = $foundCourse->course_name;
+					}
+				}else {
+					$title = $parTraining->title;
+					if($title) {
+						$foundCourse = $courses->first(function ($course) use ($title) {
+							return strtolower(trim($course->course_name)) === strtolower(trim($title));
+						});
+						if($foundCourse) {
+							$course = $foundCourse->course_name;
+						}else {
+							$course = $title;
+						}
+					}
+				}
+				
+				$lowercaseTitles = array_map('strtolower', $titles);
+				$lowerNewTitle = strtolower($title);
+				if (!in_array($lowerNewTitle, $lowercaseTitles)) {
+					$titles[] = $title;
+				}
+				
+				if($course !== '') {
+					$employeeData = $existingYear->first(function ($val) use ($employeeId) {
+						return $val['employee_id'] === $employeeId;
+					});
+					$isCompleted = $parTraining->src ? $storage->exists("media/training/". $parTraining->src) : false;
+					if($employeeData) {
+						$employeeData['data']->push([
+							...$parTraining->toArray(),
+							'courseName' => $course,
+							'isCompleted' => $isCompleted,
+							'position' => $employeePosition,
+						]);
+					}
+					$years->put($year, $existingYear);
+				}
+			}
+		}
+
+		$years->transform(function($year) {
+			return $year->sortBy('fullName')->values();
+		});
+
 		return Inertia::render("Dashboard/Management/Training/Matrix/index", [
-			'employees' => $employees
+			'courses' => $courses,
+			'years' => $years,
+			'titles' => $titles
 		]);
 	}
 

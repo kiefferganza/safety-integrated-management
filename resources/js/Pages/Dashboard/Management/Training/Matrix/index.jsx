@@ -8,8 +8,8 @@ const CustomBreadcrumbs = lazy(() => import('@/Components/custom-breadcrumbs/Cus
 const Container = lazy(() => import('@mui/material/Container'));
 const TrainingMatrixPage = lazy(() => import('./TrainingMatrixPage'));
 
-const index = ({ employees }) => {
-	console.log({ employees })
+const index = ({ titles, years }) => {
+	console.log({ years, titles })
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -36,7 +36,7 @@ const index = ({ employees }) => {
 							},
 						]}
 					/>
-					<TrainingMatrixPage employees={employees} />
+					<TrainingMatrixPage titles={titles} years={years} />
 				</Container>
 			</DashboardLayout>
 		</Suspense>
