@@ -9,7 +9,6 @@ const Container = lazy(() => import('@mui/material/Container'));
 const TrainingMatrixPage = lazy(() => import('./TrainingMatrixPage'));
 
 const index = ({ titles, years }) => {
-	console.log({ years, titles })
 	const { themeStretch } = useSettingsContext();
 
 	return (

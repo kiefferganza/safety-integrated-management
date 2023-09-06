@@ -48,7 +48,6 @@ const TableCell = styled(Box)`
 	&>p {
 		transform-origin: left bottom;
 		white-space: nowrap;
-		text-align: center;
 		&.vertical {
 			writing-mode: vertical-lr;
 		}
@@ -90,7 +89,6 @@ export default function TrainingMatrixPage ({ titles, years }) {
 
 	const handleYearChange = (e) => {
 		setSelectedYear(e.currentTarget.value);
-		// console.log(years[e.currentTarget.value]);
 	}
 
 	return (
@@ -176,13 +174,13 @@ function MatrixTable ({ titles, data }) {
 				{(data || [])?.map((d, i) => (
 					<TableBody key={i} direction="row">
 						<TableCell width={65}>
-							<Typography component='p' variant="subtitle2" color="inherit">{i + 1}</Typography>
+							<Typography component='p' variant="subtitle2" color="inherit" textAlign="center">{i + 1}</Typography>
 						</TableCell>
 						<TableCell width={240}>
-							<Typography component='p' variant="subtitle2" color="inherit">{d.fullName}</Typography>
+							<Typography component='p' variant="subtitle2" color="inherit" pl={1}>{d.fullName}</Typography>
 						</TableCell>
 						<TableCell width={200}>
-							<Typography component='p' variant="subtitle2" color="inherit" textTransform="capitalize">{d.position}</Typography>
+							<Typography component='p' variant="subtitle2" color="inherit" textTransform="capitalize" pl={1}>{d.position}</Typography>
 						</TableCell>
 						{titles?.map((title, idx) => {
 							const course = d?.data?.find(d => d?.courseName?.trim()?.toLowerCase() === title?.trim()?.toLowerCase());
