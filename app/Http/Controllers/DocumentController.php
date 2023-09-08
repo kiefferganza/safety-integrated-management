@@ -71,7 +71,7 @@ class DocumentController extends Controller
 			'approval_id' => ['nullable'],
 			'reviewers' => ['array']
 		]);
-
+		
 		$user = auth()->user();
 		$date_today = date('Y-m-d H:i:s');
 		$documentService = new DocumentService;
@@ -153,7 +153,7 @@ class DocumentController extends Controller
 					subtitle: null,
 					creator: $user,
 					params: [
-						'folder' => $$document->folder_id,
+						'folder' => $document->folder_id,
 						'document' => $documentService->generateFormNumber($document)
 					]
 				));
@@ -215,7 +215,6 @@ class DocumentController extends Controller
 		$document->employee->profile = null;
 		if($document->employee->user) {
 			$profile = $document->employee->user->getFirstMedia("profile", ["primary" => true]);
-			// dd($profile);
 			if($profile) {
 				$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
 				$document->employee->profile = [
