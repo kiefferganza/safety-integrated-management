@@ -58,6 +58,7 @@ class TrainingSeeder extends Seeder
 		// 	$external->revision_no = $external->external_comments->count();
 		// 	$external->save();
 		// }
-		TrainingTrainees::doesntHave('training')->delete();
+		// TrainingTrainees::doesntHave('training')->delete();
+		dd(Training::has('course')->get());
     }
 }

@@ -18,7 +18,6 @@ class TrainingService {
 
 	public function loadTraining(Training $training) {
 		$relation = [
-			"course",
 			"trainees" => fn ($query) => $query->with("position"),
 			"user_employee" => fn($q) => $q->select("user_id", "firstname", "lastname"),
 			"training_files",

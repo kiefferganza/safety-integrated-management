@@ -128,8 +128,8 @@ class TrainingController extends Controller
 		$training->document_type = $request->document_type;
 		$training->document_zone = $request->document_zone;
 		$training->document_level = $request->document_level;
-		// $training->title = $request->title;
-		$training->course_id = $request->title;
+		$training->title = $request->title;
+		// $training->course_id = $request->title;
 		$training->location = $request->location;
 		$training->contract_no = $request->contract_no;
 		$training->trainer = $request->trainer;
@@ -237,8 +237,8 @@ class TrainingController extends Controller
 		$training->document_type = $request->document_type;
 		$training->document_zone = $request->document_zone;
 		$training->document_level = $request->document_level;
-		// $training->title = $request->title;
-		$training->course = $request->title;
+		$training->title = $request->title;
+		// $training->course = $request->title;
 		$training->location = $request->location;
 		$training->contract_no = $request->contract_no;
 		$training->trainer = $request->trainer;
@@ -885,30 +885,23 @@ class TrainingController extends Controller
 				$years->put($year, $existingYear);
 				
 				$course = '';
-				if($parTraining->course_id) {
-					$foundCourse = $courses->find($parTraining->course_id);
+				$title = $parTraining->title;
+				if($title) {
+					$foundCourse = $courses->first(function ($course) use ($title) {
+						return strtolower(trim($course->course_name)) === strtolower(trim($title));
+					});
 					if($foundCourse) {
 						$course = $foundCourse->course_name;
+					}else {
+						$course = $title;
 					}
-				}else {
-					$title = $parTraining->title;
-					if($title) {
-						$foundCourse = $courses->first(function ($course) use ($title) {
-							return strtolower(trim($course->course_name)) === strtolower(trim($title));
-						});
-						if($foundCourse) {
-							$course = $foundCourse->course_name;
-						}else {
-							$course = $title;
-						}
+					$lowercaseTitles = array_map('strtolower', $titles);
+					$lowerNewTitle = strtolower($title);
+					if (!in_array($lowerNewTitle, $lowercaseTitles)) {
+						$titles[] = $title;
 					}
 				}
 				
-				$lowercaseTitles = array_map('strtolower', $titles);
-				$lowerNewTitle = strtolower($title);
-				if (!in_array($lowerNewTitle, $lowercaseTitles)) {
-					$titles[] = $title;
-				}
 				
 				if($course !== '') {
 					$employeeData = $existingYear->first(function ($val) use ($employeeId) {

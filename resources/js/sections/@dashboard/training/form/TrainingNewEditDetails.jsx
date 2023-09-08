@@ -137,7 +137,7 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
 						{/* <RHFTextField name="title" label="Course Title" fullWidth /> */}
-						<RHFMuiSelect name="title" label="Course Title" fullWidth options={courses.map(c => ({ label: c.course_name, value: c.id }))} />
+						<RHFMuiSelect name="title" label="Course Title" fullWidth options={courses.map(c => ({ label: c.course_name, value: c.course_name }))} />
 
 						<RHFTextField name="contract_no" label="Contract No." fullWidth />
 

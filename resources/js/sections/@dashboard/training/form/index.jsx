@@ -75,7 +75,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		document_type: currentTraining?.document_type || '',
 		document_zone: currentTraining?.document_zone || '',
 		document_level: currentTraining?.document_level || '',
-		title: currentTraining?.course_id || currentTraining?.title || '',
+		title: currentTraining?.title || '',
 		location: currentTraining?.location || '',
 		contract_no: currentTraining?.contract_no || '',
 		trainer: currentTraining?.trainer || '',
