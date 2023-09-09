@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/inertia-react';
 import * as Yup from 'yup';
 // form
@@ -67,7 +67,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		training_center: Yup.string().when("type", (type, schema) => type == "3" ? schema.required("Training center is required") : schema.notRequired()),
 	});
 
-	const defaultValues = useMemo(() => ({
+	const defaultValues = {
 		sequence_no: currentTraining?.sequence_no || sequences[type] || '',
 		project_code: currentTraining?.project_code || '',
 		originator: currentTraining?.originator || '',
@@ -90,7 +90,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		currency: currentTraining?.external_details?.currency || '',
 		course_price: currentTraining?.external_details?.course_price || '',
 		remarks: currentTraining?.remarks || ''
-	}), [currentTraining]);
+	};
 
 	const methods = useForm({
 		resolver: yupResolver(newTrainingSchema),
