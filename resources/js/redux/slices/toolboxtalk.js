@@ -95,7 +95,7 @@ export function getTbts () {
 	};
 }
 
-export function convertTbtByYear ({ tbt = [] }) {
+export function convertTbtByYear ({ tbt = [], calculateTbt = true }) {
 	dispatch(slice.actions.startLoading());
 	const tbtByDate = tbt.reduce((acc, toolbox) => {
 		const dateConducted = new Date(toolbox.date_conducted);
@@ -177,7 +177,9 @@ export function convertTbtByYear ({ tbt = [] }) {
 		}
 		return acc;
 	}, {});
-	calculateMhMpByPosition(tbtByDate);
+	if (calculateTbt) {
+		calculateMhMpByPosition(tbtByDate);
+	}
 	dispatch(slice.actions.setTbtByYear(tbtByDate));
 }
 

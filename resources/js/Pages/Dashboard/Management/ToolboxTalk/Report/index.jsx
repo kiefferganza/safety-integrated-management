@@ -4,7 +4,8 @@ import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from '@inertiajs/inertia-react';
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { convertTbtByYear } from "@/redux/slices/toolboxtalk";
+import { convertTbtByYear, setToolboxTalk } from "@/redux/slices/toolboxtalk";
+import { dispatch } from "@/redux/store";
 const TBTReportPage = lazy(() => import("./TBTReportPage"));
 
 const index = () => {
@@ -17,6 +18,7 @@ const index = () => {
 	useEffect(() => {
 		if (data?.data?.tbt) {
 			convertTbtByYear({ tbt: data.data.tbt });
+			dispatch(setToolboxTalk(data.data.tbt));
 		}
 	}, [data])
 
