@@ -1,14 +1,20 @@
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import DashboardLayout from '@/Layouts/dashboard/DashboardLayout';
 import { Head } from '@inertiajs/inertia-react';
 import { useSettingsContext } from '@/Components/settings';
 import { PATH_DASHBOARD } from '@/routes/paths';
+import MatrixToolbar from '@/sections/@dashboard/training/details/matrix/MatrixToolbar';
 const CustomBreadcrumbs = lazy(() => import('@/Components/custom-breadcrumbs/CustomBreadcrumbs'));
 const Container = lazy(() => import('@mui/material/Container'));
 const TrainingMatrixPage = lazy(() => import('./TrainingMatrixPage'));
 
 const index = ({ titles, years }) => {
+	const [selectedYear, setSelectedYear] = useState('all');
+
+	const handleYearChange = (e) => {
+		setSelectedYear(e.currentTarget.value);
+	}
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -35,7 +41,8 @@ const index = ({ titles, years }) => {
 							},
 						]}
 					/>
-					<TrainingMatrixPage titles={titles} years={years} />
+					<MatrixToolbar titles={titles} years={years} selectedYear={selectedYear} />
+					<TrainingMatrixPage titles={titles} years={years} handleYearChange={handleYearChange} selectedYear={selectedYear} />
 				</Container>
 			</DashboardLayout>
 		</Suspense>

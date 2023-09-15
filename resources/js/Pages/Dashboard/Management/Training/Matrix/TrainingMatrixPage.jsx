@@ -1,6 +1,6 @@
 import Scrollbar from "@/Components/scrollbar/Scrollbar";
 import { Box, Card, Grid, Stack, TextField, Typography, styled } from "@mui/material";
-import { useState } from "react";
+
 const TableHead = styled(Stack)(({ theme }) => ({
 	backgroundColor: '#305496',
 	height: '100%',
@@ -84,19 +84,16 @@ const POSITIONS = {
 	"Planner Engineer": "#e6ee9c",
 };
 
-export default function TrainingMatrixPage ({ titles, years }) {
-	const [selectedYear, setSelectedYear] = useState('all');
-
-	const handleYearChange = (e) => {
-		setSelectedYear(e.currentTarget.value);
+export default function TrainingMatrixPage ({ titles, years, handleYearChange, selectedYear }) {
+	if (selectedYear !== 'all') {
+		console.log(years, { [selectedYear]: years[selectedYear] })
 	}
-
 	return (
 		<Card sx={{ p: 2 }}>
 			<Grid container mb={3}>
 				<Grid item sm={12} md={2} lg={2} />
 				<Grid item sm={12} md={10} lg={10}>
-					<Typography varian="subtitle2" sx={{ fontWeight: '700' }} gutterBottom>Position Legend:</Typography>
+					<Typography variant="subtitle2" sx={{ fontWeight: '700' }} gutterBottom>Position Legend:</Typography>
 					<Stack direction="row" justifyContent="space-between" flexWrap="wrap">
 						{Object.entries(POSITIONS).map(([pos, color]) => (
 							<Stack direction="row" width={"33%"} key={pos}>
