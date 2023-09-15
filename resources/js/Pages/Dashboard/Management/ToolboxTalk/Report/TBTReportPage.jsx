@@ -45,6 +45,7 @@ const TYPES = {
 };
 
 const TBTReportPage = () => {
+	const [loading, setLoading] = useState(false);
 	const { toolboxTalks, tbtByYear, tbtYearTotalByPosition, isLoading, totalTbtByYear } = useSelector(state => state.toolboxtalk);
 	const { themeStretch } = useSettingsContext();
 	const theme = useTheme();
@@ -183,6 +184,10 @@ const TBTReportPage = () => {
 		location: new Set
 	});
 
+	if (loading) {
+		return <LoadingScreen />
+	}
+
 	if (isLoading || !tbtByYear || startDate === null || !tbtYearTotalByPosition) {
 		return <LoadingScreen />
 	}
@@ -288,7 +293,11 @@ const TBTReportPage = () => {
 								label="TBT Type"
 								multiple
 								value={filterType}
-								onChange={handleFilterType}
+								onChange={(e) => {
+									setLoading(true);
+									handleFilterType(e);
+									setLoading(false);
+								}}
 								renderValue={(selected) => selected.join(', ')}
 								fullWidth
 							>
@@ -359,16 +368,27 @@ const TBTReportPage = () => {
 					</Stack>
 					{filteredData?.length > 0 ? (
 						filteredData?.map((data, index) => {
-							const days = data[1] || {};
-							const positionData = tbtYearTotalByPosition[data[2]][data[0]] || {};
-							const tbtTotal = totalTbtByYear[data[2]][data[0]] || {};
-							return (
-								<Box key={index}>
-									<Box width={1} textAlign="center" sx={{ mt: 3, mb: 1 }}>
-										<Typography variant="h6">{MONTH_NAMES[data[0]]} {data[2]}</Typography>
+							if (tbtYearTotalByPosition[data[2]] && totalTbtByYear[data[2]]) {
+								const days = data[1] || {};
+								const positionData = tbtYearTotalByPosition[data[2]][data[0]] || {};
+								const tbtTotal = totalTbtByYear[data[2]][data[0]] || {};
+								return (
+									<Box key={index}>
+										<Box width={1} textAlign="center" sx={{ mt: 3, mb: 1 }}>
+											<Typography variant="h6">{MONTH_NAMES[data[0]]} {data[2]}</Typography>
+										</Box>
+										<TBTReportTable days={days} positionData={positionData} tbtTotal={tbtTotal} />
 									</Box>
-									<TBTReportTable days={days} positionData={positionData} tbtTotal={tbtTotal} />
-								</Box>
+								)
+							}
+							return (
+								<EmptyContent
+									key={index}
+									title="No Data"
+									sx={{
+										'& span.MuiBox-root': { height: 160 },
+									}}
+								/>
 							)
 						})
 					) : (
