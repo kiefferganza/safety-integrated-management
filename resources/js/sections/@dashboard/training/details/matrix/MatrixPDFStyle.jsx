@@ -53,8 +53,6 @@ const styles = StyleSheet.create({
 	},
 	gridContainer: { flexDirection: 'row', justifyContent: 'space-between' },
 	table: { display: 'flex', width: '100%' },
-	tableHeader: {},
-	tableBody: {},
 	tableRow: {
 		padding: '4px 0 2px 0',
 		flexDirection: 'row',
@@ -76,7 +74,7 @@ const styles = StyleSheet.create({
 	tableHeadCell: {
 		borderRight: '1px solid #000',
 		padding: '2px 4px',
-		minWidth: '48px',
+		minWidth: '40px',
 		position: 'relative'
 	},
 	tableHeadCellWrapper: {
@@ -84,7 +82,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		width: '100%',
-		height: 140,
+		height: 148,
 	},
 	tableHeadCellText: {
 		color: '#ffffff',

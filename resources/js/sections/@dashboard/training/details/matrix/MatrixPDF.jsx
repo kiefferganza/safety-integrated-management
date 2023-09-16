@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Page, View, Text, Image, Document } from '@react-pdf/renderer';
 
 import styles from './MatrixPDFStyle';
@@ -57,10 +58,27 @@ export default function MatrixPDF ({ years, titles, selectedYear }) {
 	// 	// 	return [training?.trainees];
 	// 	// }
 	// }
+
+	const total = {};
+	Object.entries(years).forEach(([year, data]) => {
+		data.forEach(data2 => {
+			data2.data.forEach(comp => {
+				if (!total[year]) {
+					total[year] = {};
+				}
+				if (comp.isCompleted) {
+					total[year][comp.courseName] = total[year][comp.courseName] ? total[year][comp.courseName] + 1 : 1;
+				} else {
+					total[year][comp.courseName] = 0;
+				}
+			});
+		})
+	});
+
 	return (
-		<Document title={"Training"}>
+		<Document title={"Training Matrix"}>
 			{Object.entries(yearData).map(([year, data], idx) => (
-				<Page size="A1" style={styles.page} key={year}>
+				<Page size="A3" style={styles.page} key={year}>
 					<View>
 						<View style={{ marginBottom: 16 }}>
 							<View style={styles.mb16}>
@@ -71,6 +89,11 @@ export default function MatrixPDF ({ years, titles, selectedYear }) {
 									<Text style={styles.h2}>{`Training Matrix - YEAR ${year}`}</Text>
 								</View>
 							</View>
+						</View>
+						<View style={{ alignItems: 'center', justifyContent: 'center' }}>
+							<MatrixTable titles={titles} data={data} year={year} total={total} />
+						</View>
+						<View style={{ marginTop: 16 }}>
 							{idx === 0 && (
 								<View style={styles.gridContainer}>
 									<View style={styles.col4} />
@@ -80,10 +103,10 @@ export default function MatrixPDF ({ years, titles, selectedYear }) {
 											{Object.entries(POSITIONS).map(([pos, color]) => (
 												<View style={{ flexDirection: 'row', width: '33%' }} key={pos}>
 													<View style={{ width: '50%' }}>
-														<Text style={[styles.body1, { fontWeight: 700 }]}>{pos}</Text>
+														<Text style={[styles.subtitle2]}>{pos}</Text>
 													</View>
 													<View style={{ width: '50%' }}>
-														<View style={{ width: 60, height: 25, backgroundColor: color, border: '0.25px solid #000' }} />
+														<View style={{ width: 60, height: 16, backgroundColor: color, border: '0.25px solid #000' }} />
 													</View>
 												</View>
 											))}
@@ -91,9 +114,6 @@ export default function MatrixPDF ({ years, titles, selectedYear }) {
 									</View>
 								</View>
 							)}
-						</View>
-						<View style={{ alignItems: 'center', justifyContent: 'center' }}>
-							<MatrixTable titles={titles} data={data} />
 						</View>
 					</View>
 					<View style={[styles.gridContainer, styles.footer]}>
@@ -111,315 +131,20 @@ export default function MatrixPDF ({ years, titles, selectedYear }) {
 			))}
 		</Document >
 	)
-
-	// return (
-	// 	<Document title="Training Matrix">
-	// 		{pages.map((trainees, pageIndex) => (
-	// 			<Page size="A1" style={styles.page} key={pageIndex}>
-	// 				<View style={styles.mb16}>
-	// 					<View style={styles.gridContainer}>
-	// 						<Image source="/logo/Fiafi-logo.png" style={{ height: 32, padding: 2 }} />
-	// 					</View>
-	// 					<View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
-	// 						<Text style={styles.h3}> {`${module} Training`}</Text>
-	// 					</View>
-	// 					<View style={styles.gridContainer}>
-	// 						<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
-	// 							<Text style={styles.subtitle2}>CMS Number:</Text>
-	// 							<Text style={[styles.body1, { fontWeight: 700 }]}>{training.cms ? training.cms.toUpperCase() : ""}</Text>
-	// 						</View>
-	// 						<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
-	// 							{/* <Text style={styles.subtitle2}>Revision:</Text>
-	// 							<Text style={[styles.body1, { fontWeight: 700 }]}>{training.revision_no || 0}</Text> */}
-	// 						</View>
-	// 						<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
-	// 							<Text style={styles.subtitle2}>Rollout Date:</Text>
-	// 							<Text></Text>
-	// 						</View>
-	// 					</View>
-	// 				</View>
-
-	// 				<View style={[styles.gridContainer, styles.mb16]}>
-	// 					<View style={[styles.col6, { paddingRight: 8 }]}>
-	// 						<View style={{ flexDirection: 'column' }}>
-	// 							<Text style={styles.subtitle2}>Course Title</Text>
-	// 							<View style={{ width: '100%' }}>
-	// 								<Text style={[styles.underlineText, styles.body1]}>{training?.course ? training.course.course_name : training.title}</Text>
-	// 							</View>
-	// 						</View>
-
-	// 						<View style={{ flexDirection: 'column' }}>
-	// 							<Text style={styles.subtitle2}>Training Location</Text>
-	// 							<View style={{ width: '100%' }}>
-	// 								<Text style={[styles.underlineText, styles.body1]}>{training.location}</Text>
-	// 							</View>
-	// 						</View>
-
-	// 						<View style={{ flexDirection: 'column' }}>
-	// 							<Text style={styles.subtitle2}>Contract No.</Text>
-	// 							<View style={{ width: '100%' }}>
-	// 								<Text style={[styles.underlineText, styles.body1]}>{training.contract_no}</Text>
-	// 							</View>
-	// 						</View>
-
-	// 						<View style={{ flexDirection: 'column' }}>
-	// 							<Text style={styles.subtitle2}>Conducted By</Text>
-	// 							<View style={{ width: '100%' }}>
-	// 								<Text style={[styles.underlineText, styles.body1]}>{training.trainer}</Text>
-	// 							</View>
-	// 						</View>
-
-	// 						{training.training_center && (
-	// 							<View style={{ flexDirection: 'column' }}>
-	// 								<Text style={styles.subtitle2}>Training Center</Text>
-	// 								<View style={{ width: '100%' }}>
-	// 									<Text style={[styles.underlineText, styles.body1]}>{training.training_center}</Text>
-	// 								</View>
-	// 							</View>
-	// 						)}
-	// 					</View>
-
-	// 					<View style={[styles.col6, { paddingLeft: 8 }]}>
-	// 						<View style={{ flexDirection: 'column' }}>
-	// 							<Text style={styles.subtitle2}>Date of Training</Text>
-	// 							<View style={{ width: '100%' }}>
-	// 								<Text style={[styles.underlineText, styles.body1]}>{training?.training_date ? fDate(new Date(training.training_date)) : ""}</Text>
-	// 							</View>
-	// 						</View>
-
-	// 						<View style={{ flexDirection: 'column' }}>
-	// 							<Text style={styles.subtitle2}>Date Expired</Text>
-	// 							<View style={{ width: '100%' }}>
-	// 								<Text style={[styles.underlineText, styles.body1]}>{training?.date_expired ? fDate(new Date(training.date_expired)) : null}</Text>
-	// 							</View>
-	// 						</View>
-
-	// 						<View style={{ flexDirection: 'column' }}>
-	// 							<Text style={styles.subtitle2}>Training Hours</Text>
-	// 							<View style={{ width: '100%' }}>
-	// 								<Text style={[styles.underlineText, styles.body1]}>{training.training_hrs}</Text>
-	// 							</View>
-	// 						</View>
-
-	// 						<View style={{ flexDirection: 'column' }}>
-	// 							<Text style={styles.subtitle2}>Status</Text>
-	// 							<View style={{ width: '100%' }}>
-	// 								<Text
-	// 									style={[styles.underlineText, styles.body1,
-	// 									{
-	// 										color: training?.status?.rawColor,
-	// 										fontWeight: 700,
-	// 									}
-	// 									]}>
-	// 									{training?.status?.text}
-	// 								</Text>
-	// 							</View>
-	// 						</View>
-	// 						{training.type === 3 && (
-	// 							<View style={{ flexDirection: 'column' }}>
-	// 								<Text style={styles.subtitle2}>Signed File</Text>
-	// 								<View style={{ width: '100%' }}>
-	// 									{training?.external_status?.currentFile ? (
-	// 										<Text style={{ color: 'blue' }}>
-	// 											{ellipsis(training.external_status.currentFile.name || "", 24)}
-	// 										</Text>
-	// 									) : (
-	// 										<Text style={[styles.faded, { fontWeight: 400 }]}>
-	// 											No Signed File
-	// 										</Text>
-	// 									)}
-	// 								</View>
-	// 							</View>
-	// 						)}
-	// 					</View>
-	// 				</View>
-
-	// 				<View style={styles.table}>
-	// 					<View style={styles.tableHeader}>
-	// 						<View style={styles.tableRow}>
-	// 							<View style={styles.tableCell_1}>
-	// 								<Text style={[styles.subtitle2, { paddingLeft: 4 }]}>S.no</Text>
-	// 							</View>
-
-	// 							<View style={styles.tableCell_2}>
-	// 								<Text style={styles.subtitle2}>Name</Text>
-	// 							</View>
-
-	// 							<View style={[styles.tableCell_2]}>
-	// 								<Text style={styles.subtitle2}>Position</Text>
-	// 							</View>
-
-	// 							<View style={styles.tableCell_1}>
-	// 								<Text style={[styles.subtitle2, { textAlign: 'center' }]}>Certificate</Text>
-	// 							</View>
-	// 						</View>
-	// 					</View>
-
-	// 					<View style={styles.tableBody}>
-	// 						{trainees?.map((item, idx) => (
-	// 							<View style={styles.tableRow} key={item.employee_id}>
-	// 								<View style={styles.tableCell_1}>
-	// 									<Text style={{ paddingLeft: 8 }}>{(idx + 1) + (pageIndex * PER_PAGE)}</Text>
-	// 								</View>
-
-	// 								<View style={styles.tableCell_2}>
-	// 									<Text>{item.fullname}</Text>
-	// 								</View>
-
-	// 								<View style={[styles.tableCell_2]}>
-	// 									<Text>{item.position}</Text>
-	// 								</View>
-
-	// 								<View style={styles.tableCell_1}>
-	// 									<Text style={[styles.subtitle2, { textAlign: 'center' }]}>{training?.external_status?.currentFile ? "Yes" : (item?.src ? "Yes" : "No")}</Text>
-	// 								</View>
-	// 							</View>
-	// 						))}
-	// 						{trainees?.length < PER_PAGE && (
-	// 							Array.from(Array(PER_PAGE - trainees.length).keys()).map((_, idx) => (
-	// 								<View style={styles.tableRow} key={idx}>
-	// 									<View style={styles.tableCell_1}>
-	// 										<Text style={{ paddingLeft: 8 }}>{trainees.length + ((idx + 1) + (pageIndex * PER_PAGE))}</Text>
-	// 									</View>
-
-	// 									<View style={styles.tableCell_2}>
-	// 									</View>
-
-	// 									<View style={[styles.tableCell_2]}>
-	// 									</View>
-
-	// 									<View style={styles.tableCell_1}>
-	// 									</View>
-	// 								</View>
-
-	// 							))
-	// 						)}
-	// 					</View>
-	// 				</View>
-
-	// 				<View style={[styles.mb40, { marginTop: training.type === 3 ? 32 : 80 }]}>
-	// 					<View style={styles.mb40}>
-	// 						<View style={[styles.gridContainer, styles.mb40]}>
-	// 							<Text style={styles.subtitle2}>Remarks</Text>
-	// 						</View>
-	// 						<View style={{ width: '100%', borderBottom: 1 }}>
-	// 						</View>
-	// 					</View>
-	// 					{training?.external_details || training.type === 3 ? (
-	// 						<View>
-	// 							<View style={[styles.gridContainer, styles.mb32]}>
-	// 								<View style={styles.col3}>
-	// 									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{training?.user_employee ? `${training?.user_employee?.firstname?.trim()} ${training?.user_employee?.lastname?.trim()}` : ''}</Text>
-	// 									<Text style={[styles.body1, { width: 140, textAlign: 'center', paddingTop: 4 }]}>Submitted By</Text>
-	// 								</View>
-	// 								<View style={styles.col3}>
-	// 									{training?.external_details?.reviewer && (
-	// 										<>
-	// 											<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
-	// 												{training?.external_details?.reviewer ? `${training?.external_details?.reviewer?.firstname?.trim()} ${training?.external_details?.reviewer?.lastname?.trim()}` : ""}
-	// 											</Text>
-	// 											<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Reviewed By</Text>
-	// 										</>
-	// 									)}
-	// 								</View>
-	// 								<View style={styles.col3}>
-	// 									{training?.external_details?.approval && (
-	// 										<>
-	// 											<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
-	// 												{training?.external_details?.approval ? `${training?.external_details?.approval?.firstname?.trim()} ${training?.external_details?.approval?.lastname?.trim()}` : ""}
-	// 											</Text>
-	// 											<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
-	// 										</>
-	// 									)}
-	// 								</View>
-	// 							</View>
-	// 							<View style={[styles.gridContainer, { flexDirection: "column" }]}>
-	// 								<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
-	// 									<View style={{ width: 80 }}>
-	// 										<Text>Total Attendees</Text>
-	// 									</View>
-	// 									<View style={{ width: 15 }}>
-	// 										<Text>:</Text>
-	// 									</View>
-	// 									<View>
-	// 										<Text style={{ textTransform: 'lowercase' }}>{training?.trainees?.length} pax</Text>
-	// 									</View>
-	// 								</View>
-
-	// 								<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
-	// 									<View style={{ width: 80 }}>
-	// 										<Text>Course Price</Text>
-	// 									</View>
-	// 									<View style={{ width: 15 }}>
-	// 										<Text>:</Text>
-	// 									</View>
-	// 									<View>
-	// 										<Text>{fCurrencyNumber(training?.external_details?.course_price) + '.00'} {training?.external_details?.currency}</Text>
-	// 									</View>
-	// 								</View>
-
-	// 								<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
-	// 									<View style={{ width: 80 }}>
-	// 										<Text>Total Ammount</Text>
-	// 									</View>
-	// 									<View style={{ width: 15 }}>
-	// 										<Text>:</Text>
-	// 									</View>
-	// 									<View>
-	// 										<Text>{training?.external_details?.currency}</Text>
-	// 									</View>
-	// 								</View>
-
-	// 								<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
-	// 									<View style={{ width: 80 }}>
-	// 										<Text>Date Requested</Text>
-	// 									</View>
-	// 									<View style={{ width: 15 }}>
-	// 										<Text>:</Text>
-	// 									</View>
-	// 									<View>
-	// 										<Text>{fDate(new Date(training?.external_details?.date_requested))}</Text>
-	// 									</View>
-	// 								</View>
-	// 							</View>
-	// 						</View>
-	// 					) : (
-	// 						<View>
-	// 							<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{training?.user_employee ? `${training?.user_employee?.firstname?.trim()} ${training?.user_employee?.lastname?.trim()}` : ''}</Text>
-	// 							<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Submitted By</Text>
-	// 						</View>
-	// 					)}
-	// 				</View>
-
-	// 				<View style={[styles.gridContainer, styles.footer]}>
-	// 					<View style={styles.col4}>
-	// 						<Text style={[styles.subtitle2, { fontSize: 9, textAlign: 'left' }]}>Uncontrolled Copy if Printed</Text>
-	// 					</View>
-	// 					<View style={styles.col6}>
-	// 						<Text style={[styles.subtitle2, { fontSize: 9, textAlign: 'center' }]}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
-	// 					</View>
-	// 					<View style={styles.col4}>
-	// 						<Text style={[styles.subtitle2, { fontSize: 9, textAlign: 'right' }]}>{format(new Date(), 'MM/dd/yy')} Page {page}</Text>
-	// 					</View>
-	// 				</View>
-	// 			</Page>
-	// 		))}
-	// 	</Document >
-	// );
 }
 
 
-function MatrixTable ({ titles, data }) {
+function MatrixTable ({ titles, data, year, total }) {
 	return (
 		<View style={styles.gridContainer}>
 			<View>
 				<View style={styles.tableHead}>
-					<View style={[styles.tableHeadCell, { width: 48 }]}>
+					<View style={[styles.tableHeadCell, { width: 40 }]}>
 						<View style={styles.tableHeadCellWrapper}>
 							<Text style={styles.tableHeadCellText}>S.no</Text>
 						</View>
 					</View>
-					<View style={[styles.tableHeadCell, { width: 140 }]}>
+					<View style={[styles.tableHeadCell, { width: 120 }]}>
 						<View style={styles.tableHeadCellWrapper}>
 							<Text style={styles.tableHeadCellText}>Name</Text>
 						</View>
@@ -430,7 +155,7 @@ function MatrixTable ({ titles, data }) {
 						</View>
 					</View>
 					{titles?.map((title, idx) => (
-						<View style={[styles.tableHeadCell, { width: 48 }]} key={idx}>
+						<View style={[styles.tableHeadCell, { width: 40 }]} key={idx}>
 							<View style={styles.tableTextVerticialWrapper}>
 								<Text style={[styles.tableHeadCellText, styles.tableTextVerticial]}>{title}</Text>
 							</View>
@@ -439,24 +164,37 @@ function MatrixTable ({ titles, data }) {
 				</View>
 				{(data || [])?.map((d, i) => (
 					<View key={i} style={styles.tableBody}>
-						<View style={[styles.tableHeadCell, { justifyContent: 'center', width: 48, height: 24, padding: 0 }]}>
-							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, color: "#000" }]}>{i + 1}</Text>
+						<View style={[styles.tableHeadCell, { justifyContent: 'center', width: 40, height: 16, padding: 0 }]}>
+							<Text style={[styles.tableHeadCellText, { fontWeight: 500, paddingBottom: 0, paddingTop: 1, paddingLeft: 4, color: "#000" }]}>{i + 1}</Text>
 						</View>
-						<View style={[styles.tableHeadCell, { justifyContent: 'center', width: 140, height: 24, padding: 0 }]}>
-							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, color: "#000" }]}>{d.fullName}</Text>
+						<View style={[styles.tableHeadCell, { justifyContent: 'center', width: 120, height: 16, padding: 0 }]}>
+							<Text style={[styles.tableHeadCellText, { fontWeight: 500, paddingBottom: 0, paddingTop: 1, paddingLeft: 4, color: "#000" }]}>{d.fullName}</Text>
 						</View>
-						<View style={[styles.tableHeadCell, { justifyContent: 'center', width: 90, height: 24, padding: 0 }]}>
-							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, color: "#000" }]}>{d.position}</Text>
+						<View style={[styles.tableHeadCell, { justifyContent: 'center', width: 90, height: 16, padding: 0 }]}>
+							<Text style={[styles.tableHeadCellText, { fontWeight: 500, paddingBottom: 0, paddingTop: 1, paddingLeft: 4, color: "#000" }]}>{d.position}</Text>
 						</View>
 						{titles?.map((title, idx) => {
 							const course = d?.data?.find(d => d?.courseName?.trim()?.toLowerCase() === title?.trim()?.toLowerCase());
 							return (
-								<View style={[styles.tableHeadCell, { backgroundColor: course ? (course.isCompleted ? '#808080' : 'red') : (POSITIONS[d.position] || 'transparent'), width: 48, height: 24, padding: 0 }]} key={idx}>
+								<View style={[styles.tableHeadCell, { backgroundColor: course ? (course.isCompleted ? '#808080' : 'red') : (POSITIONS[d.position] || 'transparent'), width: 40, height: 16, padding: 0 }]} key={idx}>
 								</View>
 							)
 						})}
 					</View>
 				))}
+				<View style={{ flexDirection: 'row', marginVertical: 8 }}>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 40, height: 16, padding: 0 }]}></View>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 16, padding: 0 }]}></View>
+
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}>
+						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 11, paddingLeft: 4, color: "#000", fontWeight: 700 }]}>Total</Text>
+					</View>
+					{titles?.map((title, idx) => (
+						<View style={[styles.tableHeadCell, { border: 0, width: 40, height: 18, padding: 0 }]} key={idx}>
+							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 11, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year][title] || 0}</Text>
+						</View>
+					))}
+				</View>
 			</View>
 		</View>
 	)

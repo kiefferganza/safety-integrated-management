@@ -59,6 +59,11 @@ class TrainingSeeder extends Seeder
 		// 	$external->save();
 		// }
 		// TrainingTrainees::doesntHave('training')->delete();
-		dd(Training::has('course')->get());
+		// dd(Training::has('course')->get());
+		Training::where('title', 'Safety Fundation')->update(['title' => 'Safety Foundation']);
+		Training::where('title', 'DDT')->update(['title' => 'DDT Training']);
+		Training::where('title', 'Working at Heights')->update(['title' => 'Working at Height']);
+		Training::where('title', 'Confined Space L-3')->update(['title' => 'CS level 3']);
+		Training::where('title', 'Confined Space Entry & Rescue L3')->update(['title' => 'CS Entry & Rescue Level 3']);
     }
 }

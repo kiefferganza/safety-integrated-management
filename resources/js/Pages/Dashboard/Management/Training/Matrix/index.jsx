@@ -11,11 +11,11 @@ const TrainingMatrixPage = lazy(() => import('./TrainingMatrixPage'));
 
 const index = ({ titles, years }) => {
 	const [selectedYear, setSelectedYear] = useState('all');
+	const { themeStretch } = useSettingsContext();
 
 	const handleYearChange = (e) => {
 		setSelectedYear(e.currentTarget.value);
 	}
-	const { themeStretch } = useSettingsContext();
 
 	return (
 		<Suspense fallback={<LoadingScreen />}>

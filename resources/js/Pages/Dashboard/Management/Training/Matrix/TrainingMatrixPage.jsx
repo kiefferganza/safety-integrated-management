@@ -85,9 +85,7 @@ const POSITIONS = {
 };
 
 export default function TrainingMatrixPage ({ titles, years, handleYearChange, selectedYear }) {
-	if (selectedYear !== 'all') {
-		console.log(years, { [selectedYear]: years[selectedYear] })
-	}
+
 	return (
 		<Card sx={{ p: 2 }}>
 			<Grid container mb={3}>
@@ -107,7 +105,15 @@ export default function TrainingMatrixPage ({ titles, years, handleYearChange, s
 						))}
 					</Stack>
 					<Stack my={3} alignItems="flex-end">
-						<TextField SelectProps={{ native: true }} onChange={handleYearChange} value={selectedYear} select label="Year" size="small" sx={{ minWidth: 160, marginRight: { sm: 0, md: '60px' } }}>
+						<TextField
+							SelectProps={{ native: true }}
+							onChange={handleYearChange}
+							value={selectedYear}
+							select
+							label="Year"
+							size="small"
+							sx={{ minWidth: 160, marginRight: { sm: 0, md: '60px' } }}
+						>
 							<option value="all">All</option>
 							{Object.keys(years).map(y => (
 								<option value={y} key={y}>{y}</option>
