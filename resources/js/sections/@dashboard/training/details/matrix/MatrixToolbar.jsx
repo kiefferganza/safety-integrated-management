@@ -9,7 +9,7 @@ import MatrixPDF from './MatrixPDF';
 
 // ----------------------------------------------------------------------
 
-export default function MatrixToolbar ({ titles, years, selectedYear }) {
+export default function MatrixToolbar ({ titles, years }) {
 	const [open, setOpen] = useState(false);
 
 	const handleOpen = () => {
@@ -37,7 +37,7 @@ export default function MatrixToolbar ({ titles, years, selectedYear }) {
 					</Tooltip>
 
 					<PDFDownloadLink
-						document={<MatrixPDF selectedYear={selectedYear} titles={titles} years={years} />}
+						document={<MatrixPDF titles={titles} years={years} />}
 						fileName={'training matrix'}
 						style={{ textDecoration: 'none' }}
 					>
@@ -70,7 +70,7 @@ export default function MatrixToolbar ({ titles, years, selectedYear }) {
 
 					<Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
 						<PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-							<MatrixPDF selectedYear={selectedYear} titles={titles} years={years} />
+							<MatrixPDF titles={titles} years={years} />
 						</PDFViewer>
 					</Box>
 				</Box>

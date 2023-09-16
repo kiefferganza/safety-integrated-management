@@ -830,8 +830,26 @@ class TrainingController extends Controller
 	}
 
 
-	public function matrix() {
+	public function matrix(Request $request) {
 		$user = auth()->user();
+
+		$from = $request->from;
+		$to = $request->to;
+		if(!$from || !$to) {
+			if(($from && !$to) || (!$from && $to)) {
+				abort(404);
+			}
+			$currentYear = Carbon::now()->year;
+			$from = Carbon::create($currentYear, 1, 1);
+			$to = Carbon::create($currentYear, 12, 31);
+		}
+
+
+		$yearList = Training::selectRaw('EXTRACT(YEAR FROM training_date) AS year')
+		->distinct()
+		->orderBy('year', 'desc')
+		->get()
+		->pluck('year');
 
 		$courses = TrainingCourses::select('id', 'course_name')->withTrashed()->get();
 		$foundCourse = $courses->find(1);
@@ -839,8 +857,9 @@ class TrainingController extends Controller
 		$employees = Employee::where('sub_id', $user->subscriber_id)->where('tbl_employees.is_deleted', 0)
 		->select('employee_id', 'firstname', 'lastname', 'tbl_position.position')
 		->has('participated_trainings')
-		->with('participated_trainings', function($q) {
+		->with('participated_trainings', function($q) use($from, $to) {
 			return $q->select(['trainee_id', 'tbl_training_trainees.training_id',  'tbl_training_trainees.employee_id', 'tbl_trainings_files.src', 'tbl_trainings.training_date', 'tbl_trainings.course_id', 'tbl_trainings.title'])
+				->whereBetween('training_date', [$from, $to])
 				->join('tbl_trainings', 'tbl_trainings.training_id', 'tbl_training_trainees.training_id')
 				->leftJoin(
 					'tbl_trainings_files', function($joinQuery) {
@@ -852,7 +871,9 @@ class TrainingController extends Controller
 		->get();
 
 		$years = collect([]);
+		
 		$titles = [];
+		// $titles = $courses->pluck('course_name')->toArray();
 		$storage = Storage::disk("public");
 
 		foreach ($employees as $employee) {
@@ -928,7 +949,10 @@ class TrainingController extends Controller
 		return Inertia::render("Dashboard/Management/Training/Matrix/index", [
 			'courses' => $courses,
 			'years' => $years,
-			'titles' => $titles
+			'titles' => $titles,
+			'yearList' => $yearList,
+			'from' => $from,
+			'to' => $to
 		]);
 	}
 

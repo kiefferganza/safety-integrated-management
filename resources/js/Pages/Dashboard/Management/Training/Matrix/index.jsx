@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy } from 'react';
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import DashboardLayout from '@/Layouts/dashboard/DashboardLayout';
 import { Head } from '@inertiajs/inertia-react';
@@ -9,13 +9,8 @@ const CustomBreadcrumbs = lazy(() => import('@/Components/custom-breadcrumbs/Cus
 const Container = lazy(() => import('@mui/material/Container'));
 const TrainingMatrixPage = lazy(() => import('./TrainingMatrixPage'));
 
-const index = ({ titles, years }) => {
-	const [selectedYear, setSelectedYear] = useState('all');
+const index = ({ titles, years, yearList, from, to }) => {
 	const { themeStretch } = useSettingsContext();
-
-	const handleYearChange = (e) => {
-		setSelectedYear(e.currentTarget.value);
-	}
 
 	return (
 		<Suspense fallback={<LoadingScreen />}>
@@ -41,8 +36,14 @@ const index = ({ titles, years }) => {
 							},
 						]}
 					/>
-					<MatrixToolbar titles={titles} years={years} selectedYear={selectedYear} />
-					<TrainingMatrixPage titles={titles} years={years} handleYearChange={handleYearChange} selectedYear={selectedYear} />
+					<MatrixToolbar titles={titles} years={years} />
+					<TrainingMatrixPage
+						titles={titles}
+						years={years}
+						yearList={yearList}
+						from={from}
+						to={to}
+					/>
 				</Container>
 			</DashboardLayout>
 		</Suspense>

@@ -1,7 +1,14 @@
+import { useState } from "react";
+import { useDateRangePicker } from "@/Components/date-range-picker";
+import DateRangePicker from "@/Components/date-range-picker/DateRangePicker";
+import Iconify from "@/Components/iconify";
+import LoadingScreen from "@/Components/loading-screen";
 import Scrollbar from "@/Components/scrollbar/Scrollbar";
-import { Box, Card, Grid, Stack, TextField, Typography, styled } from "@mui/material";
+import { Inertia } from "@inertiajs/inertia";
+import { Box, Button, Card, Grid, IconButton, Stack, Tooltip, Typography, styled } from "@mui/material";
+import { endOfMonth, format, startOfMonth } from "date-fns";
 
-const TableHead = styled(Stack)(({ theme }) => ({
+const TableHead = styled(Stack)(() => ({
 	backgroundColor: '#305496',
 	height: '100%',
 	borderLeft: '1px solid #000',
@@ -10,7 +17,7 @@ const TableHead = styled(Stack)(({ theme }) => ({
 	width: 'fit-content',
 }));
 
-const TableBody = styled(Stack)(({ theme }) => ({
+const TableBody = styled(Stack)(() => ({
 	height: '100%',
 	width: 'fit-content',
 	borderLeft: '1px solid #000',
@@ -84,64 +91,140 @@ const POSITIONS = {
 	"Planner Engineer": "#e6ee9c",
 };
 
-export default function TrainingMatrixPage ({ titles, years, handleYearChange, selectedYear }) {
+export default function TrainingMatrixPage ({ titles, years, selectedYear, yearList, from, to }) {
+	const [loading, setLoading] = useState(false);
+	const {
+		startDate,
+		endDate,
+		open: openPicker,
+		onOpen: onOpenPicker,
+		onClose: onClosePicker,
+		isSelected: isSelectedValuePicker,
+		isError,
+		label,
+		setStartDate,
+		setEndDate
+	} = useDateRangePicker(new Date(from), new Date(to));
+
+	const handleStartDateChange = (date) => {
+		setStartDate(startOfMonth(date));
+	}
+
+	const handleEndDateChange = (date) => {
+		setEndDate(endOfMonth(date));
+	}
+
+	const handleOnFilterDate = () => {
+		const routeName = route('training.management.matrix', {
+			_query: {
+				from: format(startDate, 'yyyy-MM-dd'),
+				to: format(endDate, 'yyyy-MM-dd')
+			}
+		});
+		Inertia.visit(routeName, {
+			preserveScroll: true,
+			preserveState: true,
+			only: [
+				'years',
+				'from',
+				'to',
+				'titles'
+			],
+			onStart () {
+				setLoading(true);
+			},
+			onFinish () {
+				setLoading(false);
+				onClosePicker();
+			}
+		});
+	}
+
+	const disableDate = (years) => {
+		return (date) => {
+			return years.indexOf(date.getFullYear()) === -1;
+		};
+	};
+
+	if (loading) {
+		return (
+			<LoadingScreen />
+		)
+	}
 
 	return (
-		<Card sx={{ p: 2 }}>
-			<Grid container mb={3}>
-				<Grid item sm={12} md={2} lg={2} />
-				<Grid item sm={12} md={10} lg={10}>
-					<Typography variant="subtitle2" sx={{ fontWeight: '700' }} gutterBottom>Position Legend:</Typography>
-					<Stack direction="row" justifyContent="space-between" flexWrap="wrap">
-						{Object.entries(POSITIONS).map(([pos, color]) => (
-							<Stack direction="row" width={"33%"} key={pos}>
-								<Box width="50%">
-									<Typography variant="subtitle2" sx={{ fontWeight: '600' }}>{pos}</Typography>
-								</Box>
-								<Box width="50%">
-									<Box width={60} height={25} bgcolor={color} border="0.25px solid" />
-								</Box>
-							</Stack>
-						))}
-					</Stack>
-					<Stack my={3} alignItems="flex-end">
-						<TextField
-							SelectProps={{ native: true }}
-							onChange={handleYearChange}
-							value={selectedYear}
-							select
-							label="Year"
-							size="small"
-							sx={{ minWidth: 160, marginRight: { sm: 0, md: '60px' } }}
-						>
-							<option value="all">All</option>
-							{Object.keys(years).map(y => (
-								<option value={y} key={y}>{y}</option>
+		<>
+			<Card sx={{ p: 2 }}>
+				<Grid container mb={3}>
+					<Grid item sm={12} md={2} lg={2} />
+					<Grid item sm={12} md={10} lg={10}>
+						<Typography variant="subtitle2" sx={{ fontWeight: '700' }} gutterBottom>Position Legend:</Typography>
+						<Stack direction="row" justifyContent="space-between" flexWrap="wrap">
+							{Object.entries(POSITIONS).map(([pos, color]) => (
+								<Stack direction="row" width={"33%"} key={pos}>
+									<Box width="50%">
+										<Typography variant="subtitle2" sx={{ fontWeight: '600' }}>{pos}</Typography>
+									</Box>
+									<Box width="50%">
+										<Box width={60} height={25} bgcolor={color} border="0.25px solid" />
+									</Box>
+								</Stack>
 							))}
-						</TextField>
-					</Stack>
+						</Stack>
+						<Stack my={3} alignItems="flex-end">
+							<Typography variant="subtitle2" gutterBottom>Filter Date</Typography>
+							{isSelectedValuePicker ? (
+								<Button
+									onClick={onOpenPicker}
+									variant="outlined"
+								>
+									{label}
+								</Button>
+							) : (
+								<Tooltip title="Due date">
+									<IconButton size="small" onClick={onOpenPicker}>
+										<Iconify icon="eva:calendar-fill" />
+									</IconButton>
+								</Tooltip>
+							)}
+						</Stack>
+					</Grid>
 				</Grid>
-			</Grid>
-			<Stack gap={5}>
-				{Object.entries(years).length > 0 && (
-					selectedYear !== 'all' ? (
-						years[selectedYear] && (
-							<Stack width={1}>
-								<Typography variant="h6" textAlign="center">Training Matrix - YEAR {selectedYear}</Typography>
-								<MatrixTable titles={titles} data={years[selectedYear]} />
-							</Stack>
-						)
-					) : (
+				<Stack gap={5}>
+					{Object.entries(years).length > 0 && (
 						Object.entries(years).map(([year, data], idx) => (
 							<Stack width={1} key={idx}>
 								<Typography variant="h6" textAlign="center">Training Matrix - YEAR {year}</Typography>
 								<MatrixTable titles={titles} data={data} />
 							</Stack>
 						))
-					)
-				)}
-			</Stack>
-		</Card>
+					)}
+				</Stack>
+			</Card>
+			<DateRangePicker
+				variant="calendar"
+				title="Choose training date"
+				startDate={startDate}
+				endDate={endDate}
+				onChangeStartDate={handleStartDateChange}
+				onChangeEndDate={handleEndDateChange}
+				open={openPicker}
+				onClose={onClosePicker}
+				isSelected={isSelectedValuePicker}
+				isError={isError}
+				onApply={handleOnFilterDate}
+				StartDateProps={{
+					shouldDisableDate: disableDate(yearList),
+					shouldDisableYear: disableDate(yearList),
+					views: ['year', 'month'],
+				}}
+				EndDateProps={{
+					shouldDisableDate: disableDate(yearList),
+					shouldDisableYear: disableDate(yearList),
+					views: ['year', 'month'],
+				}}
+			/>
+		</>
 	)
 }
 

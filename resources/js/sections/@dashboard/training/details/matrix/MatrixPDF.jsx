@@ -38,9 +38,7 @@ const POSITIONS = {
 
 // const PER_PAGE = 10;
 
-export default function MatrixPDF ({ years, titles, selectedYear }) {
-
-	const yearData = selectedYear !== 'all' ? { [selectedYear]: years[selectedYear] } : years;
+export default function MatrixPDF ({ years, titles }) {
 
 
 	// const pages = () => {
@@ -64,12 +62,14 @@ export default function MatrixPDF ({ years, titles, selectedYear }) {
 		data.forEach(data2 => {
 			data2.data.forEach(comp => {
 				if (!total[year]) {
-					total[year] = {};
+					total[year] = {
+						[comp.courseName]: 0,
+						'positions': new Set()
+					};
 				}
+				total[year]['positions'].add(comp.position);
 				if (comp.isCompleted) {
 					total[year][comp.courseName] = total[year][comp.courseName] ? total[year][comp.courseName] + 1 : 1;
-				} else {
-					total[year][comp.courseName] = 0;
 				}
 			});
 		})
@@ -77,7 +77,7 @@ export default function MatrixPDF ({ years, titles, selectedYear }) {
 
 	return (
 		<Document title={"Training Matrix"}>
-			{Object.entries(yearData).map(([year, data], idx) => (
+			{Object.entries(years).map(([year, data], idx) => (
 				<Page size="A3" style={styles.page} key={year}>
 					<View>
 						<View style={{ marginBottom: 16 }}>
@@ -135,6 +135,7 @@ export default function MatrixPDF ({ years, titles, selectedYear }) {
 
 
 function MatrixTable ({ titles, data, year, total }) {
+
 	return (
 		<View style={styles.gridContainer}>
 			<View>
@@ -184,14 +185,16 @@ function MatrixTable ({ titles, data, year, total }) {
 				))}
 				<View style={{ flexDirection: 'row', marginVertical: 8 }}>
 					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 40, height: 16, padding: 0 }]}></View>
-					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 16, padding: 0 }]}></View>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 16, padding: 0 }]}>
+						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 10, paddingLeft: 4, color: "#000", fontWeight: 700 }]}>Total</Text>
+					</View>
 
 					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}>
-						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 11, paddingLeft: 4, color: "#000", fontWeight: 700 }]}>Total</Text>
+						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 10, paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year]?.positions?.size || 0}</Text>
 					</View>
 					{titles?.map((title, idx) => (
 						<View style={[styles.tableHeadCell, { border: 0, width: 40, height: 18, padding: 0 }]} key={idx}>
-							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 11, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year][title] || 0}</Text>
+							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 10, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year][title] || 0}</Text>
 						</View>
 					))}
 				</View>
