@@ -858,7 +858,8 @@ class TrainingController extends Controller
 		->select('employee_id', 'firstname', 'lastname', 'tbl_position.position')
 		->has('participated_trainings')
 		->with('participated_trainings', function($q) use($from, $to) {
-			return $q->select(['trainee_id', 'tbl_training_trainees.training_id',  'tbl_training_trainees.employee_id', 'tbl_trainings_files.src', 'tbl_trainings.training_date', 'tbl_trainings.course_id', 'tbl_trainings.title'])
+			return $q->select(['trainee_id', 'tbl_training_trainees.training_id',  'tbl_training_trainees.employee_id', 'tbl_trainings_files.src', 'tbl_trainings.training_date', 'tbl_trainings.date_expired', 'tbl_trainings.title'])
+				->where('tbl_trainings.is_deleted', 0)
 				->whereBetween('training_date', [$from, $to])
 				->join('tbl_trainings', 'tbl_trainings.training_id', 'tbl_training_trainees.training_id')
 				->leftJoin(
@@ -887,6 +888,8 @@ class TrainingController extends Controller
 						'employee_id' => $employeeId,
 						'fullName' => $employeeFullName,
 						'position' => $employeePosition,
+						'completed_count' => 0,
+						'total_training' => 0,
 						'data' => collect([])
 					]
 				]));
@@ -900,6 +903,8 @@ class TrainingController extends Controller
 						'employee_id' => $employeeId,
 						'fullName' => $employeeFullName,
 						'position' => $employeePosition,
+						'completed_count' => 0,
+						'total_training' => 0,
 						'data' => collect([])
 					]);
 				}
@@ -925,18 +930,42 @@ class TrainingController extends Controller
 				
 				
 				if($course !== '') {
-					$employeeData = $existingYear->first(function ($val) use ($employeeId) {
-						return $val['employee_id'] === $employeeId;
+					$existingYear->transform(function($val) use($employeeId, $parTraining, $storage, $course, $employeePosition) {
+						if($val['employee_id'] === $employeeId) {
+							$isCompleted = $parTraining->src ? $storage->exists("media/training/". $parTraining->src) : false;
+							$expiredDate = Carbon::parse($parTraining->date_expired);
+							$parTraining->expired = false;
+							if(now() >= $expiredDate) {
+								$parTraining->expired = true;
+							}
+							$val['data']->push([
+								...$parTraining->toArray(),
+								'courseName' => $course,
+								'isCompleted' => $isCompleted,
+								'position' => $employeePosition,
+							]);
+							if($isCompleted) {
+								$val['completed_count'] += 1;
+							}
+							$val['total_training'] += 1;
+						}
+						return $val;
 					});
-					$isCompleted = $parTraining->src ? $storage->exists("media/training/". $parTraining->src) : false;
-					if($employeeData) {
-						$employeeData['data']->push([
-							...$parTraining->toArray(),
-							'courseName' => $course,
-							'isCompleted' => $isCompleted,
-							'position' => $employeePosition,
-						]);
-					}
+					// $employeeData = $existingYear->first(function ($val) use ($employeeId) {
+					// 	return $val['employee_id'] === $employeeId;
+					// });
+					// $isCompleted = $parTraining->src ? $storage->exists("media/training/". $parTraining->src) : false;
+					// if($employeeData) {
+					// 	$employeeData['data']->push([
+					// 		...$parTraining->toArray(),
+					// 		'courseName' => $course,
+					// 		'isCompleted' => $isCompleted,
+					// 		'position' => $employeePosition,
+					// 	]);
+					// 	$existingYear[0]['completed_count'] += 1;
+					// }
+					// dd($employeeData, $existingYear[0]['completed_count']);
+					// dd($existingYear);
 					$years->put($year, $existingYear);
 				}
 			}

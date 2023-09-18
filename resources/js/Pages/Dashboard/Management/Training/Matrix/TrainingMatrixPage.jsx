@@ -5,7 +5,7 @@ import Iconify from "@/Components/iconify";
 import LoadingScreen from "@/Components/loading-screen";
 import Scrollbar from "@/Components/scrollbar/Scrollbar";
 import { Inertia } from "@inertiajs/inertia";
-import { Box, Button, Card, Grid, IconButton, Stack, Tooltip, Typography, styled } from "@mui/material";
+import { Box, Button, Card, Divider, Grid, IconButton, Stack, Tooltip, Typography, styled } from "@mui/material";
 import { endOfMonth, format, startOfMonth } from "date-fns";
 
 const TableHead = styled(Stack)(() => ({
@@ -76,7 +76,7 @@ const POSITIONS = {
 	"Scaffolder": "#c5441c",
 	"Mechanical Technician": "#dfa1fe",
 	"Carpenter": "#ff00fc",
-	"Safety Officer": "#ffaf16",
+	"Safety Officer": "#8bc34a",
 	"Engineer": "#f9a19f",
 	"Grinder": "#91ad1c",
 	"Site Supervisor": "#1cffcf",
@@ -91,7 +91,7 @@ const POSITIONS = {
 	"Planner Engineer": "#e6ee9c",
 };
 
-export default function TrainingMatrixPage ({ titles, years, selectedYear, yearList, from, to }) {
+export default function TrainingMatrixPage ({ titles, years, yearList, from, to }) {
 	const [loading, setLoading] = useState(false);
 	const {
 		startDate,
@@ -140,6 +140,12 @@ export default function TrainingMatrixPage ({ titles, years, selectedYear, yearL
 		});
 	}
 
+	const handleClosePicker = () => {
+		setStartDate(new Date(from));
+		setEndDate(new Date(to));
+		onClosePicker();
+	}
+
 	const disableDate = (years) => {
 		return (date) => {
 			return years.indexOf(date.getFullYear()) === -1;
@@ -158,7 +164,30 @@ export default function TrainingMatrixPage ({ titles, years, selectedYear, yearL
 				<Grid container mb={3}>
 					<Grid item sm={12} md={2} lg={2} />
 					<Grid item sm={12} md={10} lg={10}>
-						<Typography variant="subtitle2" sx={{ fontWeight: '700' }} gutterBottom>Position Legend:</Typography>
+						<Stack direction="row" alignItems="center" justifyContent="space-between">
+							<Typography variant="subtitle2" sx={{ fontWeight: '700' }}>Position Legend:</Typography>
+							<Stack direction="row" alignItems="center" gap={1}>
+								<Stack direction="row" alignItems="center" gap={1}>
+									<Typography variant="subtitle2" sx={{ fontWeight: '700', whiteSpace: 'nowrap' }}>Completed: </Typography>
+									<Box width="50%">
+										<Box width={60} height={25} bgcolor="#808080" border="0.25px solid" />
+									</Box>
+								</Stack>
+								<Stack direction="row" alignItems="center" gap={1}>
+									<Typography variant="subtitle2" sx={{ fontWeight: '700', whiteSpace: 'nowrap' }}>Not Completed: </Typography>
+									<Box width="50%">
+										<Box width={60} height={25} bgcolor="#ffa500" border="0.25px solid" />
+									</Box>
+								</Stack>
+								<Stack direction="row" alignItems="center" gap={1}>
+									<Typography variant="subtitle2" sx={{ fontWeight: '700', whiteSpace: 'nowrap' }}>Expired: </Typography>
+									<Box width="50%">
+										<Box width={60} height={25} bgcolor="#d50000" border="0.25px solid" />
+									</Box>
+								</Stack>
+							</Stack>
+						</Stack>
+						<Divider sx={{ my: 1 }} />
 						<Stack direction="row" justifyContent="space-between" flexWrap="wrap">
 							{Object.entries(POSITIONS).map(([pos, color]) => (
 								<Stack direction="row" width={"33%"} key={pos}>
@@ -209,19 +238,21 @@ export default function TrainingMatrixPage ({ titles, years, selectedYear, yearL
 				onChangeStartDate={handleStartDateChange}
 				onChangeEndDate={handleEndDateChange}
 				open={openPicker}
-				onClose={onClosePicker}
+				onClose={handleClosePicker}
 				isSelected={isSelectedValuePicker}
 				isError={isError}
 				onApply={handleOnFilterDate}
 				StartDateProps={{
 					shouldDisableDate: disableDate(yearList),
 					shouldDisableYear: disableDate(yearList),
-					views: ['year', 'month'],
+					views: ['year'],
+					openTo: "year"
 				}}
 				EndDateProps={{
 					shouldDisableDate: disableDate(yearList),
 					shouldDisableYear: disableDate(yearList),
-					views: ['year', 'month'],
+					views: ['year'],
+					openTo: "year"
 				}}
 			/>
 		</>
@@ -272,7 +303,7 @@ function MatrixTable ({ titles, data }) {
 							const course = d?.data?.find(d => d?.courseName?.trim()?.toLowerCase() === title?.trim()?.toLowerCase());
 							return (
 								<TableCell key={idx}>
-									<Box width={1} height={1} bgcolor={course ? (course.isCompleted ? '#808080' : 'red') : (POSITIONS[d.position] || 'transparent')} />
+									<Box width={1} height={1} bgcolor={course ? (course.expired ? '#d50000' : (course.isCompleted ? '#808080' : '#ffa500')) : (POSITIONS[d.position] || 'transparent')} />
 								</TableCell>
 							)
 						})}
