@@ -889,7 +889,6 @@ class TrainingController extends Controller
 						'fullName' => $employeeFullName,
 						'position' => $employeePosition,
 						'completed_count' => 0,
-						'total_training' => 0,
 						'data' => collect([])
 					]
 				]));
@@ -904,7 +903,6 @@ class TrainingController extends Controller
 						'fullName' => $employeeFullName,
 						'position' => $employeePosition,
 						'completed_count' => 0,
-						'total_training' => 0,
 						'data' => collect([])
 					]);
 				}
@@ -947,7 +945,6 @@ class TrainingController extends Controller
 							if($isCompleted) {
 								$val['completed_count'] += 1;
 							}
-							$val['total_training'] += 1;
 						}
 						return $val;
 					});
@@ -964,8 +961,6 @@ class TrainingController extends Controller
 					// 	]);
 					// 	$existingYear[0]['completed_count'] += 1;
 					// }
-					// dd($employeeData, $existingYear[0]['completed_count']);
-					// dd($existingYear);
 					$years->put($year, $existingYear);
 				}
 			}

@@ -173,7 +173,7 @@ export default function MatrixPDF ({ years, titles }) {
 
 
 function MatrixTable ({ titles, data, year, total }) {
-	console.log({ data, year });
+
 	return (
 		<View style={styles.gridContainer}>
 			<View>
@@ -225,8 +225,8 @@ function MatrixTable ({ titles, data, year, total }) {
 									</View>
 								)
 							})}
-							<View style={[styles.tableHeadCell, { minWidth: 20, width: 20, height: 16, padding: 0 }]}>
-								<Text style={[styles.tableHeadCellText, { fontWeight: 500, paddingBottom: 0, paddingTop: 1.5, paddingLeft: 1.2, color: "#000" }]}>{d?.completed_count}/{d?.total_training}</Text>
+							<View style={[styles.tableHeadCell, { minWidth: 16, width: 16, height: 16, padding: 0 }]}>
+								<Text style={[styles.tableHeadCellText, { fontWeight: 500, paddingBottom: 0, paddingTop: 1.5, paddingLeft: 4.2, color: "#000" }]}>{d?.completed_count}</Text>
 							</View>
 						</View>
 					)
