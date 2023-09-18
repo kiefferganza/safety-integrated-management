@@ -110,7 +110,7 @@ export default function MatrixPDF ({ years, titles }) {
 												</View>
 												<View style={{ flexDirection: 'row', alignItems: 'center', width: '65%' }}>
 													<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-														<View>
+														<View style={{ height: 16 }}>
 															<Text style={[styles.subtitle2]}>Completed: </Text>
 														</View>
 														<View style={{ width: '35%' }}>
@@ -118,7 +118,7 @@ export default function MatrixPDF ({ years, titles }) {
 														</View>
 													</View>
 													<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-														<View>
+														<View style={{ height: 16 }}>
 															<Text style={[styles.subtitle2]}>Not Completed: </Text>
 														</View>
 														<View style={{ width: '35%' }}>
@@ -126,7 +126,7 @@ export default function MatrixPDF ({ years, titles }) {
 														</View>
 													</View>
 													<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-														<View>
+														<View style={{ height: 16 }}>
 															<Text style={[styles.subtitle2]}>Expired: </Text>
 														</View>
 														<View style={{ width: '35%' }}>

@@ -929,7 +929,7 @@ class TrainingController extends Controller
 				
 				if($course !== '') {
 					$existingYear->transform(function($val) use($employeeId, $parTraining, $storage, $course, $employeePosition) {
-						if($val['employee_id'] === $employeeId) {
+						if($val['employee_id'] === $employeeId && !$val['data']->contains('courseName', $course)) {
 							$isCompleted = $parTraining->src ? $storage->exists("media/training/". $parTraining->src) : false;
 							$expiredDate = Carbon::parse($parTraining->date_expired);
 							$parTraining->expired = false;
@@ -948,19 +948,6 @@ class TrainingController extends Controller
 						}
 						return $val;
 					});
-					// $employeeData = $existingYear->first(function ($val) use ($employeeId) {
-					// 	return $val['employee_id'] === $employeeId;
-					// });
-					// $isCompleted = $parTraining->src ? $storage->exists("media/training/". $parTraining->src) : false;
-					// if($employeeData) {
-					// 	$employeeData['data']->push([
-					// 		...$parTraining->toArray(),
-					// 		'courseName' => $course,
-					// 		'isCompleted' => $isCompleted,
-					// 		'position' => $employeePosition,
-					// 	]);
-					// 	$existingYear[0]['completed_count'] += 1;
-					// }
 					$years->put($year, $existingYear);
 				}
 			}
