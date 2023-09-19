@@ -224,7 +224,11 @@ export default function TrainingMatrixPage ({ titles, years, yearList, from, to 
 						Object.entries(years).map(([year, data], idx) => (
 							<Stack width={1} key={idx}>
 								<Typography variant="h6" textAlign="center">Training Matrix - YEAR {year}</Typography>
-								<MatrixTable titles={titles} data={data} />
+								<Scrollbar autoHide={false} sx={{ maxHeight: 900 }}>
+									<Stack>
+										<MatrixTable titles={titles} data={data} />
+									</Stack>
+								</Scrollbar>
 							</Stack>
 						))
 					)}
@@ -262,7 +266,7 @@ export default function TrainingMatrixPage ({ titles, years, yearList, from, to 
 
 function MatrixTable ({ titles, data }) {
 	return (
-		<Scrollbar>
+		<Scrollbar autoHide={false}>
 			<Box>
 				<TableHead direction="row">
 					<TableHeadCell width={65}>
