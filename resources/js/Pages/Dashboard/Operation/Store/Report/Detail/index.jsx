@@ -17,7 +17,7 @@ const index = ({ report }) => {
 	return (
 		<>
 			<Head>
-				<title> PPE: Report Detail</title>
+				<title> Store: Report Detail</title>
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
@@ -26,16 +26,16 @@ const index = ({ report }) => {
 							heading={report?.form_number?.toUpperCase()}
 							links={[
 								{
-									name: 'PPE',
-									href: PATH_DASHBOARD.store.report,
+									name: 'Store',
+									href: PATH_DASHBOARD.store.root,
 								},
 								{
 									name: "New Report",
-									href: PATH_DASHBOARD.store.report,
+									href: PATH_DASHBOARD.store.createReport,
 								},
 								{
 									name: "Report List",
-									href: PATH_DASHBOARD.store.reportList,
+									href: PATH_DASHBOARD.store.report,
 								},
 								{
 									name: report?.form_number?.toUpperCase()

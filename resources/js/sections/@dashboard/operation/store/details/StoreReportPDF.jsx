@@ -13,6 +13,7 @@ import { getInventoryStatus } from '@/utils/formatStatuses';
 const PER_PAGE = 12;
 
 export default function StoreReportPDF ({ report, title = "STORE REPORT PREVIEW" }) {
+	console.log(report)
 	const theme = useTheme();
 
 	const documents = useMemo(() => {
@@ -29,13 +30,13 @@ export default function StoreReportPDF ({ report, title = "STORE REPORT PREVIEW"
 		}
 	}, [report]);
 
-	const overallTotal = report?.items ? report.items.reduce((acc, curr) => acc + (curr?.max_order || 0) * (curr?.item_price || curr?.price), 0) : 0;
+	const overallTotal = report?.items ? report.items.reduce((acc, curr) => acc + (curr?.order || 0) * (curr?.item_price || curr?.price), 0) : 0;
 
 	const forcastMonth = report.budget_forcast_date ? `${fDate(startOfMonth(new Date(report.budget_forcast_date)), 'dd')} - ${fDate(endOfMonth(new Date(report.budget_forcast_date)), 'dd MMM yyyy')}` : "_______";
 	return (
 		<Document title={title}>
 			{documents.map((doc, index) => {
-				const total = doc.reduce((acc, curr) => acc + (curr?.max_order || 0) * (curr?.item_price || curr?.price), 0);
+				const total = doc.reduce((acc, curr) => acc + (curr?.order || 0) * (curr?.item_price || curr?.price), 0);
 				const curr = doc.at(-1)?.item_currency || doc.at(-1)?.currency;
 				return (
 					<Page size="A4" style={styles.page} key={index}>
@@ -240,27 +241,29 @@ export default function StoreReportPDF ({ report, title = "STORE REPORT PREVIEW"
 										</View>
 									))
 								)}
-								<View style={[styles.tableRow, { marginTop: 8, borderBottomWidth: 0 }]}>
-									<View style={styles.tableCell_1}></View>
+								{documents?.length > 1 && (
+									<View style={[styles.tableRow, { marginTop: 8, borderBottomWidth: 0 }]}>
+										<View style={styles.tableCell_1}></View>
 
-									<View style={styles.tableCell_2}></View>
+										<View style={styles.tableCell_2}></View>
 
-									<View style={[styles.tableCell_2]}></View>
+										<View style={[styles.tableCell_2]}></View>
 
-									<View style={[styles.tableCell_2]}></View>
+										<View style={[styles.tableCell_2]}></View>
 
-									<View style={styles.tableCell_2}></View>
+										<View style={styles.tableCell_2}></View>
 
-									<View style={[styles.tableCell_2]}></View>
+										<View style={[styles.tableCell_2]}></View>
 
-									<View style={[styles.tableCell_2]}>
-										<Text style={styles.subtitle2}>Subtotal:</Text>
+										<View style={[styles.tableCell_2]}>
+											<Text style={styles.subtitle2}>Subtotal:</Text>
+										</View>
+
+										<View style={styles.tableCell_2}>
+											<Text style={[styles.subtitle2, { borderBottomWidth: 1 }]}>{curr} {(total || 0)?.toLocaleString()}</Text>
+										</View>
 									</View>
-
-									<View style={styles.tableCell_2}>
-										<Text style={[styles.subtitle2, { borderBottomWidth: 1 }]}>{curr} {(total || 0)?.toLocaleString()}</Text>
-									</View>
-								</View>
+								)}
 								{(index + 1) === documents?.length && (
 									<View style={[styles.tableRow, { marginTop: 8, borderBottomWidth: 0 }]}>
 										<View style={styles.tableCell_1}></View>
@@ -299,11 +302,6 @@ export default function StoreReportPDF ({ report, title = "STORE REPORT PREVIEW"
 								</View>
 								<View style={{ flexDirection: 'row' }}>
 									<View style={{ width: "25%" }}>
-										{/* <Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.submitted?.fullname}</Text>
-										<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4, lineHeight: 0 }]}>Submitted By</Text>
-										{report?.submitted && (
-											<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.submitted?.position}</Text>
-										)} */}
 									</View>
 									<View style={{ width: "50%" }}>
 										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.reviewer?.fullname}</Text>
@@ -326,14 +324,14 @@ export default function StoreReportPDF ({ report, title = "STORE REPORT PREVIEW"
 						)}
 
 						<View style={[styles.gridContainer, styles.footer]}>
-							<View style={styles.col3}>
-								<Text style={{ fontSize: 8, textAlign: 'left' }}>Uncontrolled Copy if Printed</Text>
+							<View style={styles.col4}>
+								<Text style={[styles.subtitle2, { textAlign: 'left' }]}>Uncontrolled Copy if Printed</Text>
 							</View>
-							<View style={styles.col3}>
-								<Text style={{ fontSize: 8, textAlign: 'center' }}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
+							<View style={styles.col6}>
+								<Text style={[styles.subtitle2, { textAlign: 'center' }]}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
 							</View>
-							<View style={styles.col3}>
-								<Text style={{ fontSize: 8, textAlign: 'right' }}>{format(new Date(), 'MM/dd/yy')} Page {`${index + 1} / ${documents.length}`}</Text>
+							<View style={styles.col4}>
+								<Text style={[styles.subtitle2, { textAlign: 'right' }]}>{format(new Date(), 'MM/dd/yy')} Page {`1 / 1`}</Text>
 							</View>
 						</View>
 					</Page>

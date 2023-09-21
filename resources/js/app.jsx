@@ -49,6 +49,7 @@ import ThemeLocalization from './locales';
 
 // React Query
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Inertia } from '@inertiajs/inertia';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
@@ -56,6 +57,11 @@ const appName = window.document.getElementsByTagName('title')[0]?.innerText || '
 // 	showSpinner: true,
 // 	includeCSS: true,
 // });
+const userTimezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+Inertia.on('before', (event) => {
+	event.detail.visit.headers['X-User-Timezone'] = userTimezoneName;
+})
 
 createInertiaApp({
 	title: (title) => `${title} - ${appName}`,

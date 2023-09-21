@@ -8,6 +8,7 @@ use App\Models\Operation\Store\Store;
 use App\Models\Operation\Store\StoreHistory;
 use App\Models\Operation\Store\StoreReport;
 use App\Models\Operation\Store\StoreReportComment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -238,6 +239,9 @@ class StoreReportController extends Controller
 			"comment_code" => $request->comment_code,
 			"status" => $request->status
 		]);
+		
+		$storeReport->increment("revision_no");
+		$storeReport->save();
 
 		return redirect()->back()
 		->with("message", "Comment posted successfully!")
@@ -321,7 +325,6 @@ class StoreReportController extends Controller
 		])
 		->toMediaCollection('actions');
 
-		$storeReport->increment("revision_no");
 		$storeReport->save();
 
 		return redirect()->back()

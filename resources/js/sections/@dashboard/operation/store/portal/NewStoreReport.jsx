@@ -17,6 +17,7 @@ import Scrollbar from "@/Components/scrollbar/Scrollbar";
 import Image from "@/Components/image/Image";
 import Label from "@/Components/label/Label";
 import Iconify from "@/Components/iconify/Iconify";
+import { format } from "date-fns";
 
 const newBudgetForecastSchema = Yup.object().shape({
 	project_code: Yup.string().required('Project Code is required'),
@@ -105,6 +106,10 @@ export const NewStoreReport = ({ open, onClose, stores, employees, sequence_no, 
 	};
 
 	const onSubmit = (data) => {
+		data.inventory_start_date = format(data.inventory_start_date, 'yyyy/MM/dd');
+		data.inventory_end_date = format(data.inventory_end_date, 'yyyy/MM/dd');
+		data.budget_forcast_date = format(data.budget_forcast_date, 'yyyy/MM/dd');
+		data.submitted_date = format(data.submitted_date, 'yyyy/MM/dd');
 		Inertia.post(route("operation.store.report.store"), data, {
 			preserveScroll: true,
 			onStart () {
