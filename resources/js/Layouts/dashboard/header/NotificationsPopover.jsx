@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { noCase } from 'change-case';
+// import { noCase } from 'change-case';
 import { useState } from 'react';
 // @mui
 import {
@@ -7,7 +7,7 @@ import {
 	Stack,
 	List,
 	Badge,
-	Button,
+	// Button,
 	Avatar,
 	Tooltip,
 	Divider,
@@ -27,15 +27,33 @@ import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';
 import MenuPopover from '@/Components/menu-popover';
 import { IconButtonAnimate } from '@/Components/animate';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import axiosInstance from '@/utils/axios';
+import { Inertia } from '@inertiajs/inertia';
+import { Link } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
 export default function NotificationsPopover () {
+	const queryClient = useQueryClient();
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ['notifications'],
+		queryFn: () => axiosInstance.get(route('api.user.notifications'))
+	});
 	const [openPopover, setOpenPopover] = useState(null);
 
-	const [notifications, setNotifications] = useState(_notifications);
-
-	const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
+	if (isLoading || isError) {
+		return (
+			<IconButtonAnimate
+				color='default'
+				sx={{ width: 40, height: 40 }}
+			>
+				<Iconify icon="eva:bell-fill" />
+			</IconButtonAnimate>
+		)
+	}
+	const notifications = data?.data?.notifications || [];
+	const totalUnRead = notifications?.filter((item) => item.read_at === null)?.length || 0;
 
 	const handleOpenPopover = (event) => {
 		setOpenPopover(event.currentTarget);
@@ -46,12 +64,12 @@ export default function NotificationsPopover () {
 	};
 
 	const handleMarkAllAsRead = () => {
-		setNotifications(
-			notifications.map((notification) => ({
-				...notification,
-				isUnRead: false,
-			}))
-		);
+		const ids = notifications.filter(notif => notif?.read_at === null).map(notif => notif.id);
+		Inertia.post(route('api.user.read_notifications'), { ids }, {
+			onFinish () {
+				queryClient.invalidateQueries({ queryKey: ['notifications'] });
+			}
+		});
 	};
 
 	return (
@@ -60,11 +78,10 @@ export default function NotificationsPopover () {
 				color={openPopover ? 'primary' : 'default'}
 				onClick={handleOpenPopover}
 				sx={{ width: 40, height: 40 }}
-				disabled
 			>
-				{/* <Badge badgeContent={totalUnRead} color="error"> */}
-				<Iconify icon="eva:bell-fill" />
-				{/* </Badge> */}
+				<Badge badgeContent={totalUnRead} color="error">
+					<Iconify icon="eva:bell-fill" />
+				</Badge>
 			</IconButtonAnimate>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} sx={{ width: 360, p: 0 }}>
@@ -90,19 +107,20 @@ export default function NotificationsPopover () {
 
 				<Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
 					<List
+						sx={{ maxHeight: '85vh' }}
 						disablePadding
-						subheader={
-							<ListSubheader disableSticky sx={{ py: 1, px: 2.5, typography: 'overline' }}>
-								New
-							</ListSubheader>
-						}
+					// subheader={
+					// 	<ListSubheader disableSticky sx={{ py: 1, px: 2.5, typography: 'overline' }}>
+					// 		New
+					// 	</ListSubheader>
+					// }
 					>
-						{notifications.slice(0, 2).map((notification) => (
-							<NotificationItem key={notification.id} notification={notification} />
+						{notifications && notifications?.map((notification) => (
+							<NotificationItem key={notification.id} notification={notification} queryClient={queryClient} />
 						))}
 					</List>
 
-					<List
+					{/* <List
 						disablePadding
 						subheader={
 							<ListSubheader disableSticky sx={{ py: 1, px: 2.5, typography: 'overline' }}>
@@ -113,16 +131,16 @@ export default function NotificationsPopover () {
 						{notifications.slice(2, 5).map((notification) => (
 							<NotificationItem key={notification.id} notification={notification} />
 						))}
-					</List>
+					</List> */}
 				</Scrollbar>
 
-				<Divider sx={{ borderStyle: 'dashed' }} />
+				{/* <Divider sx={{ borderStyle: 'dashed' }} />
 
 				<Box sx={{ p: 1 }}>
 					<Button fullWidth disableRipple>
 						View All
 					</Button>
-				</Box>
+				</Box> */}
 			</MenuPopover>
 		</>
 	);
@@ -131,19 +149,39 @@ export default function NotificationsPopover () {
 // ----------------------------------------------------------------------
 
 NotificationItem.propTypes = {
+	queryClient: PropTypes.object,
 	notification: PropTypes.shape({
 		id: PropTypes.string,
-		avatar: PropTypes.node,
 		type: PropTypes.string,
-		title: PropTypes.string,
-		isUnRead: PropTypes.bool,
-		description: PropTypes.string,
-		createdAt: PropTypes.instanceOf(Date),
+		data: PropTypes.object,
+		read_at: PropTypes.string,
+		notifiable_id: PropTypes.number,
+		created_at: PropTypes.string,
 	}),
 };
 
-function NotificationItem ({ notification }) {
+function NotificationItem ({ notification, queryClient }) {
+	const { data, id, read_at, created_at } = notification;
 	const { avatar, title } = renderContent(notification);
+
+	const routeName = data?.routeName ? data?.params ? route(data.routeName, data.params) : route(data.routeName) : '#';
+
+	const beforeRedirect = (e) => {
+		if (read_at === null && id) {
+			e.preventDefault();
+			Inertia.visit(routeName, {
+				onSuccess: function () {
+					if (read_at === null && id) {
+						Inertia.post(route('api.user.read_notifications'), { ids: [id] }, {
+							onFinish () {
+								queryClient.invalidateQueries({ queryKey: ['notifications'] });
+							}
+						});
+					}
+				}
+			});
+		}
+	}
 
 	return (
 		<ListItemButton
@@ -151,10 +189,13 @@ function NotificationItem ({ notification }) {
 				py: 1.5,
 				px: 2.5,
 				mt: '1px',
-				...(notification.isUnRead && {
+				...(read_at === null && {
 					bgcolor: 'action.selected',
 				}),
 			}}
+			LinkComponent={Link}
+			href={routeName}
+			onClick={beforeRedirect}
 		>
 			<ListItemAvatar>
 				<Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>
@@ -166,7 +207,7 @@ function NotificationItem ({ notification }) {
 				secondary={
 					<Stack direction="row" sx={{ mt: 0.5, typography: 'caption', color: 'text.disabled' }}>
 						<Iconify icon="eva:clock-fill" width={16} sx={{ mr: 0.5 }} />
-						<Typography variant="caption">{fToNow(notification.createdAt)}</Typography>
+						<Typography variant="caption">{fToNow(created_at)}</Typography>
 					</Stack>
 				}
 			/>
@@ -177,41 +218,43 @@ function NotificationItem ({ notification }) {
 // ----------------------------------------------------------------------
 
 function renderContent (notification) {
+	const { data } = notification;
 	const title = (
 		<Typography variant="subtitle2">
-			{notification.title}
+			<Box display="block" component="span">{data.title}</Box>
+			{data.subtitle && (<Box display="block" component="span">{data.subtitle}</Box>)}
 			<Typography component="span" variant="body2" sx={{ color: 'text.secondary' }}>
-				&nbsp; {noCase(notification.description)}
+				&nbsp; {data.message}
 			</Typography>
 		</Typography>
 	);
 
 	if (notification.type === 'order_placed') {
 		return {
-			avatar: <img alt={notification.title} src="/storage/assets/icons/notification/ic_package.svg" />,
+			avatar: <img alt={data.title} src="/storage/assets/icons/notification/ic_package.svg" />,
 			title,
 		};
 	}
 	if (notification.type === 'order_shipped') {
 		return {
-			avatar: <img alt={notification.title} src="/storage/assets/icons/notification/ic_shipping.svg" />,
+			avatar: <img alt={data.title} src="/storage/assets/icons/notification/ic_shipping.svg" />,
 			title,
 		};
 	}
 	if (notification.type === 'mail') {
 		return {
-			avatar: <img alt={notification.title} src="/storage/assets/icons/notification/ic_mail.svg" />,
+			avatar: <img alt={data.title} src="/storage/assets/icons/notification/ic_mail.svg" />,
 			title,
 		};
 	}
 	if (notification.type === 'chat_message') {
 		return {
-			avatar: <img alt={notification.title} src="/storage/assets/icons/notification/ic_chat.svg" />,
+			avatar: <img alt={data.title} src="/storage/assets/icons/notification/ic_chat.svg" />,
 			title,
 		};
 	}
 	return {
-		avatar: notification.avatar ? <img alt={notification.title} src={notification.avatar} /> : null,
+		avatar: data?.creator?.profile?.thumbnail ? <img alt={data.title} src={data.creator.profile.thumbnail} /> : data?.creator ? route("image", { path: "assets/images/default-profile.jpg", w: 24, h: 24, fit: "crop" }) : null,
 		title,
 	};
 }

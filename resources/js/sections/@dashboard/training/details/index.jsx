@@ -13,16 +13,21 @@ import {
 	TableContainer,
 	Stack,
 	Link,
+	Avatar,
+	Tooltip,
+	Link as MuiLink
 } from '@mui/material';
 // utils
 import { fDate } from '@/utils/formatTime';
-import { excerpt } from '@/utils/exercpt';
+import { ellipsis, excerpt } from '@/utils/exercpt';
 import { fCurrencyNumber } from '@/utils/formatNumber';
 // components
 import Image from '@/Components/image';
 import Scrollbar from '@/Components/scrollbar';
 //
 import TrainingToolbar from './TrainingToolbar';
+import { getTrainingStatus } from '@/utils/formatDates';
+import { fileFormat, fileThumb } from '@/Components/file-thumbnail';
 
 // ----------------------------------------------------------------------
 
@@ -37,9 +42,9 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 		return null;
 	}
 
-	const getTotalAmmount = training?.external_details && training?.type === 3 ? training?.trainees?.length * (parseInt(training?.external_details?.course_price)) : 0;
+	training.status = getTrainingStatus(training.date_expired || new Date);
 
-	console.log(training);
+	const getTotalAmmount = training?.external_details && training?.type === 3 ? training?.trainees?.length * (parseInt(training?.external_details?.course_price)) : 0;
 
 	return (
 		<>
@@ -66,12 +71,16 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 					</Stack>
 
 					<Stack alignItems="center" flex={1}>
-						<Box>
-							<Typography variant="body2" fontWeight={700} textAlign="center">Revision:</Typography>
-						</Box>
-						<Box>
-							<Typography variant="body1" >{training?.revision_no || 0}</Typography>
-						</Box>
+						{training.type === 3 && (
+							<>
+								<Box>
+									<Typography variant="body2" fontWeight={700} textAlign="center">Revision:</Typography>
+								</Box>
+								<Box>
+									<Typography variant="body1" >{training?.revision_no || 0}</Typography>
+								</Box>
+							</>
+						)}
 					</Stack>
 
 					<Stack alignItems="center" flex={1}>
@@ -91,7 +100,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Course Title</Typography>
 							</Box>
 							<Box>
-								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training.title}</Typography>
+								<Typography variant="body1" sx={{ color: 'text.secondary' }}>{training?.course ? training.course.course_name : training.title}</Typography>
 							</Box>
 						</Box>
 
@@ -172,6 +181,44 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 								<Typography variant="body1" color={training?.status?.rawColor}>{training?.status?.text}</Typography>
 							</Box>
 						</Box>
+						<Box sx={{ mb: 1 }}>
+							<Box>
+								<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Current File</Typography>
+							</Box>
+							<Box minHeight={24}>
+								{training.external_status?.currentFile ? (
+									<Tooltip title={training.external_status.currentFile.fileName}>
+										<MuiLink
+											component="a"
+											href={training.external_status.currentFile.url}
+											sx={{
+												color: "text.primary"
+											}}
+											target="_file"
+											rel="noopener noreferrer"
+										>
+											<Stack
+												spacing={2}
+												direction="row"
+												alignItems="center"
+											>
+												<Avatar variant="rounded" sx={{ bgcolor: 'background.neutral', width: 36, height: 36, borderRadius: "9px" }}>
+													<Box component="img" src={fileThumb(fileFormat(training.external_status.currentFile.url))} sx={{ width: 24, height: 24 }} />
+												</Avatar>
+
+												<Stack spacing={0.5} flexGrow={1}>
+													<Typography variant="subtitle2" sx={{ textDecoration: "none" }}>{ellipsis(training.external_status.currentFile.name || "", 24)}</Typography>
+												</Stack>
+											</Stack>
+										</MuiLink>
+									</Tooltip>
+								) : (
+									<Box minHeight={24}>
+										<Typography variant="body1" sx={{ color: 'text.secondary' }}>No signed file yet.</Typography>
+									</Box>
+								)}
+							</Box>
+						</Box>
 					</Grid>
 				</Grid>
 
@@ -239,42 +286,47 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 								</Box>
 							</Box>
 							<Grid container spacing={{ xs: 2, md: 8 }}>
-								<Grid item xs={12} sm={4}>
+								<Grid item xs={12} md={4}>
 									<Box sx={{ mb: 3 }}>
-										<Box borderBottom={1}>
+										<Box>
 											<Typography variant="body1" textAlign="center">
-												{`${training?.external_details?.requested?.firstname?.trim()} ${training?.external_details?.requested?.lastname?.trim()}`}
+												{`${training?.user_employee?.fullname}`}
 											</Typography>
 										</Box>
 										<Box>
-											<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Requested by</Typography>
+											<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Submitted by</Typography>
 										</Box>
 									</Box>
 								</Grid>
-								<Grid item xs={12} sm={4}>
-									<Box sx={{ mb: 3 }}>
-										<Box borderBottom={1}>
-											<Typography variant="body1" textAlign="center">
-												{`${training?.external_details?.reviewer?.firstname?.trim()} ${training?.external_details?.reviewer?.lastname?.trim()}`}
-											</Typography>
+								{training?.external_details?.reviewer && (
+									<Grid item xs={12} md={4}>
+										<Box sx={{ mb: 3 }}>
+											<Box borderBottom={1}>
+												<Typography variant="body1" textAlign="center">
+													{`${training?.external_details?.reviewer?.firstname?.trim()} ${training?.external_details?.reviewer?.lastname?.trim()}`}
+												</Typography>
+											</Box>
+											<Box>
+												<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Reviewed by</Typography>
+											</Box>
 										</Box>
-										<Box>
-											<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Reviewed by</Typography>
+									</Grid>
+								)}
+								{training?.external_details?.approval && (
+									<Grid item xs={12} md={4}>
+										<Box sx={{ mb: 3 }}>
+											<Box borderBottom={1}>
+												<Typography variant="body1" textAlign="center">
+													{`${training?.external_details?.approval?.firstname?.trim()} ${training?.external_details?.approval?.lastname?.trim()}`}
+												</Typography>
+											</Box>
+											<Box>
+												<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Approved by</Typography>
+											</Box>
 										</Box>
-									</Box>
-								</Grid>
-								<Grid item xs={12} sm={4}>
-									<Box sx={{ mb: 3 }}>
-										<Box borderBottom={1}>
-											<Typography variant="body1" textAlign="center">
-												{`${training?.external_details?.approval?.firstname?.trim()} ${training?.external_details?.approval?.lastname?.trim()}`}
-											</Typography>
-										</Box>
-										<Box>
-											<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Approved by</Typography>
-										</Box>
-									</Box>
-								</Grid>
+									</Grid>
+								)}
+								<Grid item xs={12} md={2}></Grid>
 							</Grid>
 						</Box>
 
@@ -336,7 +388,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 								</Typography>
 							</Box>
 							<Box>
-								<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Requested by</Typography>
+								<Typography variant="body1" textAlign="center" sx={{ mt: 1 }}>Submitted by</Typography>
 							</Box>
 						</Box>
 					</Box>

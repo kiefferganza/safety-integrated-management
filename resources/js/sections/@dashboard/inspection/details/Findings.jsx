@@ -3,33 +3,35 @@ import { Box, Card, Grid, Stack, Tooltip, Typography } from '@mui/material';
 import Image from '@/Components/image';
 import { format } from 'date-fns';
 import Iconify from '@/Components/iconify';
+import { fDate } from '@/utils/formatTime';
 
-const Findings = ({ inspection }) => {
-	const getItemStatus = (status) => {
-		switch (status) {
-			case "1":
-				return {
-					text: "Approved",
-					start: "A",
-					icon: "material-symbols:check-small-rounded",
-					statusClass: "success"
-				}
-			case "2":
-				return {
-					text: "Failed",
-					start: "F",
-					icon: "ci:close-small",
-					statusClass: "error"
-				}
-			default:
-				return {
-					text: "Pending",
-					start: "P",
-					icon: "mdi:clock-time-three-outline",
-					statusClass: "info"
-				}
-		}
+const getItemStatus = (status) => {
+	switch (status) {
+		case "1":
+			return {
+				text: "Approved",
+				start: "A",
+				icon: "material-symbols:check-small-rounded",
+				statusClass: "success"
+			}
+		case "2":
+			return {
+				text: "Failed",
+				start: "F",
+				icon: "ci:close-small",
+				statusClass: "error"
+			}
+		default:
+			return {
+				text: "Pending",
+				start: "P",
+				icon: "mdi:clock-time-three-outline",
+				statusClass: "info"
+			}
 	}
+}
+
+const Findings = ({ inspection, rolloutDate }) => {
 
 	return (
 		<Card sx={{ p: 5 }}>
@@ -64,7 +66,7 @@ const Findings = ({ inspection }) => {
 							<Typography variant="body2" fontWeight={700}>Rollout Date:</Typography>
 						</Box>
 						<Box>
-							<Typography></Typography>
+							<Typography>{fDate(rolloutDate)}</Typography>
 						</Box>
 					</Stack>
 				</Stack>

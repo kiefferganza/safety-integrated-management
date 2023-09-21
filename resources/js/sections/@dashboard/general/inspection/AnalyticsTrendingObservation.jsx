@@ -1,39 +1,37 @@
 import PropTypes from 'prop-types';
 // @mui
 import { Box, Card, CardHeader } from '@mui/material';
-// utils
-import { fNumber } from '@/utils/formatNumber';
+import { red } from '@mui/material/colors';
 // components
 import Chart, { useChart } from '@/Components/chart';
+import { ellipsis } from '@/utils/exercpt';
 
 // ----------------------------------------------------------------------
 
-const AnalyticsTrendingObservation = ({ title, subheader, chart, height, ...other }) => {
-	const { colors, series, categories, options } = chart;
+const AnalyticsTrendingObservation = ({ title, subheader, chart, height, width, maxNegative, ...other }) => {
+	const { series, categories, options } = chart;
 
 	const chartOptions = useChart({
-		colors,
+		colors: [function ({ value }) {
+			const percentage = (value / maxNegative) * 100;
+			if (percentage > 50) {
+				return red[700];
+			} else if (percentage < 50) {
+				return red[300];
+			}
+			return red[500];
+		}],
 		series,
-		tooltip: {
-			shared: false,
-			y: {
-				formatter: (value) => fNumber(value),
-				title: {
-					formatter: (val) => val,
-				},
-			},
-		},
 		plotOptions: {
 			bar: {
-				horizontal: true,
-				barHeight: '48%',
-				borderRadius: 2,
-				stacked: true,
-				stackType: '100%'
+				columnWidth: '65%',
 			},
 		},
 		xaxis: {
-			categories
+			categories,
+			title: {
+				text: undefined
+			},
 		},
 		states: {
 			hover: {
@@ -41,17 +39,20 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, ...othe
 			}
 		},
 		dataLabels: {
-			enabled: true
-		},
-		yaxis: {
-			title: {
-				text: undefined
+			enabled: true,
+			formatter: function (val, opts) {
+				if (opts.seriesIndex === undefined) {
+					return val; // Handle tooltip label
+				} else {
+					return ellipsis(val); // Handle data label with ellipsis
+				}
 			},
-			labels: {
-				show: true,
-				align: "left",
-				maxWidth: 120
+			style: {
+				rotate: 0
 			}
+		},
+		legend: {
+			showForZeroSeries: true
 		},
 		chart: {
 			stacked: true,
@@ -69,7 +70,7 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, ...othe
 			<CardHeader title={title} subheader={subheader} />
 
 			<Box sx={{ mx: 3 }} dir="ltr">
-				<Chart type="bar" series={series} options={chartOptions} height={height} />
+				<Chart type="bar" series={series} options={chartOptions} height={height} width={width} />
 			</Box>
 		</Card>
 	);

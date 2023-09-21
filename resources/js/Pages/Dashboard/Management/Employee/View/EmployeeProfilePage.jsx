@@ -74,13 +74,13 @@ export default function EmployeeProfilePage ({ employee, trainings, currentTab =
 		// 		/>
 		// 	),
 		// },
-		{
-			value: 'gallery',
-			label: 'Gallery',
-			icon: <Iconify icon="ic:round-perm-media" />,
-			component: <ProfileGallery gallery={gallery} />,
-			href: "management.employee.profileGallery"
-		},
+		// {
+		// 	value: 'gallery',
+		// 	label: 'Gallery',
+		// 	icon: <Iconify icon="ic:round-perm-media" />,
+		// 	component: <ProfileGallery gallery={gallery} />,
+		// 	href: "management.employee.profileGallery"
+		// },
 	];
 
 	return (

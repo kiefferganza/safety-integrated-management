@@ -18,8 +18,8 @@ import {
 } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
-// _mock_
-import { _userList } from '@/_mock/arrays';
+// 
+import { useSwal } from '@/hooks/useSwal';
 // components
 import Iconify from '@/Components/iconify';
 import Scrollbar from '@/Components/scrollbar';
@@ -39,6 +39,7 @@ import {
 // sections
 import { UserTableToolbar, UserTableRow } from '@/sections/@dashboard/user/list';
 import { Link } from '@inertiajs/inertia-react';
+import { Inertia } from '@inertiajs/inertia';
 import Label from '@/Components/label';
 import { getCurrentUserName } from '@/utils/formatName';
 import { fDate } from '@/utils/formatTime';
@@ -54,6 +55,7 @@ const ROLE_OPTIONS = [
 
 const TABLE_HEAD = [
 	{ id: 'name', label: 'Name', align: 'left' },
+	{ id: 'username', label: 'Username', align: 'left' },
 	{ id: 'email', label: 'Email', align: 'left' },
 	{ id: 'date_created', label: 'Date Created', align: 'left' },
 	{ id: 'user_type', label: 'Type', align: 'left' },
@@ -64,6 +66,7 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 export default function UserListPage ({ users }) {
+	const { load, stop } = useSwal()
 	const {
 		dense,
 		page,
@@ -81,12 +84,15 @@ export default function UserListPage ({ users }) {
 		onChangeDense,
 		onChangePage,
 		onChangeRowsPerPage,
-	} = useTable();
+	} = useTable({
+		defaultOrderBy: "date_created",
+		defaultOrder: "desc"
+	});
 
 	const { themeStretch } = useSettingsContext();
 	const theme = useTheme();
 
-	const [tableData, setTableData] = useState(() => users.map(user => ({ ...user, name: getCurrentUserName(user) })));
+	const [tableData] = useState(() => users.map(user => ({ ...user, name: getCurrentUserName(user) })));
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -165,32 +171,51 @@ export default function UserListPage ({ users }) {
 	}
 
 	const handleDeleteRow = (id) => {
-		const deleteRow = tableData.filter((row) => row.user_id !== id);
-		setSelected([]);
-		setTableData(deleteRow);
+		Inertia.post(route('management.user.delete'), { ids: [id] }, {
 
-		if (page > 0) {
-			if (dataInPage.length < 2) {
-				setPage(page - 1);
+		});
+		Inertia.post(route('management.user.delete'), { ids: [id] }, {
+			preserveState: true,
+			preserveScroll: true,
+			onStart () {
+				setOpenConfirm(false);
+				load("Deleting user", "please wait...");
+			},
+			onFinish () {
+				setSelected([]);
+				if (page > 0 && dataInPage.length < 2) {
+					setPage(page - 1);
+				}
+				stop();
 			}
-		}
+		});
 	};
 
 	const handleDeleteRows = (selected) => {
-		const deleteRows = tableData.filter((row) => !selected.includes(row.user_id));
 		setSelected([]);
-		setTableData(deleteRows);
 
-		if (page > 0) {
-			if (selected.length === dataInPage.length) {
-				setPage(page - 1);
-			} else if (selected.length === dataFiltered.length) {
-				setPage(0);
-			} else if (selected.length > dataInPage.length) {
-				const newPage = Math.ceil((tableData.length - selected.length) / rowsPerPage) - 1;
-				setPage(newPage);
+		Inertia.post(route('management.user.delete'), { ids: selected }, {
+			preserveState: true,
+			preserveScroll: true,
+			onStart () {
+				setOpenConfirm(false);
+				load("Deleting users", "please wait...");
+			},
+			onFinish () {
+				setSelected([]);
+				if (page > 0) {
+					if (selected.length === dataInPage.length) {
+						setPage(page - 1);
+					} else if (selected.length === dataFiltered.length) {
+						setPage(0);
+					} else if (selected.length > dataInPage.length) {
+						const newPage = Math.ceil((tableData.length - selected.length) / rowsPerPage) - 1;
+						setPage(newPage);
+					}
+				}
+				stop();
 			}
-		}
+		});
 	};
 
 	const handleResetFilter = () => {

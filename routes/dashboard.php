@@ -12,6 +12,8 @@ use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionReportController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InventoryReportController;
+use App\Http\Controllers\Operation\StoreController;
+use App\Http\Controllers\Operation\StoreReportController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ToolboxTalkController;
@@ -52,6 +54,10 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::middleware("permission:employee_delete")->group(function() {
 			Route::delete('/{employee}/delete', [EmployeeController ::class, 'destroy']);
 			Route::post('/delete/delete-multiple', [EmployeeController ::class, 'delete_multiple'])->name('delete-multiple');
+		});
+		Route::middleware("permission:employee_access")->group(function() {
+			Route::post('/deactivate', [EmployeeController::class, "deactivate"])->name("deactivate");
+			Route::post('/activate', [EmployeeController::class, "activate"])->name("activate");
 		});
 	});
 	/**
@@ -97,6 +103,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/profile', [UsersController::class, 'profile'])->name('profile');
 			Route::get('/settings', [UsersController::class, 'settings'])->name('settings');
 			Route::get('/profile/{user:username}', [UsersController::class, "show"])->name('show');
+			Route::get('/cards', [UsersController::class, 'cards'])->name('cards');
+			Route::get('/list', [UsersController::class, 'index'])->name('list');
 		});
 		
 		// CRUD
@@ -108,7 +116,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::post('/{user}/update', [UsersController::class, 'update'])->name("update");
 		});
 		// Can delete
-		Route::post('/delete', [UsersController::class, 'delete'])->middleware('permission:user_delete');
+		Route::post('/delete', [UsersController::class, 'destroy'])->name('delete')->middleware('permission:user_delete');
 		// Can create
 		Route::middleware("permission:user_create")->group(function() {
 			Route::get('/new', [UsersController::class, 'create'])->name('new');
@@ -116,9 +124,6 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		});
 
 		Route::middleware("permission:user_access")->group(function() {
-			Route::get('/cards', [UsersController::class, 'cards'])->name('cards');
-			Route::get('/list', [UsersController::class, 'index'])->name('list');
-
 			Route::put('/{user}/activate',  [UsersController::class, 'activate'])->name("activate");
 			Route::put('/{user}/deactivate',  [UsersController::class, 'deactivate'])->name("deactivate");
 
@@ -139,8 +144,14 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 * Management - Training
 	 */
 	Route::prefix('training')->as('training.management.')->group(function() {
+		Route::get('/matrix', [TrainingController::class, 'matrix'])->name('matrix');
 		// Lists
 		Route::middleware("permission:training_show")->group(function() {
+			Route::get('/registered-courses', [TrainingController::class, 'courses'])->name('courses');
+			Route::post('/new-course', [TrainingController::class, 'addCourses'])->name('new_courses');
+			Route::post('/update-course/{course}', [TrainingController::class, 'updateCourse'])->name('update_course');
+			Route::post('/delete-course', [TrainingController::class, 'deleteCourse'])->name('delete_courses');
+
 			Route::get('/client', [TrainingController::class, 'index'])->name('client');
 			Route::get('/in-house', [TrainingController::class, 'in_house'])->name('in_house');
 			Route::get('/induction', [TrainingController::class, 'induction'])->name('induction');
@@ -149,7 +160,18 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/client/{training}', [TrainingController::class, 'show_client'])->name('client.show');
 			Route::get('/induction/{training}', [TrainingController::class, 'show_induction'])->name('induction.show');
 			Route::get('/in-house/{training}', [TrainingController::class, 'show_in_house'])->name('in_house.show');
+			// Third Party / External
+			Route::get('/third-party/action/{training}', [TrainingController::class, 'external_action'])->name('external.external_action');
+			Route::get('/third-party/review/{training}', [TrainingController::class, 'external_review'])->name('external.external_review');
+			Route::get('/third-party/approve/{training}', [TrainingController::class, 'external_approve'])->name('external.external_approve');
+			Route::post('/third-party/comment/{training}', [TrainingController::class, 'external_comment'])->name('external.external_comment');
+			Route::post('/third-party/reply/{trainingComment}', [TrainingController::class, 'external_reply'])->name('external.external_reply');
+			Route::put('/third-party/comment-status/{trainingComment}', [TrainingController::class, 'external_comment_status'])->name('external.external_comment_status');
+			Route::delete('/third-party/comment/{trainingComment}', [TrainingController::class, 'external_comment_delete'])->name('external.external_comment_delete');
 			Route::get('/third-party/{training}', [TrainingController::class, 'show_external'])->name('external.show');
+
+			Route::post('/report/approve-review/{training}', [TrainingController::class, "approveReview"])->name('external.approveReview');
+			Route::post('/report/re-upload/{training}', [TrainingController::class, "reuploadActionFile"])->name('external.reupload_file');
 		});
 
 		// Create
@@ -271,6 +293,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/report/approve-review/{inventoryReport}', [InventoryReportController::class, "approveReview"])->name('report.approveReview');
 		Route::get('/report/{inventoryReport}', [InventoryReportController::class, "show"])->name('report.show');
 		Route::delete('/report/{inventoryReport}', [InventoryReportController::class, "destroy"])->name('report.destroy');
+
+		Route::post('/report/re-upload/{inventoryReport}', [InventoryReportController::class, "reuploadActionFile"])->name('report.reupload_file');
 	});
 
 
@@ -313,8 +337,14 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/{folder}/edit', [FilePageController::class, "update"])
 			->middleware("permission:folder_edit")
 			->name('update');
+
+
 		// Folder -> Documents
 		Route::get('/view', [DocumentController::class, "view"])->name("show")->middleware(["permission:file_show", "permission:folder_show"]);
+
+		Route::get('/edit', [DocumentController::class, "edit"])->name("document.edit")->middleware(["permission:file_show", "permission:folder_show"]);
+		Route::put('/update', [DocumentController::class, "update"])->name("document.update")->middleware(["permission:file_show", "permission:folder_show"]);
+
 		Route::get('/external', [FilePageController::class, "thirdParty"])->name("external")->middleware("permission:folder_show");
 		Route::get('/{folder}', [DocumentController::class, "index"])->name("document.show")->middleware("permission:folder_show");
 		Route::middleware("permission:file_create")->group(function() {
@@ -323,12 +353,61 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		}); 
 		Route::post('/document/delete', [DocumentController::class, "destroy"])
 			->middleware("permission:file_delete")
-			->name('filemanager.document.delete');
+			->name('document.delete');
 		Route::middleware("permission:file_edit")->group(function() {
+
 			Route::post('/document/{document}/action', [DocumentController::class, "approve_or_fail_document"]);
+
+			Route::post('/document/{document}/reupload-approval-file', [DocumentController::class, "reupload_submitter_file"])->name('document.reupload_submitter_file');
+
+			Route::post('/document/{document}/{signedFile}/reupload-approval-file', [DocumentController::class, "reupload_approval_file"])->name('document.update-approval-file');
+			
+			Route::post('/document/{document}/{signedFile}/reupload-reviewer-file', [DocumentController::class, "reupload_reviewer_file"])->name('document.update-reviewer-file');
+
 			Route::post('/document/{document}/add-comment', [DocumentController::class, "add_comment"]);
+
 			Route::post('/document/{comment}/reply-comment', [DocumentController::class, "reply_comment"]);
+
 			Route::post('/document/{comment}/delete-comment', [DocumentController::class, "delete_comment"]);
+		});
+		
+	});
+
+
+
+	/**
+	 * Operation
+	 * Name: operation.{page}.{action}
+	 */
+	Route::prefix('operation')->as('operation.')->group(function() {
+		/**
+		 * Operation - Store
+		 */
+		Route::prefix('store')->as('store.')->group(function() {
+			Route::get('/', [StoreController::class, 'index'])->name('index');
+			Route::get('/view/{store:slug}', [StoreController::class, 'show'])->name('show');
+			Route::get('/create', [StoreController::class, 'create'])->name('create');
+			Route::post('/store', [StoreController::class, 'store'])->name('store');
+			Route::get('/edit/{store:slug}', [StoreController::class, 'edit'])->name('edit');
+			Route::post('/update/{store}', [StoreController::class, 'update'])->name('update');
+			Route::post('/destroy', [StoreController::class, 'destroy'])->name('destroy');
+			// Stock
+			Route::post('/add-remove-stock/{store}', [StoreController::class, "add_remove_stock"])->name('add_remove_stock');
+			// Report
+			Route::prefix('report')->as('report.')->group(function() {
+				Route::get('/list', [StoreReportController::class, 'index'])->name('index');
+				Route::get('/view/{storeReport}', [StoreReportController::class, 'show'])->name('show');
+				Route::get('/new/report', [StoreReportController::class, 'create'])->name('create');
+				Route::post('/store', [StoreReportController::class, 'store'])->name('store');
+				Route::post('/comment/{storeReport}', [StoreReportController::class, "postComment"])->name('comment');
+				Route::delete('/comment/{reportComment}', [StoreReportController::class, "destroyComment"])->name('destroyComment');
+				Route::put('/comment/{reportComment}', [StoreReportController::class, "changeCommentStatus"])->name('changeCommentStatus');
+				Route::post('/reply/{reportComment}', [StoreReportController::class, "replyComment"])->name('reply');
+				Route::post('/review/{storeReport}', [StoreReportController::class, "review"])->name('review');
+				Route::post('/approve-review/{storeReport}', [StoreReportController::class, "approveReview"])->name('approveReview');
+				Route::delete('/{storeReport}', [StoreReportController::class, "destroy"])->name('destroy');
+				Route::post('/re-upload/{storeReport}', [StoreReportController::class, "reuploadActionFile"])->name('reupload_file');
+			});
 		});
 	});
 

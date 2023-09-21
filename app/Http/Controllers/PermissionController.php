@@ -14,7 +14,11 @@ class PermissionController extends Controller
 			"isAllowed" => ["boolean", "required"]
 		]);
 		
-		$request->isAllowed ? $user->givePermissionTo($request->name) : $user->revokePermissionTo($request->name);
+		if($request->isAllowed) {
+			$user->givePermissionTo($request->name);
+		}else {
+			$user->revokePermissionTo($request->name);
+		}
 
 		return redirect()->back()
 		->with("message", "User's permission updated successfully!")

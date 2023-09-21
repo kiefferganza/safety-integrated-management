@@ -62,6 +62,10 @@ export default function UserTableRow ({ row, selected, onSelectRow, onDeleteRow 
 				</TableCell>
 
 				<TableCell align="left">
+					{username}
+				</TableCell>
+
+				<TableCell align="left">
 					{email}
 				</TableCell>
 

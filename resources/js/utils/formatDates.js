@@ -1,6 +1,5 @@
 import { isAfter, isEqual } from "date-fns";
 
-const TODAY = new Date()
 const WEEK = 7;
 
 export function getLastTwoWeeks (date) {
@@ -11,7 +10,7 @@ export function getLastTwoWeeks (date) {
 
 
 
-export function getTrainingStatus (training_date, date_expired) {
+export function getTrainingStatus (date_expired) {
 	const dateExpiredTwoWeeksBeforeDate = getLastTwoWeeks(date_expired);
 
 	const start = new Date().setHours(0, 0, 0, 0)
@@ -38,4 +37,42 @@ export function getTrainingStatus (training_date, date_expired) {
 		color: "success",
 		rawColor: "#86E8AB"
 	};
+}
+
+export function getTrainingActionStatus (externalStatus) {
+	let status = externalStatus;
+	if (typeof status !== "string") {
+		status = externalStatus?.review_status !== "accepted" || externalStatus?.review_status !== "fail" ? externalStatus?.review_status : externalStatus?.approval_status;
+	}
+
+	switch (status) {
+		case "pending":
+			return {
+				status,
+				color: "warning"
+			}
+		case "commented":
+			return {
+				status,
+				color: "info"
+			}
+		case "accepted":
+		case "approved":
+			return {
+				status,
+				color: "success"
+			}
+		case "failed":
+		case "rejected":
+			return {
+				status,
+				color: "error"
+			}
+		default:
+			return {
+				status,
+				color: "default"
+			}
+	}
+
 }

@@ -40,7 +40,6 @@ class HandleInertiaRequests extends Middleware
 			$user = auth()->user();
 
 			$authData = [];
-
 			if($user) {
 				$authData = cache()->rememberForever("authUser:".$user->user_id, function() {
 					$user = auth()->user();
@@ -78,6 +77,17 @@ class HandleInertiaRequests extends Middleware
 							"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
 						];
 					}
+					
+					$cover = $user->getFirstMedia("cover", ["primary" => true]);
+					if($cover) {
+						$path = "user/" . md5($cover->id . config('app.key')). "/" .$cover->file_name;
+						$userData["cover"]  = [
+							"url" => URL::route("image", [ "path" => $path ]),
+							"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+							"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ]),
+							"cover" => URL::route("image", [ "path" => $path, "w" => 1200, "h" => 280, "fit" => "crop" ]),
+						];
+					}
 					return [
 						"user" => $userData
 					];
@@ -85,7 +95,6 @@ class HandleInertiaRequests extends Middleware
 				$authData["permissions"] = $user->permissions->pluck('name')->mapWithKeys(fn($item) => [$item => Str::title($item)]);
 				$authData["role"] = $user->roles->first()->name;
 			}
-
 			return array_merge(parent::share($request), [
 				'auth' => $authData,
 				'ziggy' => function () use ($request) {

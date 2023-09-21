@@ -26,12 +26,12 @@ import { format } from 'date-fns';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-	{ id: 'id', label: "Ref", align: "left" },
+	{ id: 'id', label: "Ref #", align: "left" },
 	{ id: 'title', label: 'Description', align: 'left', width: 480 },
 	{ id: 'table', label: 'Section Title', align: 'left' },
-	{ id: 'negative', label: 'Negative', align: 'right' },
-	{ id: 'positive', label: 'Positive', align: 'right' },
-	{ id: 'closed', label: 'Closed', align: 'right' }
+	{ id: 'negative', label: 'Negative', align: 'left' },
+	{ id: 'positive', label: 'Positive', align: 'left' },
+	{ id: 'closed', label: 'Closed', align: 'left' }
 ];
 
 // ----------------------------------------------------------------------
@@ -280,15 +280,15 @@ const PPEReportListPage = ({ inspectionReport = {}, from = null, to = null }) =>
 													// selected={isSelected}
 													sx={{ width: 1, borderBottom: 1, borderColor: "background.neutral" }}
 												>
-													<TableCell align="left">{row.id > 34 ? "" : "" + row.id}</TableCell>
+													<TableCell align="left">{row.id > 34 ? "" : "#" + row.id}</TableCell>
 													{/* <TableCell padding="checkbox">
 														<Checkbox checked={isSelected} />
 													</TableCell> */}
 													<TableCell align="left">{row.title}</TableCell>
 													<TableCell align="left">{row.table}</TableCell>
-													<TableCell align="right">{row.negative}</TableCell>
-													<TableCell align="right">{row.positive}</TableCell>
-													<TableCell align="right">{row.closed}</TableCell>
+													<TableCell align="left">{row.negative}</TableCell>
+													<TableCell align="left">{row.positive}</TableCell>
+													<TableCell align="left">{row.closed}</TableCell>
 												</TableRow>
 											)
 										})}

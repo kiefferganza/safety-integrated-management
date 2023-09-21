@@ -66,15 +66,18 @@ export default function UserProfilePage ({ user }) {
 			value: 'gallery',
 			label: 'Gallery',
 			icon: <Iconify icon="ic:round-perm-media" />,
-			component: <ProfileGallery gallery={_userGallery.slice(0, 3)} />,
+			component: <ProfileGallery user={user} />,
 		},
-		{
+	];
+
+	if (!user?.roles.some((role) => role.name === 'Admin')) {
+		TABS.push({
 			value: 'permissions',
 			label: 'Permissions',
 			icon: <Iconify icon="fluent-mdl2:permissions-solid" />,
 			component: <ProfilePermissions />,
-		},
-	];
+		},);
+	}
 
 	return (
 		<Container maxWidth={themeStretch ? false : 'lg'}>
@@ -93,7 +96,7 @@ export default function UserProfilePage ({ user }) {
 					position: 'relative',
 				}}
 			>
-				<ProfileCover user={user} name={getCurrentUserName(user)} role={user?.employee?.position?.position} cover="/storage/assets/images/home/cover.jpg" />
+				<ProfileCover setOpenBackdrop={null} isCurrentProfile={false} user={user} name={getCurrentUserName(user)} role={user?.employee?.position?.position} />
 
 				<Tabs
 					value={currentTab}

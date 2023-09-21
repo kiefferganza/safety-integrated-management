@@ -2,16 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CommentTypeEnums;
+use App\Events\NewTrainingEvent;
 use App\Http\Requests\TrainingRequest;
 use App\Models\Employee;
 use App\Models\Training;
+use App\Models\TrainingCourses;
 use App\Models\TrainingExternal;
+use App\Models\TrainingExternalComment;
+use App\Models\TrainingExternalStatus;
 use App\Models\TrainingFiles;
 use App\Models\TrainingTrainees;
+use App\Models\User;
+use App\Notifications\NewTrainingCommentNotification;
 use App\Services\TrainingService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class TrainingController extends Controller
@@ -38,9 +47,34 @@ class TrainingController extends Controller
 	}
 
 	public function external() {
+		
+		$trainings =  (new TrainingService())->getTrainingByType(3);
+
+		foreach ($trainings as $training) {
+			/** @var Training $training */
+			if($training?->external_status?->hasMedia('actions')) {
+				$reviewerLastFile = $training->external_status->getFirstMedia('actions', ['type' => 'review']);
+				$approverLastFile = $training->external_status->getFirstMedia('actions', ['type' => 'approver']);
+				if($reviewerLastFile) {
+					$training->external_status->reviewerLatestFile = [
+						'name' => $reviewerLastFile->name,
+						'fileName' => $reviewerLastFile->file_name,
+						'url' => $reviewerLastFile->originalUrl
+					];
+				}
+				if($approverLastFile) {
+					$training->external_status->approverLatestFile = [
+						'name' => $approverLastFile->name,
+						'fileName' => $approverLastFile->file_name,
+						'url' => $approverLastFile->originalUrl
+					];
+				}
+
+			}
+		}
 
 		return Inertia::render("Dashboard/Management/Training/List/index", [
-			"trainings" => (new TrainingService)->getTrainingByType(3),
+			"trainings" => $trainings,
 			"module" => "Third Party",
 			"url" => "third-party",
 			"type" => 3
@@ -60,15 +94,18 @@ class TrainingController extends Controller
 
 	public function create(Request $request) {
 		$trainingService = new TrainingService();
+		$courses = TrainingCourses::get();
 		
 		return Inertia::render("Dashboard/Management/Training/Create/index",[
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 				->where([
 					["tbl_position.is_deleted", 0],
-					["tbl_employees.is_deleted", 0]
+					["tbl_employees.is_deleted", 0],
+					["tbl_employees.is_active", 0]
 				])
 				->get(),
 			"type" => $request->query('type') ? $request->query('type') : 2,
+			"courses" => $courses,
 			"sequences" => [
 				"1" => $trainingService->getSequenceNo(1),
 				"2" => $trainingService->getSequenceNo(2),
@@ -92,6 +129,7 @@ class TrainingController extends Controller
 		$training->document_zone = $request->document_zone;
 		$training->document_level = $request->document_level;
 		$training->title = $request->title;
+		// $training->course_id = $request->title;
 		$training->location = $request->location;
 		$training->contract_no = $request->contract_no;
 		$training->trainer = $request->trainer;
@@ -116,11 +154,13 @@ class TrainingController extends Controller
 			$training_external->currency = $request->currency;
 			$training_external->course_price = (float)$request->course_price;
 			$training_external->requested_by = (int)$user->emp_id;
-			$training_external->reviewed_by = (int)$request->reviewed_by;
-			$training_external->approved_by = (int)$request->approved_by;
+			$training_external->reviewed_by = $request->reviewed_by ? (int)$request->reviewed_by : null;
+			$training_external->approved_by = $request->approved_by ? (int)$request->approved_by : null;
 			$training_external->date_requested = date("Y-m-d H:i:s");
 
 			$training_external->save();
+
+			TrainingExternalStatus::create(["training_id" => $training->training_id]); 
 		}
 
 		if(!empty($request->trainees)) {
@@ -156,7 +196,7 @@ class TrainingController extends Controller
 			}
 			TrainingTrainees::insert($trainees);
 		}
-		
+		event(new NewTrainingEvent($training));
 
 		return redirect()->back()
 		->with("message", "Training added successfully!")
@@ -179,9 +219,11 @@ class TrainingController extends Controller
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0]
+				["tbl_employees.is_deleted", 0],
+				["tbl_employees.is_active", 0],
 			])
 			->get(),
+			"courses" => TrainingCourses::get(),
 			"details" => $trainingService->getTrainingType($training->type)
 		]);
 	}
@@ -196,6 +238,7 @@ class TrainingController extends Controller
 		$training->document_zone = $request->document_zone;
 		$training->document_level = $request->document_level;
 		$training->title = $request->title;
+		// $training->course = $request->title;
 		$training->location = $request->location;
 		$training->contract_no = $request->contract_no;
 		$training->trainer = $request->trainer;
@@ -205,7 +248,7 @@ class TrainingController extends Controller
 		$training->remarks = $request->remarks ? $request->remarks : null;
 		$training->type = (int)$request->type;
 		$training->training_center = $request->training_center;
-		$training->increment("revision_no");
+		// $training->increment("revision_no");
 
 		if($training->sequence_no === null) {
 			$training->sequence_no = $request->sequence_no;
@@ -378,7 +421,8 @@ class TrainingController extends Controller
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0]
+				["tbl_employees.is_deleted", 0],
+				["tbl_employees.is_active", 0],
 			])
 			->get(),
 			"module" => "In House",
@@ -402,7 +446,8 @@ class TrainingController extends Controller
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0]
+				["tbl_employees.is_deleted", 0],
+				["tbl_employees.is_active", 0],
 			])
 			->get(),
 			"module" => "Client",
@@ -416,7 +461,16 @@ class TrainingController extends Controller
 		}
 		$trainingService = new TrainingService();
 		
-		$training = $trainingService->loadTraining($training);
+		$training = $trainingService->loadTraining($training)->load(["external_status"]);
+		if($training->external_status->hasMedia('actions')) {
+			$currentFile = $training->external_status->getMedia('actions')->last();
+			$training->external_status->setAttribute('currentFile', [
+				'name' => $currentFile->name,
+				'fileName' => $currentFile->file_name,
+				'url' => $currentFile->originalUrl
+			]);
+			unset($training->external_status->media);
+		}
 
 		$training->training_files = $trainingService->transformFiles($training->training_files);
 
@@ -425,10 +479,11 @@ class TrainingController extends Controller
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0]
+				["tbl_employees.is_deleted", 0],
+				["tbl_employees.is_active", 0],
 			])
 			->get(),
-			"module" => "External",
+			"module" => "Third Party",
 			"url" => "thirdParty"
 		]);
 	}
@@ -448,11 +503,467 @@ class TrainingController extends Controller
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->where([
 				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0]
+				["tbl_employees.is_deleted", 0],
+				["tbl_employees.is_active", 0],
 			])
 			->get(),
 			"module" => "Induction",
 			"url" => "induction"
+		]);
+	}
+
+	public function external_action(Training $training) {
+		$user = auth()->user();
+
+		$trainingService = new TrainingService();
+		
+		$training = $trainingService->loadTraining($training)->load(["external_status", "external_comments"]);
+		
+		if($user->emp_id !== $training->external_details->requested_by) {
+			return redirect()->back();
+		}
+
+		if($training->external_status->hasMedia('actions')) {
+			$currentFile = $training->external_status->getMedia('actions')->last();
+			$training->external_status->setAttribute('currentFile', [
+				'name' => $currentFile->name,
+				'fileName' => $currentFile->file_name,
+				'url' => $currentFile->originalUrl
+			]);
+			unset($training->external_status->media);
+		}
+
+		return Inertia::render("Dashboard/Management/Training/View/ThirdParty/index", [
+			"training" => $training,
+		]);
+		
+	}
+
+	public function external_review(Training $training) {
+		$user = auth()->user();
+
+		$trainingService = new TrainingService();
+		
+		$training = $trainingService->loadTraining($training)->load(["external_status", "external_comments"]);
+		
+		if($user->emp_id !== $training->external_details->reviewed_by) {
+			return redirect()->back();
+		}
+
+		if($training->external_status->hasMedia('actions')) {
+			$currentFile = $training->external_status->getMedia('actions')->last();
+			$training->external_status->setAttribute('currentFile', [
+				'name' => $currentFile->name,
+				'fileName' => $currentFile->file_name,
+				'url' => $currentFile->originalUrl
+			]);
+			unset($training->external_status->media);
+		}
+
+		return Inertia::render("Dashboard/Management/Training/View/ThirdParty/index", [
+			"training" => $training,
+			"type" => "review"
+		]);
+	}
+
+	public function external_approve(Training $training) {
+		$user = auth()->user();
+
+		$trainingService = new TrainingService();
+		
+		$training = $trainingService->loadTraining($training)->load(["external_status", "external_comments"]);
+		
+		if($user->emp_id !== $training->external_details->approved_by) {
+			return redirect()->back();
+		}
+
+		$training = $trainingService->loadTraining($training)->load(["external_status", "external_comments"]);
+		if($training->external_status->hasMedia('actions')) {
+			$currentFile = $training->external_status->getMedia('actions')->last();
+			$training->external_status->setAttribute('currentFile', [
+				'name' => $currentFile->name,
+				'fileName' => $currentFile->file_name,
+				'url' => $currentFile->originalUrl
+			]);
+			unset($training->external_status->media);
+		}
+
+		return Inertia::render("Dashboard/Management/Training/View/ThirdParty/index", [
+			"training" => $training,
+			"type" => "approve"
+		]);
+		
+	}
+
+	public function external_comment(Training $training, Request $request) {
+		$request->validate([
+			"comment" => ["string", "max:255", "required"],
+			"pages" => ["string", "required"],
+			"comment_code" => ["integer", "max:2", "required"],
+			"status" => ["string", "required"]
+		]);
+
+		$training->external_comments()->create([
+			"reviewer_id" => auth()->user()->emp_id,
+			"comment" => $request->comment,
+			"comment_page_section" => $request->pages,
+			"comment_code" => $request->comment_code,
+			"status" => $request->status
+		]);
+
+		$statuses = $training->external_status;
+		$statuses->review_status = "commented";
+		$statuses->save();
+		$training->increment("revision_no");
+		$training->save();
+
+		$creator = User::find($training->user_id);
+		if($creator) {
+			$creator?->notify(new NewTrainingCommentNotification($training, CommentTypeEnums::COMMENTED));
+		}
+
+		return redirect()->back()
+		->with("message", "Comment posted successfully!")
+		->with("type", "success");
+	}
+
+	public function external_comment_status(TrainingExternalComment $trainingComment, Request $request) {
+		$request->validate([
+			"status" => ["string", "required"]
+		]);
+
+		$trainingComment->status = $request->status;
+		$trainingComment->save();
+
+		return redirect()->back()
+		->with("message", "Comment". $request->status ."successfully!")
+		->with("type", "success");
+	}
+
+	public function external_comment_delete(TrainingExternalComment $trainingComment) {
+		$trainingComment->delete();
+
+		return redirect()->back()
+		->with("message", "Comment deleted successfully!")
+		->with("type", "success");
+	}
+
+	public function external_reply(TrainingExternalComment $trainingComment, Request $request) {
+		$request->validate([
+			"reply" => ["string", "max:255", "required"],
+			"reply_code" => ["string", "required"]
+		]);
+
+		$training = $trainingComment->training;
+		$training->save();
+
+		$trainingComment->reply = $request->reply;
+		$trainingComment->reply_code = $request->reply_code;
+		$trainingComment->save();
+
+		$reviewer = User::where('emp_id', $trainingComment->reviewer_id)->first();
+		if($reviewer) {
+			$reviewer?->notify(new NewTrainingCommentNotification($training, CommentTypeEnums::REPLIED));
+		}
+
+		return redirect()->back()
+		->with("message", "Reply posted successfully!")
+		->with("type", "success");
+	}
+
+	public function approveReview(Request $request, Training $training) {
+		$request->validate([
+			"status" => ["string", "required"],
+			"type" => ["string", "required"],
+			"file" => ["file", "max:3072", "required"]
+		]);
+		$training->load(['external_status', 'external_details']);
+
+		/** @var TrainingExternalStatus $statuses */
+		$statuses = $training->external_status;
+
+		
+		switch ($request->type) {
+			case 'review':
+				if($request->remarks) {
+					$statuses->review_remark = $request->remarks;
+				}
+
+				if($training->external_details->approved_by === null) {
+					$statuses->status = 'closed';
+					$statuses->review_status = $request->status;
+					if($request->status === 'A' || $request->status === 'D') {
+						$statuses->approval_status = 'approved';
+					}else {
+						$statuses->approval_status = 'failed';
+					}
+				}else {
+					$statuses->status = 'for_approval';
+					$statuses->review_status = $request->status;
+					$statuses->approval_status = 'pending';
+				}
+				// if($request->status === 'A') {
+				// 	$statuses->status = 'for_approval';
+				// 	$statuses->review_status = $request->status;
+				// 	$statuses->approval_status = 'pending';
+				// }else {
+				// 	$statuses->review_status = $request->status;
+				// 	$statuses->status = 'for_revision';
+				// }
+				break;
+			case 'approver':
+				if($request->remarks) {
+					$statuses->approval_remark = $request->remarks;
+				}
+				$statuses->approval_status = $request->status;
+				$statuses->status = "closed";
+				break;
+		}
+
+		$statuses
+		->addMediaFromRequest('file')
+		->withCustomProperties([
+			'type' => $request->type
+		])
+		->toMediaCollection('actions');
+
+		$statuses->save();
+		$training->save();
+
+		return redirect()->back()
+		->with("message", "Status updated successfully!")
+		->with("type", "success");
+	}
+
+
+	public function reuploadActionFile(Request $request, Training $training) {
+		$request->validate([
+			"type" => ["string", "required"],
+			"file" => ["file", "max:3072", "required"],
+			"remarks" => ["string", "nullable"]
+		]);
+
+		/** @var TrainingExternalStatus $statuses */
+		$statuses = $training->external_status;
+
+		if($statuses->hasMedia('actions', ['type' => $request->type])) {
+			$media = $statuses->getFirstMedia('actions', ['type' => $request->type]);
+			$statuses->deleteMedia($media);
+		}
+		switch ($request->type) {
+			case 'review':
+				$statuses->review_remark = $request->remarks ?? "";
+				break;
+			case 'approval':
+				$statuses->approval_remark = $request->remarks ?? "";
+				break;
+		}
+		$statuses->save();
+		$statuses
+		->addMediaFromRequest('file')
+		->withCustomProperties([
+			'type' => $request->type
+		])
+		->toMediaCollection('actions');
+
+		return redirect()->back()
+		->with("message", "File updated successfully!")
+		->with("type", "success");
+	}
+
+
+	public function courses() {
+		$courses = TrainingCourses::get();
+		return Inertia::render("Dashboard/Management/Training/Register/index", [
+			"courses" => $courses
+		]);
+	}
+
+	public function addCourses(Request $request) {
+		$request->validate([
+			'courses' => ['required', 'array']
+		]);
+		$user = Auth::user();
+		$courses = [];
+		foreach ($request->courses as $course) {
+			$courses[] = [
+				'course_name' => $course['course_name'],
+				'user_id' => $user->user_id,
+				'sub_id' => $user->subscriber_id,
+				'created_at' => now()
+			];
+		}
+		TrainingCourses::insert($courses);
+
+		return redirect()->back()
+		->with('message', 'Course added successfully')
+		->with('type', 'success');
+	}
+
+	public function updateCourse(Request $request, TrainingCourses $course) {
+		$request->validate([
+			'course_name' => ['required', 'string']
+		]);
+
+		$course->course_name = $request->course_name;
+
+		if(!$course->isDirty('course_name')) {
+			return redirect()->back();
+		}
+		
+		$course->save();
+		return redirect()->back()
+		->with('message', 'Course updated successfully')
+		->with('type', 'success');
+	}
+
+	public function deleteCourse(Request $request) {
+		$request->validate([
+			'ids' => ['array', 'required']
+		]);
+		
+		TrainingCourses::whereIn('id', $request->ids)->update(['deleted_at' => now()]);
+
+		return redirect()->back()
+		->with('message', count($request->ids) . ' items deleted sucessfully')
+		->with('type', 'success');
+	}
+
+
+	public function matrix(Request $request) {
+		$user = auth()->user();
+
+		$from = $request->from;
+		$to = $request->to;
+		if(!$from || !$to) {
+			if(($from && !$to) || (!$from && $to)) {
+				abort(404);
+			}
+			$currentYear = Carbon::now()->year;
+			$from = Carbon::create($currentYear, 1, 1);
+			$to = Carbon::create($currentYear, 12, 31);
+		}
+
+
+		$yearList = Training::selectRaw('EXTRACT(YEAR FROM training_date) AS year')
+		->distinct()
+		->orderBy('year', 'desc')
+		->get()
+		->pluck('year');
+
+		$courses = TrainingCourses::select('id', 'course_name')->withTrashed()->get();
+		$foundCourse = $courses->find(1);
+
+		$employees = Employee::where('sub_id', $user->subscriber_id)->where('tbl_employees.is_deleted', 0)
+		->select('employee_id', 'firstname', 'lastname', 'tbl_position.position')
+		->has('participated_trainings')
+		->with('participated_trainings', function($q) use($from, $to) {
+			return $q->select(['trainee_id', 'tbl_training_trainees.training_id',  'tbl_training_trainees.employee_id', 'tbl_trainings_files.src', 'tbl_trainings.training_date', 'tbl_trainings.date_expired', 'tbl_trainings.title'])
+				->where('tbl_trainings.is_deleted', 0)
+				->whereBetween('training_date', [$from, $to])
+				->join('tbl_trainings', 'tbl_trainings.training_id', 'tbl_training_trainees.training_id')
+				->leftJoin(
+					'tbl_trainings_files', function($joinQuery) {
+						return $joinQuery->on('tbl_trainings_files.training_id', '=', 'tbl_training_trainees.training_id')
+						->on('tbl_trainings_files.emp_id', '=', 'tbl_training_trainees.employee_id');
+				});
+		})
+		->leftJoin('tbl_position', 'tbl_position.position_id', 'tbl_employees.position')
+		->get();
+
+		$years = collect([]);
+		
+		$titles = [];
+		// $titles = $courses->pluck('course_name')->toArray();
+		$storage = Storage::disk("public");
+
+		foreach ($employees as $employee) {
+			$employeeFullName = $employee->fullname;
+			$employeePosition = trim($employee->position);
+			$employeeId = $employee->employee_id;
+			foreach ($employee->participated_trainings as $parTraining) {
+				$year = Carbon::parse($parTraining->training_date)->year;
+				$existingYear = $years->get($year, collect([
+					[
+						'employee_id' => $employeeId,
+						'fullName' => $employeeFullName,
+						'position' => $employeePosition,
+						'completed_count' => 0,
+						'data' => collect([])
+					]
+				]));
+
+				$employeeData = $existingYear->first(function ($val) use ($employeeId) {
+					return $val['employee_id'] === $employeeId;
+				});
+
+				if(!$employeeData) {
+					$existingYear->push([
+						'employee_id' => $employeeId,
+						'fullName' => $employeeFullName,
+						'position' => $employeePosition,
+						'completed_count' => 0,
+						'data' => collect([])
+					]);
+				}
+				$years->put($year, $existingYear);
+				
+				$course = '';
+				$title = $parTraining->title;
+				if($title) {
+					$foundCourse = $courses->first(function ($course) use ($title) {
+						return strtolower(trim($course->course_name)) === strtolower(trim($title));
+					});
+					if($foundCourse) {
+						$course = $foundCourse->course_name;
+					}else {
+						$course = $title;
+					}
+					$lowercaseTitles = array_map('strtolower', $titles);
+					$lowerNewTitle = strtolower($title);
+					if (!in_array($lowerNewTitle, $lowercaseTitles)) {
+						$titles[] = $title;
+					}
+				}
+				
+				
+				if($course !== '') {
+					$existingYear->transform(function($val) use($employeeId, $parTraining, $storage, $course, $employeePosition) {
+						if($val['employee_id'] === $employeeId && !$val['data']->contains('courseName', $course)) {
+							$isCompleted = $parTraining->src ? $storage->exists("media/training/". $parTraining->src) : false;
+							$expiredDate = Carbon::parse($parTraining->date_expired);
+							$parTraining->expired = false;
+							if(now() >= $expiredDate) {
+								$parTraining->expired = true;
+							}
+							$val['data']->push([
+								...$parTraining->toArray(),
+								'courseName' => $course,
+								'isCompleted' => $isCompleted,
+								'position' => $employeePosition,
+							]);
+							if($isCompleted) {
+								$val['completed_count'] += 1;
+							}
+						}
+						return $val;
+					});
+					$years->put($year, $existingYear);
+				}
+			}
+		}
+
+		$years->transform(function($year) {
+			return $year->sortBy('fullName')->values();
+		});
+
+		return Inertia::render("Dashboard/Management/Training/Matrix/index", [
+			'courses' => $courses,
+			'years' => $years,
+			'titles' => $titles,
+			'yearList' => $yearList,
+			'from' => $from,
+			'to' => $to
 		]);
 	}
 

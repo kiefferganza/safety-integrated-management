@@ -1,13 +1,12 @@
 import { Suspense, lazy } from 'react';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
-import capitalize from 'lodash/capitalize';
 import { useSettingsContext } from '@/Components/settings';
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { PATH_DASHBOARD } from "@/routes/paths";
 import { Head } from "@inertiajs/inertia-react";
 const Container = lazy(() => import("@mui/material/Container"));
-const DocumentNewForm = lazy(() => import('@/sections/@dashboard/document/form/DocumentNewForm'));
+const DocumentNewEditForm = lazy(() => import('@/sections/@dashboard/document/form/DocumentNewEditForm'));
 
 const index = ({ folder }) => {
 	const { themeStretch } = useSettingsContext();
@@ -28,7 +27,7 @@ const index = ({ folder }) => {
 									href: PATH_DASHBOARD.fileManager.root,
 								},
 								{
-									name: capitalize(folder.folder_name),
+									name: folder.folder_name,
 									href: PATH_DASHBOARD.fileManager.view(folder.folder_id),
 								},
 								{
@@ -36,7 +35,7 @@ const index = ({ folder }) => {
 								},
 							]}
 						/>
-						<DocumentNewForm />
+						<DocumentNewEditForm />
 					</Container>
 				</DashboardLayout>
 			</Suspense>

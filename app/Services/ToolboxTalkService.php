@@ -52,16 +52,14 @@ class ToolboxTalkService {
 	}
 
 	public static function getList() {
-		$toolbox_talks = cache()->rememberForever("tbtList:".auth()->user()->subscriber_id, fn() => ToolboxTalk::where("is_deleted", 0)
+		return ToolboxTalk::where("is_deleted", 0)
 		->with([
-			"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct(),
+			"participants" => fn ($q) => $q->select("firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")->distinct(),
 			"file" => fn ($q) => $q->select("tbt_id","img_src"),
 			"conducted"
 		])
 		->orderBy('date_conducted')
-		->get());
-
-		return $toolbox_talks;
+		->get();
 	}
 
 

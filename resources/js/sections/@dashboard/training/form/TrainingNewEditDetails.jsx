@@ -3,9 +3,9 @@ import { usePage } from '@inertiajs/inertia-react';
 // form
 import { useFormContext } from 'react-hook-form';
 // @mui
-import { Box, Stack, Button, Divider, Typography, TextField, Autocomplete, FormHelperText } from '@mui/material';
+import { Box, Stack, Button, Divider, Typography, TextField, Autocomplete, FormHelperText, MenuItem } from '@mui/material';
 // components
-import { RHFAutocomplete, RHFTextField } from '@/Components/hook-form';
+import { RHFAutocomplete, RHFMuiSelect, RHFTextField } from '@/Components/hook-form';
 import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
 import Iconify from '@/Components/iconify';
 import TrainingEmployeeDialog from './TrainingEmployeeDialog';
@@ -16,9 +16,9 @@ import { currencies } from '@/_mock/arrays/_currencies';
 // ----------------------------------------------------------------------
 
 const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
-	const { personel } = usePage().props;
+	const { personel, courses = [] } = usePage().props;
 	const [openParticipants, setOpenParticipants] = useState(false);
-	const { setValue, watch, formState: { errors } } = useFormContext();
+	const { setValue, watch, trigger, formState: { errors } } = useFormContext();
 	const values = watch();
 
 	const {
@@ -136,7 +136,8 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 				<Stack alignItems="flex-end" spacing={2}>
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-						<RHFTextField name="title" label="Course Title" fullWidth />
+						{/* <RHFTextField name="title" label="Course Title" fullWidth /> */}
+						<RHFMuiSelect name="title" label="Course Title" fullWidth options={courses.map(c => ({ label: c.course_name, value: c.course_name }))} />
 
 						<RHFTextField name="contract_no" label="Contract No." fullWidth />
 
@@ -200,6 +201,7 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 								onChange={(_event, newValue) => {
 									if (newValue) {
 										setValue('reviewed_by', newValue.id, { shouldValidate: true, shouldDirty: true });
+										trigger('approved_by');
 									} else {
 										setValue('reviewed_by', '', { shouldValidate: true, shouldDirty: true });
 									}
@@ -212,7 +214,7 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 										</li>
 									);
 								}}
-								renderInput={(params) => <TextField label="Reviewed By:" {...params} />}
+								renderInput={(params) => <TextField label="Reviewed By:" {...params} error={!!errors?.reviewed_by?.message} helperText={errors?.reviewed_by?.message} />}
 							/>
 							<Autocomplete
 								fullWidth
@@ -220,6 +222,7 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 								onChange={(_event, newValue) => {
 									if (newValue) {
 										setValue('approved_by', newValue.id, { shouldValidate: true, shouldDirty: true });
+										trigger('reviewed_by');
 									} else {
 										setValue('approved_by', '', { shouldValidate: true, shouldDirty: true });
 									}
@@ -232,7 +235,7 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 										</li>
 									);
 								}}
-								renderInput={(params) => <TextField label="Approved By:" {...params} />}
+								renderInput={(params) => <TextField label="Approved By:" {...params} error={!!errors?.approved_by?.message} helperText={errors?.approved_by?.message} />}
 							/>
 
 							<RHFTextField name="training_center" label="Training Center" fullWidth />
@@ -284,7 +287,6 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 								sx={{ maxWidth: { md: 200 } }}
 								options={Object.keys(currencies)}
 								onChange={(_, newValue) => {
-									console.log(newValue);
 									if (newValue) {
 										setValue("currency", newValue, { shouldValidate: true, shouldDirty: true });
 									} else {

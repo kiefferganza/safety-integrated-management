@@ -109,7 +109,9 @@ export const PATH_DASHBOARD = {
 		inHouse: path(ROOTS_DASHBOARD, '/training/in-house'),
 		client: path(ROOTS_DASHBOARD, '/training/client'),
 		thirdParty: path(ROOTS_DASHBOARD, '/training/third-party'),
+		register: route('training.management.courses'),
 		new: (type) => path(ROOTS_DASHBOARD, `/training/new?type=${type || 2}`),
+		matrix: route('training.management.matrix'),
 	},
 
 	// Toolbox Talks
@@ -164,6 +166,21 @@ export const PATH_DASHBOARD = {
 		replyComment: (commentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${commentId}/reply-comment`),
 		deleteComment: (commentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${commentId}/delete-comment`),
 	},
+
+	store: {
+		root: route('operation.store.index'),
+		create: route('operation.store.create'),
+		store: route('operation.store.store'),
+		edit: (slug) => route('operation.store.edit', slug),
+		update: (id) => route('operation.store.update', id),
+		show: (slug) => route('operation.store.show', slug),
+		destroy: (id) => route('operation.store.destroy', id),
+
+		// Report
+		createReport: route('operation.store.report.create'),
+		reportShow: (slug) => route('operation.store.report.show', slug),
+		report: route('operation.store.report.index')
+	}
 
 	// invoice: {
 	// 	root: path(ROOTS_DASHBOARD, '/invoice'),

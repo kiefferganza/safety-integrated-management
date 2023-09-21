@@ -1,8 +1,11 @@
 import { useDateRangePicker } from "@/Components/date-range-picker";
+import { fileFormat, fileThumb } from "@/Components/file-thumbnail";
+import { ellipsis } from "@/utils/exercpt";
 import { fDate } from '@/utils/formatTime';
+import { Tooltip, Link as MuiLink, Avatar } from "@mui/material";
 import { endOfMonth, startOfMonth } from "date-fns";
 // MUI
-const { Box, Stack, Typography, Grid, Card, Divider } = await import('@mui/material');
+const { Box, Stack, Typography, Grid } = await import('@mui/material');
 // Component
 const { Image } = await import('@/Components/image/Image');
 
@@ -80,6 +83,45 @@ const ReportDetailHead = ({ inventoryReport, title = "" }) => {
 						</Box>
 						<Box minHeight={24}>
 							<Typography variant="body1" sx={{ color: 'text.secondary' }}>{inventoryReport.conducted_by}</Typography>
+						</Box>
+					</Box>
+
+					<Box sx={{ mb: 1 }}>
+						<Box>
+							<Typography sx={{ mb: 1, fontWeight: 700 }} variant="body2">Current File</Typography>
+						</Box>
+						<Box minHeight={24}>
+							{inventoryReport?.currentFile ? (
+								<Tooltip title={inventoryReport.currentFile.fileName}>
+									<MuiLink
+										component="a"
+										href={inventoryReport.currentFile.url}
+										sx={{
+											color: "text.primary"
+										}}
+										target="_file"
+										rel="noopener noreferrer"
+									>
+										<Stack
+											spacing={2}
+											direction="row"
+											alignItems="center"
+										>
+											<Avatar variant="rounded" sx={{ bgcolor: 'background.neutral', width: 36, height: 36, borderRadius: "9px" }}>
+												<Box component="img" src={fileThumb(fileFormat(inventoryReport.currentFile.url))} sx={{ width: 24, height: 24 }} />
+											</Avatar>
+
+											<Stack spacing={0.5} flexGrow={1}>
+												<Typography variant="subtitle2" sx={{ textDecoration: "none" }}>{ellipsis(inventoryReport.currentFile.name || "", 24)}</Typography>
+											</Stack>
+										</Stack>
+									</MuiLink>
+								</Tooltip>
+							) : (
+								<Box minHeight={24}>
+									<Typography variant="body1" sx={{ color: 'text.secondary' }}>No signed file yet.</Typography>
+								</Box>
+							)}
 						</Box>
 					</Box>
 

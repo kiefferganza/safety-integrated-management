@@ -15,8 +15,13 @@ class UpdateUserPermissions extends Seeder
      */
     public function run()
     {
-			User::where('user_type', 1)->where('deleted', 0)->get()->map(function($user) {
-				$user->revokePermissionTo(["employee_create", "employee_delete"]);
-			});
+		// User::where('user_type', 1)->where('deleted', 0)->get()->map(function($user) {
+		// 	$user->revokePermissionTo(["employee_create", "employee_delete"]);
+		// });
+		$users = User::where('user_type', 1)->where('deleted', 0)->get();
+
+		foreach ($users as $user) {
+			$user->removeRole('Admin'); // Sync the permissions of the role to each user
+		}
     }
 }

@@ -54,7 +54,7 @@ const STATUS_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function TrainingClientList ({ trainings, module, url, type }) {
+export default function TrainingList ({ trainings, module, url, type }) {
 	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const {
@@ -96,8 +96,7 @@ export default function TrainingClientList ({ trainings, module, url, type }) {
 
 
 	const checkTrainingComplete = (trainees, files) => {
-		if (trainees <= 0 || files <= 0) return false;
-		return trainees === files;
+		return trainees.every((tr) => files.findIndex(f => f.emp_id === tr.employee_id) !== -1);
 	}
 
 	useEffect(() => {
@@ -106,8 +105,8 @@ export default function TrainingClientList ({ trainings, module, url, type }) {
 				...training,
 				id: training.training_id,
 				cms: training?.project_code ? `${training?.project_code}-${training?.originator}-${training?.discipline}-${training?.document_type}-${training?.document_zone ? training?.document_zone + "-" : ""}${training?.document_level ? training?.document_level + "-" : ""}${training?.sequence_no}` : "N/A",
-				status: getTrainingStatus(training.training_date, training.date_expired),
-				completed: checkTrainingComplete(training.trainees_count, training.training_files_count)
+				status: getTrainingStatus(training.date_expired),
+				completed: checkTrainingComplete(training.trainees, training.training_files)
 			})));
 		}
 	}, [trainings]);
@@ -452,7 +451,8 @@ function applyFilter ({ inputData, comparator, filterName, filterStatus, filterS
 	if (filterName) {
 		inputData = inputData.filter((training) =>
 			training.cms.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
-			training.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+			(training?.course ? training.course?.course_name?.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 : false) ||
+			(training?.title ? training.title?.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 : false)
 		);
 	}
 

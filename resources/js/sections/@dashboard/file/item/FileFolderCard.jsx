@@ -28,7 +28,7 @@ FileFolderCard.propTypes = {
 	folder: PropTypes.object,
 };
 
-export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
+export default function FileFolderCard ({ folder, onDelete, sx, index, ...other }) {
 	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const { enqueueSnackbar } = useSnackbar();
@@ -152,7 +152,6 @@ export default function FileFolderCard ({ folder, onDelete, sx, ...other }) {
 					<Box>{folder.totalDocs && `${folder.totalDocs} docs`}</Box>
 				</Stack>
 			</Card>
-
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem
 					component={Link}

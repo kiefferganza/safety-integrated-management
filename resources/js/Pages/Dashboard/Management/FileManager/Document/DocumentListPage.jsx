@@ -21,7 +21,6 @@ const {
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // utils/hooks
-import { formatCms } from '@/utils/tablesUtils';
 import { getDocumentReviewStatus, getDocumentStatus } from '@/utils/formatStatuses';
 import { useSwal } from '@/hooks/useSwal';
 // components
@@ -46,8 +45,8 @@ const { DocumentAnalytic } = await import('@/sections/@dashboard/document/Docume
 import { Link } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
 import { DocumentTableRow, DocumentTableToolbar } from '@/sections/@dashboard/document/list';
-import { capitalCase } from 'change-case';
 import usePermission from '@/hooks/usePermission';
+import { Backdrop, CircularProgress, Portal } from '@mui/material';
 
 
 // ----------------------------------------------------------------------
@@ -91,6 +90,8 @@ const DocumentListPage = ({ folder, user }) => {
 		defaultOrder: "desc"
 	});
 
+	const [loading, setLoading] = useState(false);
+
 	const [anchorLegendEl, setAnchorLegendEl] = useState(null);
 
 	const [openConfirm, setOpenConfirm] = useState(false);
@@ -118,60 +119,57 @@ const DocumentListPage = ({ folder, user }) => {
 	});
 
 	useEffect(() => {
-		const userEmpId = user.employee.employee_id
 		const data = folder?.documents?.reduce((acc, curr) => {
 			if (curr.employee) {
 				const docObj = {
 					...curr,
 					id: curr.document_id,
-					formNumber: formatCms(curr),
 					employee: {
 						...curr.employee,
 						position: curr.employee.position,
 						department: curr.employee.department
 					},
-					docStatus: getDocumentStatus(curr.status)
+					docStatus: getDocumentReviewStatus(curr.status)
 				};
 
-				if (curr.status === "0") {
+				if (curr.status == "0") {
+					acc.push({ ...docObj, docType: "submitted" });
 					const isForApproval = curr.reviewer_sign.length >= curr.reviewer_employees.length;
-					if (isForApproval) {
-						const stat = curr.status === "0" ? curr?.reviewer_employees[0]?.pivot.review_status : curr.status
-						docObj.docStatus = curr.approval_employee ? { statusText: "FOR APPROVAL", statusClass: "info" } : getDocumentStatus(stat);
+					if (isForApproval || curr.external_approver.length > 0) {
+						const stat = curr?.reviewer_employees[0]?.pivot.review_status;
+						docObj.docStatus = curr.approval_employee || curr.external_approver?.length > 0 ? { statusText: "PENDING FOR APPROVAL", statusClass: "info" } : getDocumentStatus(stat);
 					} else {
 						const isInReview = curr.reviewer_employees.some(rev => rev.pivot.review_status !== "0");
-						if (curr.status === "0" && isInReview) {
+						if (isInReview) {
 							docObj.docStatus = {
-								statusText: "FOR REVIEW",
+								statusText: "PENDING FOR REVIEW",
 								statusClass: "primary",
 							};
 						} else {
 							docObj.docStatus = getDocumentStatus(curr.status);
 						}
 					}
-
-					if (curr.employee.employee_id === userEmpId) {
-						acc.push({ ...docObj, docType: "submitted" });
-					}
-					const isReview = curr.reviewer_employees.findIndex(rev => rev.employee_id === userEmpId);
-					if (isReview !== -1) {
-						acc.push({ ...docObj, docType: "review" });
-					}
-					if (curr?.approval_employee?.employee_id === userEmpId) {
-						acc.push({ ...docObj, docType: "approve" });
+					if (curr.external_approver.length === 0) {
+						const isInternalPending = curr.reviewer_employees.some(rev => rev.pivot.review_status === "0");
+						if (isInternalPending) {
+							acc.push({ ...docObj, docType: "internal_review" });
+						}
+					} else {
+						acc.push({ ...docObj, docType: "external_review" });
 					}
 
 				} else {
+					if (curr.status === "A" || curr.status === "D") {
+						acc.push({ ...docObj, docType: "approve" });
+					}
 					docObj.docStatus = getDocumentReviewStatus(curr.status);
 				}
-
-				acc.push({ ...docObj, docType: "documentControl" })
+				acc.push({ ...docObj, docType: "documentControl" });
 			}
 			return acc;
 		}, []);
 		setTableData(data || []);
 	}, [folder]);
-
 
 	const denseHeight = dense ? 56 : 76;
 
@@ -186,21 +184,14 @@ const DocumentListPage = ({ folder, user }) => {
 
 	const getLengthByType = (type) => tableData.filter((item) => item.docType === type).length;
 
-	const getPercentByType = (type) => (getLengthByType(type) / tableData.filter(td => td.docType !== "documentControl").length) * 100;
+	const getPercentByType = (type) => (getLengthByType(type) / tableData.filter(doc => doc.docType === 'documentControl').length) * 100;
 
 	const TABS = [
-		{ value: 'submitted', label: 'Submitted', color: 'default', count: getLengthByType('submitted') },
-		{ value: 'review', label: 'Review', color: 'warning', count: getLengthByType('review') },
-		{ value: 'approve', label: 'Verify & Approve', color: 'success', count: getLengthByType('approve') },
-		{ value: 'documentControl', label: 'Control', color: 'error', count: folder.documents.length },
-	];
-
-	const STATUS_TABS = [
-		{ value: 'PENDING', label: 'PENDING', color: 'warning', count: 0 },
-		{ value: 'REVIEWED', label: 'REVIEWED', color: 'info', count: 0 },
-		{ value: 'APPROVED w/o COMMENTS', label: 'APPROVED w/o COMMENTS', color: 'success', count: 0 },
-		{ value: 'APPROVED WITH COMMENTS', label: 'APPROVED WITH COMMENTS', color: 'info', count: 0 },
-		{ value: 'NO OBJECTION WITH COMMENTS', label: 'NO OBJECTION WITH COMMENTS', color: 'warning', count: 0 },
+		{ value: 'documentControl', label: 'Total Submitted', color: 'default', count: folder.documents.length },
+		{ value: 'submitted', label: 'Latest Submitted', color: 'success', count: getLengthByType('submitted') },
+		{ value: 'internal_review', label: 'Internal Review', color: 'warning', count: getLengthByType('internal_review') },
+		{ value: 'external_review', label: 'External Review', color: 'warning', count: getLengthByType('external_review') },
+		{ value: 'approve', label: 'Approved', color: 'success', count: getLengthByType('approve') }
 	];
 
 	const handleOpenConfirm = () => {
@@ -229,9 +220,9 @@ const DocumentListPage = ({ folder, user }) => {
 	}
 
 	const handleDeleteRow = (id) => {
-		Inertia.post(route('filemanager.document.delete'), { ids: [id] }, {
+		Inertia.post(route('files.management.document.delete'), { ids: [id] }, {
 			onStart () {
-				load("Deleting inspection", "Please wait...");
+				load("Deleting document", "Please wait...");
 			},
 			onFinish () {
 				setPage(0);
@@ -242,11 +233,11 @@ const DocumentListPage = ({ folder, user }) => {
 	};
 
 	const handleDeleteRows = (selected) => {
-		Inertia.post(route('filemanager.document.delete'), { ids: selected }, {
+		Inertia.post(route('files.management.document.delete'), { ids: selected }, {
 			onStart () {
 				load(`Deleting ${selected.length} documents`, "Please wait...");
 			},
-			onFinishonStart () {
+			onFinish () {
 				setSelected([]);
 				setPage(0);
 				stop();
@@ -272,21 +263,20 @@ const DocumentListPage = ({ folder, user }) => {
 
 	const open = Boolean(anchorLegendEl);
 
-	const folderName = capitalCase(folder.folder_name);
 	const canCreate = hasPermission("file_create");
 	const canView = hasPermission("file_show");
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'} sx={{ pb: 16 }}>
 				<CustomBreadcrumbs
-					heading={`${folderName} Document List`}
+					heading={`${folder.folder_name} Document List`}
 					links={[
 						{
 							name: 'File Manager',
 							href: PATH_DASHBOARD.fileManager.root,
 						},
 						{
-							name: folderName
+							name: folder.folder_name
 						},
 						{
 							name: 'List',
@@ -314,15 +304,15 @@ const DocumentListPage = ({ folder, user }) => {
 							sx={{ py: 2 }}
 						>
 							<DocumentAnalytic
-								title="Total"
-								total={tableData.filter(td => td.docType !== "documentControl").length}
+								title="Total Submitted"
+								total={folder.documents.length}
 								percent={100}
 								icon="heroicons:document-chart-bar"
 								color={theme.palette.info.main}
 							/>
 
 							<DocumentAnalytic
-								title="Submitted"
+								title="Latest Submitted"
 								total={getLengthByType('submitted')}
 								percent={getPercentByType('submitted')}
 								icon="heroicons:document-arrow-up"
@@ -330,38 +320,45 @@ const DocumentListPage = ({ folder, user }) => {
 							/>
 
 							<DocumentAnalytic
-								title="Review"
-								total={getLengthByType('review')}
-								percent={getPercentByType('review')}
+								title="Internal Review"
+								total={getLengthByType('internal_review')}
+								percent={getPercentByType('internal_review')}
 								icon="heroicons:document-minus"
 								color={theme.palette.warning.main}
 							/>
 
 							<DocumentAnalytic
-								title="Verify & Approve"
+								title="External Review"
+								total={getLengthByType('external_review')}
+								percent={getPercentByType('external_review')}
+								icon="heroicons:document-minus"
+								color={theme.palette.warning.main}
+							/>
+
+							<DocumentAnalytic
+								title="Approved"
 								total={getLengthByType('approve')}
 								percent={getPercentByType('approve')}
 								icon="heroicons:document-check"
 								color={theme.palette.info.main}
 							/>
 
-							<DocumentAnalytic
+							{/* <DocumentAnalytic
 								title="Control"
 								total={getLengthByType('documentControl')}
 								percent={100}
 								icon="heroicons:document-magnifying-glass"
 								color={theme.palette.success.main}
-							/>
+							/> */}
 						</Stack>
 					</Scrollbar>
 				</Card>
 
 				<Card>
-					<Stack direction="row" alignItems="center" sx={{ px: 2, bgcolor: 'background.neutral' }}>
+					<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 2, bgcolor: 'background.neutral' }}>
 						<Tabs
 							value={filterType}
 							onChange={handleFilterType}
-							sx={{ width: 1, flex: .5 }}
 						>
 							{TABS.map((tab) => (
 								<Tab
@@ -377,7 +374,6 @@ const DocumentListPage = ({ folder, user }) => {
 							))}
 						</Tabs>
 						<Tabs
-							sx={{ flex: .5 }}
 							value={filterStatus}
 							onChange={handleFilterStatus}
 						>
@@ -391,18 +387,6 @@ const DocumentListPage = ({ folder, user }) => {
 								onMouseEnter={handlePopoverLegendOpen}
 								onMouseLeave={handlePopoverLegendClose}
 							/>
-							{STATUS_TABS.map((tab) => (
-								<Tab
-									key={tab.value}
-									value={tab.value}
-									label={tab.label}
-									icon={
-										<Label color={tab.color} sx={{ mr: 1 }}>
-											{tab.count}
-										</Label>
-									}
-								/>
-							))}
 						</Tabs>
 					</Stack>
 
@@ -484,6 +468,7 @@ const DocumentListPage = ({ folder, user }) => {
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
 											canView={canView}
+											load={setLoading}
 										/>
 									))}
 
@@ -567,6 +552,11 @@ const DocumentListPage = ({ folder, user }) => {
 					</Stack>
 				</Box>
 			</Popover>
+			<Portal>
+				<Backdrop open={loading} sx={{ overflow: "hidden" }}>
+					<CircularProgress color="primary" />
+				</Backdrop>
+			</Portal>
 		</>
 	);
 }

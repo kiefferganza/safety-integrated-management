@@ -59,7 +59,7 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, position
 		position: currentEmployee?.position || '',
 		department: currentEmployee?.department || '',
 		country: currentEmployee?.country || '',
-		img_src: currentEmployee?.img_src ? getCurrentUserImage(currentEmployee) : '',
+		// img_src: currentEmployee?.img_src ? getCurrentUserImage(currentEmployee) : '',
 		birth_date: currentEmployee?.birth_date || '',
 		sex: currentEmployee?.sex || 'Male',
 		about: currentEmployee?.about || '',
@@ -127,25 +127,25 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, position
 		}
 	};
 
-	const handleDrop = useCallback(
-		(acceptedFiles) => {
-			const file = acceptedFiles[0];
+	// const handleDrop = useCallback(
+	// 	(acceptedFiles) => {
+	// 		const file = acceptedFiles[0];
 
-			const newFile = Object.assign(file, {
-				preview: URL.createObjectURL(file),
-			});
+	// 		const newFile = Object.assign(file, {
+	// 			preview: URL.createObjectURL(file),
+	// 		});
 
-			if (file) {
-				setValue('img_src', newFile);
-			}
-		},
-		[setValue]
-	);
+	// 		if (file) {
+	// 			setValue('img_src', newFile);
+	// 		}
+	// 	},
+	// 	[setValue]
+	// );
 
 	return (
 		<FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
 			<Grid container spacing={3}>
-				<Grid item xs={12} md={4}>
+				{/* <Grid item xs={12} md={4}>
 					<Card sx={{ pt: 10, pb: 5, px: 3 }}>
 						{isEdit && (
 							<Label
@@ -216,9 +216,9 @@ export default function EmpoloyeeNewEditForm ({ companies, departments, position
 							/>
 						)}
 					</Card>
-				</Grid>
+				</Grid> */}
 
-				<Grid item xs={12} md={8}>
+				<Grid item xs={12} md={12}>
 					<Card sx={{ p: 3 }}>
 
 						<Typography variant="h6" sx={{ color: 'text.disabled' }} >

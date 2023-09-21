@@ -17,14 +17,12 @@ import {
 } from '@mui/material';
 // hooks
 import useDoubleClick from '@/hooks/useDoubleClick';
-import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 // utils
 import { fDate } from '@/utils/formatTime';
 import { fData } from '@/utils/formatNumber';
 // components
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
-import { useSnackbar } from '@/Components/snackbar';
 import ConfirmDialog from '@/Components/confirm-dialog';
 import FileThumbnail from '@/Components/file-thumbnail';
 //
@@ -32,6 +30,7 @@ import FileDetailsDrawer from '../portal/FileDetailsDrawer';
 import { FileNewFolderDialog } from '..';
 import { useSwal } from '@/hooks/useSwal';
 import usePermission from '@/hooks/usePermission';
+import { Draggable } from 'react-beautiful-dnd';
 
 
 // ----------------------------------------------------------------------
@@ -43,14 +42,10 @@ FileTableRow.propTypes = {
 	onSelectRow: PropTypes.func,
 };
 
-export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+export default function FileTableRow ({ index, row, selected, onSelectRow, onDeleteRow }) {
 	const [hasPermission] = usePermission();
 	const { load, stop } = useSwal();
 	const { id, name, size, type, dateCreated, totalDocs, totalFiles, revision_no, url } = row;
-
-	const { enqueueSnackbar } = useSnackbar();
-
-	const { copy } = useCopyToClipboard();
 
 	const [folderName, setFolderName] = useState(name);
 
@@ -101,11 +96,6 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 		doubleClick: () => console.log('DOUBLE CLICK'),
 	});
 
-	const handleCopy = () => {
-		enqueueSnackbar('Copied!');
-		copy(row.url);
-	};
-
 	const handleUpdateFolder = () => {
 		handleCloseEditFolder();
 		Inertia.post(PATH_DASHBOARD.fileManager.edit(id), { folderName }, {
@@ -122,69 +112,77 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 
 	const canDelete = hasPermission("folder_delete");
 	const canEdit = hasPermission("folder_edit");
+	// console.log(row);
 	return (
 		<>
-			<TableRow
-				sx={{
-					borderRadius: 1,
-					'& .MuiTableCell-root': {
-						bgcolor: 'background.default',
-					},
-					...(openDetails && {
-						'& .MuiTableCell-root': {
-							color: 'text.primary',
-							typography: 'subtitle2',
-							bgcolor: 'background.default',
-						},
-					}),
-				}}
-			>
-				<TableCell
-					padding="checkbox"
-					sx={{
-						borderTopLeftRadius: 8,
-						borderBottomLeftRadius: 8,
-					}}
-				>
-					<Checkbox checked={selected} onDoubleClick={() => console.log('ON DOUBLE CLICK')} onClick={onSelectRow} />
-				</TableCell>
+			<Draggable isDragDisabled={row?.disableDrag} key={row.item_order.toString()} draggableId={row.item_order.toString()} index={index}>
+				{(provided) => (
+					<TableRow
+						sx={{
+							borderRadius: 1,
+							'& .MuiTableCell-root': {
+								bgcolor: 'background.default',
+							},
+							...(openDetails && {
+								'& .MuiTableCell-root': {
+									color: 'text.primary',
+									typography: 'subtitle2',
+									bgcolor: 'background.default',
+								},
+							}),
+						}}
+						{...provided.draggableProps}
+						{...provided.dragHandleProps}
+						ref={provided.innerRef}
+					>
+						<TableCell
+							padding="checkbox"
+							sx={{
+								borderTopLeftRadius: 8,
+								borderBottomLeftRadius: 8,
+							}}
+						>
+							<Checkbox checked={selected} onDoubleClick={() => console.log('ON DOUBLE CLICK')} onClick={onSelectRow} />
+						</TableCell>
 
-				<TableCell onClick={handleClick}>
-					<Stack direction="row" alignItems="center" spacing={2}>
-						<FileThumbnail file={type} />
+						<TableCell onClick={handleClick}>
+							<Stack direction="row" alignItems="center" spacing={2}>
+								<FileThumbnail file={type} />
 
-						<Typography noWrap variant="inherit" sx={{ maxWidth: 360, cursor: 'pointer' }}>
-							{name}
-						</Typography>
-					</Stack>
-				</TableCell>
+								<Typography noWrap variant="inherit" sx={{ maxWidth: 360, cursor: 'pointer' }}>
+									{name}
+								</Typography>
+							</Stack>
+						</TableCell>
 
-				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-					{totalDocs && (totalDocs || 0).toLocaleString()}
-				</TableCell>
+						<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
+							{totalDocs && (totalDocs || 0).toLocaleString()}
+						</TableCell>
 
-				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-					{totalFiles && (totalFiles || 0).toLocaleString()}
-				</TableCell>
+						<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
+							{totalFiles && (totalFiles || 0).toLocaleString()}
+						</TableCell>
 
-				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-					{size && fData(size)}
-				</TableCell>
+						<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
+							{size && fData(size)}
+						</TableCell>
 
-				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-					{revision_no && revision_no}
-				</TableCell>
+						<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
+							{revision_no && revision_no}
+						</TableCell>
 
-				<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-					{dateCreated && fDate(dateCreated)}
-				</TableCell>
+						<TableCell align="left" onClick={handleClick} sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
+							{dateCreated && fDate(dateCreated)}
+						</TableCell>
 
-				<TableCell align="right">
-					<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
-						<Iconify icon="eva:more-vertical-fill" />
-					</IconButton>
-				</TableCell>
-			</TableRow>
+						<TableCell align="right">
+							<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
+								<Iconify icon="eva:more-vertical-fill" />
+							</IconButton>
+						</TableCell>
+					</TableRow>
+				)}
+			</Draggable>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem
@@ -206,17 +204,6 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 						Edit
 					</MenuItem>
 				)}
-
-				<MenuItem
-					onClick={() => {
-						handleClosePopover();
-						handleCopy();
-					}}
-				>
-					<Iconify icon="eva:link-2-fill" />
-					Copy Link
-				</MenuItem>
-
 
 				{canDelete && (
 					<>
@@ -246,7 +233,6 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 
 			<FileDetailsDrawer
 				item={row}
-				onCopyLink={handleCopy}
 				open={openDetails}
 				onClose={handleCloseDetails}
 				onDelete={onDeleteRow}
@@ -267,6 +253,7 @@ export default function FileTableRow ({ row, selected, onSelectRow, onDeleteRow 
 					</Button>
 				}
 			/>
+
 		</>
 	);
 }

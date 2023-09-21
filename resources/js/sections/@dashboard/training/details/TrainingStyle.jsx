@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
 	h5: { fontSize: 11, fontWeight: 700 },
 	body1: { fontSize: 10 },
 	subtitle2: { fontSize: 9, fontWeight: 700 },
+	faded: { fontWeight: 500, color: '#637381' },
 	alignRight: { textAlign: 'right' },
 	underlineText: {
 		width: '100%',

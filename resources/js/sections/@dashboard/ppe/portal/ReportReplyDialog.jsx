@@ -1,7 +1,5 @@
-import { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Inertia } from '@inertiajs/inertia';
-import { PATH_DASHBOARD } from '@/routes/paths';
 import { useSwal } from '@/hooks/useSwal';
 // form
 import * as Yup from 'yup';
@@ -10,8 +8,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 const { Stack, Dialog, Button, DialogTitle, DialogContent, DialogActions, Typography, FormHelperText } = await import('@mui/material');
 // components
-import Iconify from '@/Components/iconify';
-import { MultiFilePreview, UploadBox } from '@/Components/upload';
 import FormProvider from '@/Components/hook-form/FormProvider';
 import { RHFSelect, RHFTextField } from '@/Components/hook-form';
 
@@ -91,35 +87,6 @@ export function DocumentReplyDialog ({
 						</RHFSelect>
 						<FormHelperText sx={{ marginLeft: "16px !important", marginTop: "0 !important" }}>i = Incorporated, ii = Evaluated and not incorporated for reason stated</FormHelperText>
 						<RHFTextField name="reply" label="Reply" multiline rows={2} />
-						{/* <UploadBox
-							onDrop={handleDrop}
-							placeholder={
-								<Stack spacing={0.5} alignItems="center" sx={{ color: 'text.disabled' }}>
-									<Iconify icon="eva:cloud-upload-fill" width={40} />
-									<Typography variant="body2">Upload file</Typography>
-								</Stack>
-							}
-							sx={{
-								mb: 3,
-								py: 2.5,
-								width: 'auto',
-								height: 'auto',
-								borderRadius: 1.5,
-							}}
-							error={!!errors?.file?.message}
-						/>
-						{file && (
-							<MultiFilePreview
-								files={[file]}
-								onRemove={() => {
-									setValue("file", "", { shouldValidate: true });
-									setFile(null);
-								}}
-							/>
-						)}
-						{!!errors?.file?.message && (
-							<FormHelperText sx={{ marginLeft: "16px !important", marginTop: "0 !important" }} error>{errors?.file?.message}</FormHelperText>
-						)} */}
 					</Stack>
 				</DialogContent>
 

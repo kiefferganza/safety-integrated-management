@@ -18,6 +18,7 @@ class EmployeeService {
 		$user = Auth::user();
 		$this->personels = Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id")
 			->where("is_deleted", 0)
+			->where("is_active", 0)
 			->where("sub_id", $user->subscriber_id)
 			->where("employee_id", "!=", $user->emp_id);
 		
@@ -32,7 +33,7 @@ class EmployeeService {
 		}else {
 			return Position::where("is_deleted", 0)->get();
 		}
-	}
+	} 
 
 	public function get() {
 		return $this->personels->get();
@@ -91,26 +92,25 @@ class EmployeeService {
 		$employee->company_type = $request->company_type;
 		$employee->country = $request->country;
 		$employee->birth_date = $request->birth_date;
-		$employee->is_active = $request->is_active;
 		$employee->sex = $request->sex;
 		$employee->about = $request->about;
 		$employee->date_updated = Carbon::now();
 
 
 		if($employee->position !== (int)$request->position) {
-			$pos = Position::select("position_id", "position")->firstOrFail($request->position);
+			$pos = Position::select("position_id", "position")->findOrFail($request->position);
 			$employee->position = $pos->position_id;
 			$employee->raw_position = $pos->position;
 		}
 
 		if($employee->department !== (int)$request->department) {
-			$dep = Department::select("department_id ", "department")->firstOrFail($request->department);
+			$dep = Department::select("department_id", "department")->findOrFail($request->department);
 			$employee->department = $dep->department_id;
 			$employee->raw_department = $dep->department;
 		}
 
 		if($employee->company !== (int)$request->company) {
-			$pos = CompanyModel::select("company_id ", "company_name")->firstOrFail($request->company);
+			$pos = CompanyModel::select("company_id", "company_name")->findOrFail($request->company);
 			$employee->company = $pos->company_id;
 			$employee->raw_company = $pos->company_name;
 		}

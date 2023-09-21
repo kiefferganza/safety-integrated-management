@@ -11,10 +11,10 @@ import Carousel, { CarouselDots } from '@/Components/carousel';
 // ----------------------------------------------------------------------
 
 const StyledOverlay = styled('div')(({ theme }) => ({
-	...bgGradient({
-		startColor: `${alpha(theme.palette.common.black, 0)} 0%`,
-		endColor: `${theme.palette.common.black} 75%`,
-	}),
+	// ...bgGradient({
+	// 	startColor: `${alpha(theme.palette.common.black, 0)} 0%`,
+	// 	endColor: `${theme.palette.common.black} 75%`,
+	// }),
 	top: 0,
 	left: 0,
 	right: 0,

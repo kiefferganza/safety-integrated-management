@@ -3,13 +3,10 @@ import { useState } from 'react';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 // @mui
 import { Box, Stack, Dialog, Tooltip, IconButton, DialogActions, CircularProgress } from '@mui/material';
-// routes
-import { PATH_DASHBOARD } from '@/routes/paths';
 // components
 import Iconify from '@/Components/iconify';
 //
 import TrainingPDF from './TrainingPDF';
-import { Inertia } from '@inertiajs/inertia';
 
 // ----------------------------------------------------------------------
 
@@ -29,9 +26,9 @@ export default function TrainingToolbar ({ training, module }) {
 		setOpen(false);
 	};
 
-	const handleEdit = () => {
-		Inertia.visit(`/dashboard/training/${training?.id}/edit`);
-	};
+	// const handleEdit = () => {
+	// 	Inertia.visit(`/dashboard/training/${training?.id}/edit`);
+	// };
 
 	return (
 		<>
@@ -43,11 +40,11 @@ export default function TrainingToolbar ({ training, module }) {
 				sx={{ mb: 5 }}
 			>
 				<Stack direction="row" spacing={1}>
-					<Tooltip title="Edit">
+					{/* <Tooltip title="Edit">
 						<IconButton onClick={handleEdit}>
 							<Iconify icon="eva:edit-fill" />
 						</IconButton>
-					</Tooltip>
+					</Tooltip> */}
 
 					<Tooltip title="View">
 						<IconButton onClick={handleOpen}>

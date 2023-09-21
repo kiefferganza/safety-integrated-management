@@ -6,8 +6,8 @@ import { MobileDatePicker } from '@mui/x-date-pickers';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
 // redux
-import { dispatch, useSelector } from '@/redux/store';
-import { convertTbtByYear, getTbts, } from '@/redux/slices/toolboxtalk';
+import { useSelector } from '@/redux/store';
+import { convertTbtByYear, } from '@/redux/slices/toolboxtalk';
 // utils
 import { fTimestamp } from '@/utils/formatTime';
 // Components
@@ -19,7 +19,6 @@ import Iconify from '@/Components/iconify';
 import EmptyContent from '@/Components/empty-content';
 import ToolboxTalkAnalytic from '@/sections/@dashboard/toolboxtalks/ToolboxTalkAnalytic';
 import TBTReportTable from './TBTReportTable';
-import { useMemo } from 'react';
 
 const MONTH_NAMES = {
 	1: 'January',
@@ -46,7 +45,8 @@ const TYPES = {
 };
 
 const TBTReportPage = () => {
-	const { toolboxTalks, tbtByYear, tbtYearTotalByPosition, totalTbtByYear, isLoading } = useSelector(state => state.toolboxtalk);
+	const [loading, setLoading] = useState(false);
+	const { toolboxTalks, tbtByYear, tbtYearTotalByPosition, isLoading, totalTbtByYear } = useSelector(state => state.toolboxtalk);
 	const { themeStretch } = useSettingsContext();
 	const theme = useTheme();
 
@@ -58,7 +58,6 @@ const TBTReportPage = () => {
 	const [endDateHandler, setEndDateHandler] = useState(null);
 	const endDateRef = useRef();
 
-
 	const [filterType, setFilterType] = useState([
 		'All',
 		'Civil',
@@ -67,6 +66,24 @@ const TBTReportPage = () => {
 		'Camp',
 		'Office',
 	]);
+
+	useEffect(() => {
+		if (tbtByYear !== null) {
+			const y = Object.keys(tbtByYear).at(0) ? new Date(Object.keys(tbtByYear).at(0), 0, 1) : 0;
+			setStartDate(y);
+			setStartDateHandler(y);
+			setEndDate(y);
+			setEndDateHandler(y);
+			const tbtData = Object.entries(tbtByYear).reduce((acc, curr) => {
+				const monthsData = Object.entries(curr[1]);
+				monthsData.forEach(d => d.push(curr[0]));
+				acc.push(...monthsData);
+				return acc;
+			}, []);
+			setData(tbtData);
+			setFilteredData([tbtData[0]]);
+		}
+	}, [tbtByYear, tbtYearTotalByPosition, totalTbtByYear]);
 
 	const filterTbtBySelectedDate = (start, end) => {
 		const selStartYear = getYear(start);
@@ -138,43 +155,24 @@ const TBTReportPage = () => {
 		if (newVal.length > 0) {
 			const types = newVal.map(ft => TYPES[ft]);
 			const filteredTbt = toolboxTalks.filter((toolbox) => types.indexOf(+toolbox.tbt_type) !== -1);
-			convertTbtByYear({ tbt: filteredTbt });
+			convertTbtByYear({ tbt: filteredTbt, calculateTbt: filteredData.length > 0 });
 		} else {
 			convertTbtByYear({ tbt: toolboxTalks });
 		}
 		setFilterType(newVal);
 	};
 
-	useEffect(() => {
-		if (tbtByYear === null || tbtYearTotalByPosition === null || toolboxTalks === null) {
-			dispatch(getTbts());
+	const analytic = filteredData?.reduce((acc, curr) => {
+		if (totalTbtByYear[curr[2]]) {
+			const total = totalTbtByYear[curr[2]][curr[0]];
+			acc.totalManpower += total.totalManpower;
+			acc.totalManpowerAveDay += total.totalManpowerAveDay;
+			acc.totalManhours += total.totalManhours;
+			acc.safeManhours += total.safeManhours;
+			acc.daysWork += total.daysWork;
+			acc.daysWoWork += total.daysWoWork;
+			acc.location = new Set([...acc.location, ...total.location]);
 		}
-		if (tbtByYear !== null) {
-			const y = Object.keys(tbtByYear).at(0) ? new Date(Object.keys(tbtByYear).at(0), 0, 1) : 0;
-			setStartDate(y);
-			setStartDateHandler(y);
-			setEndDate(y);
-			setEndDateHandler(y);
-			const tbtData = Object.entries(tbtByYear).reduce((acc, curr) => {
-				const monthsData = Object.entries(curr[1]);
-				monthsData.forEach(d => d.push(curr[0]));
-				acc.push(...monthsData);
-				return acc;
-			}, []);
-			setData(tbtData);
-			setFilteredData([tbtData[0]]);
-		}
-	}, [tbtByYear, tbtYearTotalByPosition, totalTbtByYear]);
-
-	const analytic = useMemo(() => filteredData?.reduce((acc, curr) => {
-		const total = totalTbtByYear[curr[2]][curr[0]];
-		acc.totalManpower += total.totalManpower;
-		acc.totalManpowerAveDay += total.totalManpowerAveDay;
-		acc.totalManhours += total.totalManhours;
-		acc.safeManhours += total.safeManhours;
-		acc.daysWork += total.daysWork;
-		acc.daysWoWork += total.daysWoWork;
-		acc.location = new Set([...acc.location, ...total.location]);
 		return acc;
 	}, {
 		totalManpower: 0,
@@ -184,9 +182,13 @@ const TBTReportPage = () => {
 		daysWork: 0,
 		daysWoWork: 0,
 		location: new Set
-	}), [filteredData]);
+	});
 
-	if (isLoading || !tbtByYear || startDate === null) {
+	if (loading) {
+		return <LoadingScreen />
+	}
+
+	if (isLoading || !tbtByYear || startDate === null || !tbtYearTotalByPosition) {
 		return <LoadingScreen />
 	}
 
@@ -291,7 +293,11 @@ const TBTReportPage = () => {
 								label="TBT Type"
 								multiple
 								value={filterType}
-								onChange={handleFilterType}
+								onChange={(e) => {
+									setLoading(true);
+									handleFilterType(e);
+									setLoading(false);
+								}}
 								renderValue={(selected) => selected.join(', ')}
 								fullWidth
 							>
@@ -362,16 +368,27 @@ const TBTReportPage = () => {
 					</Stack>
 					{filteredData?.length > 0 ? (
 						filteredData?.map((data, index) => {
-							const days = data[1] || {};
-							const positionData = tbtYearTotalByPosition[data[2]][data[0]] || {};
-							const tbtTotal = totalTbtByYear[data[2]][data[0]] || {};
-							return (
-								<Box key={index}>
-									<Box width={1} textAlign="center" sx={{ mt: 3, mb: 1 }}>
-										<Typography variant="h6">{MONTH_NAMES[data[0]]} {data[2]}</Typography>
+							if (tbtYearTotalByPosition[data[2]] && totalTbtByYear[data[2]]) {
+								const days = data[1] || {};
+								const positionData = tbtYearTotalByPosition[data[2]][data[0]] || {};
+								const tbtTotal = totalTbtByYear[data[2]][data[0]] || {};
+								return (
+									<Box key={index}>
+										<Box width={1} textAlign="center" sx={{ mt: 3, mb: 1 }}>
+											<Typography variant="h6">{MONTH_NAMES[data[0]]} {data[2]}</Typography>
+										</Box>
+										<TBTReportTable days={days} positionData={positionData} tbtTotal={tbtTotal} />
 									</Box>
-									<TBTReportTable days={days} positionData={positionData} tbtTotal={tbtTotal} />
-								</Box>
+								)
+							}
+							return (
+								<EmptyContent
+									key={index}
+									title="No Data"
+									sx={{
+										'& span.MuiBox-root': { height: 160 },
+									}}
+								/>
 							)
 						})
 					) : (

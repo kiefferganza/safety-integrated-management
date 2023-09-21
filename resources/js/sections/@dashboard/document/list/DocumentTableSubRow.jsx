@@ -8,14 +8,14 @@ import Label from "@/Components/label";
 export const DocumentTableSubRow = ({ row, open }) => {
 	const { positions } = usePage().props;
 
-	const approvalStatus = getDocumentReviewStatus(row.status);
+	const approvalStatus = getDocumentReviewStatus(row.approval_status);
 	return (
 		<TableRow>
 			<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
 				<Collapse in={open} timeout="auto" unmountOnExit>
 					<Box sx={{ margin: 1 }}>
 						<Table size="small">
-							<caption><span style={{ textTransform: "uppercase" }}>{row.formNumber}</span> - Reviewers and Approval Personels</caption>
+							<caption><span style={{ textTransform: "uppercase" }}>{row.formNumber}</span> - Reviewers and Approver Personels</caption>
 							<TableHead>
 								<TableRow>
 									<TableCell>Reviewers</TableCell>
@@ -73,7 +73,7 @@ export const DocumentTableSubRow = ({ row, open }) => {
 								<>
 									<TableHead>
 										<TableRow>
-											<TableCell>Approval</TableCell>
+											<TableCell>Approver</TableCell>
 											<TableCell>Position</TableCell>
 											<TableCell>Remarks</TableCell>
 											<TableCell>Signed File</TableCell>
@@ -109,6 +109,54 @@ export const DocumentTableSubRow = ({ row, open }) => {
 											</TableCell>
 										</TableRow>
 									</TableBody>
+								</>
+							)}
+							{row.external_approver?.length > 0 && (
+								<>
+									<TableHead>
+										<TableRow>
+											<TableCell>External Approver</TableCell>
+											<TableCell>Position</TableCell>
+											<TableCell>Remarks</TableCell>
+											<TableCell>Signed File</TableCell>
+											<TableCell>Status</TableCell>
+										</TableRow>
+									</TableHead>
+									<TableBody>
+
+										{row.external_approver.map(app => {
+											return (
+												<TableRow key={app.id}>
+													<TableCell>
+														{app?.firstname} {app?.lastname}
+													</TableCell>
+													<TableCell>{app?.position || "N/A"}</TableCell>
+													<TableCell>{app?.remarks || "N/A"}</TableCell>
+													<TableCell>
+														{app?.src ? (
+															<Tooltip title={app.src}>
+																<a href={app?.media[0]?.original_url} target="_blank">{excerpt(app.src, 16)}</a>
+															</Tooltip>
+														) : (
+															<Box component="span" sx={{ color: "text.disabled" }}>No signed files yet</Box>
+														)}
+													</TableCell>
+													<TableCell>
+														<Label
+															variant="soft"
+															color={
+																(app.status === '0' && 'warning') || (app.status === 'A' && 'success') || (app.status === 'C' && 'error') || 'warning'
+															}
+															sx={{ textTransform: 'capitalize' }}
+														>
+															{(app.status === '0' && 'PENDING') || (app.status === 'A' && 'APPROVED') || (app.status === 'C' && 'FAIL/NOT APPROVED') || 'PENDING'}
+														</Label>
+													</TableCell>
+												</TableRow>
+											)
+										})}
+									</TableBody>
+
 								</>
 							)}
 						</Table>

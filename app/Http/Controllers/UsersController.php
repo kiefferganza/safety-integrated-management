@@ -17,35 +17,37 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class UsersController extends Controller
 {
 
 	public function index()
 	{
-			$user = auth()->user();
+		$user = auth()->user();
 
-			$userslist = User::select(DB::raw("users.user_id, users.username, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id"))
-			->with("social_accounts")
-			->join("tbl_employees", "users.emp_id", "tbl_employees.employee_id")
-			->where([
-					["users.subscriber_id", $user->subscriber_id],
-					["users.deleted", 0]
-			])->get()
-			->transform(function ($user) {
-				$profile = $user->getFirstMedia("profile", ["primary" => true]);
-				if($profile) {
-					$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
-					$user->profile = [
-						"url" => URL::route("image", [ "path" => $path ]),
-						"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
-						"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
-					];
-					return $user;
-				}
-				$user->profile = null;
+		$userslist = User::select(DB::raw("users.user_id, users.username, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id"))
+		->with("social_accounts")
+		->join("tbl_employees", "users.emp_id", "tbl_employees.employee_id")
+		->where([
+				["users.subscriber_id", $user->subscriber_id],
+				["users.deleted", 0]
+		])
+		->get()
+		->transform(function ($user) {
+			$profile = $user->getFirstMedia("profile", ["primary" => true]);
+			if($profile) {
+				$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
+				$user->profile = [
+					"url" => URL::route("image", [ "path" => $path ]),
+					"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+					"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
+				];
 				return $user;
-			});
+			}
+			$user->profile = null;
+			return $user;
+		});
 
 		return Inertia::render("Dashboard/Management/User/List/index", ["users" => $userslist]);
 	}
@@ -54,7 +56,8 @@ class UsersController extends Controller
 	public function create() {
 		$employees = Employee::where([
 			["is_deleted", 0],
-			["user_id", null]
+			["user_id", null],
+			["is_active", 0]
 		])->get();
 		return Inertia::render("Dashboard/Management/User/Create/index", ["employees" => $employees]);
 	}
@@ -88,7 +91,45 @@ class UsersController extends Controller
 		$user->emp_id = $request->emp_id;
 
 		$requestRole = $request->user_type === 1 ? "User" : "Admin";
+		$userPermissions = [
+			'user_edit',
+			'user_show',
+
+			'employee_edit',
+			'employee_show',
+
+			'training_create',
+			'training_edit',
+			'training_delete',
+			'training_show',
+
+			'inspection_create',
+			'inspection_edit',
+			'inspection_delete',
+			'inspection_show',
+
+			'talk_toolbox_create',
+			'talk_toolbox_edit',
+			'talk_toolbox_delete',
+			'talk_toolbox_show',
+
+			'folder_show',
+			
+			'file_create',
+			'file_edit',
+			'file_delete',
+			'file_show',
+
+			'inventory_create',
+			'inventory_edit',
+			'inventory_delete',
+			'inventory_show',
+
+			'stock_addOrRemove',
+			'stock_show',
+		];
 		$user->assignRole($requestRole);
+		$user->syncPermissions($userPermissions);
 
 		if($request->hasFile('profile_pic')){
 			$user
@@ -101,13 +142,32 @@ class UsersController extends Controller
 
 		$emp = Employee::find($request->emp_id);
 
-		if($emp) {
+		if($emp && $user) {
 			$emp->user_id = $user->user_id;
 			$emp->email = $user->email;
+			$emp->save();
 		}
 
 		return redirect()->back()
 			->with('message', 'User added successfully')
+			->with('type', 'success');
+	}
+
+
+	public function destroy(Request $request) {
+		$request->validate([
+			'ids' => 'required|array'
+		]);
+
+		foreach ($request->ids as $id) {
+			$user = User::where("user_id", $id)->first();
+			$user->deleted = 1;
+			$user->save();
+			Employee::where("user_id", $id)->update(["user_id" => null]);
+		}
+		
+		return redirect()->back()
+			->with('message', 'User deleted successfully')
 			->with('type', 'success');
 	}
 
@@ -128,7 +188,7 @@ class UsersController extends Controller
 
 		// $employee->profiles = $user->getMedia('profile')->transform(function($profile) {});
 
-		return Inertia::render("Dashboard/Management/User/index", [
+		return Inertia::render("Dashboard/Management/User/index", [ 
 			"employee" => $employee,
 			"trainingTypes" => TrainingType::get()
 		]);
@@ -152,17 +212,29 @@ class UsersController extends Controller
 					"department" => fn ($query) => 
 						$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]])
 				]),
-				"createdEmployees" => fn($q) => $q->select("employee_id", "firstname", "lastname", "img_src", "email", "created_by", "is_active")
+				"createdEmployees" => fn($q) => $q->select("employee_id", "firstname", "lastname", "img_src", "email", "created_by", "is_active"),
 				// "social_accounts",
+				'roles'
 		]);
 		$user->profile = null;
+		$user->cover = null;
 		$profile = $user->getFirstMedia("profile", ["primary" => true]);
+		$cover = $user->getFirstMedia("cover", ["primary" => true]);
 		if($profile) {
 			$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
 			$user->profile = [
 				"url" => URL::route("image", [ "path" => $path ]),
 				"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
 				"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
+			];
+		}
+		if($cover) {
+			$path = "user/" . md5($cover->id . config('app.key')). "/" .$cover->file_name;
+			$user->cover = [
+				"url" => URL::route("image", [ "path" => $path ]),
+				"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+				"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ]),
+				"cover" => URL::route("image", [ "path" => $path, "w" => 1200, "h" => 280, "fit" => "crop" ]),
 			];
 		}
 
@@ -225,6 +297,8 @@ class UsersController extends Controller
 
 		$user->save();
 
+		cache()->forget("authUser:".$user->user_id);
+
 		if($request->about && $user->emp_id) {
 			Employee::find($user->emp_id)->update(["about" => $request->about]);
 		}
@@ -244,13 +318,19 @@ class UsersController extends Controller
 	}
 
 
-	public function destroy(Request $request) {
-		
-	}
-
-
 	public function edit_user(User $user) {
 		$user->employee = $user->employee;
+		$user->profile = null;
+		$profile = $user->getFirstMedia("profile", ["primary" => true]);
+		if($profile) {
+			$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
+			$user->profile = [
+				"url" => URL::route("image", [ "path" => $path ]),
+				"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
+				"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ])
+			];
+		}
+
 		return Inertia::render("Dashboard/Management/User/Edit/index", ["user" => $user]);
 	}
 
@@ -391,6 +471,5 @@ class UsersController extends Controller
 		->with("message", "User". $user->fullname ." deactivated successfully!")
 		->with("type", "success");
 	}
-
 
 }

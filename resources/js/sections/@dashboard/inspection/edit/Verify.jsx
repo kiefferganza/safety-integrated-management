@@ -10,8 +10,9 @@ import { Inertia } from '@inertiajs/inertia';
 import Iconify from '@/Components/iconify';
 import { RHFSelect } from '@/Components/hook-form';
 import { useSwal } from '@/hooks/useSwal';
+import { fDate } from '@/utils/formatTime';
 
-const Verify = ({ inspection }) => {
+const Verify = ({ inspection, rolloutDate }) => {
 	const { load, stop, warning } = useSwal();
 	const [loading, setLoading] = useState(false);
 	console.log(inspection)
@@ -137,7 +138,7 @@ const Verify = ({ inspection }) => {
 								<Typography variant="body2" fontWeight={700}>Rollout Date:</Typography>
 							</Box>
 							<Box>
-								<Typography></Typography>
+								<Typography>{fDate(rolloutDate)}</Typography>
 							</Box>
 						</Stack>
 					</Stack>

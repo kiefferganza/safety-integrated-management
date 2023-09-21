@@ -23,10 +23,11 @@ class TrainingService {
 			"training_files",
 		];
 		if($training->type === 3) {
+			$relation[] = 'external_status';
 			$relation["external_details"] = fn($q) => $q->with([
-				"approval" => fn($q) => $q->select("employee_id","firstname", "lastname"),
-				"reviewer" => fn($q) => $q->select("employee_id","firstname", "lastname"),
-				"requested" => fn($q) => $q->select("employee_id","firstname", "lastname")
+				"approval" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+				"reviewer" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+				"requested" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			]);
 		}
 		return $training->load($relation);
@@ -34,10 +35,25 @@ class TrainingService {
 
 
 	public function getTrainingByType($type) {
+		$relation = ["training_files", "trainees", "course"];
+		if($type === 3) {
+			$relation[] = "external_status";
+			$relation["external_details"] = fn($q) => $q->select("approved_by", "reviewed_by", "requested_by", "course_price", "currency", "training_id", "training_ext_id")->with([
+				"approval" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+				"reviewer" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+				"requested" => fn($q) => $q->select("employee_id","firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+			]);
+		}
+		
 		return Training::where([["is_deleted", false], ["type", $type]])
-		->withCount(["training_files", "trainees"])
+		->with($relation)
 		->orderByDesc("date_created")
-		->get();
+		->get()
+		->transform(function($training) {
+			$training->training_files = $this->transformFiles($training->training_files);
+			$training->trainees_count = count($training->trainees);
+			return $training;
+		});
 
 	}
 
@@ -56,8 +72,14 @@ class TrainingService {
 
 
 	public function getSequenceNo($type) {
-		$count = Training::where([["is_deleted", false], ["type", $type]])->count() + 1;
-		return str_pad($count, 6, '0', STR_PAD_LEFT);
+		$lastSeq = Training::where([["is_deleted", false], ["type", $type]])
+		->select('sequence_no')->orderBy('sequence_no', 'desc')->first();
+		$sequence = 1;
+		if($lastSeq) {
+			$sequence = (int)ltrim($lastSeq->sequence_no, "0") + 1;
+		}
+		
+		return str_pad($sequence, 6, '0', STR_PAD_LEFT);
 	}
 
 

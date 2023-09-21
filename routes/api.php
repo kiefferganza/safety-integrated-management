@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\ApiControllers\FolderApiController;
+use App\Http\Controllers\ApiControllers\ImageApiController;
+use App\Http\Controllers\ApiControllers\UserApiController;
 use App\Http\Controllers\UsersController;
-use App\Models\Employee;
-use App\Models\Position;
 use App\Models\ToolboxTalk;
 use Illuminate\Support\Facades\Route;
 
@@ -17,25 +18,46 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth')->group(function ()
+Route::middleware('auth')->as('api.')->group(function ()
 {
 
 	Route::get('toolbox-talks', function() {
-		$tbt = cache()->rememberForever("tbtList:".auth()->user()->subscriber_id, fn() => ToolboxTalk::where("is_deleted", 0)
-		->with([
-			"participants" => fn ($q) => $q->select("firstname", "lastname", "position", "raw_position")->distinct(),
-			"file" => fn ($q) => $q->select("tbt_id","img_src"),
-			"conducted"
-		])
-		->orderBy('date_conducted')
-		->get());
+		$tbt = ToolboxTalk::where("is_deleted", 0)
+			->with([
+				"participants" => fn ($q) => $q->select("firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")->distinct(),
+				"file" => fn ($q) => $q->select("tbt_id","img_src"),
+				"conducted"
+			])
+			->orderBy('date_conducted')
+			->get();
 
-		return [
+		return response()->json([
 			"tbt" => $tbt
-		];
+		]);
+	})->name('toolbox_talks');
+
+	// Route::post('/user/follow/{user_id}', [UsersController::class, "followUser"]);
+
+	Route::prefix('user')->as('user.')->group(function() {
+		Route::get('/notifications', [UserApiController::class, 'notifications'])->name('notifications');
+		Route::post('/read-notifications', [UserApiController::class, 'readNotifications'])->name('read_notifications');
+
+		Route::get('/cover/{user}', [UserApiController::class, 'coverImages'])->name('cover_images');
+		Route::post('/cover/{user}', [UserApiController::class, 'addCoverImage'])->name('add_cover');
+		Route::post('/profile-image-update/{user}', [UserApiController::class, 'updateProfileImage'])->name('update_profile_image');
+		Route::post('/set-image/{media}', [UsersController::class, 'setProfilePic'])->name('set-profile');
+		Route::get('/{user}', [UserApiController::class, 'profileImages'])->name('profile_images');
 	});
 
-	Route::post('/user/follow/{user_id}', [UsersController::class, "followUser"]);
+	Route::prefix('images')->as('images.')->group(function() {
+		Route::post('/set-image/{user}', [ImageApiController::class, 'setImageByMediaAndCollectionName'])->name('set-image');
+		Route::delete('/delete-image/{media}', [ImageApiController::class, 'deleteImageById'])->name('delete-image');
+	});
+
+	Route::prefix('folder')->as('folder.')->group(function() {
+		Route::post('/update-order', [FolderApiController::class, 'updateOrder'])->name('update-order');
+		Route::post('/generate-url/{document}', [FolderApiController::class, 'generateUrl'])->name('generate-url');
+	});
 
 });
 

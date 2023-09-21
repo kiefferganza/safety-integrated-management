@@ -30,7 +30,7 @@ const index = ({ report }) => {
 									href: PATH_DASHBOARD.ppe.root,
 								},
 								{
-									name: "Report",
+									name: "New Report",
 									href: PATH_DASHBOARD.ppe.report,
 								},
 								{

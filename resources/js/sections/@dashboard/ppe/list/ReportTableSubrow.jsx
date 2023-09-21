@@ -1,14 +1,12 @@
 import { excerpt } from "@/utils/exercpt";
 import { getDocumentReviewStatus } from "@/utils/formatStatuses";
-import { usePage } from "@inertiajs/inertia-react";
 import { Box, Collapse, Table, TableBody, TableCell, TableHead, TableRow, Tooltip } from "@mui/material";
 import Label from "@/Components/label";
 
 
 const ReportTableSubRow = ({ row, open }) => {
-	const { positions } = usePage().props;
-
 	const reviewerStatus = getDocumentReviewStatus(row.reviewer_status);
+
 	return (
 		<TableRow>
 			<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
@@ -20,6 +18,7 @@ const ReportTableSubRow = ({ row, open }) => {
 								<TableRow>
 									<TableCell>Reviewers</TableCell>
 									<TableCell>Position</TableCell>
+									<TableCell>Signed File</TableCell>
 									<TableCell>Remarks</TableCell>
 									<TableCell>Status</TableCell>
 								</TableRow>
@@ -31,6 +30,15 @@ const ReportTableSubRow = ({ row, open }) => {
 									</TableCell>
 									<TableCell>
 										{row.reviewer?.position}
+									</TableCell>
+									<TableCell>
+										{row?.reviewerLatestFile ? (
+											<Tooltip title={row.reviewerLatestFile.fileName}>
+												<a href={row.reviewerLatestFile.url} target="_blank">{excerpt(row.reviewerLatestFile.name, 16)}</a>
+											</Tooltip>
+										) : (
+											<Box component="span" sx={{ color: "text.disabled" }}>No signed files yet</Box>
+										)}
 									</TableCell>
 									<TableCell>{row?.reviewer_remarks}</TableCell>
 									<TableCell>
@@ -48,6 +56,7 @@ const ReportTableSubRow = ({ row, open }) => {
 								<TableRow>
 									<TableCell>Approval</TableCell>
 									<TableCell>Position</TableCell>
+									<TableCell>Signed File</TableCell>
 									<TableCell>Remarks</TableCell>
 									<TableCell>Status</TableCell>
 								</TableRow>
@@ -59,6 +68,15 @@ const ReportTableSubRow = ({ row, open }) => {
 									</TableCell>
 									<TableCell>
 										{row.approval?.position}
+									</TableCell>
+									<TableCell>
+										{row?.approverLatestFile ? (
+											<Tooltip title={row.approverLatestFile.fileName}>
+												<a href={row.approverLatestFile.url} target="_blank">{excerpt(row.approverLatestFile.name, 16)}</a>
+											</Tooltip>
+										) : (
+											<Box component="span" sx={{ color: "text.disabled" }}>No signed files yet</Box>
+										)}
 									</TableCell>
 									<TableCell>{row?.approval_remarks || "N/A"}</TableCell>
 									<TableCell>

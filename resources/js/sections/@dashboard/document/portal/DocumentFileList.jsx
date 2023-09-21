@@ -4,7 +4,7 @@ import { excerpt } from '@/utils/exercpt';
 import { Dialog, DialogContent, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Link as MuiLink, Typography, Stack, Avatar, Box } from '@mui/material';
 
 export const DocumentFileList = ({ title = "File List", open, onClose, document, ...other }) => {
-	const { files, reviewer_employees, reviewer_sign, approval_employee, approval_sign } = document;
+	const { currentFile, reviewer_employees, reviewer_sign, approval_employee, approval_sign, external_medias = [], external_approver } = document;
 
 	return (
 		<Dialog fullWidth maxWidth="lg" open={open} onClose={onClose} {...other}>
@@ -22,16 +22,18 @@ export const DocumentFileList = ({ title = "File List", open, onClose, document,
 								<TableRow>
 									<TableCell align="left">Current File</TableCell>
 
-									<TableCell align="left">Reviewer's File</TableCell>
+									<TableCell align="left">Internal Reviewer's File</TableCell>
 
-									<TableCell align="left">Verifier File</TableCell>
+									<TableCell align="left">Internal Approver File</TableCell>
+
+									<TableCell align="left">External File</TableCell>
 								</TableRow>
 							</TableHead>
 
 							<TableBody>
 								<TableRow>
 									<TableCell align="left">
-										<FileLinkThumbnail src={files ? files[0]?.src : ""} />
+										{currentFile?.src && <FileLinkThumbnail fullSrc={currentFile?.fullSrc} src={currentFile?.src || ""} />}
 									</TableCell>
 									<TableCell align="left">
 										{reviewer_employees.length > 0 ? (
@@ -59,6 +61,15 @@ export const DocumentFileList = ({ title = "File List", open, onClose, document,
 											<Typography sx={{ color: "text.disabled" }}>No approval assigned personel.</Typography>
 										)}
 									</TableCell>
+									<TableCell align="left">
+										{external_approver?.length > 0 ? external_medias.length > 0 ? external_medias.map((media) => (
+											<FileLinkThumbnail fullSrc={media?.original_url} src={media?.file_name || ""} />
+										)) : (
+											<Typography sx={{ color: "text.disabled" }}>No signed file yet.</Typography>
+										) : (
+											<Typography sx={{ color: "text.disabled" }}>No approval assigned personel.</Typography>
+										)}
+									</TableCell>
 								</TableRow>
 							</TableBody>
 						</Table>
@@ -69,11 +80,11 @@ export const DocumentFileList = ({ title = "File List", open, onClose, document,
 	)
 }
 
-function FileLinkThumbnail ({ src }) {
+function FileLinkThumbnail ({ fullSrc, src }) {
 	return (
 		<MuiLink
 			component="a"
-			href={`/storage/media/docs/${src}`}
+			href={fullSrc || `/storage/media/docs/${src}`}
 			sx={{
 				color: "text.primary"
 			}}
@@ -86,7 +97,7 @@ function FileLinkThumbnail ({ src }) {
 				alignItems="center"
 			>
 				<Avatar variant="rounded" sx={{ bgcolor: 'background.neutral', width: 36, height: 36, borderRadius: "9px" }}>
-					<Box component="img" src={fileThumb(fileFormat(src))} sx={{ width: 24, height: 24 }} />
+					<Box component="img" src={fileThumb(fileFormat(fullSrc || src))} sx={{ width: 24, height: 24 }} />
 				</Avatar>
 
 				<Stack spacing={0.5} flexGrow={1}>

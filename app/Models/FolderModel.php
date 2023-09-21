@@ -15,7 +15,7 @@ class FolderModel extends Model
 
 	const CREATED_AT = 'date_created';
 
-	const UPDATED_AT = 'date_updated';
+	const UPDATED_AT = 'updated_at';
 
 	/**
 	 * The attributes that are mass assignable.
@@ -26,7 +26,8 @@ class FolderModel extends Model
 		'is_removed',
 		'is_active',
 		'folder_name',
-		'sub_id'
+		'sub_id',
+		'item_order'
 	];
 
 	public function documents() {

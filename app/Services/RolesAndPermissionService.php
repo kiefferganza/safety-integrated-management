@@ -24,9 +24,14 @@ class RolesAndPermissionService {
 					'value' => 'employee_create'
 				],
 				[
-					'detail' => "Access for editing existing employees in the system.",
+					'detail' => "Edit his own employee profile",
 					'name' => 'Edit Employee',
 					'value' => 'employee_edit'
+				],
+				[
+					'detail' => "Access for editing existing employees in the system.",
+					'name' => "Edit all employee",
+					'value' => 'employee_access'
 				],
 				[
 					'detail' => "Access in deleting existing employees in the system.",

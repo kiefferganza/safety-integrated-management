@@ -7,8 +7,9 @@ const index = ({ folders, externalTraining }) => {
 	const [data, setData] = useState([]);
 
 	useEffect(() => {
-		const folderObj = folders.map((f) => {
+		const mutatedFolders = folders.map((f) => {
 			return {
+				item_order: f.item_order,
 				id: f.folder_id,
 				revision_no: f.revision_no,
 				name: f.folder_name,
@@ -17,16 +18,31 @@ const index = ({ folders, externalTraining }) => {
 				totalFiles: f.fileCount,
 				totalDocs: f.documents.length,
 				url: '',
-				type: 'folder'
+				type: 'folder',
+				fileType: 'document'
 			}
 		});
-		setData(folderObj);
-	}, [folders]);
+		mutatedFolders.push({
+			id: externalTraining.id,
+			revision_no: null,
+			name: "Third Party",
+			type: "folder",
+			fileType: "external",
+			dateCreated: null,
+			totalFiles: externalTraining.files,
+			totalDocs: externalTraining.count,
+			size: externalTraining.size,
+			url: route("files.management.external"),
+			item_order: 999,
+			disableDrag: true
+		});
+		setData(mutatedFolders);
+	}, [folders])
 
 	return (
 		<Suspense fallback={<LoadingScreen />}>
 			<DashboardLayout>
-				<FileManagerPage folders={data} externalTraining={externalTraining} />
+				<FileManagerPage folders={data} />
 			</DashboardLayout>
 		</Suspense>
 	)

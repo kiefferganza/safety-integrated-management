@@ -15,6 +15,8 @@ import {
 	Container,
 	IconButton,
 	TableContainer,
+	FormHelperText,
+	Typography,
 } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
@@ -87,12 +89,18 @@ export default function EmployeeListPage ({ employees, unassignedUsers }) {
 		onChangeDense,
 		onChangePage,
 		onChangeRowsPerPage,
-	} = useTable();
+	} = useTable({
+		defaultOrderBy: "date_created",
+		defaultOrder: "desc"
+	});
 
 	const [openAssign, setOpenAssign] = useState(false);
 	const [empAssignData, setEmpAssignData] = useState(null);
 
 	const [openConfirm, setOpenConfirm] = useState(false);
+
+	const [openActivate, setOpenActivate] = useState(false);
+	const [openDeactivate, setOpenDeactivate] = useState(false);
 
 	const [tableData, setTableData] = useState([]);
 
@@ -142,16 +150,16 @@ export default function EmployeeListPage ({ employees, unassignedUsers }) {
 		(!dataFiltered.length && !!filterEndDate) ||
 		(!dataFiltered.length && !!filterStartDate);
 
-	const getLengthByStatus = (status) => dataFiltered.filter((item) => item.status === status).length;
+	const getLengthByStatus = (status) => tableData.filter((item) => item.status === status).length;
 
 	const getPercentByStatus = (status) => (getLengthByStatus(status) / dataFiltered.length) * 100;
 
-	const getUnassignedEmployeeLength = () => dataFiltered.filter((item) => !item.user_id).length;
+	const getUnassignedEmployeeLength = () => tableData.filter((item) => !item.user_id).length;
 
 	const getPercentUnassignedEmployee = () => (getUnassignedEmployeeLength() / dataFiltered.length) * 100;
 
 	const TABS = [
-		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
+		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
 		{ value: 'active', label: 'Active', color: 'success', count: getLengthByStatus('active') },
 		{ value: 'inactive', label: 'Inactive', color: 'warning', count: getLengthByStatus('inactive') },
 		{ value: 'unassigned', label: 'Unassigned', color: 'error', count: getUnassignedEmployeeLength() }
@@ -168,6 +176,8 @@ export default function EmployeeListPage ({ employees, unassignedUsers }) {
 
 	const handleCloseConfirm = () => {
 		setOpenConfirm(false);
+		setOpenActivate(false);
+		setOpenDeactivate(false);
 	};
 
 	const handleFilterStatus = (_event, newValue) => {
@@ -233,8 +243,43 @@ export default function EmployeeListPage ({ employees, unassignedUsers }) {
 		setOpenAssign(false);
 	}
 
+	const handleActivate = () => {
+		const ids = selected.filter(id => employees.find(emp => emp.employee_id === id)?.is_active === 1);
+		handleCloseConfirm();
+		if (ids.length > 0) {
+			Inertia.post(route('management.employee.activate'), { ids }, {
+				preserveScroll: true,
+				onStart () {
+					load("Activating employee's", "please wait...");
+				},
+				onFinish () {
+					stop();
+					setSelected([]);
+				}
+			});
+		}
+	}
+
+	const handleDeactivate = () => {
+		const ids = selected.filter(id => employees.find(emp => emp.employee_id === id)?.is_active === 0);
+		handleCloseConfirm();
+		if (ids.length > 0) {
+			Inertia.post(route('management.employee.deactivate'), { ids }, {
+				preserveScroll: true,
+				onStart () {
+					load("Deactivating employee's", "please wait...");
+				},
+				onFinish () {
+					stop();
+					setSelected([]);
+				}
+			});
+		}
+	}
+
 	const canCreate = hasPermission("employee_create");
 	const canDelete = hasPermission("employee_delete");
+	const canEditAll = hasPermission("employee_access");
 	return (
 		<>
 			<Head>
@@ -369,18 +414,30 @@ export default function EmployeeListPage ({ employees, unassignedUsers }) {
 								)
 							}
 							action={
-								<Stack direction="row">
-									<Tooltip title="Print">
+								<Stack direction="row" gap={1}>
+									{canEditAll && (
+										<>
+											<Button startIcon={<Iconify icon="mdi:user-key" />} onClick={() => setOpenActivate(true)}>
+												Activate
+											</Button>
+											<Button color="warning" startIcon={<Iconify icon="mdi:account-off" />} onClick={() => setOpenDeactivate(true)}>
+												Deactivate
+											</Button>
+										</>
+									)}
+									{/* <Tooltip title="Print">
 										<IconButton color="primary">
 											<Iconify icon="eva:printer-fill" />
 										</IconButton>
-									</Tooltip>
+									</Tooltip> */}
 
-									<Tooltip title="Delete">
-										<IconButton color="primary" onClick={handleOpenConfirm}>
-											<Iconify icon="eva:trash-2-outline" />
-										</IconButton>
-									</Tooltip>
+									{canDelete && (
+										<Tooltip title="Delete">
+											<IconButton color="primary" onClick={handleOpenConfirm}>
+												<Iconify icon="eva:trash-2-outline" />
+											</IconButton>
+										</Tooltip>
+									)}
 								</Stack>
 							}
 						/>
@@ -412,6 +469,7 @@ export default function EmployeeListPage ({ employees, unassignedUsers }) {
 											onDeleteRow={() => handleDeleteRow(row.id)}
 											onAssign={handleOpenAssignment}
 											canDelete={canDelete}
+											canEditAll={canEditAll}
 										/>
 									))}
 
@@ -462,6 +520,46 @@ export default function EmployeeListPage ({ employees, unassignedUsers }) {
 						}}
 					>
 						Delete
+					</Button>
+				}
+			/>
+			<ConfirmDialog
+				open={openActivate}
+				onClose={handleCloseConfirm}
+				title="Activate Employee's"
+				content={
+					<Stack>
+						<Typography variant="subtitle2">Are you sure want to activate <strong> {selected.length} </strong> employee?</Typography>
+						<FormHelperText sx={{ display: 'flex', alignItems: 'center', gap: .5 }}><Iconify icon="material-symbols:info-outline" /> Already activated account won't be affected.</FormHelperText>
+					</Stack>
+				}
+				action={
+					<Button
+						variant="contained"
+						color="error"
+						onClick={handleActivate}
+					>
+						Activate
+					</Button>
+				}
+			/>
+			<ConfirmDialog
+				open={openDeactivate}
+				onClose={handleCloseConfirm}
+				title="Deactivate Employee's"
+				content={
+					<Stack>
+						<Typography variant="subtitle2">Are you sure want to de-activate <strong> {selected.length} </strong> employee?</Typography>
+						<FormHelperText sx={{ display: 'flex', alignItems: 'center', gap: .5 }}><Iconify icon="material-symbols:info-outline" /> Already de-activated account won't be affected.</FormHelperText>
+					</Stack>
+				}
+				action={
+					<Button
+						variant="contained"
+						color="error"
+						onClick={handleDeactivate}
+					>
+						Deactivate
 					</Button>
 				}
 			/>

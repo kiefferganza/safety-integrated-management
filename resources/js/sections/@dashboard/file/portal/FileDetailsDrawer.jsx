@@ -28,14 +28,12 @@ FileDetailsDrawer.propTypes = {
 	item: PropTypes.object,
 	onClose: PropTypes.func,
 	onDelete: PropTypes.func,
-	onCopyLink: PropTypes.func,
 };
 
 export default function FileDetailsDrawer ({
 	item,
 	open,
 	//
-	onCopyLink,
 	onClose,
 	onDelete,
 	canDelete,
@@ -93,7 +91,7 @@ export default function FileDetailsDrawer ({
 									<Stack spacing={1.5}>
 										{size && <Row label="Size" value={fData(size)} />}
 
-										{revision_no && <Row label="Revisions" value={revision_no + ""} />}
+										<Row label="Revisions" value={revision_no + ""} />
 
 										{dateCreated && <Row label="Created" value={fDateTime(dateCreated)} />}
 

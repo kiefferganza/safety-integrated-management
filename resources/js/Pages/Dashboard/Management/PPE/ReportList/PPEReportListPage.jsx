@@ -68,7 +68,7 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 
 	const [filterName, setFilterName] = useState('');
 
-	const [filterType, setFilterType] = useState('submitted');
+	const [filterType, setFilterType] = useState('control');
 
 	const [filterStartDate, setFilterStartDate] = useState(null);
 
@@ -150,7 +150,7 @@ const PPEReportListPage = ({ inventoryReports = [] }) => {
 
 	const handleResetFilter = () => {
 		setFilterName('');
-		setFilterType('submitted');
+		setFilterType('control');
 		setFilterStartDate(null);
 		setFilterEndDate(null);
 	};

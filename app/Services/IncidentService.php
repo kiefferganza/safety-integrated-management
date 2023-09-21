@@ -146,7 +146,7 @@ class IncidentService {
 
 
 	public function employees($user) {
-		return cache()->rememberForever("employees:".auth()->user()->subscriber_id, fn() => Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id", "user_id")->where("is_deleted", 0)->where("sub_id", $user->subscriber_id)->get());
+		return cache()->rememberForever("employees:".auth()->user()->subscriber_id, fn() => Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id", "user_id")->where("is_deleted", 0)->where("is_active", 0)->where("sub_id", $user->subscriber_id)->get());
 	}
 
 	

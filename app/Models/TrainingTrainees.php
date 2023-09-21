@@ -16,17 +16,7 @@ class TrainingTrainees extends Model
 	const CREATED_AT = 'date_joined';
 	const UPDATED_AT = null;
 
-	/**
-	 * The attributes that are mass assignable.
-	 *
-	 * @var array<int, string>
-	 */
-	protected $fillable = [
-		'training_id',
-		'employee_id',
-		'user_id',
-		'is_removed',
-	];
+	protected $guarded = [];
 
 
 	public function training() {

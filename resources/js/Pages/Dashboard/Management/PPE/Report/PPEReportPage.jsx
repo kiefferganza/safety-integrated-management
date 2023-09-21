@@ -60,7 +60,7 @@ const TABLE_HEAD = [
 	{ id: 'status', label: 'Status', align: 'center' },
 ];
 
-const PPEReportPage = ({ inventories, employees, sequence_no }) => {
+const PPEReportPage = ({ inventories, employees, sequence_no, submittedDates }) => {
 	const {
 		dense,
 		page,
@@ -181,11 +181,15 @@ const PPEReportPage = ({ inventories, employees, sequence_no }) => {
 		<>
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<CustomBreadcrumbs
-					heading="PPE Report"
+					heading="Generate PPE Report"
 					links={[
 						{ name: 'Dashboard', href: PATH_DASHBOARD.root },
 						{
-							name: 'PPE',
+							name: 'New PPE',
+							href: PATH_DASHBOARD.ppe.report,
+						},
+						{
+							name: 'PPE List',
 							href: PATH_DASHBOARD.ppe.root,
 						},
 						{ name: 'Report' },
@@ -427,6 +431,7 @@ const PPEReportPage = ({ inventories, employees, sequence_no }) => {
 				inventories={list}
 				employees={employees}
 				sequence_no={sequence_no}
+				submittedDates={submittedDates}
 			/>
 		</>
 	)

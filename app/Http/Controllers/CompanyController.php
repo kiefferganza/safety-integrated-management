@@ -17,7 +17,7 @@ class CompanyController extends Controller
 
 
 	public function store(Request $request) {
-		$user = Auth::user();
+		$user = auth()->user();
 		CompanyModel::create([
 			"company_name" => $request->company,
 			"sub_id" => $user->subscriber_id,
@@ -25,7 +25,7 @@ class CompanyController extends Controller
 		]);
 		return redirect()->back()
 		->with("message", "Position created successfully!")
-		->with("type", "success");;
+		->with("type", "success");
 	}
 
 

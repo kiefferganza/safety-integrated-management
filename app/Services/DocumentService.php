@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 class DocumentService {
 
 	public function getDocumentByFolders(FolderModel $folder) {
-		return $folder->load([
+		$folder = $folder->load([
 			"documents" => fn($q) =>
 				$q->where("is_deleted", 0)->withWhereHas(
 					"employee", fn($q) => $q->select("employee_id", "firstname", "lastname", "position", "department")->with([
@@ -28,32 +28,68 @@ class DocumentService {
 					"files",
 					"approval_employee",
 					"reviewer_employees",
+					"external_approver",
+					"shareableLink"
 				)->orderByDesc("date_uploaded")
 		]);
+
+		$folder->documents->transform(function($document) {
+			$files = collect([]);
+			$document->currentFile = ["src" => ""];
+			if(count($document->files) > 0) {
+				$files->push(["src" => $document->files[0]->src,"date" => $document->files[0]->upload_date]);
+			}
+			if($document->approval_sign) {
+				$files->push(["src" => $document->approval_sign->src, "date" => $document->approval_sign->created_at->format('Y-m-d H:i:s')]);
+			}
+			if(count($document->reviewer_sign) > 0) {
+				foreach ($document->reviewer_sign as $revSign) {
+					$files->push(["src" => $revSign->src, "date" => $revSign->upload_date]);
+				}
+			}
+	
+			if(count($document->external_approver) > 0) {
+				foreach ($document->external_approver as $externalApprover) {
+					$medias = [];
+					if($externalApprover->src) {
+						$media = $externalApprover->getFirstMedia();
+						$files->push(["fullSrc" => $media->getFullUrl(), "src" => $media->name, "date" => $media->created_at]);
+						$medias[] = $media;
+					}
+				}
+				$document->external_medias = $medias;
+			}
+
+			if($files->count() > 0) {
+				$document->currentFile = $files->sortByDesc("date")->first();
+			}
+			return $document;
+		});
+
+		return $folder;
 	}
 
+	PUBLIC static function generateFormNumber(Document $doc) {
+		$form_number = sprintf("%s-%s-%s-%s", $doc->project_code, $doc->originator,$doc->discipline,$doc->document_type);
+		if($doc->document_zone) {
+			$form_number .= "-". $doc->document_zone;
+		}
+		if($doc->document_level) {
+			$form_number .= "-". $doc->document_level;
+		}
+		$form_number .= "-" . $doc->sequence_no;
+		return strtoupper($form_number);
+	}
 
 	public function sequence_no($folder_id) {
-		$user = auth()->user();
-
-		$lastSubmittedDoc = Document::select("sequence_no")->where([
-			["user_id", $user->emp_id],
-			["is_deleted", 0],
-			["folder_id", $folder_id]
-		])->latest("date_uploaded")->first();
-
-		$sequence = '000001';
-
-		if($lastSubmittedDoc) {
-			$zeroes = '';
-			$prevSequence = (int)$lastSubmittedDoc->sequence_no + 1;
-			$number_of_zeroes = strlen((string) $prevSequence);
-			for($i = $number_of_zeroes; $i < 6; $i++) {
-				$zeroes .= "0";
-			}
-			$sequence = $zeroes . $prevSequence;
+		$sequence = Document::select("sequence_no")->where('is_deleted', 0)->where("folder_id", $folder_id)->orderByDesc("date_uploaded")->first();
+		if(!$sequence) {
+			$sequence_no = '000000';
+			$number = (int)ltrim($sequence_no, '0') + 1;
+			return sprintf("%06d", $number);
 		}
-		return $sequence;
+		$number = (int)ltrim($sequence->sequence_no, '0') + 1;
+		return sprintf("%06d", $number);
 	}
 
 
@@ -72,6 +108,7 @@ class DocumentService {
 
 	public function approval_action(Request $request, Document $document, $file_name, $user) {
 		$document->status = $request->status;
+		$document->approval_status = $request->status;
 		if($request->remarks) {
 			$document->remarks = $request->remarks;
 		}
@@ -85,6 +122,12 @@ class DocumentService {
 	public function reviewer_action(Request $request, Document $document, $file_name, $user) {
 		$documentReviwer = DocumentReviewer::where(["document_id" => $document->document_id, "reviewer_id" => $user->emp_id])->first();
 		if($documentReviwer) {
+			$isAlreadyReviewed = $document->reviewer_employees->every(function($item) {
+				return $item->pivot->review_status !== "0";
+			});
+			if($isAlreadyReviewed) {
+				$document->status = $request->status;
+			}
 			if($request->remarks) {
 				$documentReviwer->remarks = $request->remarks;
 			}
@@ -108,7 +151,7 @@ class DocumentService {
 	}
 
 	public function updateReviewStatus(Document $document, $file_name, $user) {
-		$doc_rev_sign = DocumentReviewerSign::where(["document_id" => $document->document_id, "user_id" => $user->emp_id])->first();	
+		$doc_rev_sign = DocumentReviewerSign::where(["document_id" => $document->document_id, "user_id" => $user->emp_id])->first();
 		if($doc_rev_sign && $file_name !== "") {
 			if(Storage::exists("public/media/docs/" . $doc_rev_sign->src)) {
 				Storage::delete("public/media/docs/" . $doc_rev_sign->src);

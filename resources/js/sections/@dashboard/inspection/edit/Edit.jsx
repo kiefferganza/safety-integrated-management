@@ -9,8 +9,9 @@ import { Upload } from '@/Components/upload';
 import { LoadingButton } from '@mui/lab';
 import { Inertia } from '@inertiajs/inertia';
 import Iconify from '@/Components/iconify';
+import { fDate } from '@/utils/formatTime';
 
-const Edit = ({ inspection }) => {
+const Edit = ({ inspection, rolloutDate }) => {
 	const [loading, setLoading] = useState(false);
 	const defaultValues = useMemo(() => ({
 		reports: inspection?.report_list.map(sec => ({
@@ -119,7 +120,7 @@ const Edit = ({ inspection }) => {
 								<Typography variant="body2" fontWeight={700}>Rollout Date:</Typography>
 							</Box>
 							<Box>
-								<Typography></Typography>
+								<Typography>{fDate(rolloutDate)}</Typography>
 							</Box>
 						</Stack>
 					</Stack>

@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use App\Models\Inventory;
 use App\Models\InventoryBound;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class InventoryController extends Controller
@@ -25,6 +24,7 @@ class InventoryController extends Controller
 			"inventory" => Inventory::where("is_removed", 0)->get(),
 			"employee" => Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
 				->where("is_deleted", 0)
+				->where("is_active", 0)
 				->where("sub_id", auth()->user()->subscriber_id)
 				->get()
 		]);
@@ -108,6 +108,7 @@ class InventoryController extends Controller
 			]),
 			"employee" => Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
 				->where("is_deleted", 0)
+				->where("is_active", 0)
 				->where("sub_id", auth()->user()->subscriber_id)
 				->get()
 		]);
@@ -214,7 +215,7 @@ class InventoryController extends Controller
 
 			
 			$inventoryBound->type = "inbound";
-			$inventoryBound->requested_by_employee = (string)$user->user_id;
+			$inventoryBound->requested_by_employee = (string)$user->emp_id;
 			$inventoryBound->requested_by_location = NULL;
 
 			$inventory->current_stock_qty = $newQty;

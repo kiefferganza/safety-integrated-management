@@ -1,17 +1,18 @@
 import { useMemo, useState } from 'react';
-const { Box, Grid, Stack, Typography, Tab, Tabs, Button } = await import("@mui/material");
+const { Box, Grid, Stack, Typography, Tab, Tabs } = await import("@mui/material");
 import { HeadingTH, TCell, TRow } from "@/sections/@dashboard/inspection/form/styledInspectionForm";
 import { getScoreColor } from "@/utils/inspection";
 import Image from "@/Components/image";
 import Iconify from "@/Components/iconify";
 import Findings from '@/sections/@dashboard/inspection/details/Findings';
-import { Link, usePage } from '@inertiajs/inertia-react';
-import { PATH_DASHBOARD } from '@/routes/paths';
+import { usePage } from '@inertiajs/inertia-react';
 import Edit from '@/sections/@dashboard/inspection/edit/Edit';
 import Review from '@/sections/@dashboard/inspection/edit/Review';
 import Verify from '@/sections/@dashboard/inspection/edit/Verify';
+import InspectionToolbar from '@/sections/@dashboard/inspection/details/InspectionToolbar';
+import { fDate } from '@/utils/formatTime';
 
-const InspectionDetailPage = ({ inspection }) => {
+const InspectionDetailPage = ({ inspection, rolloutDate }) => {
 	const { auth: { user } } = usePage().props;
 	const [currentTab, setCurrentTab] = useState('details');
 
@@ -46,17 +47,17 @@ const InspectionDetailPage = ({ inspection }) => {
 		}
 	}, [inspection]);
 
-	const getInspectionType = ({ employee_id, reviewer_id, verifier_id, status }) => {
+	const getInspectionType = ({ employee_id, reviewer_id, verifier_id, status, rolloutDate }) => {
 		if (employee_id === user.emp_id) {
-			return <Edit inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
+			return <Edit rolloutDate={rolloutDate} inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
 		} else if (reviewer_id === user.emp_id && (status === 1 || status === 4)) {
-			return <Review inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
+			return <Review rolloutDate={rolloutDate} inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
 		} else if (verifier_id === user.emp_id && status === 2) {
-			return <Verify inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
+			return <Verify rolloutDate={rolloutDate} inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
 		} else if (status !== 0) {
-			return <Findings inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
+			return <Findings rolloutDate={rolloutDate} inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
 		}
-		return <Findings inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} />;
+		return <Findings inspection={{ ...inspection, report_list: items.unsatisfactoryItems }} rolloutDate={rolloutDate} />;
 	}
 	const InspectionType = getInspectionType({
 		employee_id: inspection.employee_id,
@@ -70,7 +71,7 @@ const InspectionDetailPage = ({ inspection }) => {
 			value: 'details',
 			label: 'Details',
 			icon: <Iconify icon="heroicons:document-chart-bar" />,
-			component: <InspectionDetails inspection={inspection} reports={items.sections} />,
+			component: <InspectionDetails inspection={inspection} reports={items.sections} rolloutDate={rolloutDate} />,
 		},
 		{
 			value: 'findings',
@@ -82,6 +83,7 @@ const InspectionDetailPage = ({ inspection }) => {
 
 	return (
 		<Box>
+			<InspectionToolbar rolloutDate={rolloutDate} inspection={inspection} reports={items.sections} findings={items.unsatisfactoryItems} cms={inspection?.form_number} />
 			<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.5 }}>
 				<Tabs
 					value={currentTab}
@@ -112,7 +114,7 @@ const InspectionDetailPage = ({ inspection }) => {
 	)
 }
 
-function InspectionDetails ({ inspection, reports }) {
+function InspectionDetails ({ inspection, reports, rolloutDate }) {
 	return (
 		<>
 			<Box sx={{ mb: 2 }}>
@@ -148,7 +150,7 @@ function InspectionDetails ({ inspection, reports }) {
 						<Typography variant="body2" fontWeight={700}>Rollout Date:</Typography>
 					</Box>
 					<Box>
-						<Typography></Typography>
+						<Typography>{fDate(rolloutDate)}</Typography>
 					</Box>
 				</Stack>
 			</Stack>

@@ -9,8 +9,7 @@ import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
-import { Inertia } from '@inertiajs/inertia';
-import { Link } from '@inertiajs/inertia-react';
+import { Link, usePage } from '@inertiajs/inertia-react';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +22,8 @@ TrainingTableRow.propTypes = {
 };
 
 export default function TrainingTableRow ({ row, selected, onSelectRow, onDeleteRow, url, canEdit, canDelete }) {
-	const { cms, title, traninees_count, training_date, date_expired, status, completed } = row;
+	const { auth: { user } } = usePage().props;
+	const { cms, course, title, trainees_count, training_date, date_expired, status, completed } = row;
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -44,7 +44,8 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 	const handleClosePopover = () => {
 		setOpenPopover(null);
 	};
-
+	const canEditFinal = canEdit ? (user.emp_id === 1 || row.employee_id === user.emp_id) : false;
+	const canDeleteFinal = canDelete ? (user.emp_id === 1 || row.employee_id === user.emp_id) : false;
 	return (
 		<>
 			<TableRow hover selected={selected}>
@@ -54,9 +55,9 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 
 				<TableCell sx={{ whiteSpace: "nowrap", textTransform: "uppercase" }}>{cms}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap" }}>{title}</TableCell>
+				<TableCell sx={{ whiteSpace: "nowrap" }}>{course ? course.course_name : title}</TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap" }} align="center">{traninees_count}</TableCell>
+				<TableCell sx={{ whiteSpace: "nowrap" }} align="center">{trainees_count}</TableCell>
 
 				<TableCell sx={{ whiteSpace: "nowrap" }}>{fDate(training_date)}</TableCell>
 
@@ -95,7 +96,7 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 					<Iconify icon="eva:eye-fill" />
 					View
 				</MenuItem>
-				{canEdit && (
+				{canEditFinal && (
 					<MenuItem
 						component={Link}
 						href={`/dashboard/training/${row.id}/edit`}
@@ -106,7 +107,7 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 
 				)}
 
-				{canDelete && (
+				{canDeleteFinal && (
 					<>
 						<Divider sx={{ borderStyle: 'dashed' }} />
 						<MenuItem

@@ -45,13 +45,16 @@ class InventoryReportController extends Controller
 		});
 
 		$latestReport = InventoryReport::select("sequence_no")->latest()->first();
+		$submittedDates = InventoryReport::select("submitted_date")->get()->pluck("submitted_date");
 		$sequence = $latestReport ? (int)ltrim($latestReport->sequence_no) + 1 : 1;
 
 		return Inertia::render("Dashboard/Management/PPE/Report/index", [
 			"inventories" => $inventories,
+			"submittedDates" => $submittedDates,
 			"sequence_no" => str_pad(ltrim($sequence), 6, '0', STR_PAD_LEFT),
 			"employees" => Employee::select("employee_id", "firstname", "lastname", "sub_id", "user_id")
 				->where("is_deleted", 0)
+				->where("is_active", 0)
 				->where("sub_id", $user->subscriber_id)
 				->where("user_id", "!=", null)
 				->where("user_id", "!=", $user->user_id)
@@ -181,6 +184,16 @@ class InventoryReportController extends Controller
 			"approval" => fn($q) =>
 				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 		]);
+		if($inventoryReport->hasMedia('actions')) {
+			$currentFile = $inventoryReport->getMedia('actions')->last();
+			$inventoryReport->setAttribute('currentFile', [
+				'name' => $currentFile->name,
+				'fileName' => $currentFile->file_name,
+				'url' => $currentFile->originalUrl
+			]);
+			unset($inventoryReport->media);
+		}
+		
 		return Inertia::render("Dashboard/Management/PPE/ReportDetail/index", [
 			"report" => $inventoryReport
 		]);
@@ -197,7 +210,30 @@ class InventoryReportController extends Controller
 				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
 			"approval" => fn($q) =>
 				$q->select("employee_id", "firstname", "lastname", "tbl_position.position")->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
-		])->get()->toArray();
+		])->get();
+
+		foreach ($inventoryReports as $report) {
+			/** @var InventoryReport $report */
+			if($report->hasMedia('actions')) {
+				$reviewerLastFile = $report->getFirstMedia('actions', ['type' => 'review']);
+				$approverLastFile = $report->getFirstMedia('actions', ['type' => 'approval']);
+				if($reviewerLastFile) {
+					$report->reviewerLatestFile = [
+						'name' => $reviewerLastFile->name,
+						'fileName' => $reviewerLastFile->file_name,
+						'url' => $reviewerLastFile->originalUrl
+					];
+				}
+				if($approverLastFile) {
+					$report->approverLatestFile = [
+						'name' => $approverLastFile->name,
+						'fileName' => $approverLastFile->file_name,
+						'url' => $approverLastFile->originalUrl
+					];
+				}
+
+			}
+		}
 		
 		return Inertia::render("Dashboard/Management/PPE/ReportList/index", [
 			"inventoryReports" => $inventoryReports
@@ -213,7 +249,11 @@ class InventoryReportController extends Controller
 			"comment_code" => ["integer", "max:2", "required"],
 			"status" => ["string", "required"]
 		]);
-
+		if($inventoryReport->status === 'for_approval' && $request->comment_code == '1') {
+			$inventoryReport->status = 'for_review';
+			$inventoryReport->reviewer_status = 'C';
+			$inventoryReport->save();
+		}
 		$inventoryReport->comments()->create([
 			"inventory_report_id" => $inventoryReport->id,
 			"reviewer_id" => auth()->user()->emp_id,
@@ -273,8 +313,9 @@ class InventoryReportController extends Controller
 		$request->validate([
 			"status" => ["string", "required"],
 			"type" => ["string", "required"],
+			"file" => ["file", "max:3072", "required"]
 		]);
-
+		
 		switch ($request->type) {
 			case 'review':
 				if($request->remarks) {
@@ -282,11 +323,6 @@ class InventoryReportController extends Controller
 				}
 				$inventoryReport->reviewer_status = $request->status;
 				$inventoryReport->status = "for_approval";
-				// if($request->status === "A" || $request->status === "D") {
-				// 	$inventoryReport->status = "for_approval";
-				// }else {
-				// 	$inventoryReport->status = "for_revision";
-				// }
 				break;
 			case 'approval':
 				if($request->remarks) {
@@ -297,6 +333,14 @@ class InventoryReportController extends Controller
 				break;
 		}
 
+		$inventoryReport
+		->addMediaFromRequest('file')
+		->withCustomProperties([
+			'type' => $request->type
+		])
+		->toMediaCollection('actions');
+
+		$inventoryReport->increment('revision_no');
 		$inventoryReport->save();
 
 		return redirect()->back()
@@ -304,5 +348,37 @@ class InventoryReportController extends Controller
 		->with("type", "success");
 	}
 
+
+	public function reuploadActionFile(Request $request, InventoryReport $inventoryReport) {
+		$request->validate([
+			"type" => ["string", "required"],
+			"file" => ["file", "max:3072", "required"],
+			"remarks" => ["string"]
+		]);
+
+		if($inventoryReport->hasMedia('actions', ['type' => $request->type])) {
+			$media = $inventoryReport->getFirstMedia('actions', ['type' => $request->type]);
+			$inventoryReport->deleteMedia($media);
+		}
+		switch ($request->type) {
+			case 'review':
+				$inventoryReport->reviewer_remarks = $request->remarks ?? "";
+				break;
+			case 'approval':
+				$inventoryReport->approval_remarks = $request->remarks ?? "";
+				break;
+		}
+		$inventoryReport->save();
+		$inventoryReport
+		->addMediaFromRequest('file')
+		->withCustomProperties([
+			'type' => $request->type
+		])
+		->toMediaCollection('actions');
+
+		return redirect()->back()
+		->with("message", "File updated successfully!")
+		->with("type", "success");
+	}
 
 }

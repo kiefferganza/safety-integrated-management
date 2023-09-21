@@ -23,14 +23,6 @@ DocumentCommentDialog.propTypes = {
 	title: PropTypes.string,
 };
 
-const newCommentSchema = Yup.object().shape({
-	comment_code: Yup.string().required('Comment code is required'),
-	pages: Yup.array().min(1, 'Please select atleast one page.').required(),
-	comment: Yup.string().required('Please add a comment'),
-	file: Yup.string().required("Please attach a file for the document.")
-});
-
-
 const PAGES_DEF = Array(100).fill(null);
 
 export function DocumentCommentDialog ({
@@ -38,10 +30,24 @@ export function DocumentCommentDialog ({
 	open,
 	onClose,
 	documentId,
+	isAlreadySigned,
 	...other
 }) {
 	const { load, stop } = useSwal();
 	const [file, setFile] = useState(null);
+
+	const newCommentSchema = Yup.object().shape({
+		comment_code: Yup.string().required('Comment code is required'),
+		pages: Yup.array().min(1, 'Please select atleast one page.').required(),
+		comment: Yup.string().required('Please add a comment'),
+		file: Yup.string().test('isAlreadySigned', 'Please attach a file for the document.', function (value) {
+			if (!isAlreadySigned) {
+				return value !== undefined && value !== null && value !== '';
+			}
+			return true;
+		})
+	});
+
 	const methods = useForm({
 		resolver: yupResolver(newCommentSchema)
 	});
@@ -116,34 +122,38 @@ export function DocumentCommentDialog ({
 							renderInput={(params) => <TextField label="Comment Page" {...params} fullWidth error={!!errors?.pages?.message} helperText={errors?.pages?.message} />}
 						/>
 						<RHFTextField name="comment" label="Brief Comment" multiline rows={2} />
-						<UploadBox
-							onDrop={handleDrop}
-							placeholder={
-								<Stack spacing={0.5} alignItems="center" sx={{ color: 'text.disabled' }}>
-									<Iconify icon="eva:cloud-upload-fill" width={40} />
-									<Typography variant="body2">Upload file</Typography>
-								</Stack>
-							}
-							sx={{
-								mb: 3,
-								py: 2.5,
-								width: 'auto',
-								height: 'auto',
-								borderRadius: 1.5,
-							}}
-							error={!!errors?.file?.message}
-						/>
-						{file && (
-							<MultiFilePreview
-								files={[file]}
-								onRemove={() => {
-									setValue("file", "", { shouldValidate: true });
-									setFile(null);
-								}}
-							/>
-						)}
-						{!!errors?.file?.message && (
-							<FormHelperText sx={{ marginLeft: "16px !important", marginTop: "0 !important" }} error>{errors?.file?.message}</FormHelperText>
+						{!isAlreadySigned && (
+							<>
+								<UploadBox
+									onDrop={handleDrop}
+									placeholder={
+										<Stack spacing={0.5} alignItems="center" sx={{ color: 'text.disabled' }}>
+											<Iconify icon="eva:cloud-upload-fill" width={40} />
+											<Typography variant="body2">Upload file</Typography>
+										</Stack>
+									}
+									sx={{
+										mb: 3,
+										py: 2.5,
+										width: 'auto',
+										height: 'auto',
+										borderRadius: 1.5,
+									}}
+									error={!!errors?.file?.message}
+								/>
+								{file && (
+									<MultiFilePreview
+										files={[file]}
+										onRemove={() => {
+											setValue("file", "", { shouldValidate: true });
+											setFile(null);
+										}}
+									/>
+								)}
+								{!!errors?.file?.message && (
+									<FormHelperText sx={{ marginLeft: "16px !important", marginTop: "0 !important" }} error>{errors?.file?.message}</FormHelperText>
+								)}
+							</>
 						)}
 					</Stack>
 				</DialogContent>

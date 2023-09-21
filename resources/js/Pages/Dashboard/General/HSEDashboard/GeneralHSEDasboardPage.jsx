@@ -23,6 +23,7 @@ const AnalyticsWidgetSummary = lazy(() => import('@/sections/@dashboard/general/
 const AnalyticsTBTLine = lazy(() => import('@/sections/@dashboard/general/analytics/AnalyticsTBTLine'));
 const AnalyticsTBTWorkDays = lazy(() => import('@/sections/@dashboard/general/analytics/AnalyticsTBTWorkDays'));
 const AnalyticsTable = lazy(() => import('@/sections/@dashboard/general/analytics/AnalyticsTable'));
+const AnalyticsSummaryOpenCloseObservation = lazy(() => import('@/sections/@dashboard/general/inspection/AnalyticsSummaryOpenCloseObservation'));
 const AnalyticsTrendingObservation = lazy(() => import('@/sections/@dashboard/general/inspection/AnalyticsTrendingObservation'));
 const AnalyticsOpenClose = lazy(() => import('@/sections/@dashboard/general/inspection/AnalyticsOpenClose'));
 const FileGeneralDataActivity = lazy(() => import('@/sections/@dashboard/general/file/FileGeneralDataActivity'));
@@ -245,24 +246,32 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 
 	const inspectionData = Object.values(inspections?.data || {}).reduce((acc, curr) => {
 		acc.categories.push(curr.title)
-		acc.series[0].data.push(curr.negative)
-		acc.series[1].data.push(curr.closed)
-		acc.series[2].data.push(curr.positive)
+		// console.log(curr)
+		// acc.series[0].data.push(curr.negative)
+		acc.series[0].data.push(curr.closed)
+		acc.series[1].data.push(curr.positive)
+		acc.maxNegative = curr.negative > acc.maxNegative ? curr.negative : acc.maxNegative;
+		if (curr.negative > 0) {
+			acc.trendingObservation.series[0].data.push(curr.negative);
+			acc.trendingObservation.categories.push(curr.title);
+		}
 		return acc;
 	}, {
 		categories: [],
 		series: [
 			{
-				name: 'Negative',
-				data: []
-			}, {
 				name: 'Closed',
 				data: []
 			}, {
 				name: 'Open',
 				data: []
 			}
-		]
+		],
+		trendingObservation: {
+			categories: [],
+			series: [{ name: "Negative: ", data: [] }]
+		},
+		maxNegative: 1
 	});
 
 	const tbtMonthChartData = getTbtMonthChartData();
@@ -536,12 +545,12 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 					<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
 						<Box height={400}>
 							<Scrollbar>
-								<AnalyticsTrendingObservation
+								<AnalyticsSummaryOpenCloseObservation
 									height={900}
-									title="Trending Observation"
+									title="Summary Open vs Close Observation"
 									chart={{
 										...inspectionData,
-										colors: [theme.palette.error.main, theme.palette.success.main, theme.palette.info.main]
+										colors: [theme.palette.success.main, theme.palette.info.main]
 									}}
 								/>
 							</Scrollbar>
@@ -597,49 +606,21 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 					</Grid>
 
 					<Grid item xs={12} md={12} lg={7}>
-						<FileGeneralDataActivity
-							height={isTablet ? 280 : 240}
-							title="Data Activity"
-							sx={{ height: "100%" }}
-							chart={{
-								labels: TIME_LABELS,
-								colors: [
-									theme.palette.primary.main,
-									theme.palette.error.main,
-									theme.palette.warning.main,
-									theme.palette.text.disabled,
-								],
-								series: [
-									{
-										type: 'Week',
-										data: [
-											{ name: 'Images', data: [20, 34, 48, 65, 37, 48] },
-											{ name: 'Media', data: [10, 34, 13, 26, 27, 28] },
-											{ name: 'Documents', data: [10, 14, 13, 16, 17, 18] },
-											{ name: 'Other', data: [5, 12, 6, 7, 8, 9] },
-										],
-									},
-									{
-										type: 'Month',
-										data: [
-											{ name: 'Images', data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34] },
-											{ name: 'Media', data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34] },
-											{ name: 'Documents', data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34] },
-											{ name: 'Other', data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 12, 43, 34] },
-										],
-									},
-									{
-										type: 'Year',
-										data: [
-											{ name: 'Images', data: [10, 34, 13, 56, 77] },
-											{ name: 'Media', data: [10, 34, 13, 56, 77] },
-											{ name: 'Documents', data: [10, 34, 13, 56, 77] },
-											{ name: 'Other', data: [10, 34, 13, 56, 77] },
-										],
-									},
-								],
-							}}
-						/>
+						<Scrollbar>
+							<Box sx={{ width: inspectionData.trendingObservation.series.length > 6 ? 800 : "100%" }}>
+								<AnalyticsTrendingObservation
+									width={inspectionData.trendingObservation.series.length > 6 ? 1400 : "100%"}
+									height={isTablet ? 280 : 300}
+									title="Trending Observation"
+									sx={{ height: "100%" }}
+									maxNegative={inspectionData.maxNegative}
+									chart={{
+										categories: inspectionData.trendingObservation.categories,
+										series: inspectionData.trendingObservation.series,
+									}}
+								/>
+							</Box>
+						</Scrollbar>
 					</Grid>
 				</Grid>
 
@@ -692,12 +673,6 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 									icon: <Box component="img" src="/storage/assets/icons/files/ic_img.svg" />,
 								},
 								{
-									name: 'Media',
-									usedStorage: GB / 5,
-									filesCount: 223,
-									icon: <Box component="img" src="/storage/assets/icons/files/ic_video.svg" />,
-								},
-								{
 									name: 'Documents',
 									usedStorage: GB / 5,
 									filesCount: 223,
@@ -714,7 +689,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 					</Grid>
 
 					<Grid item xs={12} md={6} lg={4}>
-						<BookingBookedRoom title="Booked Room" data={_bookingsOverview} />
+						<BookingBookedRoom title="Analytic" data={_bookingsOverview} />
 					</Grid>
 				</Grid>
 

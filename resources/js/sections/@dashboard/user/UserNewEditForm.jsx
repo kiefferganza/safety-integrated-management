@@ -59,7 +59,7 @@ export default function UserNewEditForm ({ isEdit = false, user, employees }) {
 			lastname: user?.lastname || user?.employee?.lastname || '',
 			password: '',
 			password_confirmation: '',
-			profile_pic: user?.profile_pic ? `/storage/media/photos/employee/${user?.profile_pic}` : null,
+			profile_pic: user?.profile?.small || null,
 			username: user?.username || '',
 			user_type: user?.user_type === 0 ? 0 : 1,
 			status: user?.status === 0 ? 0 : 1
@@ -83,7 +83,7 @@ export default function UserNewEditForm ({ isEdit = false, user, employees }) {
 		formState: { isDirty, errors },
 	} = methods;
 
-	const values = watch()
+	const values = watch();
 
 	useEffect(() => {
 		if (isEdit && user) {
@@ -101,6 +101,8 @@ export default function UserNewEditForm ({ isEdit = false, user, employees }) {
 			for (const key in resErrors) {
 				setError(key, { type: "custom", message: resErrors[key] });
 			}
+		} else {
+			reset();
 		}
 	}, [resErrors]);
 
@@ -113,10 +115,7 @@ export default function UserNewEditForm ({ isEdit = false, user, employees }) {
 			setValue("email", emp?.email, { shouldDirty: true, shouldValidate: true });
 			setValue("about", emp?.about || "", { shouldDirty: true, shouldValidate: true });
 			setValue("emp_id", val?.employee_id, { shouldDirty: true, shouldValidate: true });
-			setValue("username", emp.firstname.toLowerCase() + random4digits, { shouldDirty: true, shouldValidate: true })
-			if (val?.img_src) {
-				setValue("profile_pic", `/storage/media/photos/employee/${val.img_src}`);
-			}
+			setValue("username", emp.firstname.toLowerCase() + random4digits, { shouldDirty: true, shouldValidate: true });
 		} else {
 			reset({ firstname: "", lastname: "", about: "", email: "" });
 		}
@@ -285,6 +284,7 @@ export default function UserNewEditForm ({ isEdit = false, user, employees }) {
 										<TextField
 											label="Select Employee"
 											{...params}
+											value={employees.find(emp => emp.employee_id == values.emp_id)?.fullname || ""}
 											error={!!errors?.employee_id?.message}
 											helperText={errors?.employee_id?.message}
 										/>

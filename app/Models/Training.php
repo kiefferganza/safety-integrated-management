@@ -21,8 +21,13 @@ class Training extends Model
 	protected static function boot() {
 		parent::boot();
 
-		static::creating(function ($training) {
-			$sequence = Training::where([["is_deleted", false], ["type", $training->type]])->count() + 1;
+		static::creating(function (Training $training) {
+			$lastSeq = Training::where([["is_deleted", false], ["type", $training->type]])
+			->select('sequence_no')->orderBy('sequence_no', 'desc')->first();
+			$sequence = 1;
+			if($lastSeq) {
+				$sequence = (int)ltrim($lastSeq->sequence_no, "0") + 1;
+			}
 			$training->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
 		});
 	}
@@ -42,6 +47,18 @@ class Training extends Model
 
 	public function user_employee() {
 		return $this->hasOne(Employee::class, "user_id", "user_id");
+	}
+
+	public function external_status() {
+		return $this->hasOne(TrainingExternalStatus::class, "training_id", "training_id");
+	}
+
+	public function external_comments() {
+		return $this->hasMany(TrainingExternalComment::class, "training_id", "training_id");
+	}
+
+	public function course() {
+		return $this->hasOne(TrainingCourses::class, 'id', 'course_id');
 	}
 
 }

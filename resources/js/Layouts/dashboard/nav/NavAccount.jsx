@@ -4,7 +4,7 @@ import { Box, Link as MuiLink, Typography } from '@mui/material';
 // components
 import { CustomAvatar } from '@/Components/custom-avatar';
 import { Link, usePage } from '@inertiajs/inertia-react';
-import { getCurrentUserImage, getCurrentUserName } from '@/utils/formatName';
+import { getCurrentUserName } from '@/utils/formatName';
 
 // ----------------------------------------------------------------------
 

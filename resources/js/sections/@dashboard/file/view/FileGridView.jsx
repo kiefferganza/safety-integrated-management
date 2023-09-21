@@ -25,7 +25,7 @@ FileGridView.propTypes = {
 	onOpenConfirm: PropTypes.func,
 };
 
-export default function FileGridView ({ table, data, dataFiltered, onDeleteItem }) {
+export default function FileGridView ({ data, dataFiltered, onDeleteItem }) {
 	// const { selected, onSelectRow: onSelectItem } = table;
 
 	const containerRef = useRef(null);
@@ -81,11 +81,12 @@ export default function FileGridView ({ table, data, dataFiltered, onDeleteItem 
 					>
 						{dataFiltered
 							.filter((i) => i.type === 'folder')
-							.map((folder) => (
+							.map((folder, index) => (
 								<FileFolderCard
 									key={folder.id}
 									folder={folder}
 									onDelete={() => onDeleteItem(folder.id)}
+									index={index}
 									sx={{ maxWidth: 'auto' }}
 								/>
 							))}
