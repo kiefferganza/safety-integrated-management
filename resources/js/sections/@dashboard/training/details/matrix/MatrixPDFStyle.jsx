@@ -72,10 +72,11 @@ const styles = StyleSheet.create({
 		width: '100%'
 	},
 	tableHeadCell: {
-		borderRight: '1px solid #000',
-		padding: '2px 4px',
+		padding: 4,
 		minWidth: '40px',
-		position: 'relative'
+		position: 'relative',
+		borderRight: '1px solid #000',
+		borderBottom: '1px solid #000',
 	},
 	tableHeadCellWrapper: {
 		display: 'flex',
@@ -86,9 +87,6 @@ const styles = StyleSheet.create({
 	},
 	tableHeadCellText: {
 		color: '#ffffff',
-		transformOrigin: 'left bottom',
-		whiteSpace: 'nowrap',
-		padding: '4px',
 	},
 	tableTextVerticialWrapper: {
 		display: 'flex',
@@ -97,18 +95,22 @@ const styles = StyleSheet.create({
 		width: 140,
 		height: 160,
 		transform: 'rotate(-90deg)',
+		position: 'relative',
 	},
 	tableTextVerticial: {
 		textAlign: 'center',
 		whiteSpace: "nowrap",
 		position: 'absolute',
-		top: 16
+		top: 16,
+		transformOrigin: 'left bottom',
+		whiteSpace: 'nowrap',
+		padding: '4px',
 	},
 	tableBody: {
 		flexDirection: 'row',
 		borderLeft: '1px solid #000',
-		borderTop: '1px solid #000',
-		borderBottom: '1px solid #000',
+		// borderTop: '1px solid #000',
+		// borderBottom: '1px solid #000',
 	},
 	tableCellWrapper: {
 		height: 'auto',
