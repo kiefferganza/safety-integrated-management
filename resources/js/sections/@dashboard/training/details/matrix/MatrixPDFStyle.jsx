@@ -65,10 +65,7 @@ const styles = StyleSheet.create({
 	tableCell_3: { width: '35%' },
 	tableHead: {
 		flexDirection: 'row',
-		backgroundColor: '#305496',
 		borderLeft: '1px solid #000',
-		borderRight: '1px solid #000',
-		borderBottom: '1px solid #000',
 		width: '100%'
 	},
 	tableHeadCell: {
@@ -99,7 +96,6 @@ const styles = StyleSheet.create({
 	},
 	tableTextVerticial: {
 		textAlign: 'center',
-		whiteSpace: "nowrap",
 		position: 'absolute',
 		top: 16,
 		transformOrigin: 'left bottom',
@@ -109,8 +105,6 @@ const styles = StyleSheet.create({
 	tableBody: {
 		flexDirection: 'row',
 		borderLeft: '1px solid #000',
-		// borderTop: '1px solid #000',
-		// borderBottom: '1px solid #000',
 	},
 	tableCellWrapper: {
 		height: 'auto',

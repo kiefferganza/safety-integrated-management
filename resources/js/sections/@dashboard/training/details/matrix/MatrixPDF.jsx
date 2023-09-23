@@ -117,7 +117,6 @@ export default function MatrixPDF ({ years, titles }) {
 		}
 	}
 
-
 	return (
 		<Document title={"Training Matrix"}>
 			{pages.map((page, idx) => (
@@ -216,28 +215,30 @@ function MatrixTable ({ titles, data, year, total }) {
 		<View style={styles.gridContainer}>
 			<View>
 				<View style={styles.tableHead}>
-					<View style={[styles.tableHeadCell, { minWidth: 26, width: 26 }]}>
+					<View style={[styles.tableHeadCell, { borderTop: '1px solid #000', backgroundColor: '#305496', minWidth: 26, width: 26 }]}>
 						<View style={styles.tableHeadCellWrapper}>
 							<Text style={[styles.tableHeadCellText, { padding: 0 }]}>S.no</Text>
 						</View>
 					</View>
-					<View style={[styles.tableHeadCell, { width: 120 }]}>
+					<View style={[styles.tableHeadCell, { borderTop: '1px solid #000', backgroundColor: '#305496', width: 120 }]}>
 						<View style={styles.tableHeadCellWrapper}>
 							<Text style={styles.tableHeadCellText}>Name</Text>
 						</View>
 					</View>
-					<View style={[styles.tableHeadCell, { width: 90 }]}>
+					<View style={[styles.tableHeadCell, { borderTop: '1px solid #000', backgroundColor: '#305496', width: 90 }]}>
 						<View style={styles.tableHeadCellWrapper}>
 							<Text style={styles.tableHeadCellText}>Position</Text>
 						</View>
 					</View>
 					{titles?.map((title, idx) => (
-						<View style={[styles.tableHeadCell, { width: 40 }]} key={idx}>
+						<View style={[styles.tableHeadCell, { borderTop: '1px solid #000', backgroundColor: '#305496', width: 40 }]} key={idx}>
 							<View style={styles.tableTextVerticialWrapper}>
 								<Text style={[styles.tableHeadCellText, styles.tableTextVerticial]}>{title}</Text>
 							</View>
 						</View>
 					))}
+					<View style={[styles.tableHeadCell, { minWidth: 16, width: 16, border: 0 }]}>
+					</View>
 				</View>
 				{(data || [])?.map((d, i) => {
 					const splittedYear = year.split("_");
@@ -308,6 +309,6 @@ function MatrixTable ({ titles, data, year, total }) {
 					</View>
 				)}
 			</View>
-		</View>
+		</View >
 	)
 }
