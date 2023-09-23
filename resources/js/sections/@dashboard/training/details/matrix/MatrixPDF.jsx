@@ -299,7 +299,7 @@ function MatrixTable ({ titles, data, year, total }) {
 						</View>
 						{titles?.map((title, idx) => (
 							<View style={[styles.tableHeadCell, { border: 0, width: 40, height: 18, padding: 0 }]} key={idx}>
-								<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year]['summary'][title.toLowerCase()] || 0}</Text>
+								<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 9, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year]['summary'][title.toLowerCase()] || 0}</Text>
 							</View>
 						))}
 						<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}>
