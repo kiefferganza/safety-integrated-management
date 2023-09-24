@@ -32,7 +32,7 @@ InspectionTableRow.propTypes = {
 	onSelectRow: PropTypes.func,
 };
 
-export default function InspectionTableRow ({ row, selected, onSelectRow, onDeleteRow, canEdit }) {
+export default function InspectionTableRow ({ row, selected, onSelectRow, onDeleteRow, canEdit, canDelete }) {
 	const { auth: { user } } = usePage().props;
 	const [openConfirm, setOpenConfirm] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
@@ -52,6 +52,11 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 	const handleClosePopover = () => {
 		setOpenPopover(null);
 	};
+
+	const handleDelete = () => {
+		handleCloseConfirm();
+		onDeleteRow();
+	}
 
 	return (
 		<>
@@ -153,7 +158,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 				)}
 
 
-				{(user?.emp_id === row.employee_id || user?.emp_id === 1) && (
+				{(user?.emp_id === row.employee_id || user?.emp_id === 1 || canDelete) && (
 					<>
 						<Divider sx={{ borderStyle: 'dashed' }} />
 
@@ -177,7 +182,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 				title="Delete"
 				content="Are you sure want to delete?"
 				action={
-					<Button variant="contained" color="error" onClick={onDeleteRow}>
+					<Button variant="contained" color="error" onClick={handleDelete}>
 						Delete
 					</Button>
 				}

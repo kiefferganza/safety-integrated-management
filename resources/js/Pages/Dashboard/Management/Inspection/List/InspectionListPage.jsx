@@ -262,6 +262,7 @@ const InspectionListPage = ({ user, inspections }) => {
 
 	const canCreate = hasPermission("inspection_create");
 	const canEdit = hasPermission("inspection_edit");
+	const canDelete = hasPermission("inspection_delete");
 	return (
 		<>
 			<Head>
@@ -473,6 +474,7 @@ const InspectionListPage = ({ user, inspections }) => {
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
 											canEdit={canEdit}
+											canDelete={canDelete}
 										/>
 									))}
 
