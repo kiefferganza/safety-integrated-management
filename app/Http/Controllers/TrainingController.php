@@ -851,8 +851,7 @@ class TrainingController extends Controller
 		->get()
 		->pluck('year');
 
-		$courses = TrainingCourses::select('id', 'course_name')->withTrashed()->get();
-		$foundCourse = $courses->find(1);
+		$courses = TrainingCourses::select('id', 'course_name')->get();
 
 		$employees = Employee::where('sub_id', $user->subscriber_id)->where('tbl_employees.is_deleted', 0)
 		->select('employee_id', 'firstname', 'lastname', 'tbl_position.position')
@@ -873,8 +872,9 @@ class TrainingController extends Controller
 
 		$years = collect([]);
 		
-		$titles = [];
-		// $titles = $courses->pluck('course_name')->toArray();
+		// $titles = [];
+		$titles = $courses->pluck('course_name')->toArray();
+		// dd($titles);
 		$storage = Storage::disk("public");
 
 		foreach ($employees as $employee) {
@@ -919,11 +919,11 @@ class TrainingController extends Controller
 					}else {
 						$course = $title;
 					}
-					$lowercaseTitles = array_map('strtolower', $titles);
-					$lowerNewTitle = strtolower($title);
-					if (!in_array($lowerNewTitle, $lowercaseTitles)) {
-						$titles[] = $title;
-					}
+					// $lowercaseTitles = array_map('strtolower', $titles);
+					// $lowerNewTitle = strtolower($title);
+					// if (!in_array($lowerNewTitle, $lowercaseTitles)) {
+					// 	$titles[] = $title;
+					// }
 				}
 				
 				

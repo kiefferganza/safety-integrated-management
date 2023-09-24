@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
 	},
 	tableHeadCell: {
 		padding: 4,
-		minWidth: '40px',
+		minWidth: 30,
 		position: 'relative',
 		borderRight: '1px solid #000',
 		borderBottom: '1px solid #000',
