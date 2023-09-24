@@ -7,6 +7,7 @@ use App\Models\Inspection;
 use App\Models\InspectionReportList;
 use App\Services\InspectionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 class InspectionController extends Controller
 {
@@ -77,8 +78,11 @@ class InspectionController extends Controller
 
 
 	public function edit(Inspection $inspection) {
+
 		if($inspection->employee_id !== auth()->user()->emp_id) {
-			return redirect()->back();
+			if(Gate::denies('inspection_edit')) {
+				abort(403);
+			}
 		}
 
 		return Inertia::render("Dashboard/Management/Inspection/Edit/index", [

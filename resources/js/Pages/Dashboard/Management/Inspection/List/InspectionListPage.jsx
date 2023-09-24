@@ -261,6 +261,7 @@ const InspectionListPage = ({ user, inspections }) => {
 	const open = Boolean(anchorLegendEl);
 
 	const canCreate = hasPermission("inspection_create");
+	const canEdit = hasPermission("inspection_edit");
 	return (
 		<>
 			<Head>
@@ -471,6 +472,7 @@ const InspectionListPage = ({ user, inspections }) => {
 											selected={selected.includes(row.id)}
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
+											canEdit={canEdit}
 										/>
 									))}
 

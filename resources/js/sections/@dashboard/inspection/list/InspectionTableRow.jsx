@@ -32,7 +32,7 @@ InspectionTableRow.propTypes = {
 	onSelectRow: PropTypes.func,
 };
 
-export default function InspectionTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+export default function InspectionTableRow ({ row, selected, onSelectRow, onDeleteRow, canEdit }) {
 	const { auth: { user } } = usePage().props;
 	const [openConfirm, setOpenConfirm] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
@@ -116,7 +116,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 					<Iconify icon="eva:eye-fill" />
 					View
 				</MenuItem>
-				{row.type === "submitted" && (
+				{(row.type === "submitted" || canEdit) && (
 					<MenuItem
 						component={Link}
 						href={PATH_DASHBOARD.inspection.edit(row.inspection_id)}
