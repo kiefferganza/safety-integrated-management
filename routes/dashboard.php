@@ -212,6 +212,9 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::middleware("permission:inspection_edit")->group(function() {
 			Route::get('/{inspection}/edit', [InspectionController::class, "edit"]);
 			Route::post('/{inspection}/edit', [InspectionReportController::class, "update"]);
+			
+			Route::post('/{inspection}/update', [InspectionController::class, "updateDetails"])->name('updateDetails');
+
 			Route::get('/{inspection}/review', [InspectionController::class, "review"]);
 			Route::post('/{inspection}/review', [InspectionReportController::class, "review_update"]);
 			Route::get('/{inspection}/verify', [InspectionController::class, "verify"]);

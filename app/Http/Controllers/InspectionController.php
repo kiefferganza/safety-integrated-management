@@ -216,4 +216,29 @@ class InspectionController extends Controller
 
 
 
+	public function updateDetails(Request $request, Inspection $inspection) {
+		$request->validate([
+			"contract_no" => ["string", "required"],
+			"project_code" => ["string", "required"],
+			"form_number" => ["string", "required"],
+			"location" => ["string", "required"],
+			"inspected_date" => ["string", "required"],
+			"inspected_time" => ["string", "required"],
+			"accompanied_by" => ["string", "required"],
+		]);
+
+		$inspection->contract_no = $request->contract_no;
+		$inspection->project_code = $request->project_code;
+		$inspection->form_number = $request->form_number;
+		$inspection->location = $request->location;
+		$inspection->inspected_date = $request->inspected_date;
+		$inspection->inspected_time = $request->inspected_time;
+		$inspection->accompanied_by = $request->accompanied_by;
+		$inspection->save();
+		
+		return redirect()->back()
+		->with('type', 'success')
+		->with('message', 'Inspection updated successfully');
+	}
+
 }
