@@ -91,7 +91,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 								{row.status.text}
 							</Label>
 						</Tooltip>
-						{(row.type !== "closeout" && row.status.text !== "C") && (
+						{(row.type === 'verify' || row.type === 'review') && (
 							<Tooltip title={row.dueStatus.tooltip}>
 								<Label
 									variant="soft"
