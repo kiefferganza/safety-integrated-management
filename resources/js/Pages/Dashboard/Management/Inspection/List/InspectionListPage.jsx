@@ -126,12 +126,7 @@ const InspectionListPage = ({ user, inspections }) => {
 			reviewer: employeeName(inspection.reviewer).trim(),
 			verifier: employeeName(inspection.verifier).trim(),
 			status: getInspectionStatus(inspection.status),
-			type: getInspectionType({
-				employee_id: inspection.employee_id,
-				reviewer_id: inspection.reviewer_id,
-				verifier_id: inspection.verifier_id,
-				status: inspection.status,
-			}),
+			type: getInspectionType({ status: inspection.status }),
 			totalObservation: getNumberOfObservation(inspection.report_list),
 			positiveObservation: getNumberOfPositiveObservation(inspection.report_list),
 			negativeObservation: getNumberOfNegativeObservation(inspection.report_list),
@@ -141,19 +136,19 @@ const InspectionListPage = ({ user, inspections }) => {
 	}, [user, inspections]);
 
 
-	const getInspectionType = ({ employee_id, reviewer_id, verifier_id, status }) => {
-		if (employee_id === user.emp_id) {
-			return 'submitted';
-		} else if (reviewer_id === user.emp_id && (status === 1 || status === 4)) {
-			return 'review';
-		} else if (verifier_id === user.emp_id && status === 2) {
-			return 'verify';
-		} else if (status !== 0) {
-			return 'closeout';
+	const getInspectionType = ({ status }) => {
+		switch (status) {
+			case 1:
+			case 0:
+				return 'submitted';
+			case 2:
+				return 'verify';
+			case 3:
+				return 'closeout';
+			default:
+				return 'review';
 		}
-		return 'closeout';
 	}
-
 
 	const denseHeight = dense ? 56 : 76;
 
@@ -167,21 +162,21 @@ const InspectionListPage = ({ user, inspections }) => {
 		(!dataFiltered.length && !!filterStartDate);
 	(!dataFiltered.length && !!filterEndDate);
 
-	const getLengthByType = (type) => dataFiltered.filter((item) => item.type === type).length;
+	const getLengthByType = (type) => tableData.filter((item) => item.type === type).length;
 
-	const getPercentByType = (type) => (getLengthByType(type) / dataFiltered.length) * 100;
+	const getPercentByType = (type) => (getLengthByType(type) / tableData.length) * 100;
 
 	const TABS = [
-		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
+		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
 		{ value: 'submitted', label: 'Submitted', color: 'default', count: getLengthByType('submitted') },
-		{ value: 'review', label: 'Review', color: 'warning', count: getLengthByType('review') },
+		{ value: 'review', label: 'Review', color: 'error', count: getLengthByType('review') },
 		{ value: 'verify', label: 'Verify & Approve', color: 'success', count: getLengthByType('verify') },
-		{ value: 'closeout', label: 'Closeout', color: 'error', count: getLengthByType('closeout') },
+		{ value: 'closeout', label: 'Closeout', color: 'info', count: getLengthByType('closeout') },
 	];
 
-	const getActiveDays = dataFiltered.filter(item => item.dueStatus.classType === "success").length;
-	const getDueDays = dataFiltered.filter(item => item.dueStatus.classType === "error").length;
-	const getStatusLength = (status) => dataFiltered.filter(item => item.status.text === status).length;
+	const getActiveDays = tableData.filter(item => item.dueStatus.classType === "success").length;
+	const getDueDays = tableData.filter(item => item.dueStatus.classType === "error").length;
+	const getStatusLength = (status) => tableData.filter(item => item.status.text === status).length;
 
 	const STATUS_TABS = [
 		{ value: 'I P', label: 'In Progress', color: 'warning', count: getStatusLength('I P') },
@@ -305,7 +300,7 @@ const InspectionListPage = ({ user, inspections }) => {
 						>
 							<InspectionAnalytic
 								title="Total"
-								total={dataFiltered.length}
+								total={tableData.length}
 								percent={100}
 								icon="heroicons:document-chart-bar"
 								color={theme.palette.info.main}
@@ -316,7 +311,7 @@ const InspectionListPage = ({ user, inspections }) => {
 								total={getLengthByType('submitted')}
 								percent={getPercentByType('submitted')}
 								icon="heroicons:document-magnifying-glass"
-								color={theme.palette.success.main}
+								color={theme.palette.grey[500]}
 							/>
 
 							<InspectionAnalytic
@@ -324,7 +319,7 @@ const InspectionListPage = ({ user, inspections }) => {
 								total={getLengthByType('review')}
 								percent={getPercentByType('review')}
 								icon="heroicons:document-minus"
-								color={theme.palette.warning.main}
+								color={theme.palette.error.main}
 							/>
 
 							<InspectionAnalytic
@@ -332,7 +327,7 @@ const InspectionListPage = ({ user, inspections }) => {
 								total={getLengthByType('verify')}
 								percent={getPercentByType('verify')}
 								icon="heroicons:document-check"
-								color={theme.palette.error.main}
+								color={theme.palette.success.main}
 							/>
 
 							<InspectionAnalytic
@@ -340,7 +335,7 @@ const InspectionListPage = ({ user, inspections }) => {
 								total={getLengthByType('closeout')}
 								percent={getPercentByType('closeout')}
 								icon="heroicons:document-arrow-up"
-								color={theme.palette.success.main}
+								color={theme.palette.info.main}
 							/>
 						</Stack>
 					</Scrollbar>
