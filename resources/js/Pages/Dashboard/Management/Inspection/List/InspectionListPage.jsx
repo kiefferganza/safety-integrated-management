@@ -467,7 +467,7 @@ const InspectionListPage = ({ user, inspections }) => {
 								/>
 
 								<TableBody>
-									{(dataFilteredStatusAndType?.length > 0 ? dataFilteredStatusAndType : dataFiltered).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+									{(filterType !== 'all' || filterStatus !== '' ? dataFilteredStatusAndType : dataFiltered).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
 										<InspectionTableRow
 											key={row.id}
 											row={row}
@@ -488,7 +488,7 @@ const InspectionListPage = ({ user, inspections }) => {
 					</TableContainer>
 
 					<TablePaginationCustom
-						count={dataFiltered.length}
+						count={(filterType !== 'all' || filterStatus !== '' ? dataFilteredStatusAndType : dataFiltered).length}
 						page={page}
 						rowsPerPage={rowsPerPage}
 						onPageChange={onChangePage}
