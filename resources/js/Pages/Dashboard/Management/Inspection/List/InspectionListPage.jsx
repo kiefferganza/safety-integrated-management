@@ -113,11 +113,17 @@ const InspectionListPage = ({ user, inspections }) => {
 		inputData: tableData,
 		comparator: getComparator(order, orderBy),
 		filterName,
-		filterStatus,
-		filterType,
 		filterStartDate,
 		filterEndDate
 	});
+
+	const dataFilteredStatusAndType = applyFilterStatusType({
+		inputData: [...dataFiltered],
+		comparator: getComparator(order, orderBy),
+		filterStatus,
+		filterType
+	});
+	console.log({ dataFilteredStatusAndType, dataFiltered, tableData });
 
 	useEffect(() => {
 		const data = inspections?.map(inspection => ({
@@ -162,21 +168,21 @@ const InspectionListPage = ({ user, inspections }) => {
 		(!dataFiltered.length && !!filterStartDate);
 	(!dataFiltered.length && !!filterEndDate);
 
-	const getLengthByType = (type) => tableData.filter((item) => item.type === type).length;
+	const getLengthByType = (type) => dataFiltered.filter((item) => item.type === type).length;
 
-	const getPercentByType = (type) => (getLengthByType(type) / tableData.length) * 100;
+	const getPercentByType = (type) => (getLengthByType(type) / dataFiltered.length) * 100;
 
 	const TABS = [
-		{ value: 'all', label: 'All', color: 'info', count: tableData.length },
+		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
 		{ value: 'submitted', label: 'Submitted', color: 'default', count: getLengthByType('submitted') },
 		{ value: 'review', label: 'Review', color: 'error', count: getLengthByType('review') },
 		{ value: 'verify', label: 'Verify & Approve', color: 'success', count: getLengthByType('verify') },
 		{ value: 'closeout', label: 'Closeout', color: 'info', count: getLengthByType('closeout') },
 	];
 
-	const getActiveDays = tableData.filter(item => item.dueStatus.classType === "success").length;
-	const getDueDays = tableData.filter(item => item.dueStatus.classType === "error").length;
-	const getStatusLength = (status) => tableData.filter(item => item.status.text === status).length;
+	const getActiveDays = dataFiltered.filter(item => item.dueStatus.classType === "success").length;
+	const getDueDays = dataFiltered.filter(item => item.dueStatus.classType === "error").length;
+	const getStatusLength = (status) => dataFiltered.filter(item => item.status.text === status).length;
 
 	const STATUS_TABS = [
 		{ value: 'I P', label: 'In Progress', color: 'warning', count: getStatusLength('I P') },
@@ -300,7 +306,7 @@ const InspectionListPage = ({ user, inspections }) => {
 						>
 							<InspectionAnalytic
 								title="Total"
-								total={tableData.length}
+								total={dataFiltered.length}
 								percent={100}
 								icon="heroicons:document-chart-bar"
 								color={theme.palette.info.main}
@@ -461,7 +467,7 @@ const InspectionListPage = ({ user, inspections }) => {
 								/>
 
 								<TableBody>
-									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+									{(dataFilteredStatusAndType?.length > 0 ? dataFilteredStatusAndType : dataFiltered).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
 										<InspectionTableRow
 											key={row.id}
 											row={row}
@@ -629,8 +635,6 @@ function applyFilter ({
 	inputData,
 	comparator,
 	filterName,
-	filterType,
-	filterStatus,
 	filterStartDate,
 	filterEndDate
 }) {
@@ -649,20 +653,8 @@ function applyFilter ({
 			inspection.form_number.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
 			inspection.reviewer.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
 			inspection.inspected_by.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
-			inspection.accompanied_by.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+			inspection.verifier.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
 		);
-	}
-
-	if (filterType !== 'all') {
-		inputData = inputData.filter((inspection) => inspection.type === filterType);
-	}
-
-	if (filterStatus !== '') {
-		if (filterStatus === 'A.D.' || filterStatus === 'O.D.') {
-			inputData = inputData.filter((inspection) => inspection.dueStatus.type === filterStatus);
-		} else {
-			inputData = inputData.filter((inspection) => inspection.status.text === filterStatus);
-		}
 	}
 
 	if (filterStartDate && !filterEndDate) {
@@ -678,6 +670,37 @@ function applyFilter ({
 				fTimestamp(new Date(insp.date_issued)) >= startDateTimestamp &&
 				fTimestamp(new Date(insp.date_issued)) <= endDateTimestamp
 		);
+	}
+
+	return inputData;
+}
+
+function applyFilterStatusType ({
+	inputData,
+	comparator,
+	filterType,
+	filterStatus,
+}) {
+	const stabilizedThis = inputData.map((el, index) => [el, index]);
+
+	stabilizedThis.sort((a, b) => {
+		const order = comparator(a[0], b[0]);
+		if (order !== 0) return order;
+		return a[1] - b[1];
+	});
+
+	inputData = stabilizedThis.map((el) => el[0]);
+
+	if (filterType !== 'all') {
+		inputData = inputData.filter((inspection) => inspection.type === filterType);
+	}
+
+	if (filterStatus !== '') {
+		if (filterStatus === 'A.D.' || filterStatus === 'O.D.') {
+			inputData = inputData.filter((inspection) => inspection.dueStatus.type === filterStatus);
+		} else {
+			inputData = inputData.filter((inspection) => inspection.status.text === filterStatus);
+		}
 	}
 
 	return inputData;
