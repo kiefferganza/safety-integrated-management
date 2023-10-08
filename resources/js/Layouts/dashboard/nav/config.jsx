@@ -265,9 +265,24 @@ const navConfig = [
 					'files.management.show',
 					'files.management.external',
 					'files.management.document.show',
-					'files.management.create'
+					'files.management.create',
+					'files.management.project_details'
 				],
-				icon: ICONS.folder
+				icon: ICONS.folder,
+				children: [
+					{ title: 'register', path: PATH_DASHBOARD.fileManager.register, routeNames: ['files.management.project_details'] },
+					{
+						title: 'folders',
+						path: PATH_DASHBOARD.fileManager.root,
+						routeNames: [
+							'files.management.index',
+							'files.management.show',
+							'files.management.external',
+							'files.management.document.show',
+							'files.management.create'
+						]
+					},
+				]
 			},
 		],
 	},

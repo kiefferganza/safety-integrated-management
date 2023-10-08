@@ -165,6 +165,7 @@ export const PATH_DASHBOARD = {
 		addComment: (documentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${documentId}/add-comment`),
 		replyComment: (commentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${commentId}/reply-comment`),
 		deleteComment: (commentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${commentId}/delete-comment`),
+		register: route('files.management.project_details')
 	},
 
 	store: {

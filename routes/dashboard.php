@@ -327,6 +327,10 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 * Management - Folder
 	 */
 	Route::prefix('file-manager')->as('files.management.')->group(function() {
+		Route::get('/document-project-details', [DocumentController::class, 'projectDetails'])->name('project_details');
+		Route::post('/document-project-details/new', [DocumentController::class, 'newProjectDetail'])->name('new_project_details');
+		Route::post('/document-project-details/update/{documentProjectDetail}', [DocumentController::class, 'updateProjectDetail'])->name('update_project_details');
+		Route::post('/document-project-details/delete', [DocumentController::class, 'deleteProjectDetail'])->name('delete_project_details');
 		Route::get('/', [FilePageController::class, "index"])
 			->middleware("permission:folder_show")
 			->name('index');
@@ -372,7 +376,6 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 			Route::post('/document/{comment}/delete-comment', [DocumentController::class, "delete_comment"]);
 		});
-		
 	});
 
 

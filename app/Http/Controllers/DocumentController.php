@@ -7,6 +7,7 @@ use App\Models\Document;
 use App\Models\DocumentApprovalSign;
 use App\Models\DocumentCommentReplies;
 use App\Models\DocumentExternalApprover;
+use App\Models\DocumentProjectDetail;
 use App\Models\DocumentResponseFile;
 use App\Models\DocumentReviewer;
 use App\Models\DocumentReviewerSign;
@@ -673,6 +674,70 @@ class DocumentController extends Controller
 		return redirect()->back()
 			->with("message", "File updated successfuly!")
 			->with("type",  "success");
+	}
+
+
+	public function projectDetails() {
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get();
+		$titles = [
+			['label' => 'Project Code', 'value' => 'Project Code'],
+			['label' => 'Originator', 'value' => 'Originator'],
+			['label' => 'Discipline', 'value' => 'Discipline'],
+			['label' => 'Type', 'value' => 'Type'],
+			['label' => 'Zone', 'value' => 'Zone'],
+			['label' => 'Level', 'value' => 'Level'],
+		];
+		
+		return Inertia::render("Dashboard/Management/FileManager/ProjectDetail/index", [
+			"projectDetails" => $projectDetails,
+			"titles" => $titles
+		]);
+	}
+
+
+	public function newProjectDetail(Request $request) {
+		$request->validate([
+			'title' => ['string', 'required'],
+			'value' => ['string', 'required']
+		]);
+		// dd($request->all());
+		$user = auth()->user();
+
+		DocumentProjectDetail::create([
+			'sub_id' => $user->subscriber_id,
+			'title' => $request->title,
+			'value' => $request->value
+		]);
+
+		return redirect()->back()
+		->with("message", $request->value . " added to " . $request->title . ' successfully!')
+		->with("type",  "success");
+	}
+
+
+	public function updateProjectDetail(Request $request, DocumentProjectDetail $documentProjectDetail) {
+		$request->validate([
+			'title' => ['string', 'required'],
+			'value' => ['string', 'required']
+		]);
+		$documentProjectDetail->title = $request->title;
+		$documentProjectDetail->value = $request->value;
+		$documentProjectDetail->save();
+		
+		return redirect()->back()
+		->with("message", 'Updated successfully!')
+		->with("type",  "success");
+	}
+
+	public function deleteProjectDetail(Request $request) {
+		$request->validate([
+			"ids" => ["required", "array"]
+		]);
+		DocumentProjectDetail::whereIn('id', $request->ids)->delete();
+		return redirect()->back()
+		->with("message", 'Deleted successfully!')
+		->with("type",  "success");
 	}
 
 }
