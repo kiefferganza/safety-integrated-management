@@ -133,7 +133,7 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 	}
 
 
-	const canDeleteAndCanEdit = user?.emp_id === row.employee.employee_id;
+	const canDeleteAndCanEdit = user?.employee.employee_id === row.employee.employee_id;
 	return (
 		<>
 			<TableRow hover selected={selected} sx={{ width: 1 }}>
@@ -198,7 +198,7 @@ export default function DocumentTableRow ({ row, selected, onSelectRow, onDelete
 				</MenuItem>
 
 				{canDeleteAndCanEdit && (
-					<MenuItem disabled={row.status !== '0'} onClick={handleClosePopover} component={InertiaLink} href={route('files.management.document.edit', { folder: folder.folder_id, document: row.form_number })}>
+					<MenuItem onClick={handleClosePopover} component={InertiaLink} href={route('files.management.document.edit', { folder: folder.folder_id, document: row.form_number })}>
 						<Iconify icon="eva:edit-fill" />
 						Edit
 					</MenuItem>

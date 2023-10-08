@@ -23,7 +23,7 @@ const TYPE_OPTIONS = {
 	"5": 'office',
 };
 
-const index = ({ tbt }) => {
+const index = ({ tbt, projectDetails }) => {
 	const { themeStretch } = useSettingsContext();
 
 	const cms = formatCms(tbt);
@@ -60,7 +60,7 @@ const index = ({ tbt }) => {
 								</Label>
 							}
 						/>
-						<ToolboxTalkNewEditForm isEdit tbt={tbt} />
+						<ToolboxTalkNewEditForm isEdit tbt={tbt} projectDetails={projectDetails} />
 					</Container>
 				</DashboardLayout>
 			</Suspense>

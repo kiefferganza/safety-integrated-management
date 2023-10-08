@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DocumentProjectDetail;
 use App\Models\Employee;
 use App\Models\Inspection;
 use App\Models\InspectionReportList;
@@ -55,6 +56,8 @@ class InspectionController extends Controller
 
 	public function create() {
 		$sequence = Inspection::where('is_deleted', 0)->count() + 1;
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
 
 		return Inertia::render("Dashboard/Management/Inspection/Create/index", [
 			"personel" =>  Employee::select("employee_id", "firstname", "lastname", "user_id")->where([
@@ -63,6 +66,7 @@ class InspectionController extends Controller
 				["employee_id", "!=", auth()->user()->emp_id]
 			])->get(),
 			"sequence_no" => str_pad($sequence, 6, '0', STR_PAD_LEFT),
+			"projectDetails" => $projectDetails
 		]);
 	}
 
@@ -85,8 +89,12 @@ class InspectionController extends Controller
 			}
 		}
 
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+
 		return Inertia::render("Dashboard/Management/Inspection/Edit/index", [
-			"inspection" => (New InspectionService)->getUnsatisfactoryItems($inspection)
+			"inspection" => (New InspectionService)->getUnsatisfactoryItems($inspection),
+			"projectDetails" => $projectDetails
 		]);
 	}
 

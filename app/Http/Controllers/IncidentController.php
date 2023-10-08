@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DocumentProjectDetail;
 use App\Models\Incident;
 use App\Services\IncidentService;
 use Illuminate\Http\Request;
@@ -24,10 +25,13 @@ class IncidentController extends Controller
 
 		$incidentService = new IncidentService;
 
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+
 		return Inertia::render("Dashboard/Management/Incident/Create/index", [
 			"employees" => $incidentService->employees($user),
 			"sequence_no" => $incidentService->sequence_no(),
-			"types" => $incidentService->types($user)
+			"types" => $incidentService->types($user),
+			"projectDetails" => $projectDetails
 		]);
 	}
 
@@ -72,10 +76,13 @@ class IncidentController extends Controller
 
 		$incidentService = new IncidentService;
 
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+
 		return Inertia::render("Dashboard/Management/Incident/Edit/index", [
 			"incident" => $incident,
 			"employees" => $incidentService->employees($user),
-			"types" => $incidentService->types($user)
+			"types" => $incidentService->types($user),
+			"projectDetails" => $projectDetails
 		]);
 	}
 

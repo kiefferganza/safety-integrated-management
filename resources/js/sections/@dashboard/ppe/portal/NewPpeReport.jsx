@@ -11,7 +11,7 @@ const { Autocomplete, Box, Button, Dialog, DialogContent, DialogTitle, Divider, 
 const { MobileDatePicker } = await import('@mui/x-date-pickers/MobileDatePicker');
 // Components
 import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
-import { RHFTextField } from "@/Components/hook-form";
+import { RHFMuiSelect, RHFTextField } from "@/Components/hook-form";
 import FormProvider from "@/Components/hook-form/FormProvider";
 import Scrollbar from "@/Components/scrollbar/Scrollbar";
 import Image from "@/Components/image/Image";
@@ -36,7 +36,7 @@ const newBudgetForecastSchema = Yup.object().shape({
 	inventories: Yup.array().min(1)
 });
 
-export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_no, submittedDates, ...other }) => {
+export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_no, submittedDates, projectDetails, ...other }) => {
 	const { load, stop } = useSwal();
 	const {
 		startDate,
@@ -171,26 +171,51 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 						<Stack alignItems="flex-end" spacing={2}>
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
 
-								<RHFTextField
-									name="project_code"
+								<RHFMuiSelect
 									label="Project Code"
-									inputProps={{
-										sx: { textTransform: "uppercase" }
-									}}
+									name="project_code"
+									fullWidth
+									options={projectDetails['Project Code'] ? [{ label: '', value: '' }, ...projectDetails['Project Code'].map((d) => ({ label: d.value, value: d.value }))] : []}
 								/>
 
-								<RHFTextField name="originator" label="Originator" />
+								<RHFMuiSelect
+									label="Originator"
+									name="originator"
+									fullWidth
+									options={projectDetails['Originator'] ? [{ label: '', value: '' }, ...projectDetails['Originator'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
-								<RHFTextField name="discipline" label="Discipline" />
+								<RHFMuiSelect
+									label="Discipline"
+									name="discipline"
+									fullWidth
+									options={projectDetails['Discipline'] ? [{ label: '', value: '' }, ...projectDetails['Discipline'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
 							</Stack>
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
 
-								<RHFTextField name="document_type" label="Type" />
 
-								<RHFTextField name="document_zone" label="Zone (Optional)" />
+								<RHFMuiSelect
+									label="Type"
+									name="document_type"
+									fullWidth
+									options={projectDetails['Type'] ? [{ label: '', value: '' }, ...projectDetails['Type'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
-								<RHFTextField name="document_level" label="Level (Optional)" />
+								<RHFMuiSelect
+									label="Zone (Optional)"
+									name="document_zone"
+									fullWidth
+									options={projectDetails['Zone'] ? [{ label: '', value: '' }, ...projectDetails['Zone'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
+
+								<RHFMuiSelect
+									label="Level (Optional)"
+									name="document_level"
+									fullWidth
+									options={projectDetails['Level'] ? [{ label: '', value: '' }, ...projectDetails['Level'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
 							</Stack>
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>

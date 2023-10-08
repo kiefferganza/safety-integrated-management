@@ -11,7 +11,7 @@ import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import Iconify from '@/Components/iconify';
 import EditDetails from '@/sections/@dashboard/inspection/edit/form/EditDetails';
 
-const index = ({ inspection }) => {
+const index = ({ inspection, projectDetails }) => {
 	const { themeStretch } = useSettingsContext();
 	const [currentTab, setCurrentTab] = useState('details');
 
@@ -20,7 +20,7 @@ const index = ({ inspection }) => {
 			value: 'details',
 			label: 'Details',
 			icon: <Iconify icon="heroicons:document-chart-bar" />,
-			component: <EditDetails inspection={inspection} />,
+			component: <EditDetails inspection={inspection} projectDetails={projectDetails} />,
 		},
 		{
 			value: 'findings',

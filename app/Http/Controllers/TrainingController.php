@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\CommentTypeEnums;
 use App\Events\NewTrainingEvent;
 use App\Http\Requests\TrainingRequest;
+use App\Models\DocumentProjectDetail;
 use App\Models\Employee;
 use App\Models\Training;
 use App\Models\TrainingCourses;
@@ -95,6 +96,8 @@ class TrainingController extends Controller
 	public function create(Request $request) {
 		$trainingService = new TrainingService();
 		$courses = TrainingCourses::get();
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
 		
 		return Inertia::render("Dashboard/Management/Training/Create/index",[
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
@@ -111,7 +114,8 @@ class TrainingController extends Controller
 				"2" => $trainingService->getSequenceNo(2),
 				"3" => $trainingService->getSequenceNo(3),
 				"4" => $trainingService->getSequenceNo(4),
-			]
+			],
+			"projectDetails" => $projectDetails,
 		]);
 	}
 
@@ -214,6 +218,9 @@ class TrainingController extends Controller
 			$relation[] = "external_details";
 		}
 
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+
 		return Inertia::render("Dashboard/Management/Training/Edit/index", [
 			"training" => $training->load($relation),
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
@@ -224,7 +231,9 @@ class TrainingController extends Controller
 			])
 			->get(),
 			"courses" => TrainingCourses::get(),
-			"details" => $trainingService->getTrainingType($training->type)
+			"details" => $trainingService->getTrainingType($training->type),
+			"type" => $trainingService->getTrainingType($training->type),
+			"projectDetails" => $projectDetails,
 		]);
 	}
 

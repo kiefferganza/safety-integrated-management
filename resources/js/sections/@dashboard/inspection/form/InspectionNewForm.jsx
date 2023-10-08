@@ -20,7 +20,7 @@ import TimeFrame from './TimeFrame';
 
 const steps = ['General Info', 'Inspection Report', 'Time Frame', 'Evidence'];
 
-const InspectionNewForm = () => {
+const InspectionNewForm = ({ projectDetails }) => {
 	const { warning } = useSwal();
 	const { sequence_no, personel, auth: { user }, errors: resErrors } = usePage().props;
 	const [loading, setLoading] = useState(false);
@@ -583,7 +583,7 @@ const InspectionNewForm = () => {
 					})}
 				</Stepper>
 				<Box display={activeStep !== 0 ? "none" : "block"}>
-					<InspectionForm personel={personel} />
+					<InspectionForm personel={personel} projectDetails={projectDetails} />
 				</Box>
 
 				<Box display={activeStep !== 1 ? "none" : "block"}>

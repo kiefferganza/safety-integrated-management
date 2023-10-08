@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DocumentProjectDetail;
 use App\Models\Position;
 use App\Models\TbtStatistic;
 use App\Models\TbtStatisticMonth;
@@ -42,11 +43,14 @@ class ToolboxTalkController extends Controller
 
 	public function create(Request $request) {
 		$tbtService = new ToolboxTalkService();
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
 
 		return Inertia::render("Dashboard/Management/ToolboxTalk/Create/index", [
 			"sequences" => $tbtService->getSequenceNo(),
 			"participants" => (new EmployeeService())->personels()->position()->get(),
-			"tbt_type" => $request->type ? $request->type : "1"
+			"tbt_type" => $request->type ? $request->type : "1",
+			"projectDetails" => $projectDetails
 		]);
 	}
 
@@ -74,10 +78,14 @@ class ToolboxTalkController extends Controller
 
 	public function edit(ToolboxTalk $tbt) {
 		$tbtService = new ToolboxTalkService();
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+
 		return Inertia::render("Dashboard/Management/ToolboxTalk/Edit/index", [
 			"sequences" => $tbtService->getSequenceNo(),
 			"tbt" => $tbt->load(["participants" => fn($q) => $q->distinct(), "file"]),
 			"participants" => (new EmployeeService())->personels()->position()->get(),
+			"projectDetails" => $projectDetails
 		]);
 	}
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DocumentProjectDetail;
 use App\Models\Employee;
 use App\Models\InventoryReport;
 use Illuminate\Http\Request;
@@ -44,6 +45,8 @@ class InventoryReportController extends Controller
 			return $inventory;
 		});
 
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+
 		$latestReport = InventoryReport::select("sequence_no")->latest()->first();
 		$submittedDates = InventoryReport::select("submitted_date")->get()->pluck("submitted_date");
 		$sequence = $latestReport ? (int)ltrim($latestReport->sequence_no) + 1 : 1;
@@ -58,7 +61,8 @@ class InventoryReportController extends Controller
 				->where("sub_id", $user->subscriber_id)
 				->where("user_id", "!=", null)
 				->where("user_id", "!=", $user->user_id)
-				->get()
+				->get(),
+			"projectDetails" => $projectDetails
 		]);
 	}
 

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { RHFTextField, RHFUpload } from '@/Components/hook-form';
+import { RHFMuiSelect, RHFTextField, RHFUpload } from '@/Components/hook-form';
 import { Autocomplete, Box, Button, Divider, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack, Switch, TextField, Typography } from '@mui/material';
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import { useFormContext } from 'react-hook-form';
@@ -15,7 +15,7 @@ const canvasStyles = {
 	height: "240px"
 };
 
-const GeneralIncident = ({ personel }) => {
+const GeneralIncident = ({ personel, projectDetails }) => {
 	const [seeDr, setSeeDr] = useState(false);
 	const [imageSign, setImageSign] = useState(false);
 	const { setValue, watch, formState: { errors } } = useFormContext();
@@ -78,49 +78,49 @@ const GeneralIncident = ({ personel }) => {
 				</Typography>
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-					<RHFTextField
-						name="project_code"
+					<RHFMuiSelect
 						label="Project Code"
-						onChange={(event) => {
-							setValue("project_code", event.target.value, { shouldValidate: true });
-						}}
-						inputProps={{
-							sx: { textTransform: "uppercase" }
-						}}
+						name="project_code"
+						fullWidth
+						options={projectDetails['Project Code'] ? [{ label: '', value: '' }, ...projectDetails['Project Code'].map((d) => ({ label: d.value, value: d.value }))] : []}
 					/>
 
-					<RHFTextField
+					<RHFMuiSelect
+						label="Originator"
 						name="originator"
-						onChange={(event) => {
-							setValue("originator", event.target.value, { shouldValidate: true });
-						}}
-						label="Originator" />
+						fullWidth
+						options={projectDetails['Originator'] ? [{ label: '', value: '' }, ...projectDetails['Originator'].map((d) => ({ label: d.value, value: d.value }))] : []}
+					/>
 
-					<RHFTextField
+					<RHFMuiSelect
+						label="Discipline"
 						name="discipline"
-						onChange={(event) => {
-							setValue("discipline", event.target.value, { shouldValidate: true });
-						}}
-						label="Discipline" />
+						fullWidth
+						options={projectDetails['Discipline'] ? [{ label: '', value: '' }, ...projectDetails['Discipline'].map((d) => ({ label: d.value, value: d.value }))] : []}
+					/>
 
 				</Stack>
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-					<RHFTextField
+					<RHFMuiSelect
+						label="Type"
 						name="document_type"
-						onChange={(event) => {
-							setValue("document_type", event.target.value, { shouldValidate: true });
-						}}
-						label="Type" />
-
-					<RHFTextField
-						name="document_zone"
-						label="Zone (Optional)"
+						fullWidth
+						options={projectDetails['Type'] ? [{ label: '', value: '' }, ...projectDetails['Type'].map((d) => ({ label: d.value, value: d.value }))] : []}
 					/>
 
-					<RHFTextField
-						name="document_level"
+					<RHFMuiSelect
+						label="Zone (Optional)"
+						name="document_zone"
+						fullWidth
+						options={projectDetails['Zone'] ? [{ label: '', value: '' }, ...projectDetails['Zone'].map((d) => ({ label: d.value, value: d.value }))] : []}
+					/>
+
+					<RHFMuiSelect
 						label="Level (Optional)"
+						name="document_level"
+						fullWidth
+						options={projectDetails['Level'] ? [{ label: '', value: '' }, ...projectDetails['Level'].map((d) => ({ label: d.value, value: d.value }))] : []}
 					/>
 
 				</Stack>

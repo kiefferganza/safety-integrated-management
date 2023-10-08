@@ -24,7 +24,7 @@ ToolboxTalkNewEditForm.propTypes = {
 	isEdit: PropTypes.bool,
 };
 
-export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
+export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {}, projectDetails }) {
 	const [loading, setLoading] = useState(false);
 	const { sequences, participants, tbt_type, errors: resErrors } = usePage().props;
 
@@ -172,7 +172,7 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		<FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
 			<Card>
 
-				<ToolboxTalkProjectDetails isEdit={isEdit} />
+				<ToolboxTalkProjectDetails isEdit={isEdit} projectDetails={projectDetails} />
 
 				<ToolboxTalkDetails participants={participants} sequences={sequences} isEdit={isEdit} />
 

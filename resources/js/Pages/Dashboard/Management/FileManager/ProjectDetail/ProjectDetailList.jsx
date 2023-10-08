@@ -30,7 +30,6 @@ import {
 	TablePaginationCustom,
 } from '@/Components/table';
 // sections
-import { fDate } from '@/utils/formatTime';
 import { useSwal } from '@/hooks/useSwal';
 import { Inertia } from '@inertiajs/inertia';
 import ProjectDetailNewEdit from '@/sections/@dashboard/project-detail/portal/ProjectDetailNewEdit';

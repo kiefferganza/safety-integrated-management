@@ -40,6 +40,7 @@ class DocumentController extends Controller
 
 	public function create(FolderModel $folder) {
 		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
 
 		return Inertia::render("Dashboard/Management/FileManager/Document/Create/index", [
 			"folder" => $folder,
@@ -50,7 +51,8 @@ class DocumentController extends Controller
 				->where("user_id", "!=", NULL)
 				->where("sub_id", $user->subscriber_id)
 				->where("employee_id", "!=", $user->emp_id)
-				->get()
+				->get(),
+			'projectDetails' => $projectDetails
 		]);
 	}
 
@@ -287,6 +289,8 @@ class DocumentController extends Controller
 			->firstOrFail();
 		$document->file = $document->files[0] ?? "";
 
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+
 		return Inertia::render("Dashboard/Management/FileManager/Document/Edit/index", [
 			"folder" => $folder,
 			"personel" => Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id", "user_id")
@@ -296,7 +300,8 @@ class DocumentController extends Controller
 				->where("sub_id", $user->subscriber_id)
 				->where("employee_id", "!=", $user->emp_id)
 				->get(),
-			"document" => $document
+			"document" => $document,
+			"projectDetails" => $projectDetails
 		]);
 	}
 
@@ -701,7 +706,6 @@ class DocumentController extends Controller
 			'title' => ['string', 'required'],
 			'value' => ['string', 'required']
 		]);
-		// dd($request->all());
 		$user = auth()->user();
 
 		DocumentProjectDetail::create([

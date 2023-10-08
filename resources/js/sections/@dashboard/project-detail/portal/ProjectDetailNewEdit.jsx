@@ -28,7 +28,6 @@ const ProjectDetailNewEdit = ({
 	editDetail,
 	...other
 }) => {
-	console.log({ editDetail, isEdit });
 	const { load, stop } = useSwal();
 	const methods = useForm({
 		defaultValues: {

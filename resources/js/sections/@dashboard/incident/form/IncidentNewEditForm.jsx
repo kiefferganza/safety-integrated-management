@@ -44,7 +44,7 @@ const newIncidentSchema = Yup.object().shape({
 	workday: Yup.string().required(),
 });
 
-const IncidentNewForm = ({ currentIncident, isEdit = false }) => {
+const IncidentNewForm = ({ currentIncident, isEdit = false, projectDetails }) => {
 	const { warning, load, stop } = useSwal();
 	const { sequence_no, employees, types, errors: resErrors } = usePage().props;
 	const [loading, setLoading] = useState(false);
@@ -116,7 +116,7 @@ const IncidentNewForm = ({ currentIncident, isEdit = false }) => {
 	}, [resErrors]);
 
 	const STEPS = [
-		{ id: 1, component: <GeneralIncident personel={employees} /> },
+		{ id: 1, component: <GeneralIncident personel={employees} projectDetails={projectDetails} /> },
 		{ id: 2, component: <IncidentInformation types={types} /> }
 	];
 
@@ -136,15 +136,9 @@ const IncidentNewForm = ({ currentIncident, isEdit = false }) => {
 	const handleBack = () => {
 		setActiveStep((prevActiveStep) => prevActiveStep - 1);
 	};
-	console.log(errors)
+
 	const onSubmit = async (data) => {
 		data.incident_date = format(data.incident_date, "yyyy-MM-dd hh:mm:ss").toString();
-		console.log(data);
-		// const cleanData = pickBy(data, identity);
-		// cleanData.lti = cleanData?.lti || 0;
-		// cleanData.engineer_id = Number(cleanData.engineer_id);
-		// cleanData.injured_id = Number(cleanData.injured_id);
-		// cleanData.incident_date = format(cleanData.incident_date, "yyyy-MM-dd").toString();
 
 		const result = await warning("Are you sure you want to save this form?", "Press cancel to undo this action.", "Yes");
 		if (result.isConfirmed) {
