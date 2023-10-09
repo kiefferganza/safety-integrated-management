@@ -60,7 +60,7 @@ const TABLE_HEAD = [
 	{ id: 'status', label: 'Status', align: 'center' },
 ];
 
-const StoreCreateReportPage = ({ stores, employees, sequence_no, submittedDates }) => {
+const StoreCreateReportPage = ({ stores, employees, sequence_no, submittedDates, projectDetails }) => {
 	const {
 		dense,
 		page,
@@ -431,6 +431,7 @@ const StoreCreateReportPage = ({ stores, employees, sequence_no, submittedDates 
 				employees={employees}
 				sequence_no={sequence_no}
 				submittedDates={submittedDates}
+				projectDetails={projectDetails}
 			/>
 		</>
 	)

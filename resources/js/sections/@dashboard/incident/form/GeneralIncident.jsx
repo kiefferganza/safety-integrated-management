@@ -188,12 +188,18 @@ const GeneralIncident = ({ personel, projectDetails }) => {
 				</Stack>
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
-					<RHFTextField
+					{/* <RHFTextField
 						name="location"
 						label="Location"
 						onChange={(event) => {
 							setValue("location", event.target.value, { shouldValidate: true });
 						}}
+					/> */}
+					<RHFMuiSelect
+						label="Location"
+						name="location"
+						fullWidth
+						options={projectDetails['Location'] ? [{ label: '', value: '' }, ...projectDetails['Location'].map((d) => ({ label: d.value, value: d.value }))] : []}
 					/>
 					<Box width={1} />
 					<Box width={1} />

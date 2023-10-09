@@ -105,7 +105,12 @@ const InspectionForm = ({ personel, projectDetails }) => {
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-					<RHFTextField name="contract_no" label="Contract No." />
+					<RHFMuiSelect
+						label="Contract No."
+						name="contract_no"
+						fullWidth
+						options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value, value: d.value }))] : []}
+					/>
 
 					<RHFTextField disabled name="inspected_by" label="Inspected By" />
 
@@ -116,7 +121,12 @@ const InspectionForm = ({ personel, projectDetails }) => {
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-					<RHFTextField name="location" label="Location" />
+					<RHFMuiSelect
+						label="Location"
+						name="location"
+						fullWidth
+						options={projectDetails['Location'] ? [{ label: '', value: '' }, ...projectDetails['Location'].map((d) => ({ label: d.value, value: d.value }))] : []}
+					/>
 
 					{isDesktop ? (
 						<DesktopDatePicker

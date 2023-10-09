@@ -692,6 +692,8 @@ class DocumentController extends Controller
 			['label' => 'Type', 'value' => 'Type'],
 			['label' => 'Zone', 'value' => 'Zone'],
 			['label' => 'Level', 'value' => 'Level'],
+			['label' => 'Contract No.', 'value' => 'Contract No.'],
+			['label' => 'Location', 'value' => 'Location'],
 		];
 		
 		return Inertia::render("Dashboard/Management/FileManager/ProjectDetail/index", [

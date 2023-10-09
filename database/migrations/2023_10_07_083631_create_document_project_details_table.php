@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('document_project_details', function (Blueprint $table) {
             $table->id();
 			$table->integer('sub_id');
-			$table->enum('title', ['Project Code', 'Originator', 'Discipline', 'Type', 'Zone', 'Level']);
+			$table->enum('title', ['Project Code', 'Originator', 'Discipline', 'Type', 'Zone', 'Level', 'Contract No.', 'Location']);
 			$table->string('value');
             $table->timestamps();
         });

@@ -152,7 +152,7 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining, projectD
 
 				<TrainingProjectDetails isEdit={isEdit} sequences={sequences} projectDetails={projectDetails} />
 
-				<TrainingNewEditDetails isEdit={isEdit} currentTraining={currentTraining} />
+				<TrainingNewEditDetails isEdit={isEdit} currentTraining={currentTraining} projectDetails={projectDetails} />
 
 			</Card>
 

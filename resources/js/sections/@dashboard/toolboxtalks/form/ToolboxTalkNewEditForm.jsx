@@ -174,7 +174,7 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {}, proj
 
 				<ToolboxTalkProjectDetails isEdit={isEdit} projectDetails={projectDetails} />
 
-				<ToolboxTalkDetails participants={participants} sequences={sequences} isEdit={isEdit} />
+				<ToolboxTalkDetails participants={participants} sequences={sequences} isEdit={isEdit} projectDetails={projectDetails} />
 
 			</Card>
 

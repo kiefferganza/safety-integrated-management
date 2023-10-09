@@ -15,7 +15,7 @@ import { currencies } from '@/_mock/arrays/_currencies';
 
 // ----------------------------------------------------------------------
 
-const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
+const TrainingNewEditDetails = ({ currentTraining, isEdit, projectDetails }) => {
 	const { personel, courses = [] } = usePage().props;
 	const [openParticipants, setOpenParticipants] = useState(false);
 	const { setValue, watch, trigger, formState: { errors } } = useFormContext();
@@ -136,12 +136,21 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit }) => {
 				<Stack alignItems="flex-end" spacing={2}>
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-						{/* <RHFTextField name="title" label="Course Title" fullWidth /> */}
 						<RHFMuiSelect name="title" label="Course Title" fullWidth options={courses.map(c => ({ label: c.course_name, value: c.course_name }))} />
 
-						<RHFTextField name="contract_no" label="Contract No." fullWidth />
+						<RHFMuiSelect
+							label="Contract No."
+							name="contract_no"
+							fullWidth
+							options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value, value: d.value }))] : []}
+						/>
 
-						<RHFTextField name="location" label="Training Location" fullWidth />
+						<RHFMuiSelect
+							label="Training Location"
+							name="location"
+							fullWidth
+							options={projectDetails['Location'] ? [{ label: '', value: '' }, ...projectDetails['Location'].map((d) => ({ label: d.value, value: d.value }))] : []}
+						/>
 
 					</Stack>
 

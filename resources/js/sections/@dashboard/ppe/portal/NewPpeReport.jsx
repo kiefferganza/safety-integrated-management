@@ -236,9 +236,20 @@ export const NewPpeReport = ({ open, onClose, inventories, employees, sequence_n
 						<Stack alignItems="flex-end" spacing={2}>
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
 
-								<RHFTextField name="contract_no" label="Contract No." fullWidth />
+								<RHFMuiSelect
+									label="Contract No."
+									name="contract_no"
+									fullWidth
+									options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
-								<RHFTextField name="location" label="Location" fullWidth />
+
+								<RHFMuiSelect
+									label="Location"
+									name="location"
+									fullWidth
+									options={projectDetails['Location'] ? [{ label: '', value: '' }, ...projectDetails['Location'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
 								<PersonelAutocomplete
 									value={employees.find(per => per.employee_id == values.conducted_by)?.fullname}
