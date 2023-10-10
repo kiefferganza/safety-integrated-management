@@ -14,6 +14,7 @@ const ICONS = {
 	chat: icon('ic_chat'),
 	mail: icon('ic_mail'),
 	user: icon('ic_user'),
+	companyInformation: icon('mdi_company'),
 	file: icon('ic_file'),
 	lock: icon('ic_lock'),
 	label: icon('ic_label'),
@@ -56,6 +57,18 @@ const navConfig = [
 	{
 		subheader: 'hse',
 		items: [
+			// COMPANY INFORMATION
+			{
+				title: 'company information',
+				path: PATH_DASHBOARD.companyInformation.register,
+				icon: ICONS.companyInformation,
+				routeNames: [
+					'management.company_information.register'
+				],
+				children: [
+					{ title: 'register', path: PATH_DASHBOARD.companyInformation.register, routeNames: ['management.company_information.register'] },
+				],
+			},
 			// USER
 			{
 				title: 'user',
@@ -265,24 +278,9 @@ const navConfig = [
 					'files.management.show',
 					'files.management.external',
 					'files.management.document.show',
-					'files.management.create',
-					'files.management.project_details'
+					'files.management.create'
 				],
-				icon: ICONS.folder,
-				children: [
-					{ title: 'register', path: PATH_DASHBOARD.fileManager.register, routeNames: ['files.management.project_details'] },
-					{
-						title: 'folders',
-						path: PATH_DASHBOARD.fileManager.root,
-						routeNames: [
-							'files.management.index',
-							'files.management.show',
-							'files.management.external',
-							'files.management.document.show',
-							'files.management.create'
-						]
-					},
-				]
+				icon: ICONS.folder
 			},
 		],
 	},

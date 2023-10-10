@@ -39,7 +39,7 @@ const ProjectDetailNewEdit = ({
 	const { handleSubmit, reset, formState: { isDirty } } = methods;
 
 	const onCreate = (data) => {
-		Inertia.post(route('files.management.new_project_details'), data, {
+		Inertia.post(route('management.company_information.store'), data, {
 			preserveScroll: true,
 			onStart: () => {
 				reset({
@@ -56,7 +56,7 @@ const ProjectDetailNewEdit = ({
 	}
 
 	const onUpdate = (data) => {
-		Inertia.post(route('files.management.update_project_details', editDetail.id), data, {
+		Inertia.post(route('management.company_information.update', editDetail.id), data, {
 			preserveScroll: true,
 			onStart: () => {
 				reset({

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CompanyInformation;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DocumentController;
@@ -33,6 +34,15 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	// General
 	Route::get('/hse-dashboard', [DashboardController::class, 'index'])->name('dashboard');
 	Route::get('/employees', fn () => Inertia::render("/General/Employee/index"))->name('general.employee');
+
+	/**
+	 * Management - Company Information
+	 */
+	Route::prefix('company-information')->as('management.company_information.')->group(function() {
+		Route::get('/register', [CompanyInformation::class, 'register'])->name('register');
+		Route::post('/register/new', [CompanyInformation::class, 'store'])->name('store');
+		Route::post('/register/update/{documentProjectDetail}', [CompanyInformation::class, 'update'])->name('update');
+	});
 
 	/**
 	 * Management - Employee

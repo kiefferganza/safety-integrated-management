@@ -41,6 +41,10 @@ export const PATH_DASHBOARD = {
 	permissionDenied: path(ROOTS_DASHBOARD, '/permission-denied'),
 	blank: path(ROOTS_DASHBOARD, '/blank'),
 
+	companyInformation: {
+		register: route('management.company_information.register')
+	},
+
 	general: {
 		employee: path(ROOTS_DASHBOARD, '/employees'),
 		inventory: path(ROOTS_DASHBOARD, '/inventory'),
@@ -164,8 +168,7 @@ export const PATH_DASHBOARD = {
 		actionDocument: (documentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${documentId}/action`),
 		addComment: (documentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${documentId}/add-comment`),
 		replyComment: (commentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${commentId}/reply-comment`),
-		deleteComment: (commentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${commentId}/delete-comment`),
-		register: route('files.management.project_details')
+		deleteComment: (commentId) => path(ROOTS_DASHBOARD, `/file-manager/document/${commentId}/delete-comment`)
 	},
 
 	store: {
