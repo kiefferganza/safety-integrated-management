@@ -32,7 +32,7 @@ const index = ({ auth: { user }, inspections, trainings, incidents, from, to }) 
 		if (isErrorTbtStat || isErrorTbt) {
 			enqueueSnackbar('Something went wrong!', { variant: "error" });
 		}
-	}, [from, to, toolboxtalks, tbtStatistics, isErrorTbtStat, isErrorTbt]);
+	}, [from, to, toolboxtalks, tbtStatistics, isErrorTbtStat, isErrorTbt, isLoadingTbt, isLoadingTbtStat]);
 
 	return (
 		<>

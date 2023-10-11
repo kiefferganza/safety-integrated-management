@@ -11,4 +11,6 @@ axiosInstance.interceptors.response.use(
 	(error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
 );
 
+export const fetchTbtByType = (type) => axiosInstance.get(route('api.tbt.type', { type })).then(res => res.data);
+
 export default axiosInstance;

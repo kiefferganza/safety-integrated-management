@@ -16,6 +16,7 @@ import { usePage } from '@inertiajs/inertia-react';
 import ToolboxTalkProjectDetails from './ToolboxTalkProjectDetails';
 import ToolboxTalkDetails from './ToolboxTalkDetails';
 import { format, formatISO } from 'date-fns';
+import { useQueryClient } from '@tanstack/react-query';
 
 // ----------------------------------------------------------------------
 
@@ -25,8 +26,9 @@ ToolboxTalkNewEditForm.propTypes = {
 };
 
 export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {}, projectDetails }) {
+	const queryClient = useQueryClient();
 	const [loading, setLoading] = useState(false);
-	const { sequences, participants, tbt_type, errors: resErrors } = usePage().props;
+	const { auth: { user }, sequences, participants, tbt_type, errors: resErrors } = usePage().props;
 
 	const NewTBTSchema = Yup.object().shape({
 		project_code: Yup.string().required('Project Code is required'),
@@ -163,6 +165,8 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {}, proj
 				},
 				onFinish () {
 					setLoading(false);
+					queryClient.invalidateQueries({ queryKey: ['toolboxtalks', user.subscriber_id] });
+					queryClient.invalidateQueries({ queryKey: ['toolboxtalks', { type: +data.tbt_type, sub: user.subscriber_id }] });
 				}
 			}
 		);

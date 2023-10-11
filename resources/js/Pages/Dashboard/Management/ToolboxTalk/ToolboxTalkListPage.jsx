@@ -34,6 +34,7 @@ import {
 	TableHeadCustom,
 	TableSelectedAction,
 	TablePaginationCustom,
+	TableSkeleton,
 } from '@/Components/table';
 // sections
 import { Link } from '@inertiajs/inertia-react';
@@ -44,6 +45,7 @@ import ToolboxTalkAnalytic from '@/sections/@dashboard/toolboxtalks/ToolboxTalkA
 import { formatCms } from '@/utils/tablesUtils';
 import { endOfMonth } from 'date-fns';
 import usePermission from '@/hooks/usePermission';
+import { useQueryClient } from '@tanstack/react-query';
 
 // ----------------------------------------------------------------------
 
@@ -82,7 +84,8 @@ const TABLE_HEAD_ALL = [
 ];
 
 
-const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType = false, addTypeHeader = false }) => {
+const ToolboxTalkListPage = ({ loading, user, tbt, moduleName = 'Civil', type = "1", selectType = false, addTypeHeader = false }) => {
+	const queryClient = useQueryClient();
 	const [hasPermission] = usePermission();
 	const theme = useTheme();
 	const { themeStretch } = useSettingsContext();
@@ -131,14 +134,16 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 	});
 
 	useEffect(() => {
-		const data = tbt?.map(toolbox => ({
-			...toolbox,
-			id: toolbox.tbt_id,
-			cms: formatCms(toolbox),
-			attachment: toolbox.file.length > 0 ? "Y" : "N",
-			participants_count: toolbox.participants?.length
-		}));
-		setTableData(data);
+		if (tbt) {
+			const data = tbt?.map(toolbox => ({
+				...toolbox,
+				id: toolbox.tbt_id,
+				cms: formatCms(toolbox),
+				attachment: toolbox.file.length > 0 ? "Y" : "N",
+				participants_count: toolbox.participants?.length
+			}));
+			setTableData(data);
+		}
 	}, [tbt]);
 
 
@@ -194,19 +199,29 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 	};
 
 	const handleDeleteRow = (id) => {
+		const type = tableData.find(t => t.id === id)?.tbt_type;
 		Inertia.post(route('toolboxtalk.management.delete'), { ids: [id] }, {
 			onStart: () => {
 				load("Deleting toolbox talk", "Please wait...");
+				queryClient.invalidateQueries({ queryKey: ['toolboxtalks', user.subscriber_id] });
+				queryClient.invalidateQueries({ queryKey: ['toolboxtalks', { type, sub: user.subscriber_id }] });
 			},
-			onFinish: stop,
+			onFinish: () => {
+				stop();
+			},
 			preserveScroll: true
 		});
 	};
 
 	const handleDeleteRows = (selected) => {
+		const types = new Set(tableData.filter(t => selected.includes(t.id)).map(t => t.tbt_type));
 		Inertia.post(route('toolboxtalk.management.delete'), { ids: selected }, {
 			onStart: () => {
 				load(`Deleting ${selected.length} toolbox talks`, "Please wait...");
+				queryClient.invalidateQueries({ queryKey: ['toolboxtalks', user.subscriber_id] });
+				types.forEach(type => {
+					queryClient.invalidateQueries({ queryKey: ['toolboxtalks', { type, sub: user.subscriber_id }] });
+				});
 			},
 			onFinish: () => {
 				setSelected([]);
@@ -371,16 +386,24 @@ const ToolboxTalkListPage = ({ tbt, moduleName = 'Civil', type = "1", selectType
 								/>
 
 								<TableBody>
-									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-										<ToolboxTalkTableRow
-											key={row.id}
-											row={row}
-											selected={selected.includes(row.id)}
-											onSelectRow={() => onSelectRow(row.id)}
-											onDeleteRow={() => handleDeleteRow(row.id)}
-											addTypeHeader={addTypeHeader}
-										/>
-									))}
+									{loading ? (
+										[...Array(rowsPerPage)].map((_i, index) => (
+											<TableSkeleton key={index} sx={{ height: denseHeight }} />
+										))
+									) : (
+										<>
+											{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+												<ToolboxTalkTableRow
+													key={row.id}
+													row={row}
+													selected={selected.includes(row.id)}
+													onSelectRow={() => onSelectRow(row.id)}
+													onDeleteRow={() => handleDeleteRow(row.id)}
+													addTypeHeader={addTypeHeader}
+												/>
+											))}
+										</>
+									)}
 
 									<TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, tableData.length)} />
 

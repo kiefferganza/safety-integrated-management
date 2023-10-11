@@ -4,6 +4,7 @@ import { alpha } from '@mui/material/styles';
 import { Stack, Typography, CircularProgress } from '@mui/material';
 // components
 import Iconify from '@/Components/iconify';
+import CountUp from 'react-countup';
 
 // ----------------------------------------------------------------------
 
@@ -17,7 +18,7 @@ ToolboxTalkAnalytic.propTypes = {
 
 export default function ToolboxTalkAnalytic ({ title, total, icon, color, percent }) {
 	return (
-		<Stack direction="row" alignItems="center" justifyContent="center" sx={{ width: 1, minWidth: 240 }}>
+		<Stack direction="row" alignItems="center" justifyContent="center" sx={{ width: 1, minWidth: 240, pl: 1.5 }}>
 			<Stack alignItems="center" justifyContent="center" sx={{ position: 'relative' }}>
 				<Iconify icon={icon} width={24} sx={{ color, position: 'absolute' }} />
 
@@ -38,12 +39,11 @@ export default function ToolboxTalkAnalytic ({ title, total, icon, color, percen
 				/>
 			</Stack>
 
-			<Stack spacing={0.5} sx={{ ml: 2 }}>
+			<Stack spacing={0.5} sx={{ ml: 2 }} flex={1}>
 				<Typography variant="subtitle2" sx={{ wordBreak: 'break-word', fontWeight: 700 }}>{title}</Typography>
 
 				<Typography variant="subtitle2">
-					{/* {fShortenNumber(total) || 0} */}
-					{total ? total.toLocaleString("en-US") : 0}
+					<CountUp end={total || 0} duration={3} delay={0.6} />
 				</Typography>
 			</Stack>
 		</Stack>
