@@ -14,9 +14,7 @@ use Inertia\Inertia;
 class DashboardController extends Controller
 {
     public function index(Request $request): \Inertia\Response
-    {
-			$dashboardService = new DashboardService;
-			
+    {		
 			if($request->from && $request->to) {
 				$from = new Carbon($request->from);
 				$to = (new Carbon($request->to))->endOfDay();
@@ -36,9 +34,6 @@ class DashboardController extends Controller
 			}
 			
 			return Inertia::render("Dashboard/General/HSEDashboard/index", [
-				"trainings" => Training::select("type", "training_hrs", "training_date")->where("is_deleted", 0)->withCount("training_files")->get(),
-				"inspections" => fn() => $dashboardService->getInspectionByDate($from, $to),
-				"incidents" => $dashboardService->getIncidents(),
 				"from" => $from,
 				"to" => $to
 			]);
