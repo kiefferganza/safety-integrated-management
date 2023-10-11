@@ -9,7 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 // import { dispatch, useSelector } from '@/redux/store';
 // import { getTbts } from '@/redux/slices/toolboxtalk';
 
-const index = ({ auth: { user }, inspections, toolboxtalks, trainings, tbtStatistics, incidents, sliderImages, from, to }) => {
+const index = ({ auth: { user }, inspections, toolboxtalks, trainings, tbtStatistics, incidents, from, to }) => {
 	const [loading, setLoading] = useState(false);
 	const [totalTbtByYear, setTotalTbtByYear] = useState({});
 
@@ -30,7 +30,6 @@ const index = ({ auth: { user }, inspections, toolboxtalks, trainings, tbtStatis
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
 					<GeneralHSEDasboardPage
-						sliderImages={sliderImages}
 						user={user}
 						totalTbtByYear={totalTbtByYear}
 						trainings={trainings}

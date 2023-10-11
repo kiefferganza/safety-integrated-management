@@ -15,6 +15,8 @@ import { Inertia } from '@inertiajs/inertia';
 // sections
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import Scrollbar from '@/Components/scrollbar/Scrollbar';
+import { useQueries, useQuery } from '@tanstack/react-query';
+import axiosInstance from '@/utils/axios';
 const AppWelcome = lazy(() => import('@/sections/@dashboard/general/app/AppWelcome'));
 const WelcomeIllustration = lazy(() => import('@/assets/illustrations/WelcomeIllustration'));
 const HseSlider = lazy(() => import('@/sections/@dashboard/general/hse-dashboard/HseSlider'));
@@ -33,11 +35,11 @@ const BookingBookedRoom = lazy(() => import('@/sections/@dashboard/general/booki
 
 // ----------------------------------------------------------------------
 const GB = 1000000000 * 24;
-const TIME_LABELS = {
-	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
-	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-	year: ['2018', '2019', '2020', '2021', '2022'],
-};
+// const TIME_LABELS = {
+// 	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
+// 	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+// 	year: ['2018', '2019', '2020', '2021', '2022'],
+// };
 
 
 const MONTH_NAMES = {
@@ -55,8 +57,23 @@ const MONTH_NAMES = {
 	12: 'Dec',
 }
 
+const fetchSlider = () => axiosInstance.get(route('api.dashboard.slider_images')).then(res => res.data);
+const fetchTbt = (from, to) => axiosInstance.get(route('api.dashboard.toolboxtalks', { from, to })).then(res => res.data);
+const fetchTbtStatistics = (from, to) => axiosInstance.get(route('api.dashboard.tbt_statistics', { from, to })).then(res => res.data);
 
-export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, trainings, tbtStatistics, inspections, incidents, sliderImages = [], from, to, setLoading }) {
+export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, trainings, tbtStatistics, inspections, incidents, from, to, setLoading }) {
+	const [
+		{ isLoading: isLoadingSlider, isError: isErrorSlider, data: sliderImages }
+	] = useQueries({
+		queries: [
+			{ queryKey: ['slider', user.subscriber_id], queryFn: fetchSlider, refetchOnWindowFocus: false },
+			{ queryKey: ['toolboxtalks', user.subscriber_id], queryFn: () => fetchTbt(from, to), refetchOnWindowFocus: false },
+			{ queryKey: ['tbtStatistics', user.subscriber_id], queryFn: () => fetchTbtStatistics(from, to), refetchOnWindowFocus: false },
+		]
+	});
+	console.log({ isLoadingSlider, isErrorSlider, sliderImages })
+
+
 	const [tbtData, setTbtData] = useState([]);
 	const [startTbtDate, setStartTbtDate] = useState(from ? new Date(from) : null);
 	const [endTbtDate, setEndTbtDate] = useState(to ? new Date(to) : null);
@@ -306,7 +323,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 					</Grid>
 
 					<Grid item xs={12} md={4}>
-						<HseSlider list={sliderImages} />
+						<HseSlider list={sliderImages} isLoading={isLoadingSlider} isError={isErrorSlider} />
 					</Grid>
 
 					<Grid item md={12}>

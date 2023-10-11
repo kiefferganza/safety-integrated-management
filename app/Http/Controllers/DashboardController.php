@@ -41,7 +41,6 @@ class DashboardController extends Controller
 				"tbtStatistics" => fn() => $dashboardService->getTbtStatisticByDate($from, $to),
 				"inspections" => fn() => $dashboardService->getInspectionByDate($from, $to),
 				"incidents" => $dashboardService->getIncidents(),
-				"sliderImages" => $dashboardService->getSliderImages(),
 				"from" => $from,
 				"to" => $to
 			]);
