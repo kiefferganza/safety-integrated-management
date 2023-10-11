@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import CountUp from 'react-countup';
 // @mui
 import { alpha, useTheme } from '@mui/material/styles';
 import { Box, Card, Skeleton, Typography } from '@mui/material';
@@ -6,8 +7,6 @@ import { Box, Card, Skeleton, Typography } from '@mui/material';
 import { bgGradient } from '@/utils/cssStyles';
 // components
 import Iconify from '@/Components/iconify';
-import { useEffect, useRef } from 'react';
-import { CountUp } from 'countup.js';
 
 // ----------------------------------------------------------------------
 
@@ -22,25 +21,6 @@ AnalyticsWidgetSummary.propTypes = {
 
 export default function AnalyticsWidgetSummary ({ isLoading, title, total = 0, icon, data, color = 'primary', sx, ...other }) {
 	const theme = useTheme();
-	const countRef = useRef(null);
-
-
-	useEffect(() => {
-		if (countRef.current && !isLoading) {
-			const options = {
-				startVal: 0,  // Starting value
-				duration: 2, // Duration in seconds
-			};
-			const countUp = new CountUp(countRef.current, total, options);
-
-			if (!countUp.error) {
-				countUp.start();
-			} else {
-				// countRef.current?.innerText = total?.toLocaleString();
-				console.error(countUp.error);
-			}
-		}
-	}, [total, isLoading]);
 
 	if (isLoading) {
 		return (
@@ -96,7 +76,8 @@ export default function AnalyticsWidgetSummary ({ isLoading, title, total = 0, i
 			</Typography>
 
 			<Box display="flex" alignItems="center" gap={2} justifyContent="center">
-				<Typography variant="h5" ref={countRef}>
+				<Typography variant="h5">
+					<CountUp end={total || 0} duration={3} delay={0.6} />
 				</Typography>
 			</Box>
 		</Card>

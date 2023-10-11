@@ -19,7 +19,6 @@ class ToolboxTalkController extends Controller
 		$positions = cache()->rememberForever("positions".$user->subscriber_id, fn() => Position::where("user_id", $user->subscriber_id)->get());
 
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/All", [
-			"tbt" => ToolboxTalkService::getList(),
 			"positions" => $positions
 		]);
 	}
@@ -111,43 +110,26 @@ class ToolboxTalkController extends Controller
 		->with("type", "success");
 	}
 
-
 	public function civil_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CivilList", [
-			"tbt" => ToolboxTalkService::getListByType(1)
-		]);
+    	return Inertia::render("Dashboard/Management/ToolboxTalk/List/CivilList");
 	}
-
-
 
 	public function electrical_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/ElectricalList", [
-			"tbt" => ToolboxTalkService::getListByType(2)
-		]);
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/ElectricalList");
 	}
-
 
 	
 	public function mechanical_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/MechanicalList", [
-			"tbt" => ToolboxTalkService::getListByType(3)
-		]);
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/MechanicalList");
 	}
-
 
 
 	public function camp_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CampList", [
-			"tbt" => ToolboxTalkService::getListByType(4)
-		]);
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CampList");
 	}
 
-
-
 	public function office_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/OfficeList", [
-			"tbt" => ToolboxTalkService::getListByType(5)
-		]);
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/OfficeList");
 	}
 
 

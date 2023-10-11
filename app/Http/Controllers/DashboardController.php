@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TbtStatistic;
 use App\Models\ToolboxTalk;
-use App\Models\ToolboxTalkParticipant;
-use App\Models\Training;
-use App\Services\DashboardService;
 use Carbon\Carbon;
 use Inertia\Inertia;
 
