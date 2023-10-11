@@ -47,9 +47,7 @@ class DashboardController extends Controller
 		$from = new Carbon($request->from);
 		$to = (new Carbon($request->to))->endOfDay();
 
-		return response()->json([
-			$dashboardService->getTbtByDate($from, $to),
-		]);
+		return response()->json($dashboardService->getTbtByDate($from, $to));
 	}
 
 	public function tbtStatistics(Request $request) {
@@ -57,9 +55,7 @@ class DashboardController extends Controller
 		$from = new Carbon($request->from);
 		$to = (new Carbon($request->to))->endOfDay();
 
-		return response()->json([
-			$dashboardService->getTbtStatisticByDate($from, $to),
-		]);
+		return response()->json($dashboardService->getTbtStatisticByDate($from, $to));
 	}
 
 }

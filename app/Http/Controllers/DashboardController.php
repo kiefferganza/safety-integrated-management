@@ -36,9 +36,7 @@ class DashboardController extends Controller
 			}
 			
 			return Inertia::render("Dashboard/General/HSEDashboard/index", [
-				"toolboxtalks" => fn() => $dashboardService->getTbtByDate($from, $to),
 				"trainings" => Training::select("type", "training_hrs", "training_date")->where("is_deleted", 0)->withCount("training_files")->get(),
-				"tbtStatistics" => fn() => $dashboardService->getTbtStatisticByDate($from, $to),
 				"inspections" => fn() => $dashboardService->getInspectionByDate($from, $to),
 				"incidents" => $dashboardService->getIncidents(),
 				"from" => $from,

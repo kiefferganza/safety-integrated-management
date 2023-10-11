@@ -17,6 +17,7 @@ import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import Scrollbar from '@/Components/scrollbar/Scrollbar';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/utils/axios';
+import { Card, Skeleton } from '@mui/material';
 const AppWelcome = lazy(() => import('@/sections/@dashboard/general/app/AppWelcome'));
 const WelcomeIllustration = lazy(() => import('@/assets/illustrations/WelcomeIllustration'));
 const HseSlider = lazy(() => import('@/sections/@dashboard/general/hse-dashboard/HseSlider'));
@@ -58,23 +59,19 @@ const MONTH_NAMES = {
 }
 
 const fetchSlider = () => axiosInstance.get(route('api.dashboard.slider_images')).then(res => res.data);
-const fetchTbt = (from, to) => axiosInstance.get(route('api.dashboard.toolboxtalks', { from, to })).then(res => res.data);
-const fetchTbtStatistics = (from, to) => axiosInstance.get(route('api.dashboard.tbt_statistics', { from, to })).then(res => res.data);
 
-export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, trainings, tbtStatistics, inspections, incidents, from, to, setLoading }) {
+export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, trainings, tbtStatistics, inspections, incidents, from, to, isLoadingTbt, isLoadingTbtStat }) {
 	const [
-		{ isLoading: isLoadingSlider, isError: isErrorSlider, data: sliderImages }
+		{ isLoading: isLoadingSlider, isError: isErrorSlider, data: sliderImages },
 	] = useQueries({
 		queries: [
 			{ queryKey: ['slider', user.subscriber_id], queryFn: fetchSlider, refetchOnWindowFocus: false },
-			{ queryKey: ['toolboxtalks', user.subscriber_id], queryFn: () => fetchTbt(from, to), refetchOnWindowFocus: false },
-			{ queryKey: ['tbtStatistics', user.subscriber_id], queryFn: () => fetchTbtStatistics(from, to), refetchOnWindowFocus: false },
 		]
 	});
-	console.log({ isLoadingSlider, isErrorSlider, sliderImages })
+	// console.log({ isLoadingTbt, isErrorTbt, data })
 
 
-	const [tbtData, setTbtData] = useState([]);
+	const [tbtData, setTbtData] = useState(null);
 	const [startTbtDate, setStartTbtDate] = useState(from ? new Date(from) : null);
 	const [endTbtDate, setEndTbtDate] = useState(to ? new Date(to) : null);
 	const endTbtDateRef = useRef();
@@ -85,7 +82,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 	const { themeStretch } = useSettingsContext();
 
 	useEffect(() => {
-		if (totalTbtByYear) {
+		if (totalTbtByYear && tbtStatistics && (!isLoadingTbt || !isLoadingTbtStat)) {
 			const tmpTotalTbtByYear = { ...totalTbtByYear };
 			const tbtAndStatistics = tbtStatistics.reduce((acc, curr) => {
 				const statInTbtTotal = curr.year in tmpTotalTbtByYear;
@@ -126,7 +123,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 			}, []);
 			setTbtData(tbt);
 		}
-	}, [totalTbtByYear, tbtStatistics]);
+	}, [totalTbtByYear, tbtStatistics, isLoadingTbt, isLoadingTbtStat]);
 
 
 	const handleStartTbtDateChange = (newDate) => {
@@ -149,12 +146,6 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 			Inertia.get(route("dashboard"), dates, {
 				preserveScroll: true,
 				preserveState: true,
-				onStart () {
-					setLoading(true);
-				},
-				onFinish () {
-					setLoading(false);
-				},
 				only: [
 					"toolboxtalks",
 					"tbtStatistics",
@@ -166,52 +157,68 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 		}
 	}
 
-	const tbtAnalytic = useMemo(() => tbtData?.reduce((acc, curr) => {
-		const total = tbtData.find(t => (t[0] === curr[0] && t[2] === curr[2]));
-		if (total) {
-			acc.totalManpower += Math.round(total[1].totalManpower);
-			acc.totalManhours += Math.round(total[1].totalManhours);
-			acc.safeManhours += total[1].totalManhours === 0 ? 0 : Math.round(total[1].safeManhours);
-			acc.daysWork += total[1].daysWork;
-			acc.daysWoWork += total[1].daysWoWork;
-			acc.location = new Set([...acc.location, ...total[1].location]);
-		}
-		return acc;
-	}, {
-		totalManpower: 0,
-		totalManhours: 0,
-		safeManhours: 0,
-		daysWork: 0,
-		daysWoWork: 0,
-		location: new Set
-	}), [tbtData]);
+	const { tbtAnalytic, tbtDataItd } = useMemo(() => {
+		if (!tbtData && !totalTbtByYear) return { tbtAnalytic: null, tbtDataItd: null };
+		return tbtData.reduce((acc, curr) => {
+			const currMonth = curr[0];
+			const total = tbtData.find(t => (t[0] === currMonth && t[2] === curr[2]));
+			if (total) {
+				acc.tbtAnalytic.totalManpower += Math.round(total[1].totalManpower);
+				acc.tbtAnalytic.totalManhours += Math.round(total[1].totalManhours);
+				acc.tbtAnalytic.safeManhours += total[1].totalManhours === 0 ? 0 : Math.round(total[1].safeManhours);
+				acc.tbtAnalytic.daysWork += total[1].daysWork;
+				acc.tbtAnalytic.daysWoWork += total[1].daysWoWork;
+				acc.tbtAnalytic.location = new Set([
+					...acc.tbtAnalytic.location,
+					...total[1].location,
+				]);
+			}
 
-	const tbtDataItd = useMemo(() => tbtData?.reduce((acc, curr, _idx, arr) => {
-		const currMonth = curr[0];
-		const currTotal = {
-			totalManpower: acc.totalManpower + Math.round(curr[1].totalManpower),
-			totalManhours: acc.totalManhours + Math.round(curr[1].totalManhours),
-			daysWork: acc.daysWork + curr[1].daysWork,
-			daysWoWork: acc.daysWoWork + curr[1].daysWoWork,
-			location: new Set([...acc.location, ...curr[1].location])
-		}
-		if (curr[2] in totalTbtByYear) {
-			return calculateItd({ monthsObj: totalTbtByYear[curr[2]], currMonth, currTotal });
-		} else {
-			const currYear = arr.filter(a => a[2] === curr[2]);
-			let monthsObj = {};
-			currYear.forEach(d => {
-				monthsObj[d[0]] = d[1];
-			})
-			return calculateItd({ monthsObj, currMonth, currTotal });
-		}
-	}, {
-		totalManpower: 0,
-		totalManhours: 0,
-		daysWork: 0,
-		daysWoWork: 0,
-		location: new Set
-	}), [tbtData]);
+			const currTotal = {
+				totalManpower: acc.tbtDataItd.totalManpower,
+				totalManhours: acc.tbtDataItd.totalManhours,
+				daysWork: acc.tbtDataItd.daysWork,
+				daysWoWork: acc.tbtDataItd.daysWoWork,
+				location: new Set([...acc.tbtDataItd.location, ...curr[1].location]),
+			};
+			if (curr[2] in totalTbtByYear) {
+				acc.tbtDataItd = calculateItd({
+					monthsObj: totalTbtByYear[curr[2]],
+					currMonth,
+					currTotal,
+				});
+			} else {
+				const currYear = tbtData.filter(a => a[2] === curr[2]);
+				let monthsObj = {};
+				currYear.forEach(d => {
+					monthsObj[d[0]] = d[1];
+				});
+				acc.tbtDataItd = calculateItd({
+					monthsObj,
+					currMonth,
+					currTotal,
+				});
+			}
+
+			return acc;
+		}, {
+			tbtAnalytic: {
+				totalManpower: 0,
+				totalManhours: 0,
+				safeManhours: 0,
+				daysWork: 0,
+				daysWoWork: 0,
+				location: new Set(),
+			},
+			tbtDataItd: {
+				totalManpower: 0,
+				totalManhours: 0,
+				daysWork: 0,
+				daysWoWork: 0,
+				location: new Set(),
+			},
+		});
+	}, [tbtData]);
 
 	const trainingComputedData = trainings.reduce((acc, curr) => {
 		if (curr.training_files_count > 0) {
@@ -238,27 +245,30 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 	});
 
 	const getTbtMonthChartData = () => {
-		if (tbtData.length > 12) {
-			const tbtHasData = tbtData.filter(tbt => (tbt[1].totalManhours !== 0 && tbt[1].totalManpower !== 0));
-			const tbtRolling = tbtHasData.slice(tbtHasData.length - 12);
-			const tbtWorks = tbtRolling.reduce((acc, curr) => ({
-				daysWork: acc.daysWork + (curr[1]?.daysWork || 0),
-				daysWoWork: acc.daysWoWork + (curr[1]?.daysWoWork || 0)
-			}), { daysWork: 0, daysWoWork: 0 })
-			return {
-				tbt: tbtRolling,
-				...tbtWorks,
-			}
-		} else {
-			const tbtWorks = tbtData.reduce((acc, curr) => ({
-				daysWork: acc.daysWork + (curr[1]?.daysWork || 0),
-				daysWoWork: acc.daysWoWork + (curr[1]?.daysWoWork || 0)
-			}), { daysWork: 0, daysWoWork: 0 });
-			return {
-				tbt: tbtData.filter(tbt => (tbt[1].totalManhours !== 0 && tbt[1].totalManpower !== 0)),
-				...tbtWorks
+		if (tbtData) {
+			if (tbtData.length > 12) {
+				const tbtHasData = tbtData.filter(tbt => (tbt[1].totalManhours !== 0 && tbt[1].totalManpower !== 0));
+				const tbtRolling = tbtHasData.slice(tbtHasData.length - 12);
+				const tbtWorks = tbtRolling.reduce((acc, curr) => ({
+					daysWork: acc.daysWork + (curr[1]?.daysWork || 0),
+					daysWoWork: acc.daysWoWork + (curr[1]?.daysWoWork || 0)
+				}), { daysWork: 0, daysWoWork: 0 })
+				return {
+					tbt: tbtRolling,
+					...tbtWorks,
+				}
+			} else {
+				const tbtWorks = tbtData.reduce((acc, curr) => ({
+					daysWork: acc.daysWork + (curr[1]?.daysWork || 0),
+					daysWoWork: acc.daysWoWork + (curr[1]?.daysWoWork || 0)
+				}), { daysWork: 0, daysWoWork: 0 });
+				return {
+					tbt: tbtData.filter(tbt => (tbt[1].totalManhours !== 0 && tbt[1].totalManpower !== 0)),
+					...tbtWorks
+				}
 			}
 		}
+		return [];
 	}
 
 	const inspectionData = Object.values(inspections?.data || {}).reduce((acc, curr) => {
@@ -300,7 +310,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				<Grid container spacing={3}>
 					<Grid item xs={12} md={8}>
 						<AppWelcome
-							title={`Health and Safety Management Software`}
+							title='Health and Safety Management Software'
 							description="The Fiafi Group Safety Management Software makes it simple to administer the Health and Safety program of an organization. Capture, monitor, and report safety program data, analyze trends, and gain insights from user- friendly interfaces, all while meeting workplace compliance requirements and reducing administrative work."
 							img={
 								<WelcomeIllustration
@@ -391,10 +401,11 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 
 					<Grid item xs={12} sm={6} md={3}>
 						<AnalyticsWidgetSummary
+							isLoading={isLoadingTbtStat || tbtData === null}
 							title="MANPOWER X̅"
 							total={monthsDiff === 1 ?
-								Math.round(tbtAnalytic.totalManpower / new Date(+tbtData[0][2], +tbtData[0][0], 0).getDate())
-								: Math.round(tbtAnalytic.totalManpower / (monthsDiff || 0))
+								Math.round((tbtAnalytic?.totalManpower || 1) / new Date(+tbtData[0][2], +tbtData[0][0], 0).getDate())
+								: Math.round((tbtAnalytic?.totalManpower || 1) / (monthsDiff || 1))
 							}
 							color="info"
 							icon={'material-symbols:supervisor-account-outline'}
@@ -403,16 +414,18 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 
 					<Grid item xs={12} sm={6} md={3}>
 						<AnalyticsWidgetSummary
+							isLoading={isLoadingTbtStat || tbtData === null}
 							title="MANPOWER"
-							total={Math.round(tbtAnalytic.totalManpower)}
+							total={Math.round(tbtAnalytic?.totalManpower || 0)}
 							icon={'simple-line-icons:user'}
 						/>
 					</Grid>
 
 					<Grid item xs={12} sm={6} md={3}>
 						<AnalyticsWidgetSummary
+							isLoading={isLoadingTbtStat || tbtData === null}
 							title="MANHOURS"
-							total={Math.round(tbtAnalytic.totalManhours)}
+							total={Math.round(tbtAnalytic?.totalManhours || 0)}
 							icon={'mdi:clock-time-four-outline'}
 							color="warning"
 						/>
@@ -420,8 +433,9 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 
 					<Grid item xs={12} sm={6} md={3}>
 						<AnalyticsWidgetSummary
+							isLoading={isLoadingTbtStat || tbtData === null}
 							title="SAFE MANHOURS"
-							total={Math.round(tbtAnalytic.totalManhours)}
+							total={Math.round(tbtAnalytic?.totalManhours || 0)}
 							color="success"
 							icon={'mdi:clock-time-four-outline'}
 						/>
@@ -433,32 +447,33 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				<Grid container spacing={2} >
 					<Grid item xs={12} md={7} lg={5} order={{ md: 1, lg: 1 }}>
 						<AnalyticsTable
+							isLoading={isLoadingTbt || tbtAnalytic === null || tbtData === null}
 							headTitles={[{ title: "HSE Data" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 							data={[
 								{
 									title: "Total Days Work",
-									month: tbtAnalytic?.daysWork || 0,
-									itd: tbtDataItd?.daysWork || 0,
+									month: tbtAnalytic?.daysWork,
+									itd: tbtDataItd?.daysWork,
 								},
 								{
 									title: "Total Days w/o Work",
-									month: tbtAnalytic?.daysWoWork || 0,
-									itd: tbtDataItd?.daysWoWork || 0,
+									month: tbtAnalytic?.daysWoWork,
+									itd: tbtDataItd?.daysWoWork,
 								},
 								{
 									title: "Total Work Location",
-									month: tbtAnalytic?.location?.size || 0,
-									itd: tbtDataItd?.location?.size || 0,
+									month: tbtAnalytic?.location?.size,
+									itd: tbtDataItd?.location?.size,
 								},
 								{
 									title: "Number of Training Hours Completed",
-									month: trainingComputedData.trainingHoursCompletedMonth || 0,
-									itd: trainingComputedData.trainingHoursCompleted || 0,
+									month: trainingComputedData.trainingHoursCompletedMonth,
+									itd: trainingComputedData.trainingHoursCompleted,
 								},
 								{
 									title: "Number of HSE Induction Completed",
-									month: trainingComputedData.completedInductionMonth || 0,
-									itd: trainingComputedData.completedInduction || 0,
+									month: trainingComputedData.completedInductionMonth,
+									itd: trainingComputedData.completedInduction,
 								},
 								{
 									title: "Number of HSE Enforcement Notices Issued",
@@ -480,58 +495,76 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 					</Grid>
 
 					<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
-						<AnalyticsTBTLine
-							height={isTablet ? 364 : 240}
-							title="Hours Worked / Month"
-							subheader="(12 month rolling)"
-							chart={{
-								labels: tbtMonthChartData.tbt.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
-								series: tbtMonthChartData.tbt.reduce((acc, curr) => {
-									acc[0].data.push(curr[1].totalManpower);
-									acc[1].data.push(curr[1].totalManhours);
-									acc[2].data.push(curr[1].totalManhours === 0 ? 0 : curr[1].safeManhours);
-									return acc;
-								}, [
-									{
-										name: 'Manpower',
-										type: 'column',
-										fill: 'solid',
-										data: [],
-									},
-									{
-										name: 'Man Hours',
-										type: 'column',
-										fill: 'solid',
-										data: [],
-									},
-									{
-										name: 'Safe Man Hours',
-										type: 'column',
-										fill: 'solid',
-										data: [],
-									}
-								]),
-								colors: [
-									theme.palette.primary.main,
-									theme.palette.error.main,
-								],
-							}}
-						/>
+						{(tbtData && tbtMonthChartData) ? (
+							<AnalyticsTBTLine
+								height={isTablet ? 364 : 240}
+								title="Hours Worked / Month"
+								subheader="(12 month rolling)"
+								chart={{
+									labels: tbtMonthChartData.tbt.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
+									series: tbtMonthChartData.tbt.reduce((acc, curr) => {
+										acc[0].data.push(curr[1].totalManpower);
+										acc[1].data.push(curr[1].totalManhours);
+										acc[2].data.push(curr[1].totalManhours === 0 ? 0 : curr[1].safeManhours);
+										return acc;
+									}, [
+										{
+											name: 'Manpower',
+											type: 'column',
+											fill: 'solid',
+											data: [],
+										},
+										{
+											name: 'Man Hours',
+											type: 'column',
+											fill: 'solid',
+											data: [],
+										},
+										{
+											name: 'Safe Man Hours',
+											type: 'column',
+											fill: 'solid',
+											data: [],
+										}
+									]),
+									colors: [
+										theme.palette.primary.main,
+										theme.palette.error.main,
+									],
+								}}
+							/>
+						) : (
+							<Card sx={{ p: 2 }}>
+								<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width={200} />
+								<Skeleton animation='pulse' height={24} width={120} />
+								<Skeleton animation='pulse' height={320} width="100%" />
+							</Card>
+						)}
 					</Grid>
 					<Grid item xs={12} md={5} lg={2} order={{ md: 2, lg: 3 }}>
-						<AnalyticsTBTWorkDays
-							title="Work Days"
-							chart={{
-								series: [
-									{ label: 'Days Work', value: tbtMonthChartData?.daysWork || 0 },
-									{ label: 'Days Without Work', value: tbtMonthChartData?.daysWoWork || 0 },
-								],
-								colors: [
-									theme.palette.primary.main,
-									theme.palette.error.main,
-								],
-							}}
-						/>
+						{(tbtData && tbtMonthChartData) ? (
+							<AnalyticsTBTWorkDays
+								title="Work Days"
+								chart={{
+									series: [
+										{ label: 'Days Work', value: tbtMonthChartData?.daysWork || 0 },
+										{ label: 'Days Without Work', value: tbtMonthChartData?.daysWoWork || 0 },
+									],
+									colors: [
+										theme.palette.primary.main,
+										theme.palette.error.main,
+									],
+								}}
+							/>
+						) : (
+							<Card sx={{ p: 2 }}>
+								<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width={90} />
+								<Skeleton animation='pulse' sx={{ my: 3 }} height={200} width="100%" variant="circular" />
+								<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width="100%" />
+								<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width="100%" />
+								<Skeleton animation='pulse' sx={{ mt: 1 }} height={28} width="100%" />
+							</Card>
+						)}
 					</Grid>
 				</Grid>
 
@@ -542,6 +575,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 				<Grid container spacing={3} >
 					<Grid item xs={12} md={7} lg={5} order={{ md: 1, lg: 1 }}>
 						<AnalyticsTable
+							isLoading={false}
 							headTitles={[{ title: "Accidents and Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 							data={[
 								{ title: "Fatality", month: incidents.severity.month.Fatality, itd: incidents.severity.itd.Fatality },
@@ -601,6 +635,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 					<Grid item xs={12} md={12} lg={5}>
 						<Stack spacing={2}>
 							<AnalyticsTable
+								isLoading={false}
 								headTitles={[{ title: "Recordable Cases" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 								data={[
 									{ title: "No of Restricted Work Cases", month: incidents?.recordable?.rwc.month, itd: incidents?.recordable?.rwc.itd },
@@ -613,6 +648,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 								sx={{ mb: 1 }}
 							/>
 							<AnalyticsTable
+								isLoading={false}
 								headTitles={[{ title: "Non Recordable" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 								data={[
 									{ title: "No of First Aid Cases", month: incidents?.nonrecordable?.fac.month, itd: incidents?.nonrecordable?.fac.itd },
@@ -649,6 +685,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 					<Grid item xs={12} md={12} lg={5} height={1}>
 						<Stack spacing={2} height={1}>
 							<AnalyticsTable
+								isLoading={false}
 								headTitles={[{ title: "Other Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 								data={[
 									{ title: "No of Property Damage", month: incidents?.pd.month, itd: incidents?.pd.itd },
@@ -661,6 +698,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, training
 								sx={{ mb: 1 }}
 							/>
 							<AnalyticsTable
+								isLoading={false}
 								headTitles={[{ title: "HSE KPI's" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 								data={[
 									{ title: "Attended HSE Leadership Training (%)", month: 0, itd: 0 },

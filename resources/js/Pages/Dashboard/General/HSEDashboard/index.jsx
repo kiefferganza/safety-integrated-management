@@ -4,32 +4,46 @@ import { Head } from "@inertiajs/inertia-react";
 const GeneralHSEDasboardPage = lazy(() => import("./GeneralHSEDasboardPage"));
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import { convertTbtByYear } from '@/utils/convertTBt';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-// import { dispatch, useSelector } from '@/redux/store';
-// import { getTbts } from '@/redux/slices/toolboxtalk';
+import axiosInstance from '@/utils/axios';
+import { useQueries } from '@tanstack/react-query';
+import { useSnackbar } from 'notistack';
 
-const index = ({ auth: { user }, inspections, toolboxtalks, trainings, tbtStatistics, incidents, from, to }) => {
-	const [loading, setLoading] = useState(false);
-	const [totalTbtByYear, setTotalTbtByYear] = useState({});
+const fetchTbt = (from, to) => axiosInstance.get(route('api.dashboard.toolboxtalks', { from, to })).then(res => res.data);
+const fetchTbtStatistics = (from, to) => axiosInstance.get(route('api.dashboard.tbt_statistics', { from, to })).then(res => res.data);
+
+const index = ({ auth: { user }, inspections, trainings, incidents, from, to }) => {
+	const { enqueueSnackbar } = useSnackbar();
+	const [totalTbtByYear, setTotalTbtByYear] = useState(null);
+	const [
+		{ isLoading: isLoadingTbt, isError: isErrorTbt, data: toolboxtalks },
+		{ isLoading: isLoadingTbtStat, isError: isErrorTbtStat, data: tbtStatistics },
+	] = useQueries({
+		queries: [
+			{ queryKey: ['dash-toolboxtalks', { sub: user.subscriber_id, from, to }], queryFn: () => fetchTbt(from, to), refetchOnWindowFocus: false },
+			{ queryKey: ['dash-tbtStatistics', { sub: user.subscriber_id, from, to }], queryFn: () => fetchTbtStatistics(from, to), refetchOnWindowFocus: false },
+		]
+	});
 
 	useEffect(() => {
-		setLoading(true);
-		setTotalTbtByYear(convertTbtByYear({ tbt: toolboxtalks }).totalTbtByYear);
-		setLoading(false);
-	}, [from, to, toolboxtalks]);
+		if (toolboxtalks && tbtStatistics) {
+			const convertedTbt = convertTbtByYear({ tbt: toolboxtalks })
+			setTotalTbtByYear(convertedTbt.totalTbtByYear);
+		}
+		if (isErrorTbtStat || isErrorTbt) {
+			enqueueSnackbar('Something went wrong!', { variant: "error" });
+		}
+	}, [from, to, toolboxtalks, tbtStatistics, isErrorTbtStat, isErrorTbt]);
 
 	return (
 		<>
 			<Head>
 				<title> General: Analytics</title>
 			</Head>
-			<Backdrop open={loading} sx={{ overflow: "hidden" }}>
-				<CircularProgress color="primary" />
-			</Backdrop>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
 					<GeneralHSEDasboardPage
+						isLoadingTbt={isLoadingTbt}
+						isLoadingTbtStat={isLoadingTbtStat}
 						user={user}
 						totalTbtByYear={totalTbtByYear}
 						trainings={trainings}
@@ -38,7 +52,6 @@ const index = ({ auth: { user }, inspections, toolboxtalks, trainings, tbtStatis
 						incidents={incidents}
 						from={from}
 						to={to}
-						setLoading={setLoading}
 					/>
 				</DashboardLayout>
 			</Suspense>
