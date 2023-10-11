@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiControllers\DashboardController;
 use App\Http\Controllers\ApiControllers\FolderApiController;
 use App\Http\Controllers\ApiControllers\ImageApiController;
 use App\Http\Controllers\ApiControllers\UserApiController;
@@ -57,6 +58,15 @@ Route::middleware('auth')->as('api.')->group(function ()
 	Route::prefix('folder')->as('folder.')->group(function() {
 		Route::post('/update-order', [FolderApiController::class, 'updateOrder'])->name('update-order');
 		Route::post('/generate-url/{document}', [FolderApiController::class, 'generateUrl'])->name('generate-url');
+	});
+
+	Route::prefix('dashboard')->as('dashboard.')->group(function() {
+		Route::get('/slider-images', [DashboardController::class, 'sliderImages'])->name('slider_images');
+		Route::get('/toolboxtalks', [DashboardController::class, 'toolboxtalks'])->name('toolboxtalks');
+		Route::get('/toolboxtalks-statistics', [DashboardController::class, 'tbtStatistics'])->name('tbt_statistics');
+		Route::get('/trainings', [DashboardController::class, 'trainings'])->name('trainings');
+		Route::get('/incidents', [DashboardController::class, 'incidents'])->name('incidents');
+		Route::get('/inspections', [DashboardController::class, 'inspections'])->name('inspections');
 	});
 
 });

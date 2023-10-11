@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
 // @mui
 import { alpha, useTheme } from '@mui/material/styles';
-import { Box, Card, Typography } from '@mui/material';
+import { Box, Card, Skeleton, Typography } from '@mui/material';
 // utils
 import { bgGradient } from '@/utils/cssStyles';
 // components
 import Iconify from '@/Components/iconify';
+import { useEffect, useRef } from 'react';
+import { CountUp } from 'countup.js';
 
 // ----------------------------------------------------------------------
 
@@ -15,10 +17,50 @@ AnalyticsWidgetSummary.propTypes = {
 	color: PropTypes.string,
 	title: PropTypes.string,
 	total: PropTypes.number,
+	isLoading: PropTypes.bool
 };
 
-export default function AnalyticsWidgetSummary ({ title, total, icon, data, color = 'primary', sx, ...other }) {
+export default function AnalyticsWidgetSummary ({ isLoading, title, total = 0, icon, data, color = 'primary', sx, ...other }) {
 	const theme = useTheme();
+	const countRef = useRef(null);
+
+
+	useEffect(() => {
+		if (countRef.current && !isLoading) {
+			const options = {
+				startVal: 0,  // Starting value
+				duration: 2, // Duration in seconds
+			};
+			const countUp = new CountUp(countRef.current, total, options);
+
+			if (!countUp.error) {
+				countUp.start();
+			} else {
+				// countRef.current?.innerText = total?.toLocaleString();
+				console.error(countUp.error);
+			}
+		}
+	}, [total, isLoading]);
+
+	if (isLoading) {
+		return (
+			<Card
+				sx={{
+					py: 5,
+					boxShadow: 0,
+					textAlign: 'center',
+					color: (theme) => theme.palette[color].darker,
+					bgcolor: (theme) => theme.palette[color].lighter,
+					...sx,
+				}}
+				{...other}
+			>
+				<Skeleton variant="circular" width={64} height={64} sx={{ marginX: 'auto', mb: 3 }} />
+				<Skeleton variant="rounded" width='40%' height={24} sx={{ marginX: 'auto', mb: 1 }} />
+				<Skeleton variant="rounded" width='60%' height={24} sx={{ marginX: 'auto', mt: 2 }} />
+			</Card>
+		)
+	}
 
 	return (
 		<Card
@@ -54,19 +96,8 @@ export default function AnalyticsWidgetSummary ({ title, total, icon, data, colo
 			</Typography>
 
 			<Box display="flex" alignItems="center" gap={2} justifyContent="center">
-				<Typography variant="h5">
-					{(total || 0).toLocaleString()}
+				<Typography variant="h5" ref={countRef}>
 				</Typography>
-
-
-				{/* <Box>
-					<Typography variant="h5">{fShortenNumber(total)}</Typography>
-					<Typography variant="subtitle2" sx={{ opacity: 0.64 }}>{label}</Typography>
-				</Box>
-				<Box>
-					<Typography variant="h5">{fShortenNumber(2312312)}</Typography>
-					<Typography variant="subtitle2" sx={{ opacity: 0.64 }}>ITD</Typography>
-				</Box> */}
 			</Box>
 		</Card>
 	);

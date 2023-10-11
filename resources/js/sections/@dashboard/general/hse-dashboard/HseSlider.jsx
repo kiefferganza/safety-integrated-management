@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 // @mui
 import { alpha, useTheme, styled } from '@mui/material/styles';
-import { Box, Card, CardContent, Typography } from '@mui/material';
+import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material';
 // utils
 import { bgGradient } from '@/utils/cssStyles';
 // components
@@ -27,9 +27,11 @@ const StyledOverlay = styled('div')(({ theme }) => ({
 
 HseSlider.propTypes = {
 	list: PropTypes.array,
+	isLoading: PropTypes.bool,
+	isError: PropTypes.bool
 };
 
-export default function HseSlider ({ list, ...other }) {
+export default function HseSlider ({ list, isLoading, isError, ...other }) {
 	const theme = useTheme();
 
 	const carouselSettings = {
@@ -51,11 +53,19 @@ export default function HseSlider ({ list, ...other }) {
 
 	return (
 		<Card {...other}>
-			<Carousel {...carouselSettings}>
-				{list.map((item) => (
-					<CarouselItem key={item.id} item={item} />
-				))}
-			</Carousel>
+			{isLoading || !list ? (
+				<Skeleton
+					sx={{
+						height: { xs: 280, xl: 320 },
+					}}
+				/>
+			) : (
+				<Carousel {...carouselSettings}>
+					{list.map((item) => (
+						<CarouselItem key={item.id} item={item} />
+					))}
+				</Carousel>
+			)}
 		</Card>
 	);
 }
