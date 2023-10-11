@@ -42,6 +42,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::get('/register', [CompanyInformation::class, 'register'])->name('register');
 		Route::post('/register/new', [CompanyInformation::class, 'store'])->name('store');
 		Route::post('/register/update/{documentProjectDetail}', [CompanyInformation::class, 'update'])->name('update');
+		Route::post('/document-project-details/delete', [CompanyInformation::class, 'delete'])->name('delete');
 	});
 
 	/**
@@ -337,10 +338,6 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 * Management - Folder
 	 */
 	Route::prefix('file-manager')->as('files.management.')->group(function() {
-		Route::get('/document-project-details', [DocumentController::class, 'projectDetails'])->name('project_details');
-		Route::post('/document-project-details/new', [DocumentController::class, 'newProjectDetail'])->name('new_project_details');
-		Route::post('/document-project-details/update/{documentProjectDetail}', [DocumentController::class, 'updateProjectDetail'])->name('update_project_details');
-		Route::post('/document-project-details/delete', [DocumentController::class, 'deleteProjectDetail'])->name('delete_project_details');
 		Route::get('/', [FilePageController::class, "index"])
 			->middleware("permission:folder_show")
 			->name('index');

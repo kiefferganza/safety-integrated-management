@@ -142,7 +142,7 @@ const ProjectDetailList = ({ projectDetails = [], titles }) => {
 
 	const handleDeleteRow = (id) => {
 		setOpenConfirm(false);
-		Inertia.post(route('files.management.delete_project_details'), { ids: [id] }, {
+		Inertia.post(route('management.company_information.delete'), { ids: [id] }, {
 			onStart: () => {
 				load("Deleting", "Please wait...");
 			},
@@ -152,7 +152,7 @@ const ProjectDetailList = ({ projectDetails = [], titles }) => {
 
 	const handleDeleteRows = (sel) => {
 		setOpenConfirm(false);
-		Inertia.post(route('files.management.delete_project_details'), { ids: sel }, {
+		Inertia.post(route('management.company_information.delete'), { ids: sel }, {
 			onStart: () => {
 				load(`Deleting ${selected.length} item`, "Please wait...");
 			},
