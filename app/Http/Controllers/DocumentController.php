@@ -134,10 +134,10 @@ class DocumentController extends Controller
 			DocumentReviewer::insert($reviewers);
 			$userReviewers = User::whereIn('emp_id', $reviewersId)->get();
 			Notification::send($userReviewers, new ModuleBasicNotification(
-				title: 'Newly created Document',
-				message: $user->firstname . ' ' . $user->lastname . ' added you as a reviewer',
+				title: 'added you as a reviewer',
+				message: '',
 				routeName: 'files.management.show',
-				subtitle: null,
+				category: 'Document',
 				creator: $user,
 				params: [
 					'folder' => $document_id,
@@ -150,10 +150,10 @@ class DocumentController extends Controller
 			$userApproval = User::where('emp_id', (int)$fields['approval_id'])->first();
 			if($userApproval) {
 				Notification::send($userApproval, new ModuleBasicNotification(
-					title: 'Newly created Document',
-					message: $user->firstname . ' ' . $user->lastname . ' added you as a approver',
+					title: 'added you as a approver',
+					message: '',
 					routeName: 'files.management.show',
-					subtitle: null,
+					category: 'Document',
 					creator: $user,
 					params: [
 						'folder' => $document->folder_id,
@@ -474,10 +474,10 @@ class DocumentController extends Controller
 		$creator = User::where('emp_id', $document->user_id)->first();
 		if($creator) {
 			Notification::send($creator, new ModuleBasicNotification(
-				title: 'New Comment',
-				message: $user->firstname . ' ' . $user->lastname . ' commented on your documment',
-				subtitle: 'CMS: '. $document->form_number,
+				title: 'commented on your documment',
+				message: 'CMS: '. $document->form_number,
 				routeName: 'files.management.show',
+				category: 'Document',
 				creator: $user,
 				params: [
 					'folder' => $document->folder_id,
@@ -551,9 +551,9 @@ class DocumentController extends Controller
 		$creator = User::where('emp_id', $comment->reviewer_id)->first();
 		if($creator) {
 			Notification::send($creator, new ModuleBasicNotification(
-				title: 'New Reply',
-				message: $user->firstname . ' ' . $user->lastname . ' replied on your comment',
-				subtitle: 'CMS: '. $doc->form_number,
+				title: 'replied on your comment',
+				message: 'CMS: '. $doc->form_number,
+				category: 'Document',
 				routeName: 'files.management.show',
 				creator: $user,
 				params: [

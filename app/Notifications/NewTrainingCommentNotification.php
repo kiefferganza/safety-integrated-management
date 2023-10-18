@@ -82,19 +82,20 @@ class NewTrainingCommentNotification extends Notification
 
 		$messageAndTitleAndRoute = match ($type) {
 			CommentTypeEnums::COMMENTED => [
-				'title' => 'New Comment CMS: '. strtoupper($form_number),
-				'message' => $userName . ' has posted a new comment',
+				'message' => 'New Comment CMS: '. strtoupper($form_number),
+				'title' => 'has posted a new comment',
 				'routeName' => 'training.management.external.external_action',
 			],
 			CommentTypeEnums::REPLIED => [
-				'title' => 'New Reply CMS: '. strtoupper($form_number),
-				'message' => $userName . ' has replied to your comment',
+				'message' => 'New Reply CMS: '. strtoupper($form_number),
+				'title' => 'has replied to your comment',
 				'routeName' => 'training.management.external.external_review',
 			],
 		};
 		
         return [
 			'params' => $training->training_id,
+			'category' => 'Training',
 			'creator' => [
 				'user_id' => $user->user_id,
 				'name' => $userName,

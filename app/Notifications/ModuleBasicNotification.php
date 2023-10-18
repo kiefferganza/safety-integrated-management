@@ -18,7 +18,7 @@ class ModuleBasicNotification extends Notification
      *
      * @return void
      */
-    public function __construct(public string $title, public string|null $subtitle, public string $message, public string $routeName, public null|array $params, public User $creator)
+    public function __construct(public string $title, public string $message, public string $category, public string $routeName, public null|array $params, public User $creator)
     {
         //
     }
@@ -71,7 +71,7 @@ class ModuleBasicNotification extends Notification
         return [
 			'params' => $this->params,
 			'title' => $this->title,
-			'subtitle' => $this->subtitle,
+			'category' => $this->category,
 			'message' => $this->message,
 			'routeName' => $this->routeName,
 			'creator' => [

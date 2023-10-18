@@ -114,7 +114,7 @@ class UserApiController extends Controller
 		$request->validate(['ids' => ['array', 'required']]);
 		$user = auth()->user();
 		$user->notifications()->whereIn('id', $request->ids)->where('read_at', null)->update(['read_at' => new DateTime()]);
-		return redirect()->back();
+		return response()->json([]);
 	}
 
 }
