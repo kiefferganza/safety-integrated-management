@@ -199,6 +199,7 @@ const navConfig = [
 					'toolboxtalk.management.mechanical',
 					'toolboxtalk.management.camp',
 					'toolboxtalk.management.office',
+					'toolboxtalk.management.show',
 					'toolboxtalk.management.new',
 					'toolboxtalk.management.edit',
 					'toolboxtalk.management.report',

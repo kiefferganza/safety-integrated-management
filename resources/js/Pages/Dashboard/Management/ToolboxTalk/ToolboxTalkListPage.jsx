@@ -54,7 +54,7 @@ const TYPES = {
 	'Civil': 1,
 	'Electrical': 2,
 	'Mechanical': 3,
-	'Camp': 4,
+	'Workshop': 4,
 	'Office': 5,
 };
 
@@ -187,7 +187,7 @@ const ToolboxTalkListPage = ({ loading, user, tbt, moduleName = 'Civil', type = 
 					'Civil',
 					'Electrical',
 					'Mechanical',
-					'Camp',
+					'Workshop',
 					'Office',
 				]
 			} else {

@@ -10,13 +10,15 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
 
 import { fToNow } from '@/utils/formatTime';
+import { Link } from '@inertiajs/inertia-react';
 
 // import Label from '@/Components/label';
 // import FileThumbnail from '@/Components/file-thumbnail';
 
 // ----------------------------------------------------------------------
 
-export default function NotificationItem ({ notification }) {
+export default function NotificationItem ({ notification, mutation }) {
+	const routeName = notification.data?.routeName ? notification.data?.params ? route(notification.data.routeName, notification.data.params) : route(data.routeName) : '#';
 	const renderAvatar = (
 		<ListItemAvatar>
 			{notification.data?.creator?.profile ? (
@@ -47,7 +49,7 @@ export default function NotificationItem ({ notification }) {
 			disableTypography
 			primary={reader(
 				`<p>${notification.data?.creator ? `<strong>${notification.data.creator.name}</strong> ` : ''}${notification.data.title}</p>
-				${notification.data.message ? `<p>${notification.data.message}</p>` : ''}
+				${notification.data.message ? `${notification.data.message}` : ''}
 				`
 			)}
 			secondary={
@@ -199,6 +201,13 @@ export default function NotificationItem ({ notification }) {
 	// 	</Stack>
 	// );
 
+
+
+	const handleRedirect = () => {
+		mutation.mutate([notification.id]);
+	}
+
+
 	return (
 		<ListItemButton
 			disableRipple
@@ -207,6 +216,9 @@ export default function NotificationItem ({ notification }) {
 				alignItems: 'flex-start',
 				borderBottom: (theme) => `dashed 1px ${theme.palette.divider}`,
 			}}
+			LinkComponent={Link}
+			href={routeName}
+			onFocus={handleRedirect}
 		>
 			{renderUnReadBadge}
 

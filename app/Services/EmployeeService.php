@@ -16,7 +16,7 @@ class EmployeeService {
 
 	public function personels() {
 		$user = Auth::user();
-		$this->personels = Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id")
+		$this->personels = Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id", "user_id")
 			->where("is_deleted", 0)
 			->where("is_active", 0)
 			->where("sub_id", $user->subscriber_id)

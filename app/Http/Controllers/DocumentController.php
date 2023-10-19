@@ -475,7 +475,7 @@ class DocumentController extends Controller
 		if($creator) {
 			Notification::send($creator, new ModuleBasicNotification(
 				title: 'commented on your documment',
-				message: 'CMS: '. $document->form_number,
+				message: '<p>CMS: '. $document->form_number. '</p>',
 				routeName: 'files.management.show',
 				category: 'Document',
 				creator: $user,
@@ -552,7 +552,7 @@ class DocumentController extends Controller
 		if($creator) {
 			Notification::send($creator, new ModuleBasicNotification(
 				title: 'replied on your comment',
-				message: 'CMS: '. $doc->form_number,
+				message: '<p>CMS: '. $doc->form_number.'</p>',
 				category: 'Document',
 				routeName: 'files.management.show',
 				creator: $user,

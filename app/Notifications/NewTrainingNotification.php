@@ -124,7 +124,7 @@ class NewTrainingNotification extends Notification
         return [
 			'params' => $training->training_id,
 			'category' => 'Training - '. $moduleType['name'],
-			'message' => 'CMS: '. strtoupper($form_number),
+			'message' => '<p>CMS: <strong>'. strtoupper($form_number). '</strong></p>',
 			'creator' => [
 				'user_id' => $user->user_id,
 				'name' => $userName,

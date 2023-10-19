@@ -245,7 +245,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/mechanical', [ToolboxTalkController::class, "mechanical_list"])->name('mechanical');
 			Route::get('/workshop', [ToolboxTalkController::class, "camp_list"])->name('camp');
 			Route::get('/office', [ToolboxTalkController::class, "office_list"])->name('office');
-			Route::get('/{tbt}/view', [ToolboxTalkController::class, "view"]);
+			Route::get('/{tbt}/view', [ToolboxTalkController::class, "view"])->name('show');
 		});
 		Route::middleware("permission:talk_toolbox_create")->group(function() {
 			Route::get('/new', [ToolboxTalkController::class, "create"])->name('new');

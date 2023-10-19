@@ -22,7 +22,7 @@ const TYPE_OPTIONS = [
 	{ type: 1, label: 'Civil' },
 	{ type: 2, label: 'Electrical' },
 	{ type: 3, label: 'Mechanical' },
-	{ type: 4, label: 'Camp' },
+	{ type: 4, label: 'Workshop' },
 	{ type: 5, label: 'Office' },
 ];
 

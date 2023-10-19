@@ -163,11 +163,11 @@ export default function NotificationsPopover () {
 			<List disablePadding>
 				{currentTab === 'all' ? (
 					notifications.map((notification) => (
-						<NotificationItem key={notification.id} notification={notification} />
+						<NotificationItem key={notification.id} notification={notification} mutation={mutation} />
 					))
 				) : (
 					notifications?.filter((item) => item.read_at === null).map((notification) => (
-						<NotificationItem key={notification.id} notification={notification} />
+						<NotificationItem key={notification.id} notification={notification} mutation={mutation} />
 					))
 				)}
 			</List>
