@@ -48,6 +48,7 @@ import {
 import { InspectionTableRow, InspectionTableToolbar } from '@/sections/@dashboard/inspection/list';
 import InspectionAnalytic from '@/sections/@dashboard/inspection/InspectionAnalytic';
 import usePermission from '@/hooks/usePermission';
+import { getObservation } from '@/utils/inspection';
 
 
 // ----------------------------------------------------------------------
@@ -123,7 +124,6 @@ const InspectionListPage = ({ user, inspections }) => {
 		filterStatus,
 		filterType
 	});
-	console.log({ dataFilteredStatusAndType, dataFiltered, tableData });
 
 	useEffect(() => {
 		const data = inspections?.map(inspection => ({
@@ -133,9 +133,10 @@ const InspectionListPage = ({ user, inspections }) => {
 			verifier: employeeName(inspection.verifier).trim(),
 			status: getInspectionStatus(inspection.status),
 			type: getInspectionType({ status: inspection.status }),
-			totalObservation: getNumberOfObservation(inspection.report_list),
-			positiveObservation: getNumberOfPositiveObservation(inspection.report_list),
-			negativeObservation: getNumberOfNegativeObservation(inspection.report_list),
+			...getObservation(inspection.report_list),
+			// totalObservation: getNumberOfObservation(inspection.report_list),
+			// positiveObservation: getNumberOfPositiveObservation(inspection.report_list),
+			// negativeObservation: getNumberOfNegativeObservation(inspection.report_list),
 			dueStatus: getDueDateStatus(inspection.date_due)
 		}));
 		setTableData(data || []);
@@ -568,12 +569,11 @@ const InspectionListPage = ({ user, inspections }) => {
 	);
 }
 
+// const getNumberOfObservation = (reports) => reports.filter(report => report.ref_score !== 0 && report.ref_score !== 4 && report.ref_score !== null).length;
 
-const getNumberOfObservation = (reports) => reports.filter(report => report.ref_score !== 0 && report.ref_score !== 4 && report.ref_score !== null).length;
+// const getNumberOfPositiveObservation = (reports) => reports.filter(report => report.ref_score === 1).length;
 
-const getNumberOfPositiveObservation = (reports) => reports.filter(report => report.ref_score === 1).length;
-
-const getNumberOfNegativeObservation = (reports) => reports.filter(report => (report.ref_score === 2 || report.ref_score === 3) && report.item_status !== "2").length;
+// const getNumberOfNegativeObservation = (reports) => reports.filter(report => (report.ref_score === 2 || report.ref_score === 3) && report.item_status !== "2").length;
 
 
 const getInspectionStatus = (status) => {
