@@ -136,12 +136,27 @@ class InspectionController extends Controller
 
 
 	public function review(Inspection $inspection) {
-		if($inspection->reviewer_id !== auth()->user()->emp_id) {
-			return redirect()->back();
+		// if($inspection->reviewer_id !== auth()->user()->emp_id) {
+		// 	return redirect()->back();
+		// }
+
+				$inspectionFirstUpload = Inspection::
+			select("date_issued")
+			->where([
+				"is_deleted" => 0
+			])
+			->orderBy('date_issued')
+			->first();
+		
+		if($inspectionFirstUpload) {
+			$rolloutDate = $inspectionFirstUpload->date_issued;
+		}else {
+			$rolloutDate = $inspection->date_issued;
 		}
 
 		return Inertia::render("Dashboard/Management/Inspection/Review/index", [
 			"inspection" => (New InspectionService)->getUnsatisfactoryItems($inspection),
+			"rolloutDate" => $rolloutDate
 		]);
 	}
 
@@ -151,8 +166,23 @@ class InspectionController extends Controller
 			return redirect()->back();
 		}
 
+				$inspectionFirstUpload = Inspection::
+			select("date_issued")
+			->where([
+				"is_deleted" => 0
+			])
+			->orderBy('date_issued')
+			->first();
+		
+		if($inspectionFirstUpload) {
+			$rolloutDate = $inspectionFirstUpload->date_issued;
+		}else {
+			$rolloutDate = $inspection->date_issued;
+		}
+
 		return Inertia::render("Dashboard/Management/Inspection/Verify/index", [
-			"inspection" => (New InspectionService)->getUnsatisfactoryItems($inspection)
+			"inspection" => (New InspectionService)->getUnsatisfactoryItems($inspection),
+			"rolloutDate" => $rolloutDate
 		]);
 	}
 

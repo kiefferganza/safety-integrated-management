@@ -133,7 +133,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 					</MenuItem>
 				)}
 
-				{row.type === "review" && (
+				{(row.type === "review" && row.reviewer_id === user.emp_id) && (
 					<MenuItem
 						component={Link}
 						href={PATH_DASHBOARD.inspection.review(row.inspection_id)}
@@ -145,7 +145,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 					</MenuItem>
 				)}
 
-				{row.type === "verify" && (
+				{(row.type === "verify" && row.verifier_id === user.emp_id) && (
 					<MenuItem
 						component={Link}
 						href={PATH_DASHBOARD.inspection.verify(row.inspection_id)}

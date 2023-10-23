@@ -10,10 +10,8 @@ import { useSettingsContext } from '@/Components/settings';
 import CustomBreadcrumbs from '@/Components/custom-breadcrumbs';
 import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 
-const index = ({ inspection }) => {
+const index = ({ inspection, rolloutDate }) => {
 	const { themeStretch } = useSettingsContext();
-
-
 
 	return (
 		<>
@@ -44,7 +42,7 @@ const index = ({ inspection }) => {
 							]}
 						/>
 
-						<Verify inspection={inspection} />
+						<Verify inspection={inspection} rolloutDate={rolloutDate} />
 					</Container>
 				</DashboardLayout>
 			</Suspense>
