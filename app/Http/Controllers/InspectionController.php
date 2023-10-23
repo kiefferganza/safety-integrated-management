@@ -136,11 +136,11 @@ class InspectionController extends Controller
 
 
 	public function review(Inspection $inspection) {
-		// if($inspection->reviewer_id !== auth()->user()->emp_id) {
-		// 	return redirect()->back();
-		// }
+		if($inspection->reviewer_id !== auth()->user()->emp_id) {
+			return redirect()->back();
+		}
 
-				$inspectionFirstUpload = Inspection::
+		$inspectionFirstUpload = Inspection::
 			select("date_issued")
 			->where([
 				"is_deleted" => 0
