@@ -32,7 +32,7 @@ InspectionTableRow.propTypes = {
 	onSelectRow: PropTypes.func,
 };
 
-export default function InspectionTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
+export default function InspectionTableRow ({ row, selected, onSelectRow, onDeleteRow, canEdit, canDelete }) {
 	const { auth: { user } } = usePage().props;
 	const [openConfirm, setOpenConfirm] = useState(false);
 	const [openPopover, setOpenPopover] = useState(null);
@@ -52,6 +52,11 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 	const handleClosePopover = () => {
 		setOpenPopover(null);
 	};
+
+	const handleDelete = () => {
+		handleCloseConfirm();
+		onDeleteRow();
+	}
 
 	return (
 		<>
@@ -86,7 +91,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 								{row.status.text}
 							</Label>
 						</Tooltip>
-						{(row.type !== "closeout" && row.status.text !== "C") && (
+						{(row.type === 'verify' || row.type === 'review') && (
 							<Tooltip title={row.dueStatus.tooltip}>
 								<Label
 									variant="soft"
@@ -116,7 +121,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 					<Iconify icon="eva:eye-fill" />
 					View
 				</MenuItem>
-				{row.type === "submitted" && (
+				{(row.type === "submitted" || canEdit) && (
 					<MenuItem
 						component={Link}
 						href={PATH_DASHBOARD.inspection.edit(row.inspection_id)}
@@ -128,7 +133,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 					</MenuItem>
 				)}
 
-				{row.type === "review" && (
+				{(row.type === "review" && row.reviewer_id === user.emp_id) && (
 					<MenuItem
 						component={Link}
 						href={PATH_DASHBOARD.inspection.review(row.inspection_id)}
@@ -140,7 +145,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 					</MenuItem>
 				)}
 
-				{row.type === "verify" && (
+				{(row.type === "verify" && row.verifier_id === user.emp_id) && (
 					<MenuItem
 						component={Link}
 						href={PATH_DASHBOARD.inspection.verify(row.inspection_id)}
@@ -153,7 +158,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 				)}
 
 
-				{(user?.emp_id === row.employee_id || user?.emp_id === 1) && (
+				{(user?.emp_id === row.employee_id || user?.emp_id === 1 || canDelete) && (
 					<>
 						<Divider sx={{ borderStyle: 'dashed' }} />
 
@@ -177,7 +182,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 				title="Delete"
 				content="Are you sure want to delete?"
 				action={
-					<Button variant="contained" color="error" onClick={onDeleteRow}>
+					<Button variant="contained" color="error" onClick={handleDelete}>
 						Delete
 					</Button>
 				}

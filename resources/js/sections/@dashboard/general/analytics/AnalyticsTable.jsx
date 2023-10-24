@@ -1,6 +1,6 @@
-import { Card, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Card, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
-const AnalyticsTable = ({ headTitles = [], data = [], color = 'primary', ...other }) => {
+const AnalyticsTable = ({ isLoading, headTitles = [], data = [], color = 'primary', ...other }) => {
 
 	return (
 		<Card
@@ -22,17 +22,29 @@ const AnalyticsTable = ({ headTitles = [], data = [], color = 'primary', ...othe
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{data.map((d, idx) => (
-							<TableRow key={idx} hover sx={{ width: 1 }}>
-								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} component="th" scope="row">{d?.title}</TableCell>
-								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} width={80} align="right">
-									{d.month.toLocaleString()}
-								</TableCell>
-								<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} width={80} align="right">
-									{d.itd.toLocaleString()}
-								</TableCell>
-							</TableRow>
-						))}
+						{isLoading ? (
+							<>
+								{Array.from(Array(8)).map((_, idx) => (
+									<TableRow key={idx}>
+										<TableCell colSpan={3}>
+											<Skeleton variant="rounded" width="100%" height={24} />
+										</TableCell>
+									</TableRow>
+								))}
+							</>
+						) : (
+							data.map((d, idx) => (
+								<TableRow key={idx} hover sx={{ width: 1 }}>
+									<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} component="th" scope="row">{d?.title}</TableCell>
+									<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} width={80} align="right">
+										{d.month.toLocaleString()}
+									</TableCell>
+									<TableCell sx={{ color: (theme) => theme.palette[color].darker, borderBottom: 1 }} width={80} align="right">
+										{d.itd.toLocaleString()}
+									</TableCell>
+								</TableRow>
+							))
+						)}
 					</TableBody>
 				</Table>
 			</TableContainer>

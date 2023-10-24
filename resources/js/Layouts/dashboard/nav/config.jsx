@@ -14,6 +14,7 @@ const ICONS = {
 	chat: icon('ic_chat'),
 	mail: icon('ic_mail'),
 	user: icon('ic_user'),
+	companyInformation: icon('mdi_company'),
 	file: icon('ic_file'),
 	lock: icon('ic_lock'),
 	label: icon('ic_label'),
@@ -56,6 +57,18 @@ const navConfig = [
 	{
 		subheader: 'hse',
 		items: [
+			// COMPANY INFORMATION
+			{
+				title: 'company information',
+				path: PATH_DASHBOARD.companyInformation.register,
+				icon: ICONS.companyInformation,
+				routeNames: [
+					'management.company_information.register'
+				],
+				children: [
+					{ title: 'register', path: PATH_DASHBOARD.companyInformation.register, routeNames: ['management.company_information.register'] },
+				],
+			},
 			// USER
 			{
 				title: 'user',
@@ -186,6 +199,7 @@ const navConfig = [
 					'toolboxtalk.management.mechanical',
 					'toolboxtalk.management.camp',
 					'toolboxtalk.management.office',
+					'toolboxtalk.management.show',
 					'toolboxtalk.management.new',
 					'toolboxtalk.management.edit',
 					'toolboxtalk.management.report',

@@ -4,15 +4,26 @@ import { Head } from '@inertiajs/inertia-react';
 import { useDispatch } from '@/redux/store';
 import { convertTbtByYear, setToolboxTalk } from "@/redux/slices/toolboxtalk";
 import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/utils/axios";
 const ToolboxTalkListPage = lazy(() => import("../ToolboxTalkListPage"));
 
-const CivilList = ({ tbt, positions }) => {
+const fetchTbt = () => axiosInstance.get(route('api.tbt.index')).then(res => res.data);
+
+const CivilList = ({ auth: { user }, positions }) => {
+	const { isLoading, data } = useQuery({
+		queryKey: ['toolboxtalks', user.subscriber_id],
+		queryFn: fetchTbt,
+		refetchOnWindowFocus: false
+	});
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		dispatch(setToolboxTalk(tbt));
-		convertTbtByYear({ tbt, positions });
-	}, []);
+		if (data) {
+			dispatch(setToolboxTalk(data));
+			convertTbtByYear({ data, positions });
+		}
+	}, [isLoading, data]);
 
 	return (
 		<>
@@ -21,7 +32,7 @@ const CivilList = ({ tbt, positions }) => {
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
-					<ToolboxTalkListPage tbt={tbt || []} selectType addTypeHeader moduleName="All" />
+					<ToolboxTalkListPage user={user} loading={isLoading} tbt={data} selectType addTypeHeader moduleName="All" />
 				</DashboardLayout>
 			</Suspense>
 		</>

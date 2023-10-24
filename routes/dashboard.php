@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CompanyInformation;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DocumentController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ToolboxTalkController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\UsersController;
+use App\Models\Incident;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -33,6 +35,16 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	// General
 	Route::get('/hse-dashboard', [DashboardController::class, 'index'])->name('dashboard');
 	Route::get('/employees', fn () => Inertia::render("/General/Employee/index"))->name('general.employee');
+
+	/**
+	 * Management - Company Information
+	 */
+	Route::prefix('company-information')->as('management.company_information.')->group(function() {
+		Route::get('/register', [CompanyInformation::class, 'register'])->name('register');
+		Route::post('/register/new', [CompanyInformation::class, 'store'])->name('store');
+		Route::post('/register/update/{documentProjectDetail}', [CompanyInformation::class, 'update'])->name('update');
+		Route::post('/document-project-details/delete', [CompanyInformation::class, 'delete'])->name('delete');
+	});
 
 	/**
 	 * Management - Employee
@@ -213,6 +225,9 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::middleware("permission:inspection_edit")->group(function() {
 			Route::get('/{inspection}/edit', [InspectionController::class, "edit"]);
 			Route::post('/{inspection}/edit', [InspectionReportController::class, "update"]);
+			
+			Route::post('/{inspection}/update', [InspectionController::class, "updateDetails"])->name('updateDetails');
+
 			Route::get('/{inspection}/review', [InspectionController::class, "review"]);
 			Route::post('/{inspection}/review', [InspectionReportController::class, "review_update"]);
 			Route::get('/{inspection}/verify', [InspectionController::class, "verify"]);
@@ -232,7 +247,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/mechanical', [ToolboxTalkController::class, "mechanical_list"])->name('mechanical');
 			Route::get('/workshop', [ToolboxTalkController::class, "camp_list"])->name('camp');
 			Route::get('/office', [ToolboxTalkController::class, "office_list"])->name('office');
-			Route::get('/{tbt}/view', [ToolboxTalkController::class, "view"]);
+			Route::get('/{tbt}/view', [ToolboxTalkController::class, "view"])->name('show');
 		});
 		Route::middleware("permission:talk_toolbox_create")->group(function() {
 			Route::get('/new', [ToolboxTalkController::class, "create"])->name('new');
@@ -303,6 +318,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::get('/report', [IncidentController::class, "reportList"])->name('report');
 		Route::middleware("permission:incident_show")->group(function() {
 			Route::get('/list', [IncidentController::class, "index"])->name('index');
+			Route::get('/view/{incident:uuid}', [IncidentController::class, "show"])->name('show');
 		});
 		Route::middleware("permission:incident_create")->group(function() {
 			Route::get('/create', [IncidentController::class, "create"])->name('create');
@@ -370,7 +386,6 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 			Route::post('/document/{comment}/delete-comment', [DocumentController::class, "delete_comment"]);
 		});
-		
 	});
 
 

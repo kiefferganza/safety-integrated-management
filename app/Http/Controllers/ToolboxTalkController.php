@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DocumentProjectDetail;
 use App\Models\Position;
 use App\Models\TbtStatistic;
 use App\Models\TbtStatisticMonth;
@@ -18,7 +19,6 @@ class ToolboxTalkController extends Controller
 		$positions = cache()->rememberForever("positions".$user->subscriber_id, fn() => Position::where("user_id", $user->subscriber_id)->get());
 
 		return Inertia::render("Dashboard/Management/ToolboxTalk/List/All", [
-			"tbt" => ToolboxTalkService::getList(),
 			"positions" => $positions
 		]);
 	}
@@ -42,11 +42,14 @@ class ToolboxTalkController extends Controller
 
 	public function create(Request $request) {
 		$tbtService = new ToolboxTalkService();
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
 
 		return Inertia::render("Dashboard/Management/ToolboxTalk/Create/index", [
 			"sequences" => $tbtService->getSequenceNo(),
 			"participants" => (new EmployeeService())->personels()->position()->get(),
-			"tbt_type" => $request->type ? $request->type : "1"
+			"tbt_type" => $request->type ? $request->type : "1",
+			"projectDetails" => $projectDetails
 		]);
 	}
 
@@ -74,10 +77,14 @@ class ToolboxTalkController extends Controller
 
 	public function edit(ToolboxTalk $tbt) {
 		$tbtService = new ToolboxTalkService();
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+
 		return Inertia::render("Dashboard/Management/ToolboxTalk/Edit/index", [
 			"sequences" => $tbtService->getSequenceNo(),
 			"tbt" => $tbt->load(["participants" => fn($q) => $q->distinct(), "file"]),
 			"participants" => (new EmployeeService())->personels()->position()->get(),
+			"projectDetails" => $projectDetails
 		]);
 	}
 
@@ -103,43 +110,26 @@ class ToolboxTalkController extends Controller
 		->with("type", "success");
 	}
 
-
 	public function civil_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CivilList", [
-			"tbt" => ToolboxTalkService::getListByType(1)
-		]);
+    	return Inertia::render("Dashboard/Management/ToolboxTalk/List/CivilList");
 	}
-
-
 
 	public function electrical_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/ElectricalList", [
-			"tbt" => ToolboxTalkService::getListByType(2)
-		]);
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/ElectricalList");
 	}
-
 
 	
 	public function mechanical_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/MechanicalList", [
-			"tbt" => ToolboxTalkService::getListByType(3)
-		]);
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/MechanicalList");
 	}
-
 
 
 	public function camp_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CampList", [
-			"tbt" => ToolboxTalkService::getListByType(4)
-		]);
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/CampList");
 	}
 
-
-
 	public function office_list() {
-		return Inertia::render("Dashboard/Management/ToolboxTalk/List/OfficeList", [
-			"tbt" => ToolboxTalkService::getListByType(5)
-		]);
+		return Inertia::render("Dashboard/Management/ToolboxTalk/List/OfficeList");
 	}
 
 

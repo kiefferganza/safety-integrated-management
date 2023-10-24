@@ -3,7 +3,7 @@ import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 const TrainingEditCreatePage = lazy(() => import("../TrainingEditCreatePage"));
 import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 
-const index = ({ training, details }) => {
+const index = ({ training, details, projectDetails }) => {
 	const [trainingData, setTrainingData] = useState({});
 
 	const joinTrainees = () => {
@@ -32,7 +32,7 @@ const index = ({ training, details }) => {
 	return (
 		<Suspense fallback={<LoadingScreen />}>
 			<DashboardLayout>
-				<TrainingEditCreatePage details={details} isEdit currentTraining={trainingData} />
+				<TrainingEditCreatePage details={details} isEdit currentTraining={trainingData} projectDetails={projectDetails} />
 			</DashboardLayout>
 		</Suspense>
 	)

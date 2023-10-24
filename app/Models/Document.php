@@ -45,7 +45,7 @@ class Document extends Model
 			if($user->user_type !== 0) {
 				$admins = User::where('user_type', 0)->get();
 				Notification::send($admins, new AdminNotification(
-					title: 'New document created',
+					title: 'document created',
 					message: '',
 					routeName: 'files.management.show',
 					creator: $user,

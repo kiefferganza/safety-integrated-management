@@ -104,27 +104,27 @@ class NewTrainingNotification extends Notification
 
 		$messageAndRoutes = match ($this->type) {
 			TrainingTypeNotificationEnums::APPROVER => [
-				'message' => $userName . ' added you as a approver',
+				'title' => 'added you as a approver',
 				'routeName' => 'training.management.external.external_approve'
 			],
 			TrainingTypeNotificationEnums::REVIEWER => [
-				'message' => $userName . ' added you as a reviewer',
+				'title' => 'added you as a reviewer',
 				'routeName' => 'training.management.external.external_review'
 			],
 			TrainingTypeNotificationEnums::PARTICIPANT => [
-				'message' => $userName . ' added you as a training participant',
+				'title' => 'added you as a training participant',
 				'routeName' => $moduleType['slug']
 			],
 			default => [
-				'message' => 'None',
+				'title' => 'None',
 				'routeName' => null
 			]
 		};
 
         return [
 			'params' => $training->training_id,
-			'title' => 'Newly created Training in '. $moduleType['name'],
-			'subtitle' => 'CMS: '. strtoupper($form_number),
+			'category' => 'Training - '. $moduleType['name'],
+			'message' => '<p>CMS: <strong>'. strtoupper($form_number). '</strong></p>',
 			'creator' => [
 				'user_id' => $user->user_id,
 				'name' => $userName,

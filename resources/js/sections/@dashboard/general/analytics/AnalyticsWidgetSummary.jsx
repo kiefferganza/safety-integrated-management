@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
+import CountUp from 'react-countup';
 // @mui
 import { alpha, useTheme } from '@mui/material/styles';
-import { Box, Card, Typography } from '@mui/material';
+import { Box, Card, Skeleton, Typography } from '@mui/material';
 // utils
 import { bgGradient } from '@/utils/cssStyles';
 // components
@@ -15,10 +16,31 @@ AnalyticsWidgetSummary.propTypes = {
 	color: PropTypes.string,
 	title: PropTypes.string,
 	total: PropTypes.number,
+	isLoading: PropTypes.bool
 };
 
-export default function AnalyticsWidgetSummary ({ title, total, icon, data, color = 'primary', sx, ...other }) {
+export default function AnalyticsWidgetSummary ({ isLoading, title, total = 0, icon, data, color = 'primary', sx, ...other }) {
 	const theme = useTheme();
+
+	if (isLoading) {
+		return (
+			<Card
+				sx={{
+					py: 5,
+					boxShadow: 0,
+					textAlign: 'center',
+					color: (theme) => theme.palette[color].darker,
+					bgcolor: (theme) => theme.palette[color].lighter,
+					...sx,
+				}}
+				{...other}
+			>
+				<Skeleton variant="circular" width={64} height={64} sx={{ marginX: 'auto', mb: 3 }} />
+				<Skeleton variant="rounded" width='40%' height={24} sx={{ marginX: 'auto', mb: 1 }} />
+				<Skeleton variant="rounded" width='60%' height={24} sx={{ marginX: 'auto', mt: 2 }} />
+			</Card>
+		)
+	}
 
 	return (
 		<Card
@@ -55,18 +77,8 @@ export default function AnalyticsWidgetSummary ({ title, total, icon, data, colo
 
 			<Box display="flex" alignItems="center" gap={2} justifyContent="center">
 				<Typography variant="h5">
-					{(total || 0).toLocaleString()}
+					<CountUp end={total || 0} duration={3} delay={0.6} />
 				</Typography>
-
-
-				{/* <Box>
-					<Typography variant="h5">{fShortenNumber(total)}</Typography>
-					<Typography variant="subtitle2" sx={{ opacity: 0.64 }}>{label}</Typography>
-				</Box>
-				<Box>
-					<Typography variant="h5">{fShortenNumber(2312312)}</Typography>
-					<Typography variant="subtitle2" sx={{ opacity: 0.64 }}>ITD</Typography>
-				</Box> */}
 			</Box>
 		</Card>
 	);

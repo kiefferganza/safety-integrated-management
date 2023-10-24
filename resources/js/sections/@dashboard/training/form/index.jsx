@@ -22,7 +22,7 @@ TrainingNewEditForm.propTypes = {
 	currentTraining: PropTypes.object,
 };
 
-export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
+export default function TrainingNewEditForm ({ isEdit, currentTraining, projectDetails }) {
 	const { type, sequences, errors: resErrors } = usePage().props;
 
 	const [loadingSend, setLoadingSend] = useState(false);
@@ -41,24 +41,15 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		training_date: Yup.string().required("Please add date range"),
 		date_expired: Yup.string().required("Please add date range"),
 		type: Yup.string().required("Please select course type"),
-		// reviewers: Yup.array().test('isRequired', 'Please select either reviewer or approval personel', function (item) {
-		// 	if (isEdit) return true;
-		// 	if (this.parent.approval_id === "" && item.length === 0) return false;
-		// 	return true;
-		// }),
-		// approval_id: Yup.string().when("reviewers", (reviewers, schema) => reviewers.length > 0 ? schema.notRequired() : schema.required('Please select either reviewer or approval personel'))
-		// External
 		reviewed_by: Yup.string().when("type", (type, schema) => {
 			if (type == "3") {
 				return schema.when("approved_by", (approved_by, schema) => !!approved_by ? schema.notRequired() : schema.required('Please select either reviewer or approval personel'));
-				// return schema.required("Please select a reviwer")
 			}
 			return schema.notRequired();
 		}),
 		approved_by: Yup.string().when("type", (type, schema) => {
 			if (type == "3") {
 				return schema.when("reviewed_by", (reviewed_by, schema) => !!reviewed_by ? schema.notRequired() : schema.required('Please select either reviewer or approval personel'))
-				// return schema.required("Please select an approval")
 			}
 			return schema.notRequired();
 		}),
@@ -159,9 +150,9 @@ export default function TrainingNewEditForm ({ isEdit, currentTraining }) {
 		<FormProvider methods={methods}>
 			<Card>
 
-				<TrainingProjectDetails isEdit={isEdit} sequences={sequences} />
+				<TrainingProjectDetails isEdit={isEdit} sequences={sequences} projectDetails={projectDetails} />
 
-				<TrainingNewEditDetails isEdit={isEdit} currentTraining={currentTraining} />
+				<TrainingNewEditDetails isEdit={isEdit} currentTraining={currentTraining} projectDetails={projectDetails} />
 
 			</Card>
 

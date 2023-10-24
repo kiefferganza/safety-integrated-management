@@ -5,18 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TbtStatistic;
 use App\Models\ToolboxTalk;
-use App\Models\ToolboxTalkParticipant;
-use App\Models\Training;
-use App\Services\DashboardService;
 use Carbon\Carbon;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
     public function index(Request $request): \Inertia\Response
-    {
-			$dashboardService = new DashboardService;
-			
+    {		
 			if($request->from && $request->to) {
 				$from = new Carbon($request->from);
 				$to = (new Carbon($request->to))->endOfDay();
@@ -36,12 +31,6 @@ class DashboardController extends Controller
 			}
 			
 			return Inertia::render("Dashboard/General/HSEDashboard/index", [
-				"toolboxtalks" => fn() => $dashboardService->getTbtByDate($from, $to),
-				"trainings" => Training::select("type", "training_hrs", "training_date")->where("is_deleted", 0)->withCount("training_files")->get(),
-				"tbtStatistics" => fn() => $dashboardService->getTbtStatisticByDate($from, $to),
-				"inspections" => fn() => $dashboardService->getInspectionByDate($from, $to),
-				"incidents" => $dashboardService->getIncidents(),
-				"sliderImages" => $dashboardService->getSliderImages(),
 				"from" => $from,
 				"to" => $to
 			]);

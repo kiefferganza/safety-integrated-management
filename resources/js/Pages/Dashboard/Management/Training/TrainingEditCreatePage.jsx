@@ -19,7 +19,7 @@ const TYPE_OPTIONS = {
 	4: "induction"
 };
 
-export default function TrainingEditCreatePage ({ isEdit = false, details = null, currentTraining, type }) {
+export default function TrainingEditCreatePage ({ isEdit = false, details = null, currentTraining, type, projectDetails }) {
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -46,7 +46,7 @@ export default function TrainingEditCreatePage ({ isEdit = false, details = null
 					]}
 				/>
 
-				<TrainingNewEditForm isEdit={isEdit} currentTraining={currentTraining} />
+				<TrainingNewEditForm isEdit={isEdit} currentTraining={currentTraining} projectDetails={projectDetails} />
 			</Container>
 		</>
 	);

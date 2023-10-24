@@ -8,7 +8,7 @@ import { Head } from "@inertiajs/inertia-react";
 const Container = lazy(() => import("@mui/material/Container"));
 const DocumentNewEditForm = lazy(() => import('@/sections/@dashboard/document/form/DocumentNewEditForm'));
 
-const index = ({ folder }) => {
+const index = ({ folder, projectDetails }) => {
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -35,7 +35,7 @@ const index = ({ folder }) => {
 								},
 							]}
 						/>
-						<DocumentNewEditForm />
+						<DocumentNewEditForm projectDetails={projectDetails} />
 					</Container>
 				</DashboardLayout>
 			</Suspense>

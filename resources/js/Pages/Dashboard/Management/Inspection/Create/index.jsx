@@ -6,7 +6,7 @@ import InspectionNewForm from "@/sections/@dashboard/inspection/form/InspectionN
 import { Head } from "@inertiajs/inertia-react";
 import { Container } from "@mui/material";
 
-const index = () => {
+const index = ({ projectDetails }) => {
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -33,7 +33,7 @@ const index = () => {
 						]}
 					/>
 
-					<InspectionNewForm />
+					<InspectionNewForm projectDetails={projectDetails} />
 				</Container>
 			</DashboardLayout>
 		</>

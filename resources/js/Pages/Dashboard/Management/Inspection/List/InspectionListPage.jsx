@@ -48,6 +48,7 @@ import {
 import { InspectionTableRow, InspectionTableToolbar } from '@/sections/@dashboard/inspection/list';
 import InspectionAnalytic from '@/sections/@dashboard/inspection/InspectionAnalytic';
 import usePermission from '@/hooks/usePermission';
+import { getObservation } from '@/utils/inspection';
 
 
 // ----------------------------------------------------------------------
@@ -113,10 +114,15 @@ const InspectionListPage = ({ user, inspections }) => {
 		inputData: tableData,
 		comparator: getComparator(order, orderBy),
 		filterName,
-		filterStatus,
-		filterType,
 		filterStartDate,
 		filterEndDate
+	});
+
+	const dataFilteredStatusAndType = applyFilterStatusType({
+		inputData: [...dataFiltered],
+		comparator: getComparator(order, orderBy),
+		filterStatus,
+		filterType
 	});
 
 	useEffect(() => {
@@ -126,34 +132,30 @@ const InspectionListPage = ({ user, inspections }) => {
 			reviewer: employeeName(inspection.reviewer).trim(),
 			verifier: employeeName(inspection.verifier).trim(),
 			status: getInspectionStatus(inspection.status),
-			type: getInspectionType({
-				employee_id: inspection.employee_id,
-				reviewer_id: inspection.reviewer_id,
-				verifier_id: inspection.verifier_id,
-				status: inspection.status,
-			}),
-			totalObservation: getNumberOfObservation(inspection.report_list),
-			positiveObservation: getNumberOfPositiveObservation(inspection.report_list),
-			negativeObservation: getNumberOfNegativeObservation(inspection.report_list),
+			type: getInspectionType({ status: inspection.status }),
+			...getObservation(inspection.report_list),
+			// totalObservation: getNumberOfObservation(inspection.report_list),
+			// positiveObservation: getNumberOfPositiveObservation(inspection.report_list),
+			// negativeObservation: getNumberOfNegativeObservation(inspection.report_list),
 			dueStatus: getDueDateStatus(inspection.date_due)
 		}));
 		setTableData(data || []);
 	}, [user, inspections]);
 
 
-	const getInspectionType = ({ employee_id, reviewer_id, verifier_id, status }) => {
-		if (employee_id === user.emp_id) {
-			return 'submitted';
-		} else if (reviewer_id === user.emp_id && (status === 1 || status === 4)) {
-			return 'review';
-		} else if (verifier_id === user.emp_id && status === 2) {
-			return 'verify';
-		} else if (status !== 0) {
-			return 'closeout';
+	const getInspectionType = ({ status }) => {
+		switch (status) {
+			case 1:
+			case 0:
+				return 'submitted';
+			case 2:
+				return 'verify';
+			case 3:
+				return 'closeout';
+			default:
+				return 'review';
 		}
-		return 'closeout';
 	}
-
 
 	const denseHeight = dense ? 56 : 76;
 
@@ -174,9 +176,9 @@ const InspectionListPage = ({ user, inspections }) => {
 	const TABS = [
 		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
 		{ value: 'submitted', label: 'Submitted', color: 'default', count: getLengthByType('submitted') },
-		{ value: 'review', label: 'Review', color: 'warning', count: getLengthByType('review') },
+		{ value: 'review', label: 'Review', color: 'error', count: getLengthByType('review') },
 		{ value: 'verify', label: 'Verify & Approve', color: 'success', count: getLengthByType('verify') },
-		{ value: 'closeout', label: 'Closeout', color: 'error', count: getLengthByType('closeout') },
+		{ value: 'closeout', label: 'Closeout', color: 'info', count: getLengthByType('closeout') },
 	];
 
 	const getActiveDays = dataFiltered.filter(item => item.dueStatus.classType === "success").length;
@@ -261,6 +263,8 @@ const InspectionListPage = ({ user, inspections }) => {
 	const open = Boolean(anchorLegendEl);
 
 	const canCreate = hasPermission("inspection_create");
+	const canEdit = hasPermission("inspection_edit");
+	const canDelete = hasPermission("inspection_delete");
 	return (
 		<>
 			<Head>
@@ -314,7 +318,7 @@ const InspectionListPage = ({ user, inspections }) => {
 								total={getLengthByType('submitted')}
 								percent={getPercentByType('submitted')}
 								icon="heroicons:document-magnifying-glass"
-								color={theme.palette.success.main}
+								color={theme.palette.grey[500]}
 							/>
 
 							<InspectionAnalytic
@@ -322,7 +326,7 @@ const InspectionListPage = ({ user, inspections }) => {
 								total={getLengthByType('review')}
 								percent={getPercentByType('review')}
 								icon="heroicons:document-minus"
-								color={theme.palette.warning.main}
+								color={theme.palette.error.main}
 							/>
 
 							<InspectionAnalytic
@@ -330,7 +334,7 @@ const InspectionListPage = ({ user, inspections }) => {
 								total={getLengthByType('verify')}
 								percent={getPercentByType('verify')}
 								icon="heroicons:document-check"
-								color={theme.palette.error.main}
+								color={theme.palette.success.main}
 							/>
 
 							<InspectionAnalytic
@@ -338,7 +342,7 @@ const InspectionListPage = ({ user, inspections }) => {
 								total={getLengthByType('closeout')}
 								percent={getPercentByType('closeout')}
 								icon="heroicons:document-arrow-up"
-								color={theme.palette.success.main}
+								color={theme.palette.info.main}
 							/>
 						</Stack>
 					</Scrollbar>
@@ -464,13 +468,15 @@ const InspectionListPage = ({ user, inspections }) => {
 								/>
 
 								<TableBody>
-									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+									{(filterType !== 'all' || filterStatus !== '' ? dataFilteredStatusAndType : dataFiltered).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
 										<InspectionTableRow
 											key={row.id}
 											row={row}
 											selected={selected.includes(row.id)}
 											onSelectRow={() => onSelectRow(row.id)}
 											onDeleteRow={() => handleDeleteRow(row.id)}
+											canEdit={canEdit}
+											canDelete={canDelete}
 										/>
 									))}
 
@@ -483,7 +489,7 @@ const InspectionListPage = ({ user, inspections }) => {
 					</TableContainer>
 
 					<TablePaginationCustom
-						count={dataFiltered.length}
+						count={(filterType !== 'all' || filterStatus !== '' ? dataFilteredStatusAndType : dataFiltered).length}
 						page={page}
 						rowsPerPage={rowsPerPage}
 						onPageChange={onChangePage}
@@ -563,12 +569,11 @@ const InspectionListPage = ({ user, inspections }) => {
 	);
 }
 
+// const getNumberOfObservation = (reports) => reports.filter(report => report.ref_score !== 0 && report.ref_score !== 4 && report.ref_score !== null).length;
 
-const getNumberOfObservation = (reports) => reports.filter(report => report.ref_score !== 0 && report.ref_score !== 4 && report.ref_score !== null).length;
+// const getNumberOfPositiveObservation = (reports) => reports.filter(report => report.ref_score === 1).length;
 
-const getNumberOfPositiveObservation = (reports) => reports.filter(report => report.ref_score === 1).length;
-
-const getNumberOfNegativeObservation = (reports) => reports.filter(report => (report.ref_score === 2 || report.ref_score === 3) && report.item_status !== "2").length;
+// const getNumberOfNegativeObservation = (reports) => reports.filter(report => (report.ref_score === 2 || report.ref_score === 3) && report.item_status !== "2").length;
 
 
 const getInspectionStatus = (status) => {
@@ -630,8 +635,6 @@ function applyFilter ({
 	inputData,
 	comparator,
 	filterName,
-	filterType,
-	filterStatus,
 	filterStartDate,
 	filterEndDate
 }) {
@@ -650,20 +653,8 @@ function applyFilter ({
 			inspection.form_number.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
 			inspection.reviewer.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
 			inspection.inspected_by.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
-			inspection.accompanied_by.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+			inspection.verifier.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
 		);
-	}
-
-	if (filterType !== 'all') {
-		inputData = inputData.filter((inspection) => inspection.type === filterType);
-	}
-
-	if (filterStatus !== '') {
-		if (filterStatus === 'A.D.' || filterStatus === 'O.D.') {
-			inputData = inputData.filter((inspection) => inspection.dueStatus.type === filterStatus);
-		} else {
-			inputData = inputData.filter((inspection) => inspection.status.text === filterStatus);
-		}
 	}
 
 	if (filterStartDate && !filterEndDate) {
@@ -679,6 +670,37 @@ function applyFilter ({
 				fTimestamp(new Date(insp.date_issued)) >= startDateTimestamp &&
 				fTimestamp(new Date(insp.date_issued)) <= endDateTimestamp
 		);
+	}
+
+	return inputData;
+}
+
+function applyFilterStatusType ({
+	inputData,
+	comparator,
+	filterType,
+	filterStatus,
+}) {
+	const stabilizedThis = inputData.map((el, index) => [el, index]);
+
+	stabilizedThis.sort((a, b) => {
+		const order = comparator(a[0], b[0]);
+		if (order !== 0) return order;
+		return a[1] - b[1];
+	});
+
+	inputData = stabilizedThis.map((el) => el[0]);
+
+	if (filterType !== 'all') {
+		inputData = inputData.filter((inspection) => inspection.type === filterType);
+	}
+
+	if (filterStatus !== '') {
+		if (filterStatus === 'A.D.' || filterStatus === 'O.D.') {
+			inputData = inputData.filter((inspection) => inspection.dueStatus.type === filterStatus);
+		} else {
+			inputData = inputData.filter((inspection) => inspection.status.text === filterStatus);
+		}
 	}
 
 	return inputData;

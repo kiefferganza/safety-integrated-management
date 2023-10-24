@@ -12,7 +12,7 @@ import { useSettingsContext } from '@/Components/settings';
 const ToolboxTalkNewEditForm = lazy(() => import("@/sections/@dashboard/toolboxtalks/form/ToolboxTalkNewEditForm"));
 import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 
-const index = () => {
+const index = ({ projectDetails }) => {
 	const { themeStretch } = useSettingsContext();
 
 	return (
@@ -39,7 +39,7 @@ const index = () => {
 								},
 							]}
 						/>
-						<ToolboxTalkNewEditForm />
+						<ToolboxTalkNewEditForm projectDetails={projectDetails} />
 					</Container>
 				</DashboardLayout>
 			</Suspense>

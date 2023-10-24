@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Operation;
 
 use App\Http\Controllers\Controller;
+use App\Models\DocumentProjectDetail;
 use App\Models\Employee;
 use App\Models\Operation\Store\Store;
 use App\Models\Operation\Store\StoreHistory;
 use App\Models\Operation\Store\StoreReport;
 use App\Models\Operation\Store\StoreReportComment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -98,11 +100,14 @@ class StoreReportController extends Controller
 		->where("user_id", "!=", null)
 		->get();
 		
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+		
 		return Inertia::render("Dashboard/Operation/Store/Report/index", compact(
 			'stores',
 			'submittedDates',
 			'sequence_no',
-			'employees'
+			'employees',
+			'projectDetails'
 		));
     }
 
@@ -238,6 +243,9 @@ class StoreReportController extends Controller
 			"comment_code" => $request->comment_code,
 			"status" => $request->status
 		]);
+		
+		$storeReport->increment("revision_no");
+		$storeReport->save();
 
 		return redirect()->back()
 		->with("message", "Comment posted successfully!")
@@ -321,7 +329,6 @@ class StoreReportController extends Controller
 		])
 		->toMediaCollection('actions');
 
-		$storeReport->increment("revision_no");
 		$storeReport->save();
 
 		return redirect()->back()

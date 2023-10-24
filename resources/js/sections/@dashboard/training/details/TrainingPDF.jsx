@@ -224,99 +224,101 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 						</View>
 					</View>
 
-					<View style={[styles.mb40, { marginTop: training.type === 3 ? 32 : 80 }]}>
-						<View style={styles.mb40}>
-							<View style={[styles.gridContainer, styles.mb40]}>
-								<Text style={styles.subtitle2}>Remarks</Text>
+					{(pageIndex + 1) === pages.length && (
+						<View style={[styles.mb40, { marginTop: training.type === 3 ? 32 : 80 }]}>
+							<View style={styles.mb40}>
+								<View style={[styles.gridContainer, styles.mb40]}>
+									<Text style={styles.subtitle2}>Remarks</Text>
+								</View>
+								<View style={{ width: '100%', borderBottom: 1 }}>
+								</View>
 							</View>
-							<View style={{ width: '100%', borderBottom: 1 }}>
-							</View>
+							{training?.external_details || training.type === 3 ? (
+								<View>
+									<View style={[styles.gridContainer, styles.mb32]}>
+										<View style={styles.col3}>
+											<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{training?.user_employee ? `${training?.user_employee?.firstname?.trim()} ${training?.user_employee?.lastname?.trim()}` : ''}</Text>
+											<Text style={[styles.body1, { width: 140, textAlign: 'center', paddingTop: 4 }]}>Submitted By</Text>
+										</View>
+										<View style={styles.col3}>
+											{training?.external_details?.reviewer && (
+												<>
+													<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
+														{training?.external_details?.reviewer ? `${training?.external_details?.reviewer?.firstname?.trim()} ${training?.external_details?.reviewer?.lastname?.trim()}` : ""}
+													</Text>
+													<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Reviewed By</Text>
+												</>
+											)}
+										</View>
+										<View style={styles.col3}>
+											{training?.external_details?.approval && (
+												<>
+													<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
+														{training?.external_details?.approval ? `${training?.external_details?.approval?.firstname?.trim()} ${training?.external_details?.approval?.lastname?.trim()}` : ""}
+													</Text>
+													<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
+												</>
+											)}
+										</View>
+									</View>
+									<View style={[styles.gridContainer, { flexDirection: "column" }]}>
+										<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
+											<View style={{ width: 80 }}>
+												<Text>Total Attendees</Text>
+											</View>
+											<View style={{ width: 15 }}>
+												<Text>:</Text>
+											</View>
+											<View>
+												<Text style={{ textTransform: 'lowercase' }}>{training?.trainees?.length} pax</Text>
+											</View>
+										</View>
+
+										<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
+											<View style={{ width: 80 }}>
+												<Text>Course Price</Text>
+											</View>
+											<View style={{ width: 15 }}>
+												<Text>:</Text>
+											</View>
+											<View>
+												<Text>{fCurrencyNumber(training?.external_details?.course_price) + '.00'} {training?.external_details?.currency}</Text>
+											</View>
+										</View>
+
+										<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
+											<View style={{ width: 80 }}>
+												<Text>Total Ammount</Text>
+											</View>
+											<View style={{ width: 15 }}>
+												<Text>:</Text>
+											</View>
+											<View>
+												<Text>{fCurrencyNumber(getTotalAmmount) || fCurrencyNumber(training?.external_details?.course_price) + '.00'} {training?.external_details?.currency}</Text>
+											</View>
+										</View>
+
+										<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
+											<View style={{ width: 80 }}>
+												<Text>Date Requested</Text>
+											</View>
+											<View style={{ width: 15 }}>
+												<Text>:</Text>
+											</View>
+											<View>
+												<Text>{fDate(new Date(training?.external_details?.date_requested))}</Text>
+											</View>
+										</View>
+									</View>
+								</View>
+							) : (
+								<View>
+									<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{training?.user_employee ? `${training?.user_employee?.firstname?.trim()} ${training?.user_employee?.lastname?.trim()}` : ''}</Text>
+									<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Submitted By</Text>
+								</View>
+							)}
 						</View>
-						{training?.external_details || training.type === 3 ? (
-							<View>
-								<View style={[styles.gridContainer, styles.mb32]}>
-									<View style={styles.col3}>
-										<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{training?.user_employee ? `${training?.user_employee?.firstname?.trim()} ${training?.user_employee?.lastname?.trim()}` : ''}</Text>
-										<Text style={[styles.body1, { width: 140, textAlign: 'center', paddingTop: 4 }]}>Submitted By</Text>
-									</View>
-									<View style={styles.col3}>
-										{training?.external_details?.reviewer && (
-											<>
-												<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
-													{training?.external_details?.reviewer ? `${training?.external_details?.reviewer?.firstname?.trim()} ${training?.external_details?.reviewer?.lastname?.trim()}` : ""}
-												</Text>
-												<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Reviewed By</Text>
-											</>
-										)}
-									</View>
-									<View style={styles.col3}>
-										{training?.external_details?.approval && (
-											<>
-												<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>
-													{training?.external_details?.approval ? `${training?.external_details?.approval?.firstname?.trim()} ${training?.external_details?.approval?.lastname?.trim()}` : ""}
-												</Text>
-												<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Approved By</Text>
-											</>
-										)}
-									</View>
-								</View>
-								<View style={[styles.gridContainer, { flexDirection: "column" }]}>
-									<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
-										<View style={{ width: 80 }}>
-											<Text>Total Attendees</Text>
-										</View>
-										<View style={{ width: 15 }}>
-											<Text>:</Text>
-										</View>
-										<View>
-											<Text style={{ textTransform: 'lowercase' }}>{training?.trainees?.length} pax</Text>
-										</View>
-									</View>
-
-									<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
-										<View style={{ width: 80 }}>
-											<Text>Course Price</Text>
-										</View>
-										<View style={{ width: 15 }}>
-											<Text>:</Text>
-										</View>
-										<View>
-											<Text>{fCurrencyNumber(training?.external_details?.course_price) + '.00'} {training?.external_details?.currency}</Text>
-										</View>
-									</View>
-
-									<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
-										<View style={{ width: 80 }}>
-											<Text>Total Ammount</Text>
-										</View>
-										<View style={{ width: 15 }}>
-											<Text>:</Text>
-										</View>
-										<View>
-											<Text>{fCurrencyNumber(getTotalAmmount) || fCurrencyNumber(training?.external_details?.course_price) + '.00'} {training?.external_details?.currency}</Text>
-										</View>
-									</View>
-
-									<View style={[styles.mb8, { display: 'flex', flexDirection: 'row' }]}>
-										<View style={{ width: 80 }}>
-											<Text>Date Requested</Text>
-										</View>
-										<View style={{ width: 15 }}>
-											<Text>:</Text>
-										</View>
-										<View>
-											<Text>{fDate(new Date(training?.external_details?.date_requested))}</Text>
-										</View>
-									</View>
-								</View>
-							</View>
-						) : (
-							<View>
-								<Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{training?.user_employee ? `${training?.user_employee?.firstname?.trim()} ${training?.user_employee?.lastname?.trim()}` : ''}</Text>
-								<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4 }]}>Submitted By</Text>
-							</View>
-						)}
-					</View>
+					)}
 
 					<View style={[styles.gridContainer, styles.footer]}>
 						<View style={styles.col4}>

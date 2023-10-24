@@ -23,7 +23,7 @@ const types = [
 	'Civil',
 	'Electrical',
 	'Mechanical',
-	'Camp',
+	'Workshop',
 	'Office',
 ];
 

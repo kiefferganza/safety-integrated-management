@@ -11,4 +11,10 @@ axiosInstance.interceptors.response.use(
 	(error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
 );
 
+export const fetchTbtByType = (type) => axiosInstance.get(route('api.tbt.type', { type })).then(res => res.data);
+
+export const getNotifications = () => axiosInstance.get(route('api.user.notifications')).then(res => res.data);
+
+export const readNotification = (ids) => axiosInstance.post(route('api.user.read_notifications'), { ids })
+
 export default axiosInstance;

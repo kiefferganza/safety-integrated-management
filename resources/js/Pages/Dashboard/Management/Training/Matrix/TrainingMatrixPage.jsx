@@ -157,7 +157,7 @@ export default function TrainingMatrixPage ({ titles, years, yearList, from, to 
 			<LoadingScreen />
 		)
 	}
-
+	console.log({ titles });
 	return (
 		<>
 			<Card sx={{ p: 2 }}>
@@ -249,13 +249,13 @@ export default function TrainingMatrixPage ({ titles, years, yearList, from, to 
 				StartDateProps={{
 					shouldDisableDate: disableDate(yearList),
 					shouldDisableYear: disableDate(yearList),
-					views: ['year'],
+					views: ['year', 'month'],
 					openTo: "year"
 				}}
 				EndDateProps={{
 					shouldDisableDate: disableDate(yearList),
 					shouldDisableYear: disableDate(yearList),
-					views: ['year'],
+					views: ['year', 'month'],
 					openTo: "year"
 				}}
 			/>

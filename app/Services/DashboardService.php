@@ -294,23 +294,23 @@ class DashboardService {
 		// dd($incidentReport);
 		
 		// LTIFR = (Number of lost time injuries / Total hours worked) x 1,000,000
-		if($incidents["ltifr"]["lti"] > 0) {
+		if($incidents["ltifr"]["lti"] > 0 && $incidents["ltifr"]["totalHours"] > 0) {
 			$incidentReport["ltifr"]["itd"] = round(($incidents["ltifr"]["lti"] / $incidents["ltifr"]["totalHours"]) * 1000000);
 		}
-		if($incidents["ltifr"]["monthLti"] > 0) {
+		if($incidents["ltifr"]["monthLti"] > 0 && $incidents["ltifr"]["monthTotalhours"] > 0) {
 			$incidentReport["ltifr"]["month"] = round(($incidents["ltifr"]["monthLti"] / $incidents["ltifr"]["monthTotalhours"]) * 1000000);
 		}
 
 		// LTISR = (Number of days lost due to lost time injuries / Total hours worked) x 1,000
-		if($incidents["ltisr"]["dayloss"] > 0) {
+		if($incidents["ltisr"]["dayloss"] > 0 && $incidents["ltisr"]["totalHours"] > 0) {
 			$incidentReport["ltisr"]["itd"] = round(($incidents["ltisr"]["dayloss"] / $incidents["ltisr"]["totalHours"]) * 1000);
 		}
-		if($incidents["ltisr"]["monthDayloss"] > 0) {
+		if($incidents["ltisr"]["monthDayloss"] > 0 && $incidents["ltisr"]["monthTotalhours"] > 0) {
 			$incidentReport["ltisr"]["month"] = round(($incidents["ltisr"]["monthDayloss"] / $incidents["ltisr"]["monthTotalhours"]) * 1000);
 		}
 		
 		// FAFR = (Number of fatal accidents / Total hours worked) x 1,000,000
-		if($incidents["fafr"]["total"] > 0) {
+		if($incidents["fafr"]["total"] > 0 && $incidents["fafr"]["totalHours"] > 0) {
 			$incidentReport["fafr"]["itd"] = round(($incidents["fafr"]["total"] / $incidents["fafr"]["totalHours"]) * 1000000);
 		}
 		if($incidents["fafr"]["monthTotal"] > 0) {
@@ -318,10 +318,10 @@ class DashboardService {
 		}
 		
 		// TRI (Total Recordable Incidents ) = (Number of recordable injuries and illnesses / Total number of hours worked) x 200,000
-		if($incidents["tris"]["total"] > 0) {
+		if($incidents["tris"]["total"] > 0 && $incidents["tris"]["totalHours"] > 0) {
 			$incidentReport["tris"]["itd"] = round(($incidents["tris"]["total"] / $incidents["tris"]["totalHours"]) * 200000);
 		}
-		if($incidents["tris"]["monthTotal"] > 0) {
+		if($incidents["tris"]["monthTotal"] > 0 && $incidents["tris"]["monthTotalhours"] > 0) {
 			$incidentReport["tris"]["month"] = round(($incidents["tris"]["monthTotal"] / $incidents["tris"]["monthTotalhours"]) * 200000);
 		}
 

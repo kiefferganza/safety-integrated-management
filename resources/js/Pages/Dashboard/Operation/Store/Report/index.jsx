@@ -4,7 +4,7 @@ import DashboardLayout from '@/Layouts/dashboard/DashboardLayout';
 import { Head } from '@inertiajs/inertia-react';
 const StoreCreateReportPage = lazy(() => import("./StoreCreateReportPage"));
 
-const index = ({ stores, submittedDates, sequence_no, employees }) => {
+const index = ({ stores, submittedDates, sequence_no, employees, projectDetails }) => {
 
 	return (
 		<>
@@ -13,7 +13,7 @@ const index = ({ stores, submittedDates, sequence_no, employees }) => {
 			</Head>
 			<Suspense fallback={<LoadingScreen />}>
 				<DashboardLayout>
-					<StoreCreateReportPage stores={stores} submittedDates={submittedDates} sequence_no={sequence_no} employees={employees} />
+					<StoreCreateReportPage projectDetails={projectDetails} stores={stores} submittedDates={submittedDates} sequence_no={sequence_no} employees={employees} />
 				</DashboardLayout>
 			</Suspense>
 		</>

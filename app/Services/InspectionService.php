@@ -4,11 +4,16 @@ namespace App\Services;
 
 use App\Models\Inspection;
 use App\Models\InspectionReportList;
+use App\Models\User;
+use App\Notifications\ModuleBasicNotification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class InspectionService {
 
 	public function insertInspection(Request $request){
+		$user = auth()->user();
 		$request->validate([
 			"project_code" => ["string", "required"],
 			"form_number" => ["string", "required"],
@@ -44,8 +49,25 @@ class InspectionService {
 		$inspection_id = $inspection->inspection_id;
 
 		$sections_merged = array_merge($request->sectionA, $request->sectionB, $request->sectionC, $request->sectionC_B, $request->sectionD, $request->sectionE);
+		
+		$obs = [
+			"total" => 0,
+			"positive" => 0,
+			"negative" => 0
+		];
 
 		foreach ($sections_merged as $section) {
+			if($section['score'] !== null) {
+				if($section["score"] !== "4") {
+					$obs['total'] += 1;
+				}
+				if($section["score"] === "1") {
+					$obs['positive'] += 1;
+				}else if($section["score"] === "2" || $section["score"] === "3") {
+					$obs['negative'] += 1;
+				}
+			}
+
 			$report = InspectionReportList::create([
 				"inspection_id" => $inspection_id,
 				"employee_id" => auth()->user()->emp_id,
@@ -59,6 +81,36 @@ class InspectionService {
 			if($section["photo_before"] !== null) {
 				$report->addMedia($section["photo_before"])->toMediaCollection("before");
 			}
+		}
+
+		// Notification
+		$message = '<p>Total Observation: <strong>'. $obs['total'] .'</strong></p>';
+		$message .= '<p>Positive Observation: <strong>'. $obs['positive'] .'</strong></p>';
+		$message .= '<p>Negative Observation: <strong>'. $obs['negative'] .'</strong></p>';
+		$message .= '<p>Due Date: <strong>'. Carbon::parse($request->date_due)->format('M j, Y') .'</strong></p>';
+		$message .= '<p>CMS: <strong>'. $request->form_number .'</strong></p>';
+
+		$toReviewer = User::where("emp_id", $request->reviewer_id)->first();
+		if($toReviewer) {
+			Notification::send($toReviewer, new ModuleBasicNotification(
+				title: 'set you as a reviewer',
+				message: $message,
+				category: 'Inspection',
+				routeName: 'inspection.management.view',
+				creator: $user,
+				params: $inspection_id
+			));
+		}
+		$toApprover = User::where("emp_id", $request->verifier_id)->first();
+		if($toApprover) {
+			Notification::send($toApprover, new ModuleBasicNotification(
+				title: 'set you as an approver',
+				message: $message,
+				category: 'Inspection',
+				routeName: 'inspection.management.view',
+				creator: $user,
+				params: $inspection_id
+			));
 		}
 	}
 

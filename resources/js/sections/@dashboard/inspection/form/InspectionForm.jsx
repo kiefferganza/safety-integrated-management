@@ -1,4 +1,4 @@
-import { RHFTextField } from '@/Components/hook-form'
+import { RHFMuiSelect, RHFTextField } from '@/Components/hook-form'
 import { Autocomplete, Box, Chip, Divider, Stack, TextField, Typography } from '@mui/material'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -8,7 +8,7 @@ import { useFormContext } from 'react-hook-form';
 import { format } from 'date-fns';
 import useResponsive from '@/hooks/useResponsive';
 
-const InspectionForm = ({ personel }) => {
+const InspectionForm = ({ personel, projectDetails }) => {
 	const isDesktop = useResponsive('up', 'sm');
 	const [cc, setCC] = useState([]);
 	const [time, setTime] = useState(null);
@@ -36,7 +36,6 @@ const InspectionForm = ({ personel }) => {
 
 
 	const options = personel.map((option) => ({ id: option.employee_id, label: `${option?.firstname} ${option?.lastname}`, user_id: option.user_id }));
-
 	return (
 		<Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
 			<Stack spacing={3}>
@@ -45,26 +44,48 @@ const InspectionForm = ({ personel }) => {
 				</Typography>
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-					<RHFTextField
-						name="project_code"
+					<RHFMuiSelect
 						label="Project Code"
-						inputProps={{
-							sx: { textTransform: "uppercase" }
-						}}
+						name="project_code"
+						fullWidth
+						options={projectDetails['Project Code'] ? [{ label: '', value: '' }, ...projectDetails['Project Code'].map((d) => ({ label: d.value, value: d.value }))] : []}
 					/>
 
-					<RHFTextField name="originator" label="Originator" />
+					<RHFMuiSelect
+						label="Originator"
+						name="originator"
+						fullWidth
+						options={projectDetails['Originator'] ? [{ label: '', value: '' }, ...projectDetails['Originator'].map((d) => ({ label: d.value, value: d.value }))] : []}
+					/>
 
-					<RHFTextField name="discipline" label="Discipline" />
+					<RHFMuiSelect
+						label="Discipline"
+						name="discipline"
+						fullWidth
+						options={projectDetails['Discipline'] ? [{ label: '', value: '' }, ...projectDetails['Discipline'].map((d) => ({ label: d.value, value: d.value }))] : []}
+					/>
 
 				</Stack>
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-					<RHFTextField name="document_type" label="Type" />
-
-					<RHFTextField name="document_zone" label="Zone (Optional)" />
-
-					<RHFTextField name="document_level" label="Level (Optional)" />
+					<RHFMuiSelect
+						label="Type"
+						name="document_type"
+						fullWidth
+						options={projectDetails['Type'] ? [{ label: '', value: '' }, ...projectDetails['Type'].map((d) => ({ label: d.value, value: d.value }))] : []}
+					/>
+					<RHFMuiSelect
+						label="Zone (Optional)"
+						name="document_zone"
+						fullWidth
+						options={projectDetails['Zone'] ? [{ label: '', value: '' }, ...projectDetails['Zone'].map((d) => ({ label: d.value, value: d.value }))] : []}
+					/>
+					<RHFMuiSelect
+						label="Level (Optional)"
+						name="document_level"
+						fullWidth
+						options={projectDetails['Level'] ? [{ label: '', value: '' }, ...projectDetails['Level'].map((d) => ({ label: d.value, value: d.value }))] : []}
+					/>
 
 				</Stack>
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
@@ -84,7 +105,12 @@ const InspectionForm = ({ personel }) => {
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-					<RHFTextField name="contract_no" label="Contract No." />
+					<RHFMuiSelect
+						label="Contract No."
+						name="contract_no"
+						fullWidth
+						options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value, value: d.value }))] : []}
+					/>
 
 					<RHFTextField disabled name="inspected_by" label="Inspected By" />
 
@@ -95,7 +121,12 @@ const InspectionForm = ({ personel }) => {
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-					<RHFTextField name="location" label="Location" />
+					<RHFMuiSelect
+						label="Location"
+						name="location"
+						fullWidth
+						options={projectDetails['Location'] ? [{ label: '', value: '' }, ...projectDetails['Location'].map((d) => ({ label: d.value, value: d.value }))] : []}
+					/>
 
 					{isDesktop ? (
 						<DesktopDatePicker

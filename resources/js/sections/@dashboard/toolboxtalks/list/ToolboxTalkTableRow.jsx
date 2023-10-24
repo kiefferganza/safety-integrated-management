@@ -16,7 +16,6 @@ const {
 // utils
 import { fDate } from '@/utils/formatTime';
 // components
-import Label from '@/Components/label';
 import Iconify from '@/Components/iconify';
 import MenuPopover from '@/Components/menu-popover';
 import ConfirmDialog from '@/Components/confirm-dialog';
@@ -35,7 +34,7 @@ const TYPES = {
 	"1": 'Civil',
 	"2": 'Electrical',
 	"3": 'Mechanical',
-	"4": 'Camp',
+	"4": 'Workshop',
 	"5": 'Office',
 };
 

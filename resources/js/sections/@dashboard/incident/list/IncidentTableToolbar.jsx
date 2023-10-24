@@ -21,7 +21,7 @@ const MenuProps = {
 IncidentTableToolbar.propTypes = {
 	isFiltered: PropTypes.bool,
 	filterName: PropTypes.string,
-	filterCause: PropTypes.string,
+	filterCause: PropTypes.array,
 	onFilterName: PropTypes.func,
 	onResetFilter: PropTypes.func,
 	onFilterCause: PropTypes.func,

@@ -7,6 +7,7 @@ use App\Models\Document;
 use App\Models\DocumentApprovalSign;
 use App\Models\DocumentCommentReplies;
 use App\Models\DocumentExternalApprover;
+use App\Models\DocumentProjectDetail;
 use App\Models\DocumentResponseFile;
 use App\Models\DocumentReviewer;
 use App\Models\DocumentReviewerSign;
@@ -39,6 +40,7 @@ class DocumentController extends Controller
 
 	public function create(FolderModel $folder) {
 		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
 
 		return Inertia::render("Dashboard/Management/FileManager/Document/Create/index", [
 			"folder" => $folder,
@@ -49,7 +51,8 @@ class DocumentController extends Controller
 				->where("user_id", "!=", NULL)
 				->where("sub_id", $user->subscriber_id)
 				->where("employee_id", "!=", $user->emp_id)
-				->get()
+				->get(),
+			'projectDetails' => $projectDetails
 		]);
 	}
 
@@ -131,10 +134,10 @@ class DocumentController extends Controller
 			DocumentReviewer::insert($reviewers);
 			$userReviewers = User::whereIn('emp_id', $reviewersId)->get();
 			Notification::send($userReviewers, new ModuleBasicNotification(
-				title: 'Newly created Document',
-				message: $user->firstname . ' ' . $user->lastname . ' added you as a reviewer',
+				title: 'added you as a reviewer',
+				message: '',
 				routeName: 'files.management.show',
-				subtitle: null,
+				category: 'Document',
 				creator: $user,
 				params: [
 					'folder' => $document_id,
@@ -147,10 +150,10 @@ class DocumentController extends Controller
 			$userApproval = User::where('emp_id', (int)$fields['approval_id'])->first();
 			if($userApproval) {
 				Notification::send($userApproval, new ModuleBasicNotification(
-					title: 'Newly created Document',
-					message: $user->firstname . ' ' . $user->lastname . ' added you as a approver',
+					title: 'added you as a approver',
+					message: '',
 					routeName: 'files.management.show',
-					subtitle: null,
+					category: 'Document',
 					creator: $user,
 					params: [
 						'folder' => $document->folder_id,
@@ -286,6 +289,8 @@ class DocumentController extends Controller
 			->firstOrFail();
 		$document->file = $document->files[0] ?? "";
 
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+
 		return Inertia::render("Dashboard/Management/FileManager/Document/Edit/index", [
 			"folder" => $folder,
 			"personel" => Employee::select("employee_id","firstname", "lastname", "position", "is_deleted", "company", "sub_id", "user_id")
@@ -295,7 +300,8 @@ class DocumentController extends Controller
 				->where("sub_id", $user->subscriber_id)
 				->where("employee_id", "!=", $user->emp_id)
 				->get(),
-			"document" => $document
+			"document" => $document,
+			"projectDetails" => $projectDetails
 		]);
 	}
 
@@ -468,10 +474,10 @@ class DocumentController extends Controller
 		$creator = User::where('emp_id', $document->user_id)->first();
 		if($creator) {
 			Notification::send($creator, new ModuleBasicNotification(
-				title: 'New Comment',
-				message: $user->firstname . ' ' . $user->lastname . ' commented on your documment',
-				subtitle: 'CMS: '. $document->form_number,
+				title: 'commented on your documment',
+				message: '<p>CMS: '. $document->form_number. '</p>',
 				routeName: 'files.management.show',
+				category: 'Document',
 				creator: $user,
 				params: [
 					'folder' => $document->folder_id,
@@ -545,9 +551,9 @@ class DocumentController extends Controller
 		$creator = User::where('emp_id', $comment->reviewer_id)->first();
 		if($creator) {
 			Notification::send($creator, new ModuleBasicNotification(
-				title: 'New Reply',
-				message: $user->firstname . ' ' . $user->lastname . ' replied on your comment',
-				subtitle: 'CMS: '. $doc->form_number,
+				title: 'replied on your comment',
+				message: '<p>CMS: '. $doc->form_number.'</p>',
+				category: 'Document',
 				routeName: 'files.management.show',
 				creator: $user,
 				params: [
@@ -674,5 +680,6 @@ class DocumentController extends Controller
 			->with("message", "File updated successfuly!")
 			->with("type",  "success");
 	}
+
 
 }

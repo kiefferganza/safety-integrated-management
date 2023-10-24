@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DocumentProjectDetail;
 use App\Models\Employee;
 use App\Models\Inspection;
 use App\Models\InspectionReportList;
 use App\Services\InspectionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 class InspectionController extends Controller
 {
@@ -54,6 +56,8 @@ class InspectionController extends Controller
 
 	public function create() {
 		$sequence = Inspection::where('is_deleted', 0)->count() + 1;
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
 
 		return Inertia::render("Dashboard/Management/Inspection/Create/index", [
 			"personel" =>  Employee::select("employee_id", "firstname", "lastname", "user_id")->where([
@@ -62,6 +66,7 @@ class InspectionController extends Controller
 				["employee_id", "!=", auth()->user()->emp_id]
 			])->get(),
 			"sequence_no" => str_pad($sequence, 6, '0', STR_PAD_LEFT),
+			"projectDetails" => $projectDetails
 		]);
 	}
 
@@ -77,12 +82,19 @@ class InspectionController extends Controller
 
 
 	public function edit(Inspection $inspection) {
+
 		if($inspection->employee_id !== auth()->user()->emp_id) {
-			return redirect()->back();
+			if(Gate::denies('inspection_edit')) {
+				abort(403);
+			}
 		}
 
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+
 		return Inertia::render("Dashboard/Management/Inspection/Edit/index", [
-			"inspection" => (New InspectionService)->getUnsatisfactoryItems($inspection)
+			"inspection" => (New InspectionService)->getUnsatisfactoryItems($inspection),
+			"projectDetails" => $projectDetails
 		]);
 	}
 
@@ -128,8 +140,23 @@ class InspectionController extends Controller
 			return redirect()->back();
 		}
 
+		$inspectionFirstUpload = Inspection::
+			select("date_issued")
+			->where([
+				"is_deleted" => 0
+			])
+			->orderBy('date_issued')
+			->first();
+		
+		if($inspectionFirstUpload) {
+			$rolloutDate = $inspectionFirstUpload->date_issued;
+		}else {
+			$rolloutDate = $inspection->date_issued;
+		}
+
 		return Inertia::render("Dashboard/Management/Inspection/Review/index", [
 			"inspection" => (New InspectionService)->getUnsatisfactoryItems($inspection),
+			"rolloutDate" => $rolloutDate
 		]);
 	}
 
@@ -139,8 +166,23 @@ class InspectionController extends Controller
 			return redirect()->back();
 		}
 
+				$inspectionFirstUpload = Inspection::
+			select("date_issued")
+			->where([
+				"is_deleted" => 0
+			])
+			->orderBy('date_issued')
+			->first();
+		
+		if($inspectionFirstUpload) {
+			$rolloutDate = $inspectionFirstUpload->date_issued;
+		}else {
+			$rolloutDate = $inspection->date_issued;
+		}
+
 		return Inertia::render("Dashboard/Management/Inspection/Verify/index", [
-			"inspection" => (New InspectionService)->getUnsatisfactoryItems($inspection)
+			"inspection" => (New InspectionService)->getUnsatisfactoryItems($inspection),
+			"rolloutDate" => $rolloutDate
 		]);
 	}
 
@@ -211,5 +253,30 @@ class InspectionController extends Controller
 	}
 
 
+
+	public function updateDetails(Request $request, Inspection $inspection) {
+		$request->validate([
+			"contract_no" => ["string", "required"],
+			"project_code" => ["string", "required"],
+			"form_number" => ["string", "required"],
+			"location" => ["string", "required"],
+			"inspected_date" => ["string", "required"],
+			"inspected_time" => ["string", "required"],
+			"accompanied_by" => ["string", "required"],
+		]);
+
+		$inspection->contract_no = $request->contract_no;
+		$inspection->project_code = $request->project_code;
+		$inspection->form_number = $request->form_number;
+		$inspection->location = $request->location;
+		$inspection->inspected_date = $request->inspected_date;
+		$inspection->inspected_time = $request->inspected_time;
+		$inspection->accompanied_by = $request->accompanied_by;
+		$inspection->save();
+		
+		return redirect()->back()
+		->with('type', 'success')
+		->with('message', 'Inspection updated successfully');
+	}
 
 }

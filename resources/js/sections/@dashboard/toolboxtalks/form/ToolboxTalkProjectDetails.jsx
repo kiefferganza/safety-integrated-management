@@ -1,9 +1,9 @@
 // @mui
 import { Box, Stack, Divider, Typography } from '@mui/material';
-import { RHFTextField } from '@/Components/hook-form';
+import { RHFMuiSelect, RHFTextField } from '@/Components/hook-form';
 // ----------------------------------------------------------------------
 
-const ToolboxTalkProjectDetails = () => {
+const ToolboxTalkProjectDetails = ({ projectDetails }) => {
 	return (
 		<Box sx={{ p: 3 }}>
 			<Typography variant="h6" sx={{ color: 'text.disabled', flex: 1, mb: 3 }}>
@@ -14,26 +14,49 @@ const ToolboxTalkProjectDetails = () => {
 				<Stack alignItems="flex-end" spacing={2}>
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-						<RHFTextField
-							name="project_code"
+						<RHFMuiSelect
 							label="Project Code"
-							inputProps={{
-								sx: { textTransform: "uppercase" }
-							}}
+							name="project_code"
+							fullWidth
+							options={projectDetails['Project Code'] ? [{ label: '', value: '' }, ...projectDetails['Project Code'].map((d) => ({ label: d.value, value: d.value }))] : []}
 						/>
 
-						<RHFTextField name="originator" label="Originator" />
+						<RHFMuiSelect
+							label="Originator"
+							name="originator"
+							fullWidth
+							options={projectDetails['Originator'] ? [{ label: '', value: '' }, ...projectDetails['Originator'].map((d) => ({ label: d.value, value: d.value }))] : []}
+						/>
 
-						<RHFTextField name="discipline" label="Discipline" />
+						<RHFMuiSelect
+							label="Discipline"
+							name="discipline"
+							fullWidth
+							options={projectDetails['Discipline'] ? [{ label: '', value: '' }, ...projectDetails['Discipline'].map((d) => ({ label: d.value, value: d.value }))] : []}
+						/>
 
 					</Stack>
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
+						<RHFMuiSelect
+							label="Type"
+							name="document_type"
+							fullWidth
+							options={projectDetails['Type'] ? [{ label: '', value: '' }, ...projectDetails['Type'].map((d) => ({ label: d.value, value: d.value }))] : []}
+						/>
 
-						<RHFTextField name="document_type" label="Type" />
+						<RHFMuiSelect
+							label="Zone (Optional)"
+							name="document_zone"
+							fullWidth
+							options={projectDetails['Zone'] ? [{ label: '', value: '' }, ...projectDetails['Zone'].map((d) => ({ label: d.value, value: d.value }))] : []}
+						/>
 
-						<RHFTextField name="document_zone" label="Zone (Optional)" />
-
-						<RHFTextField name="document_level" label="Level (Optional)" />
+						<RHFMuiSelect
+							label="Level (Optional)"
+							name="document_level"
+							fullWidth
+							options={projectDetails['Level'] ? [{ label: '', value: '' }, ...projectDetails['Level'].map((d) => ({ label: d.value, value: d.value }))] : []}
+						/>
 
 					</Stack>
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>

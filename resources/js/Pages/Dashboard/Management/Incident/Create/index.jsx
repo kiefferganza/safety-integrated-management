@@ -11,7 +11,7 @@ import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import IncidentNewForm from '@/sections/@dashboard/incident/form/IncidentNewEditForm';
 const CustomBreadcrumbs = lazy(() => import('@/Components/custom-breadcrumbs'));
 
-const index = () => {
+const index = ({ projectDetails }) => {
 	const { themeStretch } = useSettingsContext();
 	return (
 		<>
@@ -38,7 +38,7 @@ const index = () => {
 								},
 							]}
 						/>
-						<IncidentNewForm />
+						<IncidentNewForm projectDetails={projectDetails} />
 					</Container>
 				</DashboardLayout>
 			</Suspense>

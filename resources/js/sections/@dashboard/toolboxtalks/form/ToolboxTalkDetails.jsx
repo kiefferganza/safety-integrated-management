@@ -9,7 +9,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 // components
-import { RHFSelect, RHFTextField } from '@/Components/hook-form';
+import { RHFMuiSelect, RHFSelect, RHFTextField } from '@/Components/hook-form';
 import { Upload } from "@/Components/upload";
 import useResponsive from '@/hooks/useResponsive';
 import Scrollbar from '@/Components/scrollbar';
@@ -22,11 +22,11 @@ const TYPE_OPTIONS = [
 	{ type: 1, label: 'Civil' },
 	{ type: 2, label: 'Electrical' },
 	{ type: 3, label: 'Mechanical' },
-	{ type: 4, label: 'Camp' },
+	{ type: 4, label: 'Workshop' },
 	{ type: 5, label: 'Office' },
 ];
 
-const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
+const ToolboxTalkDetails = ({ isEdit, participants, sequences, projectDetails = [] }) => {
 	const { auth: { user } } = usePage().props;
 	const [openParticipants, setOpenParticipants] = useState(false);
 	const isDesktop = useResponsive('up', 'sm');
@@ -136,9 +136,20 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences }) => {
 
 							<RHFTextField name="title" label="Title" fullWidth />
 
-							<RHFTextField name="contract_no" label="Contract No." fullWidth />
+							<RHFMuiSelect
+								label="Contract No."
+								name="contract_no"
+								fullWidth
+								options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value, value: d.value }))] : []}
+							/>
 
-							<RHFTextField name="location" label="Station/Location" fullWidth />
+
+							<RHFMuiSelect
+								label="Station/Location."
+								name="location"
+								fullWidth
+								options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Location'].map((d) => ({ label: d.value, value: d.value }))] : []}
+							/>
 
 						</Stack>
 

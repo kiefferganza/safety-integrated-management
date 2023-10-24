@@ -93,13 +93,13 @@ export function IncidentTableRow ({ row, selected, onSelectRow, onDeleteRow }) {
 			</TableRow>
 
 			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
-				{/* <MenuItem
-					href={PATH_DASHBOARD.toolboxTalks.view(row.id)}
+				<MenuItem
+					href={route("incident.management.show", row.uuid)}
 					component={Link}
 				>
 					<Iconify icon="eva:eye-fill" />
 					View
-				</MenuItem> */}
+				</MenuItem>
 
 				<MenuItem
 					href={PATH_DASHBOARD.incident.edit(row.uuid)}

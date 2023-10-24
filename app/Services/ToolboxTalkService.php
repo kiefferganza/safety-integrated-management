@@ -2,10 +2,15 @@
 
 namespace App\Services;
 
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Models\ToolboxTalk;
 use App\Models\ToolboxTalkFile;
 use App\Models\ToolboxTalkParticipant;
+use App\Models\User;
+use App\Notifications\ModuleBasicNotification;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 class ToolboxTalkService {
@@ -155,7 +160,49 @@ class ToolboxTalkService {
 		$tbt->moc_wo_no = $input["moc_wo_no"];
 		$tbt->site = $input["site"];
 
-		$tbt->save();
+		if($tbt->save()) {
+			$type = "Civil";
+
+			switch ($input["tbt_type"]) {
+				case '2':
+					$type = "Electrical";
+					break;
+				case "3":
+					$type = "Mechanical";
+				case "4":
+					$type = "Workshop";
+				case "5":
+					$type = "Office";
+				default:
+					break;
+			}
+			foreach ($input['participants'] as $participant) {
+				if($participant['user_id']) {
+					$creator = User::find($participant['user_id']);
+					$conductedBy = Employee::find($input['conducted_by']);
+					if($creator) {
+						$dateConducted = Carbon::parse($input["date_conducted"])->format('F j, Y');
+						$time = Carbon::createFromFormat('H:i', $input["time_conducted"])->format('g:i A');
+
+						$message = '<p>Title: <strong>'. $input['title'] .'</strong></p>';
+						if($conductedBy) {
+							$message .= '<p>Conducted By: <strong>'. $conductedBy->fullname .'</strong></p>';
+						}
+						$message .= '<p>Location: <strong>'. $input['location'] .'</strong></p>';
+						$message .= '<p>Date & Time: <strong>'. $dateConducted .' '. $time .'</strong></p>';
+						$message .= '<p>CMS: <strong>'. $this->getCms($input). '</strong></p>';
+						Notification::send($creator, new ModuleBasicNotification(
+							title: 'created toolbox talks',
+							message: $message,
+							category: 'Toolbox Talks - ' . $type,
+							routeName: 'toolboxtalk.management.show',
+							creator: $user,
+							params: $tbt->tbt_id
+						));
+					}
+				}
+			}
+		}
 
 		return $tbt->tbt_id;
 	}

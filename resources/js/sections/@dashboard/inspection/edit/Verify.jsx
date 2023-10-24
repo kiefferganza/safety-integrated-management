@@ -15,7 +15,7 @@ import { fDate } from '@/utils/formatTime';
 const Verify = ({ inspection, rolloutDate }) => {
 	const { load, stop, warning } = useSwal();
 	const [loading, setLoading] = useState(false);
-	console.log(inspection)
+
 	const defaultValues = useMemo(() => ({
 		reports: inspection?.report_list.map(sec => ({
 			photo_after: sec?.photo_after || "/storage/media/inspection/blank.png",

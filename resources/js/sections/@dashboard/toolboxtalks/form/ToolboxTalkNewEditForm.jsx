@@ -16,6 +16,7 @@ import { usePage } from '@inertiajs/inertia-react';
 import ToolboxTalkProjectDetails from './ToolboxTalkProjectDetails';
 import ToolboxTalkDetails from './ToolboxTalkDetails';
 import { format, formatISO } from 'date-fns';
+import { useQueryClient } from '@tanstack/react-query';
 
 // ----------------------------------------------------------------------
 
@@ -24,9 +25,10 @@ ToolboxTalkNewEditForm.propTypes = {
 	isEdit: PropTypes.bool,
 };
 
-export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
+export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {}, projectDetails }) {
+	const queryClient = useQueryClient();
 	const [loading, setLoading] = useState(false);
-	const { sequences, participants, tbt_type, errors: resErrors } = usePage().props;
+	const { auth: { user }, sequences, participants, tbt_type, errors: resErrors } = usePage().props;
 
 	const NewTBTSchema = Yup.object().shape({
 		project_code: Yup.string().required('Project Code is required'),
@@ -163,6 +165,8 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 				},
 				onFinish () {
 					setLoading(false);
+					queryClient.invalidateQueries({ queryKey: ['toolboxtalks', user.subscriber_id] });
+					queryClient.invalidateQueries({ queryKey: ['toolboxtalks', { type: +data.tbt_type, sub: user.subscriber_id }] });
 				}
 			}
 		);
@@ -172,9 +176,9 @@ export default function ToolboxTalkNewEditForm ({ isEdit = false, tbt = {} }) {
 		<FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
 			<Card>
 
-				<ToolboxTalkProjectDetails isEdit={isEdit} />
+				<ToolboxTalkProjectDetails isEdit={isEdit} projectDetails={projectDetails} />
 
-				<ToolboxTalkDetails participants={participants} sequences={sequences} isEdit={isEdit} />
+				<ToolboxTalkDetails participants={participants} sequences={sequences} isEdit={isEdit} projectDetails={projectDetails} />
 
 			</Card>
 

@@ -11,12 +11,13 @@ const { Autocomplete, Box, Button, Dialog, DialogContent, DialogTitle, Divider, 
 const { MobileDatePicker } = await import('@mui/x-date-pickers/MobileDatePicker');
 // Components
 import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
-import { RHFTextField } from "@/Components/hook-form";
+import { RHFMuiSelect, RHFTextField } from "@/Components/hook-form";
 import FormProvider from "@/Components/hook-form/FormProvider";
 import Scrollbar from "@/Components/scrollbar/Scrollbar";
 import Image from "@/Components/image/Image";
 import Label from "@/Components/label/Label";
 import Iconify from "@/Components/iconify/Iconify";
+import { format } from "date-fns";
 
 const newBudgetForecastSchema = Yup.object().shape({
 	project_code: Yup.string().required('Project Code is required'),
@@ -36,7 +37,7 @@ const newBudgetForecastSchema = Yup.object().shape({
 	items: Yup.array().min(1)
 });
 
-export const NewStoreReport = ({ open, onClose, stores, employees, sequence_no, submittedDates, ...other }) => {
+export const NewStoreReport = ({ open, onClose, stores, employees, sequence_no, submittedDates, projectDetails, ...other }) => {
 	const { load, stop } = useSwal();
 	const {
 		startDate,
@@ -105,6 +106,10 @@ export const NewStoreReport = ({ open, onClose, stores, employees, sequence_no, 
 	};
 
 	const onSubmit = (data) => {
+		data.inventory_start_date = format(data.inventory_start_date, 'yyyy/MM/dd');
+		data.inventory_end_date = format(data.inventory_end_date, 'yyyy/MM/dd');
+		data.budget_forcast_date = format(data.budget_forcast_date, 'yyyy/MM/dd');
+		data.submitted_date = format(data.submitted_date, 'yyyy/MM/dd');
 		Inertia.post(route("operation.store.report.store"), data, {
 			preserveScroll: true,
 			onStart () {
@@ -171,26 +176,50 @@ export const NewStoreReport = ({ open, onClose, stores, employees, sequence_no, 
 						<Stack alignItems="flex-end" spacing={2}>
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
 
-								<RHFTextField
-									name="project_code"
+								<RHFMuiSelect
 									label="Project Code"
-									inputProps={{
-										sx: { textTransform: "uppercase" }
-									}}
+									name="project_code"
+									fullWidth
+									options={projectDetails['Project Code'] ? [{ label: '', value: '' }, ...projectDetails['Project Code'].map((d) => ({ label: d.value, value: d.value }))] : []}
 								/>
 
-								<RHFTextField name="originator" label="Originator" />
+								<RHFMuiSelect
+									label="Originator"
+									name="originator"
+									fullWidth
+									options={projectDetails['Originator'] ? [{ label: '', value: '' }, ...projectDetails['Originator'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
-								<RHFTextField name="discipline" label="Discipline" />
+								<RHFMuiSelect
+									label="Discipline"
+									name="discipline"
+									fullWidth
+									options={projectDetails['Discipline'] ? [{ label: '', value: '' }, ...projectDetails['Discipline'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
 							</Stack>
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
 
-								<RHFTextField name="document_type" label="Type" />
+								<RHFMuiSelect
+									label="Type"
+									name="document_type"
+									fullWidth
+									options={projectDetails['Type'] ? [{ label: '', value: '' }, ...projectDetails['Type'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
-								<RHFTextField name="document_zone" label="Zone (Optional)" />
+								<RHFMuiSelect
+									label="Zone (Optional)"
+									name="document_zone"
+									fullWidth
+									options={projectDetails['Zone'] ? [{ label: '', value: '' }, ...projectDetails['Zone'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
-								<RHFTextField name="document_level" label="Level (Optional)" />
+								<RHFMuiSelect
+									label="Level (Optional)"
+									name="document_level"
+									fullWidth
+									options={projectDetails['Level'] ? [{ label: '', value: '' }, ...projectDetails['Level'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
 							</Stack>
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
@@ -211,9 +240,19 @@ export const NewStoreReport = ({ open, onClose, stores, employees, sequence_no, 
 						<Stack alignItems="flex-end" spacing={2}>
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
 
-								<RHFTextField name="contract_no" label="Contract No." fullWidth />
+								<RHFMuiSelect
+									label="Contract No."
+									name="contract_no"
+									fullWidth
+									options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
-								<RHFTextField name="location" label="Location" fullWidth />
+								<RHFMuiSelect
+									label="Location"
+									name="location"
+									fullWidth
+									options={projectDetails['Location'] ? [{ label: '', value: '' }, ...projectDetails['Location'].map((d) => ({ label: d.value, value: d.value }))] : []}
+								/>
 
 								<PersonelAutocomplete
 									value={employees.find(per => per.employee_id == values.conducted_by)?.fullname}

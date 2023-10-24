@@ -8,13 +8,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
 import { Card, Box, Stack, Typography, Divider, TextField, Autocomplete, Chip } from '@mui/material';
 // components
-import FormProvider, { RHFTextField } from '@/Components/hook-form';
+import FormProvider, { RHFMuiSelect, RHFTextField } from '@/Components/hook-form';
 import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
 import { MultiFilePreview, Upload } from '@/Components/upload';
 import { PATH_DASHBOARD } from '@/routes/paths';
 
-const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
+const DocumentNewEditForm = ({ currentDocument, isEdit, projectDetails }) => {
 	const { load, stop } = useSwal();
 	const [cc, setCC] = useState([]);
 	const [file, setFile] = useState([]);
@@ -149,26 +149,51 @@ const DocumentNewEditForm = ({ currentDocument, isEdit }) => {
 						</Typography>
 						<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-							<RHFTextField
-								name="project_code"
+							<RHFMuiSelect
 								label="Project Code"
-								inputProps={{
-									sx: { textTransform: "uppercase" }
-								}}
+								name="project_code"
+								fullWidth
+								options={projectDetails['Project Code'] ? [{ label: '', value: '' }, ...projectDetails['Project Code'].map((d) => ({ label: d.value, value: d.value }))] : []}
 							/>
 
-							<RHFTextField name="originator" label="Originator" />
+							<RHFMuiSelect
+								label="Originator"
+								name="originator"
+								fullWidth
+								options={projectDetails['Originator'] ? [{ label: '', value: '' }, ...projectDetails['Originator'].map((d) => ({ label: d.value, value: d.value }))] : []}
+							/>
 
-							<RHFTextField name="discipline" label="Discipline" />
+							<RHFMuiSelect
+								label="Discipline"
+								name="discipline"
+								fullWidth
+								options={projectDetails['Discipline'] ? [{ label: '', value: '' }, ...projectDetails['Discipline'].map((d) => ({ label: d.value, value: d.value }))] : []}
+							/>
+
 
 						</Stack>
 						<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-							<RHFTextField name="document_type" label="Type" />
+							<RHFMuiSelect
+								label="Type"
+								name="document_type"
+								fullWidth
+								options={projectDetails['Type'] ? [{ label: '', value: '' }, ...projectDetails['Type'].map((d) => ({ label: d.value, value: d.value }))] : []}
+							/>
 
-							<RHFTextField name="document_zone" label="Zone (Optional)" />
+							<RHFMuiSelect
+								label="Zone (Optional)"
+								name="document_zone"
+								fullWidth
+								options={projectDetails['Zone'] ? [{ label: '', value: '' }, ...projectDetails['Zone'].map((d) => ({ label: d.value, value: d.value }))] : []}
+							/>
 
-							<RHFTextField name="document_level" label="Level (Optional)" />
+							<RHFMuiSelect
+								label="Level (Optional)"
+								name="document_level"
+								fullWidth
+								options={projectDetails['Level'] ? [{ label: '', value: '' }, ...projectDetails['Level'].map((d) => ({ label: d.value, value: d.value }))] : []}
+							/>
 
 						</Stack>
 						<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
