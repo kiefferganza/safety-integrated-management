@@ -20,6 +20,7 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ToolboxTalkController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\UsersController;
+use App\Models\Incident;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -316,6 +317,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::get('/report', [IncidentController::class, "reportList"])->name('report');
 		Route::middleware("permission:incident_show")->group(function() {
 			Route::get('/list', [IncidentController::class, "index"])->name('index');
+			Route::get('/view/{incident:uuid}', [IncidentController::class, "show"])->name('show');
 		});
 		Route::middleware("permission:incident_create")->group(function() {
 			Route::get('/create', [IncidentController::class, "create"])->name('create');

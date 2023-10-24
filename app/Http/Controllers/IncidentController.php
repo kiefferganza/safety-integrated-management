@@ -20,6 +20,17 @@ class IncidentController extends Controller
 	}
 
 
+	public function show(Incident $incident) {
+		$incident->load([
+			"detail",
+			"supervisor",
+			"injured"
+		]);
+		$incident->getFirstMedia();
+		dd($incident);
+	}
+
+
 	public function create() {
 		$user = auth()->user();
 
