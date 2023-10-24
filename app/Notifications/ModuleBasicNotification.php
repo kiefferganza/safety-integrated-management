@@ -54,9 +54,15 @@ class ModuleBasicNotification extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable)
+    public function toArray()
     {
         $creator = $this->creator;
+
+		if(!trim($creator->firstname)) {
+			$name = $creator->employee->fullname;
+		}else {
+			$name = $creator->firstname . ' ' . $creator->lastname;
+		}
 
 		$profile = $creator->getFirstMedia("profile", ["primary" => true]);
 		if($profile) {
@@ -76,7 +82,7 @@ class ModuleBasicNotification extends Notification
 			'routeName' => $this->routeName,
 			'creator' => [
 				'user_id' => $creator->user_id,
-				'name' => $creator->firstname . ' ' . $creator->lastname,
+				'name' => $name,
 				'profile' => $profile
 			],
         ];

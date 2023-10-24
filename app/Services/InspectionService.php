@@ -88,6 +88,7 @@ class InspectionService {
 		$message .= '<p>Positive Observation: <strong>'. $obs['positive'] .'</strong></p>';
 		$message .= '<p>Negative Observation: <strong>'. $obs['negative'] .'</strong></p>';
 		$message .= '<p>Due Date: <strong>'. Carbon::parse($request->date_due)->format('M j, Y') .'</strong></p>';
+		$message .= '<p>CMS: <strong>'. $request->form_number .'</strong></p>';
 
 		$toReviewer = User::where("emp_id", $request->reviewer_id)->first();
 		if($toReviewer) {
