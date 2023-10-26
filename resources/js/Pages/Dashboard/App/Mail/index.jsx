@@ -1,5 +1,5 @@
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
-import { Mail } from "@/sections/@dashboard/mail";
+import { MailView } from "@/sections/@dashboard/mail/view";
 import { Head } from "@inertiajs/inertia-react";
 
 const index = () => {
@@ -9,7 +9,7 @@ const index = () => {
 				<title>Mail</title>
 			</Head>
 			<DashboardLayout>
-				<Mail />
+				<MailView />
 			</DashboardLayout>
 		</>
 	)

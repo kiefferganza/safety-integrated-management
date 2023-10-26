@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function ()
 	// Route::get('/dashboard/blog/new', fn () => Inertia::render("Dashboard/Management/Blog/Create/index"))->name('management.blog.new');
 
 	// APP
-	// Route::get('/dashboard/mail', fn () => Inertia::render("Dashboard/App/Mail/index"))->name('app.mail');
+	Route::get('/dashboard/mail', fn () => Inertia::render("Dashboard/App/Mail/index"))->name('app.mail');
 	// Route::get('/dashboard/chat', fn () => Inertia::render("Dashboard/App/Chat/index"))->name('app.chat');
 	Route::get('/dashboard/calendar', fn () => Inertia::render("Dashboard/App/Calendar/index"))->name('app.calendar');
 	// Route::get('/dashboard/kanban', fn () => Inertia::render("Dashboard/App/Kanban/index"))->name('app.kanban');

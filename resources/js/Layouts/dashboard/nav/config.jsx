@@ -331,8 +331,7 @@ const navConfig = [
 				title: 'mail',
 				path: PATH_DASHBOARD.mail.root,
 				icon: ICONS.mail,
-				info: <Label color='error'>+32</Label>,
-				disabled: true
+				info: <Label color='error'>+32</Label>
 			},
 			{
 				title: 'chat',
