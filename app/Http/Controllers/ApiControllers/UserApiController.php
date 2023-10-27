@@ -123,10 +123,10 @@ class UserApiController extends Controller
 		$user = auth()->user();
 		$data = [];
 		$users = User::select('email', 'user_id')->where('subscriber_id', $user->subscriber_id)->where('deleted', 0)->get();
-		foreach ($users as $user) {
+		foreach ($users as $u) {
 			$data[] = [
-				'email' => $user->email,
-				'user_id' => $user->user_id,
+				'email' => $u->email,
+				'user_id' => $u->user_id,
 				'type' => 'Users'
 			];
 		}

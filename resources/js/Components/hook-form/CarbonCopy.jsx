@@ -60,7 +60,7 @@ export default function CarbonCopy ({ name, ...other }) {
 							return option.email;
 						}}
 						groupBy={(option) => option?.type}
-						options={data ? data.filter(d => !d.email.includes('tba')) : []}
+						options={data ? data.filter(d => !d.email.toLowerCase().includes('tba') && !d.email.toLowerCase().includes('tbc')) : []}
 						loading={isLoading}
 						limitTags={1}
 						multiple
