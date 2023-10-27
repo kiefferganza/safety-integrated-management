@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\User;
 use App\Services\API\UserApiService;
 use DateTime;
@@ -98,7 +99,7 @@ class UserApiController extends Controller
 		$notifications = [];
 		if($user) {
 			try {
-				$notifications = $user->notifications()->limit(25)->get();
+				$notifications = $user->notifications()->get();
 			} catch (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e) {
 				info($e);
 				$notifications = [];
@@ -115,6 +116,29 @@ class UserApiController extends Controller
 		$user = auth()->user();
 		$user->notifications()->whereIn('id', $request->ids)->where('read_at', null)->update(['read_at' => new DateTime()]);
 		return response()->json([]);
+	}
+
+
+	public function getEmails() {
+		$user = auth()->user();
+		$data = [];
+		$users = User::select('email', 'user_id')->where('subscriber_id', $user->subscriber_id)->where('deleted', 0)->get();
+		foreach ($users as $user) {
+			$data[] = [
+				'email' => $user->email,
+				'user_id' => $user->user_id,
+				'type' => 'Users'
+			];
+		}
+		$employees = Employee::select('email', 'employee_id')->where('user_id', null)->where('sub_id', $user->subscriber_id)->where('is_deleted', 0)->get();
+		foreach ($employees as $emp) {
+			$data[] = [
+				'email' => $emp->email,
+				'emp_id' => $emp->employee_id,
+				'type' => 'Employees'
+			];
+		}
+		return response()->json($data);
 	}
 
 }

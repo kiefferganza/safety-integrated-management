@@ -13,13 +13,12 @@ import { Inertia } from '@inertiajs/inertia';
 import { useSwal } from '@/hooks/useSwal';
 import { MultiFilePreview, Upload } from '@/Components/upload';
 import { PATH_DASHBOARD } from '@/routes/paths';
+import CarbonCopy from '@/Components/hook-form/CarbonCopy';
 
 const DocumentNewEditForm = ({ currentDocument, isEdit, projectDetails }) => {
 	const { load, stop } = useSwal();
-	const [cc, setCC] = useState([]);
 	const [file, setFile] = useState([]);
 	const { errors: resErrors, folder, sequence_no, personel } = usePage().props;
-
 
 	const newDocumentSchema = Yup.object().shape({
 		project_code: Yup.string().required('Project Code is required'),
@@ -44,7 +43,12 @@ const DocumentNewEditForm = ({ currentDocument, isEdit, projectDetails }) => {
 				})
 			),
 			otherwise: Yup.array()
-		})
+		}),
+		cc: Yup.array().of(Yup.object().shape({
+			email: Yup.string().email("Must be a valid email address"),
+			user_id: Yup.number().nullable(),
+			emp_id: Yup.number().nullable(),
+		})).optional(),
 	});
 
 	const defaultValues = {
@@ -60,7 +64,9 @@ const DocumentNewEditForm = ({ currentDocument, isEdit, projectDetails }) => {
 		approval_id: currentDocument?.approval_id || '',
 		src: '',
 		reviewers: currentDocument?.reviewer_employees ? currentDocument?.reviewer_employees.map(rev => ({ id: rev.employee_id, label: rev.fullname, user_id: rev.user_id })) : [],
-		external_approver: currentDocument?.external_approver && currentDocument?.external_approver?.length > 0 ? currentDocument.external_approver : []
+		approver: null,
+		external_approver: currentDocument?.external_approver && currentDocument?.external_approver?.length > 0 ? currentDocument.external_approver : [],
+		cc: []
 	};
 
 	const methods = useForm({
@@ -121,8 +127,8 @@ const DocumentNewEditForm = ({ currentDocument, isEdit, projectDetails }) => {
 					load("Updating document.", "please wait...");
 				},
 				onFinish () {
-					// reset();
-					// setFile([]);
+					reset();
+					setFile([]);
 					stop();
 				}
 			});
@@ -137,7 +143,7 @@ const DocumentNewEditForm = ({ currentDocument, isEdit, projectDetails }) => {
 		return null;
 	}
 
-	const options = personel.map((option) => ({ id: option.employee_id, label: option.fullname, user_id: option.user_id }));
+	const options = personel.map((option) => ({ id: option.employee_id, label: option.fullname, email: option.email, user_id: option.user_id, position: option.position?.position }));
 
 	return (
 		<FormProvider methods={methods}>
@@ -244,8 +250,10 @@ const DocumentNewEditForm = ({ currentDocument, isEdit, projectDetails }) => {
 									onChange={(_event, newValue) => {
 										if (newValue) {
 											setValue('approval_id', newValue.id, { shouldValidate: true, shouldDirty: true });
+											setValue('approver', newValue);
 										} else {
 											setValue('approval_id', '', { shouldValidate: true, shouldDirty: true });
+											setValue('approver', null);
 										}
 									}}
 									disabled={isEdit ? !(currentDocument?.status === '0') : false}
@@ -254,29 +262,8 @@ const DocumentNewEditForm = ({ currentDocument, isEdit, projectDetails }) => {
 									label="Approval Personel"
 									error={errors?.approval_id?.message}
 								/>
-								<Autocomplete
-									multiple
-									freeSolo
-									fullWidth
-									value={cc}
-									onChange={(_event, newValue) => {
-										setCC(newValue);
-									}}
-									options={options}
-									renderOption={(props, option) => {
-										return (
-											<li {...props} key={props.id}>
-												{option.label}
-											</li>
-										);
-									}}
-									renderTags={(value, getTagProps) =>
-										value.map((option, index) => (
-											<Chip {...getTagProps({ index })} key={index} size="small" label={option?.label || option} />
-										))
-									}
-									renderInput={(params) => <TextField label="Add CC" {...params} fullWidth />}
-								/>
+
+								<CarbonCopy name="cc" fullWidth />
 							</Stack>
 						)}
 					</Stack>

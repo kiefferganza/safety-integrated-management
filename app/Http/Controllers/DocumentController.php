@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewDocumentMail;
+use App\Models\AppSection\Mail as AppSectionMail;
+use App\Models\CarbonCopy;
 use App\Models\CompanyModel;
 use App\Models\Document;
 use App\Models\DocumentApprovalSign;
@@ -18,7 +21,9 @@ use App\Models\Position;
 use App\Models\User;
 use App\Notifications\ModuleBasicNotification;
 use App\Services\DocumentService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -51,6 +56,7 @@ class DocumentController extends Controller
 				->where("user_id", "!=", NULL)
 				->where("sub_id", $user->subscriber_id)
 				->where("employee_id", "!=", $user->emp_id)
+				->with("position")
 				->get(),
 			'projectDetails' => $projectDetails
 		]);
@@ -69,12 +75,12 @@ class DocumentController extends Controller
 			'document_type' => ['required','string', 'max:255'],
 			'document_zone' => ['nullable', 'max:255'],
 			'document_level' => ['nullable', 'max:255'],
-			// 'manual_cc' => ['nullable', 'email'],
-			// 'cc' => ['array'],
 			'approval_id' => ['nullable'],
-			'reviewers' => ['array']
+			'approver' => ['nullable'],
+			'reviewers' => ['array'],
+			'cc' => ['array']
 		]);
-		
+
 		$user = auth()->user();
 		$date_today = date('Y-m-d H:i:s');
 		$documentService = new DocumentService;
@@ -116,6 +122,25 @@ class DocumentController extends Controller
 			]);
 		}
 
+		$emails = [];
+		$ccEmails = [];
+		$personels = [];
+		// Mail/Notification
+		if(isset($fields['cc']) && count($fields['cc']) > 0) {
+			$carbonCopy = [];
+			foreach ($fields['cc'] as $cc) {
+				$ccEmails[] = $cc['email'];
+				$carbonCopy[] = [
+					'model_type' => Document::class,
+					'model_id' => $document_id,
+					'email' => $cc['email'],
+					'user_id' => $cc['user_id'],
+					'emp_id' => $cc['emp_id']
+				];
+			}
+			CarbonCopy::insert($carbonCopy);
+		}
+
 		// Document Reviewers
 		if(isset($fields['reviewers'])) {
 			$reviewers = [];
@@ -130,6 +155,13 @@ class DocumentController extends Controller
 					"is_deleted" => 0
 				);
 				$reviewersId[] = (int)$reviewer["id"];
+				$personels[] = [
+					"email" => $reviewer['email'],
+					"position" => $reviewer['position'],
+					"name" => $reviewer['label'],
+					"user_id" => $reviewer['user_id'],
+					"type" => 'Reviewer'
+				];
 			}
 			DocumentReviewer::insert($reviewers);
 			$userReviewers = User::whereIn('emp_id', $reviewersId)->get();
@@ -144,11 +176,14 @@ class DocumentController extends Controller
 					'document' => $documentService->generateFormNumber($document)
 				]
 			));
+			$emails[] = $userReviewers->pluck('email');
+
 		}
 
 		if(isset($fields['approval_id'])) {
 			$userApproval = User::where('emp_id', (int)$fields['approval_id'])->first();
 			if($userApproval) {
+				$emails[] = $userApproval->email;
 				Notification::send($userApproval, new ModuleBasicNotification(
 					title: 'added you as a approver',
 					message: '',
@@ -162,6 +197,57 @@ class DocumentController extends Controller
 				));
 			}
 		}
+
+		if(isset($fields['approver'])) {
+			$personels[] = [
+				"email" => $fields['approver']['email'],
+				"position" => $fields['approver']['position'],
+				"name" => $fields['approver']['label'],
+				"user_id" => $fields['approver']['user_id'],
+				"type" => 'Approver'
+			];
+		}
+		
+
+		$to = [];
+		$subject = 'New Notification from Fiafi Group - New Document';
+		$recipients = [];
+
+		$date_uploaded = Carbon::parse($document->date_uploaded)->format('M j, Y');
+		$mail = new NewDocumentMail($document, $personels, $folder->folder_name, $date_uploaded);
+		$mail->subject($subject);
+		if($request->hasFile('src')) {
+			$file = $request->file('src');
+			$mail->attach($file->getRealPath(), [
+				'as' => $file->getClientOriginalName(),
+				'mime' => $file->getMimeType()
+			]);
+		}
+
+		foreach($personels as $per) {
+			$to[] = $per['email'];
+			$recipients[] = [
+				'user_id' => $per['user_id']
+			];
+		}
+		Mail::to(implode(',', $to))->cc(implode(',', $ccEmails))->send($mail);
+
+		$mailModel = new AppSectionMail();
+		$mailModel->sub_id = $user->subscriber_id;
+		$mailModel->user_id = $user->user_id;
+		$mailModel->from = 'admin@safety-integrated-management.com';
+		$mailModel->to = implode(',', $to);
+		$mailModel->subject = $subject;
+		$mailModel->content = $mail->renderEmailContent();
+		$mailModel->type = 'notification';
+		if(!empty($ccEmails)) {
+			$mailModel->properties = json_encode([
+				'cc' => implode(',', $ccEmails)
+			]);
+		}
+		$mailModel->status = 'sent';
+		$mailModel->save();
+		$mailModel->recipients()->createMany($recipients);
 
 		return redirect()->back()
 		->with("message", "Document added successfully!")
@@ -284,7 +370,8 @@ class DocumentController extends Controller
 				"files" => fn($q) => $q->orderByRaw('COALESCE(file_id, upload_date) desc'),
 				"approval_employee",
 				"reviewer_employees",
-				"external_approver" => fn($q) => $q->select('id', 'firstname', 'lastname', 'position', 'document_id')
+				"external_approver" => fn($q) => $q->select('id', 'firstname', 'lastname', 'position', 'document_id'),
+				"carbon_copy"
 			])
 			->firstOrFail();
 		$document->file = $document->files[0] ?? "";

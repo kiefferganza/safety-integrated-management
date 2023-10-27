@@ -167,4 +167,14 @@ class User extends Authenticatable implements HasMedia
 	// 	$firstname = $this->attributes['firstname'] && "";
 	// 	return  trim($firstname). ' '  . trim($this->attributes['lastname']);
 	// }
+
+	// public function sentEmails()
+	// {
+	// 	return $this->hasMany(Mail::class, 'user_id');
+	// }
+
+	// public function receivedEmails()
+	// {
+	// 	return $this->belongsToMany(Mail::class, 'recipients', 'user_id', 'mail_id');
+	// }
 }

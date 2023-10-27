@@ -208,4 +208,9 @@ class Document extends Model
 		return $this->hasMany(DocumentExternalHistory::class, 'document_id');
 	}
 
+	public function carbon_copy()
+    {
+        return $this->morphOne(CarbonCopy::class, 'model');
+    }
+
 }

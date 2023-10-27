@@ -15,6 +15,8 @@ export const fetchTbtByType = (type) => axiosInstance.get(route('api.tbt.type', 
 
 export const getNotifications = () => axiosInstance.get(route('api.user.notifications')).then(res => res.data);
 
-export const readNotification = (ids) => axiosInstance.post(route('api.user.read_notifications'), { ids })
+export const readNotification = (ids) => axiosInstance.post(route('api.user.read_notifications'), { ids });
+
+export const getEmails = () => axiosInstance.get(route('api.user.emails')).then(res => res.data);
 
 export default axiosInstance;

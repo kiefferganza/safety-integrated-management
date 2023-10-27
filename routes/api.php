@@ -41,6 +41,7 @@ Route::middleware('auth')->as('api.')->group(function ()
 	// Route::post('/user/follow/{user_id}', [UsersController::class, "followUser"]);
 
 	Route::prefix('user')->as('user.')->group(function() {
+		Route::get('/emails', [UserApiController::class, 'getEmails'])->name('emails');
 		Route::get('/notifications', [UserApiController::class, 'notifications'])->name('notifications');
 		Route::post('/read-notifications', [UserApiController::class, 'readNotifications'])->name('read_notifications');
 
@@ -49,6 +50,7 @@ Route::middleware('auth')->as('api.')->group(function ()
 		Route::post('/profile-image-update/{user}', [UserApiController::class, 'updateProfileImage'])->name('update_profile_image');
 		Route::post('/set-image/{media}', [UsersController::class, 'setProfilePic'])->name('set-profile');
 		Route::get('/{user}', [UserApiController::class, 'profileImages'])->name('profile_images');
+
 	});
 
 	Route::prefix('images')->as('images.')->group(function() {

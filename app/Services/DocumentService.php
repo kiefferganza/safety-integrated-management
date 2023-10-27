@@ -69,7 +69,7 @@ class DocumentService {
 		return $folder;
 	}
 
-	PUBLIC static function generateFormNumber(Document $doc) {
+	public static function generateFormNumber(Document $doc) {
 		$form_number = sprintf("%s-%s-%s-%s", $doc->project_code, $doc->originator,$doc->discipline,$doc->document_type);
 		if($doc->document_zone) {
 			$form_number .= "-". $doc->document_zone;

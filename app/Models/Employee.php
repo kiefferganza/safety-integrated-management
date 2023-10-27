@@ -92,6 +92,9 @@ class Employee extends Model
 
     public function getFullnameAttribute()
     {
-        return trim($this->attributes['firstname']) . ' ' . trim($this->attributes['lastname']);
+        if(isset($this->attributes['firstname']) && isset($this->attributes['lastname'])) {
+			return trim($this->attributes['firstname']) . ' ' . trim($this->attributes['lastname']);
+		}
+		return null;
     }
 }
