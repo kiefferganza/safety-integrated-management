@@ -1,6 +1,6 @@
 @component('mail::message')
 <div style="text-align: center; margin-bottom: 8px;">
-    <img src="{{ URL::route('image', ['path' => 'assets/company/logo.png', 'w' => 40, 'h' => 40, 'fit' => 'contain']) }}" alt="{{ $company }} Logo" />
+	<img src="{{ $logo }}" alt="{{ $company }} Logo" />
 </div>
 <h1 style="text-align: center;">New Notification from {{ $company }}</h1>
 

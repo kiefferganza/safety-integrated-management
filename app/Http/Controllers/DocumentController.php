@@ -138,7 +138,7 @@ class DocumentController extends Controller
 					'emp_id' => $cc['emp_id']
 				];
 			}
-			// CarbonCopy::insert($carbonCopy);
+			CarbonCopy::insert($carbonCopy);
 		}
 
 		// Document Reviewers
@@ -198,56 +198,56 @@ class DocumentController extends Controller
 			}
 		}
 
-		// if(isset($fields['approver'])) {
-		// 	$personels[] = [
-		// 		"email" => $fields['approver']['email'],
-		// 		"position" => $fields['approver']['position'],
-		// 		"name" => $fields['approver']['label'],
-		// 		"user_id" => $fields['approver']['user_id'],
-		// 		"type" => 'Approver'
-		// 	];
-		// }
+		if(isset($fields['approver'])) {
+			$personels[] = [
+				"email" => $fields['approver']['email'],
+				"position" => $fields['approver']['position'],
+				"name" => $fields['approver']['label'],
+				"user_id" => $fields['approver']['user_id'],
+				"type" => 'Approver'
+			];
+		}
 		
 
-		// $to = [];
-		// $subject = 'New Notification from Fiafi Group - New Document';
-		// $recipients = [];
+		$to = [];
+		$subject = 'New Notification from Fiafi Group - New Document';
+		$recipients = [];
 
-		// $date_uploaded = Carbon::parse($document->date_uploaded)->format('M j, Y');
-		// $mail = new NewDocumentMail($document, $personels, $folder->folder_name, $date_uploaded);
-		// $mail->subject($subject);
-		// if($request->hasFile('src')) {
-		// 	$file = $request->file('src');
-		// 	$mail->attach($file->getRealPath(), [
-		// 		'as' => $file->getClientOriginalName(),
-		// 		'mime' => $file->getMimeType()
-		// 	]);
-		// }
+		$date_uploaded = Carbon::parse($document->date_uploaded)->format('M j, Y');
+		$mail = new NewDocumentMail($document, $personels, $folder->folder_name, $date_uploaded);
+		$mail->subject($subject);
+		if($request->hasFile('src')) {
+			$file = $request->file('src');
+			$mail->attach($file->getRealPath(), [
+				'as' => $file->getClientOriginalName(),
+				'mime' => $file->getMimeType()
+			]);
+		}
 
-		// foreach($personels as $per) {
-		// 	$to[] = $per['email'];
-		// 	$recipients[] = [
-		// 		'user_id' => $per['user_id']
-		// 	];
-		// }
-		// Mail::to(implode(',', $to))->cc(implode(',', $ccEmails))->send($mail);
+		foreach($personels as $per) {
+			$to[] = $per['email'];
+			$recipients[] = [
+				'user_id' => $per['user_id']
+			];
+		}
+		Mail::to(implode(',', $to))->cc(implode(',', $ccEmails))->send($mail);
 
-		// $mailModel = new AppSectionMail();
-		// $mailModel->sub_id = $user->subscriber_id;
-		// $mailModel->user_id = $user->user_id;
-		// $mailModel->from = 'admin@safety-integrated-management.com';
-		// $mailModel->to = implode(',', $to);
-		// $mailModel->subject = $subject;
-		// $mailModel->content = $mail->renderEmailContent();
-		// $mailModel->type = 'notification';
-		// if(!empty($ccEmails)) {
-		// 	$mailModel->properties = json_encode([
-		// 		'cc' => implode(',', $ccEmails)
-		// 	]);
-		// }
-		// $mailModel->status = 'sent';
-		// $mailModel->save();
-		// $mailModel->recipients()->createMany($recipients);
+		$mailModel = new AppSectionMail();
+		$mailModel->sub_id = $user->subscriber_id;
+		$mailModel->user_id = $user->user_id;
+		$mailModel->from = 'admin@safety-integrated-management.com';
+		$mailModel->to = implode(',', $to);
+		$mailModel->subject = $subject;
+		$mailModel->content = $mail->renderEmailContent();
+		$mailModel->type = 'notification';
+		if(!empty($ccEmails)) {
+			$mailModel->properties = json_encode([
+				'cc' => implode(',', $ccEmails)
+			]);
+		}
+		$mailModel->status = 'sent';
+		$mailModel->save();
+		$mailModel->recipients()->createMany($recipients);
 
 		return redirect()->back()
 		->with("message", "Document added successfully!")

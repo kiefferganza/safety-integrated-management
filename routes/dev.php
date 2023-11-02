@@ -34,6 +34,7 @@ Route::middleware('web')->group(function() {
 			// var_dump($mail->renderEmailContent());
 			// dd($mail->renderEmailContent());
 			// Mail::send($mail);
+			Mail::to('dykennethryan@gmail.com')->send($mail);
 			return $mail; 
 		});
 	}

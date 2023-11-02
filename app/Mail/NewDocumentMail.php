@@ -3,13 +3,12 @@
 namespace App\Mail;
 
 use App\Models\Document;
-use App\Models\Position;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Markdown;
+use Illuminate\Support\Facades\URL;
 
 class NewDocumentMail extends Mailable implements ShouldQueue
 {
@@ -26,7 +25,7 @@ class NewDocumentMail extends Mailable implements ShouldQueue
      */
     public function __construct(public Document $document, public array $data, public string $folder_name = "", public string|null $date = null) {
 		$this->company = "Fiafi Group";
-		$this->logo = '/assets/logo.png';
+		$this->logo = URL::route('image', ['path' => 'assets/company/logo.png', 'w' => 40, 'h' => 40, 'fit' => 'contain']);
 		$this->url = route('files.management.show', [
 			'folder' => $document->folder_id,
 			'document' => $document->form_number,
