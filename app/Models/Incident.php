@@ -60,7 +60,7 @@ class Incident extends Model implements HasMedia
 	}
 
 	public function detail() {
-		return $this->hasOne(IncidentDetail::class, "id", "incident_id");
+		return $this->hasOne(IncidentDetail::class);
 	}
 
 

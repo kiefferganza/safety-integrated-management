@@ -27,7 +27,10 @@ class IncidentController extends Controller
 			"injured"
 		]);
 		$incident->getFirstMedia();
-		dd($incident);
+
+		return Inertia::render("Dashboard/Management/Incident/Details/index", [
+			"incident" => $incident,
+		]);
 	}
 
 

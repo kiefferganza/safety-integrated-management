@@ -218,16 +218,10 @@ const GeneralIncident = ({ personel, projectDetails }) => {
 							<RHFTextField
 								label="Dr. Name"
 								name="dr_name"
-								onChange={(event) => {
-									setValue("dr_phone", event.target.value, { shouldDirty: true });
-								}}
 							/>
 							<RHFTextField
 								label="Doctor's phone number:"
 								name="dr_phone"
-								onChange={(event) => {
-									setValue("dr_phone", event.target.value, { shouldDirty: true });
-								}}
 							/>
 						</>
 					)}

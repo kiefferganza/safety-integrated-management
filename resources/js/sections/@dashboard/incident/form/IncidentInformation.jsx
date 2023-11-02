@@ -187,7 +187,7 @@ const IncidentInformation = ({ types }) => {
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 					<FormControl fullWidth error={!!errors?.root_cause?.message}>
-						<FormLabel id="root-cause-radio-label">Root cause of incident/near</FormLabel>
+						<FormLabel id="root-cause-radio-label">Root cause of incident</FormLabel>
 						<RadioGroup
 							aria-labelledby="root-cause-radio-label"
 							row
@@ -239,7 +239,7 @@ const IncidentInformation = ({ types }) => {
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 					<FormControl fullWidth error={!!errors?.mechanism?.message}>
-						<FormLabel id="mechanism-radio-label">Mechanism of incident/near</FormLabel>
+						<FormLabel id="mechanism-radio-label">Mechanism of incident</FormLabel>
 						<RadioGroup
 							aria-labelledby="mechanism-radio-label"
 							row

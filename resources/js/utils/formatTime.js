@@ -11,6 +11,15 @@ export function fDate (date, newFormat) {
 	return "Invalid date";
 }
 
+export function fTime (date, newFormat) {
+	const fm = newFormat || 'p';
+	const d = new Date(date);
+	if (isValid(d)) {
+		return date ? format(d, fm) : '';
+	}
+	return "Invalid date";
+}
+
 export function fDateTime (date, newFormat) {
 	const fm = newFormat || 'dd MMM yyyy p';
 
