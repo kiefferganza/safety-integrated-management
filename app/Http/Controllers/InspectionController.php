@@ -7,6 +7,8 @@ use App\Models\Employee;
 use App\Models\Inspection;
 use App\Models\InspectionReportList;
 use App\Services\InspectionService;
+use Doctrine\DBAL\Query\QueryBuilder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -37,19 +39,28 @@ class InspectionController extends Controller
 
 	public function index()
 	{
-		// $insReport = InspectionReportList::whereHas('media')->get();
-		// dd($insReport);
+		$user = auth()->user();
+		$isAdmin = $user->user_type === 0;
+
 		$inspections =	Inspection::select("inspection_id","employee_id", "reviewer_id", "verifier_id","accompanied_by", "form_number", "status", "revision_no", "location", "contract_no", "inspected_by", "inspected_date","inspected_time", "avg_score", "date_issued","date_due")
-		->where("is_deleted", 0)
-		->with([
-			"reviewer",
-			"verifier",
-			"report_list" => fn($q) => $q->orderBy("ref_num")
-		])
-		->get();
+		->where("is_deleted", 0);
+
+		if(!$isAdmin) {
+			$inspections->where(function (Builder $query) use ($user) {
+				return $query->where("employee_id", $user->emp_id)
+					->orWhere("reviewer_id", $user->emp_id)
+					->orWhere("verifier_id", $user->emp_id);
+			});
+		}
 
 		return Inertia::render("Dashboard/Management/Inspection/List/index", [
-			"inspections" => $inspections,
+			"inspections" => $inspections
+				->with([
+					"reviewer",
+					"verifier",
+					"report_list" => fn($q) => $q->orderBy("ref_num")
+				])
+				->get(),
 		]);
 	}
 

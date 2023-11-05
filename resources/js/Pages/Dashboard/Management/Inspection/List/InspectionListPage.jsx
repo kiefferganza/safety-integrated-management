@@ -177,8 +177,8 @@ const InspectionListPage = ({ user, inspections }) => {
 		{ value: 'all', label: 'All', color: 'info', count: dataFiltered.length },
 		{ value: 'submitted', label: 'Submitted', color: 'default', count: getLengthByType('submitted') },
 		{ value: 'review', label: 'Review', color: 'error', count: getLengthByType('review') },
-		{ value: 'verify', label: 'Verify & Approve', color: 'success', count: getLengthByType('verify') },
-		{ value: 'closeout', label: 'Closeout', color: 'info', count: getLengthByType('closeout') },
+		{ value: 'verify', label: 'Verify & Approve', color: 'warning', count: getLengthByType('verify') },
+		{ value: 'closeout', label: 'Closeout', color: 'success', count: getLengthByType('closeout') },
 	];
 
 	const getActiveDays = dataFiltered.filter(item => item.dueStatus.classType === "success").length;
@@ -186,8 +186,8 @@ const InspectionListPage = ({ user, inspections }) => {
 	const getStatusLength = (status) => dataFiltered.filter(item => item.status.text === status).length;
 
 	const STATUS_TABS = [
-		{ value: 'I P', label: 'In Progress', color: 'warning', count: getStatusLength('I P') },
-		{ value: 'W F C', label: 'Waiting For Closure', color: 'error', count: getStatusLength('W F C') },
+		{ value: 'I P', label: 'In Progress', color: 'info', count: getStatusLength('I P') },
+		{ value: 'W F C', label: 'Waiting For Closure', color: 'warning', count: getStatusLength('W F C') },
 		{ value: 'C', label: 'Closed', color: 'success', count: getStatusLength('C') },
 		{ value: 'F R', label: 'For Revision', color: 'error', count: getStatusLength('F R') },
 		{ value: 'A.D.', label: 'Active Days', color: 'success', count: getActiveDays },
@@ -334,7 +334,7 @@ const InspectionListPage = ({ user, inspections }) => {
 								total={getLengthByType('verify')}
 								percent={getPercentByType('verify')}
 								icon="heroicons:document-check"
-								color={theme.palette.success.main}
+								color={theme.palette.warning.main}
 							/>
 
 							<InspectionAnalytic
@@ -591,7 +591,7 @@ const getInspectionStatus = (status) => {
 			result.tooltip = 'In Progress';
 			break;
 		case 2:
-			result.classType = 'error';
+			result.classType = 'warning';
 			result.text = 'W F C';
 			result.tooltip = 'Waiting For Closure';
 			break;

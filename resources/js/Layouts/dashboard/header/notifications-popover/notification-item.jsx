@@ -11,6 +11,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 
 import { fToNow } from '@/utils/formatTime';
 import { Link } from '@inertiajs/inertia-react';
+import Label from '@/Components/label';
 
 // import Label from '@/Components/label';
 // import FileThumbnail from '@/Components/file-thumbnail';
@@ -19,6 +20,7 @@ import { Link } from '@inertiajs/inertia-react';
 
 export default function NotificationItem ({ notification, mutation }) {
 	const routeName = notification.data?.routeName ? notification.data?.params ? route(notification.data.routeName, notification.data.params) : route(data.routeName) : '#';
+	console.log(notification)
 	const renderAvatar = (
 		<ListItemAvatar>
 			{notification.data?.creator?.profile ? (
@@ -47,11 +49,16 @@ export default function NotificationItem ({ notification, mutation }) {
 	const renderText = (
 		<ListItemText
 			disableTypography
-			primary={reader(
-				`<p>${notification.data?.creator ? `<strong>${notification.data.creator.name}</strong> ` : ''}${notification.data.title}</p>
+			primary={<>
+				{reader(
+					`<p>${notification.data?.creator ? `<strong>${notification.data.creator.name}</strong> ` : ''}${notification.data.title}</p>
 				${notification.data.message ? `${notification.data.message}` : ''}
 				`
-			)}
+				)}
+				{notification.data?.label && (
+					<Label color={notification.data?.label.color} sx={{ my: 1, pointerEvent: 'none', cursor: 'pointer' }} variant="outlined">{notification.data?.label.title}</Label>
+				)}
+			</>}
 			secondary={
 				<Stack
 					direction="row"

@@ -57,7 +57,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 		handleCloseConfirm();
 		onDeleteRow();
 	}
-
+	const canEditRow = canEdit && user.emp_id === row.employee_id;
 	return (
 		<>
 			<TableRow hover selected={selected} sx={{ width: 1 }}>
@@ -121,7 +121,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 					<Iconify icon="eva:eye-fill" />
 					View
 				</MenuItem>
-				{(row.type === "submitted" || canEdit) && (
+				{(row.type === "submitted" && canEditRow) && (
 					<MenuItem
 						component={Link}
 						href={PATH_DASHBOARD.inspection.edit(row.inspection_id)}
@@ -133,7 +133,7 @@ export default function InspectionTableRow ({ row, selected, onSelectRow, onDele
 					</MenuItem>
 				)}
 
-				{(row.type === "review" && row.reviewer_id === user.emp_id) && (
+				{((row.type === "review" || row.type === "submitted") && row.reviewer_id === user.emp_id) && (
 					<MenuItem
 						component={Link}
 						href={PATH_DASHBOARD.inspection.review(row.inspection_id)}

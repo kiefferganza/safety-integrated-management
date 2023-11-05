@@ -64,6 +64,7 @@ const InspectionDetailPage = ({ inspection, rolloutDate }) => {
 		reviewer_id: inspection.reviewer_id,
 		verifier_id: inspection.verifier_id,
 		status: inspection.status,
+		rolloutDate
 	});
 
 	const TABS = [

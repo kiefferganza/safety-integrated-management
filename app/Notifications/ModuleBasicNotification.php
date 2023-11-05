@@ -18,7 +18,7 @@ class ModuleBasicNotification extends Notification
      *
      * @return void
      */
-    public function __construct(public string $title, public string $message, public string $category, public string $routeName, public null|array|int $params, public User $creator)
+    public function __construct(public string $title, public string $message, public string $category, public string $routeName, public null|array|int $params, public User $creator, public null|array $label = null)
     {
         //
     }
@@ -85,6 +85,7 @@ class ModuleBasicNotification extends Notification
 				'name' => $name,
 				'profile' => $profile
 			],
+			'label' => $this->label
         ];
     }
 }
