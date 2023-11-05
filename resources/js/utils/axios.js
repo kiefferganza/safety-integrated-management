@@ -19,4 +19,6 @@ export const readNotification = (ids) => axiosInstance.post(route('api.user.read
 
 export const getEmails = () => axiosInstance.get(route('api.user.emails')).then(res => res.data);
 
+export const getTrainingsChartByYear = (year) => axiosInstance.get(route('api.dashboard.trainings_by_year', year)).then(res => res.data);
+
 export default axiosInstance;

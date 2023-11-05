@@ -68,6 +68,7 @@ Route::middleware('auth')->as('api.')->group(function ()
 		Route::get('/toolboxtalks', [DashboardController::class, 'toolboxtalks'])->name('toolboxtalks');
 		Route::get('/toolboxtalks-statistics', [DashboardController::class, 'tbtStatistics'])->name('tbt_statistics');
 		Route::get('/trainings', [DashboardController::class, 'trainings'])->name('trainings');
+		Route::get('/trainings-chart-by-year/{year}', [DashboardController::class, 'trainingsByYear'])->name('trainings_by_year');
 		Route::get('/incidents', [DashboardController::class, 'incidents'])->name('incidents');
 		Route::get('/inspections', [DashboardController::class, 'inspections'])->name('inspections');
 	});

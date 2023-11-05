@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, lazy } from 'react';
-import { format } from 'date-fns';
+import { differenceInDays, format, isSameMonth, isSameYear } from 'date-fns';
 // @mui
 const { Box, Grid, Container, Button, TextField, Typography, Stack, Divider, useTheme } = await import('@mui/material');
 const { MobileDatePicker } = await import('@mui/x-date-pickers');
@@ -31,6 +31,7 @@ import AnalyticsTrendingObservation from '@/sections/@dashboard/general/inspecti
 import AnalyticsOpenClose from '@/sections/@dashboard/general/inspection/AnalyticsOpenClose';
 import FileGeneralStorageOverview from '@/sections/@dashboard/general/file/FileGeneralStorageOverview';
 import BookingBookedRoom from '@/sections/@dashboard/general/booking/BookingBookedRoom';
+import AnalyticsTrainingLine from '@/sections/@dashboard/general/analytics/AnalyticsTrainingLine';
 // const AnalyticsWidgetSummary = lazy(() => import('@/sections/@dashboard/general/analytics/AnalyticsWidgetSummary'));
 // const AnalyticsTBTLine = lazy(() => import('@/sections/@dashboard/general/analytics/AnalyticsTBTLine'));
 // const AnalyticsTBTWorkDays = lazy(() => import('@/sections/@dashboard/general/analytics/AnalyticsTBTWorkDays'));
@@ -86,7 +87,6 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 			{ queryKey: ['dash-incidents', { sub: user.subscriber_id }], queryFn: fetchIncidents, refetchOnWindowFocus: false },
 		]
 	});
-	// console.log({ isLoadingTbt, isErrorTbt, data })
 
 
 	const [tbtData, setTbtData] = useState(null);
@@ -235,33 +235,6 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 		});
 	}, [tbtData]);
 
-	let trainingComputedData = null;
-	if (trainings) {
-		trainingComputedData = trainings.reduce((acc, curr) => {
-			if (curr.training_files_count > 0) {
-				const trainingDate = new Date(curr.training_date);
-				const isInMonths = startTbtDate && endTbtDate ? fTimestamp(trainingDate) >= startTbtDate.setHours(0, 0, 0, 0) && fTimestamp(trainingDate) <= endTbtDate.setHours(0, 0, 0, 0) : false;
-
-				if (curr.type === 4) {
-					acc.completedInduction += 1;
-					if (isInMonths) {
-						acc.completedInductionMonth += 1;
-					}
-				}
-				acc.trainingHoursCompleted += curr.training_hrs;
-				if (isInMonths) {
-					acc.trainingHoursCompletedMonth += curr.training_hrs;
-				}
-			}
-			return acc;
-		}, {
-			trainingHoursCompleted: 0,
-			trainingHoursCompletedMonth: 0,
-			completedInduction: 0,
-			completedInductionMonth: 0
-		});
-	}
-
 	const getTbtMonthChartData = () => {
 		if (tbtData) {
 			if (tbtData.length > 12) {
@@ -291,8 +264,6 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 
 	const inspectionData = Object.values(inspections?.data || {}).reduce((acc, curr) => {
 		acc.categories.push(curr.title)
-		// console.log(curr)
-		// acc.series[0].data.push(curr.negative)
 		acc.series[0].data.push(curr.closed)
 		acc.series[1].data.push(curr.positive)
 		acc.maxNegative = curr.negative > acc.maxNegative ? curr.negative : acc.maxNegative;
@@ -320,7 +291,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 	});
 
 	const tbtMonthChartData = getTbtMonthChartData();
-	const monthsDiff = monthDiff(startTbtDate, endTbtDate);
+	// const monthsDiff = monthDiff(startTbtDate, endTbtDate);
 	return (
 		<Container maxWidth={themeStretch ? false : 'xl'}>
 			<Grid container spacing={3}>
@@ -351,77 +322,16 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 				<Grid item xs={12} md={4}>
 					<HseSlider list={sliderImages} isLoading={isLoadingSlider} isError={isErrorSlider} />
 				</Grid>
-				<Grid item md={12}>
-					<Box display="flex" justifyContent="end">
-						<Box>
-							<Typography variant="subtitle2" fontWeight={700} mb={1} textAlign="right">Filter By Date</Typography>
-							<Box display="flex" gap={2}>
-								<MobileDatePicker
-									label="Start Date"
-									value={startTbtDate}
-									onChange={handleStartTbtDateChange}
-									onAccept={handleAcceptDate}
-									inputFormat="MMM yyyy"
-									openTo="year"
-									showToolbar
-									views={['year', 'month']}
-									renderInput={(params) => (
-										<TextField
-											{...params}
-											size="small"
-											fullWidth
-											sx={{
-												maxWidth: { md: 160 },
-											}}
-											InputProps={{
-												endAdornment: (
-													<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
-												)
-											}}
-										/>
-									)}
-								/>
-								<MobileDatePicker
-									disabled={!startTbtDate}
-									label="End Date"
-									value={endTbtDate}
-									onChange={handleTbtEndDateChange}
-									onAccept={handleAcceptDate}
-									minDate={startTbtDate}
-									inputFormat="MMM yyyy"
-									openTo="year"
-									showToolbar
-									views={['year', 'month']}
-									ref={endTbtDateRef}
-									renderInput={(params) => (
-										<TextField
-											{...params}
-											size="small"
-											fullWidth
-											sx={{
-												maxWidth: { md: 160 },
-											}}
-											InputProps={{
-												endAdornment: (
-													<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
-												)
-											}}
-										/>
-									)}
-								/>
-							</Box>
-						</Box>
-					</Box>
-				</Grid>
 
 				<Grid item xs={12} sm={6} md={3}>
 					<AnalyticsWidgetSummary
 						isLoading={isLoadingTbtStat || tbtData === null}
-						title="MANPOWER X̅"
-						total={monthsDiff === 1 ?
-							Math.round((tbtAnalytic?.totalManpower || 1) / new Date(+tbtData[0][2], +tbtData[0][0], 0).getDate())
-							: Math.round((tbtAnalytic?.totalManpower || 1) / (monthsDiff || 1))
-						}
+						title="Ave. MANPOWER/DAY"
+						// total={monthsDiff === 1 ?
+						// 	Math.round((tbtAnalytic?.totalManpower || 1) / new Date(+tbtData[0][2], +tbtData[0][0], 0).getDate())
+						// 	: Math.round((tbtAnalytic?.totalManpower || 1) / (monthsDiff || 1))
+						// }
+						total={Math.round((tbtAnalytic?.totalManpower || 1)) / (differenceInDays(endTbtDate, startTbtDate) + 1)}
 						color="info"
 						icon={'material-symbols:supervisor-account-outline'}
 					/>
@@ -457,12 +367,75 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 				</Grid>
 			</Grid>
 
-			<Divider variant="middle" sx={{ my: 3 }} />
+			<Divider variant="middle" sx={{ my: 1 }} />
 
-			<Grid container spacing={2} >
+			<Grid item md={12} sx={{ mb: 1 }}>
+				<Box display="flex" justifyContent="end">
+					<Box>
+						<Typography variant="subtitle2" fontWeight={700} mb={1} textAlign="right">Filter TBT By Date</Typography>
+						<Box display="flex" gap={2}>
+							<MobileDatePicker
+								label="Start Date"
+								value={startTbtDate}
+								onChange={handleStartTbtDateChange}
+								onAccept={handleAcceptDate}
+								inputFormat="MMM yyyy"
+								openTo="year"
+								showToolbar
+								views={['year', 'month']}
+								renderInput={(params) => (
+									<TextField
+										{...params}
+										size="small"
+										fullWidth
+										sx={{
+											maxWidth: { md: 160 },
+										}}
+										InputProps={{
+											endAdornment: (
+												<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
+											)
+										}}
+									/>
+								)}
+							/>
+							<MobileDatePicker
+								disabled={!startTbtDate}
+								label="End Date"
+								value={endTbtDate}
+								onChange={handleTbtEndDateChange}
+								onAccept={handleAcceptDate}
+								minDate={startTbtDate}
+								inputFormat="MMM yyyy"
+								openTo="year"
+								showToolbar
+								views={['year', 'month']}
+								ref={endTbtDateRef}
+								renderInput={(params) => (
+									<TextField
+										{...params}
+										size="small"
+										fullWidth
+										sx={{
+											maxWidth: { md: 160 },
+										}}
+										InputProps={{
+											endAdornment: (
+												<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
+											)
+										}}
+									/>
+								)}
+							/>
+						</Box>
+					</Box>
+				</Box>
+			</Grid>
+
+			<Grid container spacing={2}>
 				<Grid item xs={12} md={7} lg={5} order={{ md: 1, lg: 1 }}>
 					<AnalyticsTable
-						isLoading={(isLoadingTbt || tbtAnalytic === null || tbtData === null) || (trainingComputedData === null || isLoadingTraining)}
+						isLoading={(isLoadingTbt || tbtAnalytic === null || tbtData === null) || isLoadingTraining}
 						headTitles={[{ title: "HSE Data" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 						data={[
 							{
@@ -482,13 +455,13 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 							},
 							{
 								title: "Number of Training Hours Completed",
-								month: trainingComputedData?.trainingHoursCompletedMonth,
-								itd: trainingComputedData?.trainingHoursCompleted,
+								month: trainings?.totalHrsMonthCompleted || 0,
+								itd: trainings?.totalHrsCompleted || 0,
 							},
 							{
 								title: "Number of HSE Induction Completed",
-								month: trainingComputedData?.completedInductionMonth,
-								itd: trainingComputedData?.completedInduction,
+								month: trainings?.totalInductionMonthCompleted || 0,
+								itd: trainings?.totalInductionCompleted || 0,
 							},
 							{
 								title: "Number of HSE Enforcement Notices Issued",
@@ -581,6 +554,10 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 						</Card>
 					)}
 				</Grid>
+			</Grid>
+
+			<Grid container spacing={2} sx={{ my: 2 }}>
+				<AnalyticsTrainingLine />
 			</Grid>
 
 
@@ -800,9 +777,9 @@ function calculateItd ({ monthsObj, currMonth, currTotal }) {
 	}
 }
 
-function monthDiff (dateFrom, dateTo) {
-	if (dateFrom && dateTo) {
-		return dateTo.getMonth() - dateFrom.getMonth() +
-			(12 * (dateTo.getFullYear() - dateFrom.getFullYear())) + 1
-	}
-}
+// function monthDiff (dateFrom, dateTo) {
+// 	if (dateFrom && dateTo) {
+// 		return dateTo.getMonth() - dateFrom.getMonth() +
+// 			(12 * (dateTo.getFullYear() - dateFrom.getFullYear())) + 1
+// 	}
+// }
