@@ -44,7 +44,7 @@ const SECTION_TITLES = [
 	"Monitoring/Control",
 	"Site Operations",
 	"Environmental",
-	"Other"
+	"Others"
 ]
 
 export default function InspectionReportTableToolbar ({

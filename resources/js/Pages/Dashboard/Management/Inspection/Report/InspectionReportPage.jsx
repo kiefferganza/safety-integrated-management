@@ -59,6 +59,7 @@ const PPEReportListPage = ({ inspectionReport = {}, from = null, to = null }) =>
 		defaultRowsPerPage: 40,
 		defaultDense: true
 	});
+	// console.log({ inspectionReport })
 
 	const { themeStretch } = useSettingsContext();
 	const theme = useTheme();
@@ -97,6 +98,7 @@ const PPEReportListPage = ({ inspectionReport = {}, from = null, to = null }) =>
 	};
 
 	const handleFilterType = (event) => {
+		setPage(0);
 		setFilterType(event.target.value);
 	}
 
@@ -339,7 +341,7 @@ function applyFilter ({ inputData, comparator, filterName, filterType }) {
 	}
 
 	if (filterType.length > 0) {
-		inputData = inputData.filter((ins) => filterType.indexOf(ins.table) !== -1);
+		inputData = inputData.filter((ins) => filterType.some(t => t.toLowerCase() === ins.table.toLowerCase()));
 	}
 
 	return inputData;
