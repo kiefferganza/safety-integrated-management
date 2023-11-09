@@ -14,19 +14,10 @@ const AnalyticsSummaryOpenCloseObservation = ({ title, subheader, chart, height,
 	const chartOptions = useChart({
 		colors,
 		series,
-		tooltip: {
-			shared: false,
-			y: {
-				formatter: (value) => fNumber(value),
-				title: {
-					formatter: (val) => val,
-				},
-			},
-		},
 		plotOptions: {
 			bar: {
 				horizontal: true,
-				barHeight: '48%',
+				barHeight: '60%',
 				borderRadius: 2,
 				stacked: true,
 				stackType: '100%'
@@ -41,7 +32,10 @@ const AnalyticsSummaryOpenCloseObservation = ({ title, subheader, chart, height,
 			}
 		},
 		dataLabels: {
-			enabled: true
+			enabled: true,
+			style: {
+				fontSize: '8px', // Customize the font size of data labels
+			},
 		},
 		yaxis: {
 			title: {
@@ -52,6 +46,15 @@ const AnalyticsSummaryOpenCloseObservation = ({ title, subheader, chart, height,
 				align: "left",
 				maxWidth: 120
 			}
+		},
+		tooltip: {
+			shared: false,
+			y: {
+				formatter: (value) => fNumber(value),
+				title: {
+					formatter: (val) => val,
+				},
+			},
 		},
 		chart: {
 			stacked: true,

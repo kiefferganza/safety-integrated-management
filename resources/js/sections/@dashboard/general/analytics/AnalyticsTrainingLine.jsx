@@ -15,12 +15,13 @@ import Iconify from '@/Components/iconify';
 import Chart, { useChart } from '@/Components/chart';
 import CustomPopover, { usePopover } from '@/Components/custom-popover';
 import { ProgressLoadingScreen } from '@/Components/loading-screen';
+import { generateYears } from '@/utils/years';
 
 function AnalyticsTrainingLine () {
 	const theme = useTheme();
 	const { auth: { user } } = usePage().props;
 	const [year, setYear] = useState(new Date().getFullYear());
-	const years = generateArrayOfYears();
+	const years = generateYears();
 
 	const popover = usePopover();
 
@@ -133,17 +134,5 @@ function AnalyticsTrainingLine () {
 		</>
 	)
 }
-
-function generateArrayOfYears () {
-	let max = new Date().getFullYear()
-	let min = max - 9;
-	let years = [];
-
-	for (let i = max; i >= min; i--) {
-		years.unshift(i)
-	}
-	return years
-}
-
 
 export default AnalyticsTrainingLine

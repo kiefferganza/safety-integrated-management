@@ -36,47 +36,96 @@ class DashboardService {
 	}
 
 
-	public function getInspectionByDate($from, $to) {
+	public function getInspectionByDate($year) {
 		$inspections =  InspectionReportList::select("list_id", "ref_num", "table_name", "tbl_inspection_reports_list.inspection_id", "ref_score", "section_title", "tbl_inspection_reports.status")
-		->whereBetween("tbl_inspection_reports.date_issued", [$from, $to])
 		->where("ref_score", "!=", 4)
 		->where("section_title", "!=", null)
-		->where("tbl_inspection_reports.is_deleted", 0)
-		->join("tbl_inspection_reports", "tbl_inspection_reports.inspection_id", "tbl_inspection_reports_list.inspection_id")
+		->where("tbl_inspection_reports.is_deleted", 0);
+
+		if($year && $year !== "All") {
+			$inspections = $inspections->whereYear("tbl_inspection_reports.date_issued", $year);
+		}
+
+		$inspections = $inspections->join("tbl_inspection_reports", "tbl_inspection_reports.inspection_id", "tbl_inspection_reports_list.inspection_id")
 		->orderBy("ref_num")
 		->get()
-		->reduce(function ($arr, $item){
-			$ref = $item->ref_num;
-			$title = $item->section_title;
-			$score = $item->ref_score;
-			// && $item->status !== null
-			if($title) {
-				$tableName = InspectionService::getTableName($ref);
-				$arr["data"][$title] ??= [
-					"negative" => 0,
-					"closed" => 0,
-					"positive" => 0,
-					"title" => $title,
-					"id" => $ref,
-					"table" => $tableName
-				];
-				if($item->status === 3) {
-					$arr["data"][$title]["closed"] += 1;
-					$arr["total"]["closed"] += 1;
+		->groupBy("section_title")
+		->reduce(function($arr, $item) {
+			$title = $item->first()?->section_title;
+			if($title){
+				$arr["summary"]["categories"][] = $title;
+				$arr["trendingObservation"]["categories"][] = $title;
+			}
+			$open = 0;
+			$close = 0;
+			$negative = 0;
+			foreach ($item as $inspecion) {
+				if($inspecion->status === 3) {
+					$close += 1;
+					$arr["openVsClose"]["close"] += 1;
 				}else {
-					if($score === 1) {
-						$arr["data"][$title]["positive"] += 1;
-						$arr["total"]["open"] += 1;
+					if($inspecion->ref_score === 1) {
+						$close += 1;
+						$arr["openVsClose"]["close"] += 1;
 					}else {
-						$arr["data"][$title]["negative"] += 1;
-						$arr["total"]["open"] += 1;
+						$open += 1;
+						$arr["openVsClose"]["open"] += 1;
+						$negative += 1;
 					}
 				}
 			}
+			$arr["summary"]["series"][0]["data"][] = $close;
+			$arr["summary"]["series"][1]["data"][] = $open;
+			$arr["trendingObservation"]["series"][0]["data"][] = $negative;
+			$arr["trendingObservation"]["merged"][$title] = $negative;
 			return $arr;
-		}, ["data" => [], "total" => [ "open" => 0, "closed" => 0 ]]);
+		}, [
+			"summary" => [
+				"categories" => [],
+				"series" => [
+					[
+						"name" => "Closed: ",
+						"data" => [],
+					],
+					[
+						"name" => "Open: ",
+						"data" => [],
+					],
+				],
+			],
+			"openVsClose" => [
+				"open" => 0,
+				"close" => 0,
+			],
+			"trendingObservation" => [
+				"categories" => [],
+				"series" => [
+					[
+						"name" => "Negative: ",
+						"data" => [],
+					],
+				],
+				"merged" => [],
+			],
+		]);
+		$copiedTrend = [...$inspections["trendingObservation"]["series"][0]["data"]];
+		rsort($copiedTrend);
+		$copiedTrend = array_unique(array_slice($copiedTrend, 0, 5));
 
-
+		$mergedTrends = collect($inspections["trendingObservation"]["merged"]);
+		$trends = [];
+		foreach ($copiedTrend as $cTrend) {
+			if(count($trends) === 5 || $cTrend === 0) break;
+			$getTrend = $mergedTrends->filter(fn($value) => $cTrend === $value)->toArray();
+			foreach ($getTrend as $name => $value) {
+				if(count($trends) === 5) break;
+				$trends[] = [
+					"name" => $name,
+					"value" => $value
+				];
+			}
+		}
+		$inspections["trendingObservation"]["trends"] = $trends;
 		return $inspections;
 	}
 

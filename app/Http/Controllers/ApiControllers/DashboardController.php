@@ -152,10 +152,8 @@ class DashboardController extends Controller
 
 	public function inspections(Request $request) {
 		$dashboardService = new DashboardService;
-		$from = new Carbon($request->from);
-		$to = (new Carbon($request->to))->endOfDay();
 
-		return response()->json($dashboardService->getInspectionByDate($from, $to));
+		return response()->json($dashboardService->getInspectionByDate($request->year));
 	}
 
 	public function incidents() {

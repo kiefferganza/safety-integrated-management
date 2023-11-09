@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, lazy } from 'react';
+import { useEffect, useMemo, useRef, useState, lazy, useCallback } from 'react';
 import { differenceInDays, format, isSameMonth, isSameYear } from 'date-fns';
 // @mui
 const { Box, Grid, Container, Button, TextField, Typography, Stack, Divider, useTheme } = await import('@mui/material');
@@ -7,8 +7,10 @@ const { MobileDatePicker } = await import('@mui/x-date-pickers');
 import { _bookingsOverview } from '@/_mock/arrays';
 // utils
 import { fTimestamp } from '@/utils/formatTime';
+import { generateYears } from '@/utils/years';
 // components
 import { useSettingsContext } from '@/Components/settings';
+import CustomPopover, { usePopover } from '@/Components/custom-popover';
 import useResponsive from '@/hooks/useResponsive';
 import Iconify from '@/Components/iconify';
 import { Inertia } from '@inertiajs/inertia';
@@ -17,7 +19,7 @@ import { Inertia } from '@inertiajs/inertia';
 import Scrollbar from '@/Components/scrollbar/Scrollbar';
 import { useQueries } from '@tanstack/react-query';
 import axiosInstance from '@/utils/axios';
-import { Card, Skeleton } from '@mui/material';
+import { ButtonBase, Card, CardHeader, MenuItem, Skeleton } from '@mui/material';
 const AppWelcome = lazy(() => import('@/sections/@dashboard/general/app/AppWelcome'));
 const WelcomeIllustration = lazy(() => import('@/assets/illustrations/WelcomeIllustration'));
 const HseSlider = lazy(() => import('@/sections/@dashboard/general/hse-dashboard/HseSlider'));
@@ -32,26 +34,10 @@ import AnalyticsOpenClose from '@/sections/@dashboard/general/inspection/Analyti
 import FileGeneralStorageOverview from '@/sections/@dashboard/general/file/FileGeneralStorageOverview';
 import BookingBookedRoom from '@/sections/@dashboard/general/booking/BookingBookedRoom';
 import AnalyticsTrainingLine from '@/sections/@dashboard/general/analytics/AnalyticsTrainingLine';
-// const AnalyticsWidgetSummary = lazy(() => import('@/sections/@dashboard/general/analytics/AnalyticsWidgetSummary'));
-// const AnalyticsTBTLine = lazy(() => import('@/sections/@dashboard/general/analytics/AnalyticsTBTLine'));
-// const AnalyticsTBTWorkDays = lazy(() => import('@/sections/@dashboard/general/analytics/AnalyticsTBTWorkDays'));
-// const AnalyticsTable = lazy(() => import('@/sections/@dashboard/general/analytics/AnalyticsTable'));
-// const AnalyticsSummaryOpenCloseObservation = lazy(() => import('@/sections/@dashboard/general/inspection/AnalyticsSummaryOpenCloseObservation'));
-// const AnalyticsTrendingObservation = lazy(() => import('@/sections/@dashboard/general/inspection/AnalyticsTrendingObservation'));
-// const AnalyticsOpenClose = lazy(() => import('@/sections/@dashboard/general/inspection/AnalyticsOpenClose'));
-// // const FileGeneralDataActivity = lazy(() => import('@/sections/@dashboard/general/file/FileGeneralDataActivity'));
-// const FileGeneralStorageOverview = lazy(() => import('@/sections/@dashboard/general/file/FileGeneralStorageOverview'));
-// const BookingBookedRoom = lazy(() => import('@/sections/@dashboard/general/booking/BookingBookedRoom'));
-
+import { ProgressLoadingScreen } from '@/Components/loading-screen';
 
 // ----------------------------------------------------------------------
 const GB = 1000000000 * 24;
-// const TIME_LABELS = {
-// 	week: ['Mon', 'Tue', 'Web', 'Thu', 'Fri', 'Sat', 'Sun'],
-// 	month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-// 	year: ['2018', '2019', '2020', '2021', '2022'],
-// };
-
 
 const MONTH_NAMES = {
 	1: 'Jan',
@@ -68,36 +54,41 @@ const MONTH_NAMES = {
 	12: 'Dec',
 }
 
+const LAST_TEN_YEARS = generateYears();
+
 const fetchSlider = () => axiosInstance.get(route('api.dashboard.slider_images')).then(res => res.data);
 const fetchTrainings = () => axiosInstance.get(route('api.dashboard.trainings')).then(res => res.data);
-const fetchInspections = (from, to) => axiosInstance.get(route('api.dashboard.inspections', { from, to })).then(res => res.data);
+const fetchInspections = (year) => axiosInstance.get(route('api.dashboard.inspections', { year })).then(res => res.data);
 const fetchIncidents = () => axiosInstance.get(route('api.dashboard.incidents')).then(res => res.data);
 
 export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStatistics, from, to, isLoadingTbt, isLoadingTbtStat }) {
-	const [
-		{ isLoading: isLoadingSlider, isError: isErrorSlider, data: sliderImages },
-		{ isLoading: isLoadingTraining, data: trainings },
-		{ isLoading: _isLoadingInspection, data: inspections },
-		{ isLoading: isLoadingIncident, data: incidents },
-	] = useQueries({
-		queries: [
-			{ queryKey: ['slider', user.subscriber_id], queryFn: fetchSlider, refetchOnWindowFocus: false },
-			{ queryKey: ['dash-trainings', { sub: user.subscriber_id }], queryFn: fetchTrainings, refetchOnWindowFocus: false },
-			{ queryKey: ['dash-inspections', { sub: user.subscriber_id, from, to }], queryFn: () => fetchInspections(from, to), refetchOnWindowFocus: false },
-			{ queryKey: ['dash-incidents', { sub: user.subscriber_id }], queryFn: fetchIncidents, refetchOnWindowFocus: false },
-		]
-	});
-
-
 	const [tbtData, setTbtData] = useState(null);
+	const [inspectionYear, setInstpectionYear] = useState("All");
 	const [startTbtDate, setStartTbtDate] = useState(from ? new Date(from) : null);
 	const [endTbtDate, setEndTbtDate] = useState(to ? new Date(to) : null);
 	const endTbtDateRef = useRef();
+
+	const inspectionYearPopover = usePopover();
 
 	const theme = useTheme();
 	const isTablet = useResponsive('down', 'lg');
 
 	const { themeStretch } = useSettingsContext();
+
+	const [
+		{ isLoading: isLoadingSlider, isError: isErrorSlider, data: sliderImages },
+		{ isLoading: isLoadingTraining, data: trainings },
+		{ isLoading: isLoadingInspection, data: inspections },
+		{ isLoading: isLoadingIncident, data: incidents },
+	] = useQueries({
+		queries: [
+			{ queryKey: ['slider', user.subscriber_id], queryFn: fetchSlider, refetchOnWindowFocus: false },
+			{ queryKey: ['dash-trainings', { sub: user.subscriber_id }], queryFn: fetchTrainings, refetchOnWindowFocus: false },
+			{ queryKey: ['dash-inspections', { sub: user.subscriber_id, year: inspectionYear }], queryFn: () => fetchInspections(inspectionYear), refetchOnWindowFocus: false },
+			{ queryKey: ['dash-incidents', { sub: user.subscriber_id }], queryFn: fetchIncidents, refetchOnWindowFocus: false },
+		]
+	});
+
 
 	useEffect(() => {
 		if (totalTbtByYear && tbtStatistics && (!isLoadingTbt || !isLoadingTbtStat)) {
@@ -143,6 +134,11 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 		}
 	}, [totalTbtByYear, tbtStatistics, isLoadingTbt, isLoadingTbtStat]);
 
+
+	const handleInspectionYearChange = useCallback((newValue) => {
+		inspectionYearPopover.onClose();
+		setInstpectionYear(newValue);
+	}, [inspectionYearPopover]);
 
 	const handleStartTbtDateChange = (newDate) => {
 		setStartTbtDate(newDate);
@@ -262,501 +258,528 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 		return [];
 	}
 
-	const inspectionData = Object.values(inspections?.data || {}).reduce((acc, curr) => {
-		acc.categories.push(curr.title)
-		acc.series[0].data.push(curr.closed)
-		acc.series[1].data.push(curr.positive)
-		acc.maxNegative = curr.negative > acc.maxNegative ? curr.negative : acc.maxNegative;
-		if (curr.negative > 0) {
-			acc.trendingObservation.series[0].data.push(curr.negative);
-			acc.trendingObservation.categories.push(curr.title);
-		}
-		return acc;
-	}, {
-		categories: [],
-		series: [
-			{
-				name: 'Closed',
-				data: []
-			}, {
-				name: 'Open',
-				data: []
-			}
-		],
-		trendingObservation: {
-			categories: [],
-			series: [{ name: "Negative: ", data: [] }]
-		},
-		maxNegative: 1
-	});
-
 	const tbtMonthChartData = getTbtMonthChartData();
 	// const monthsDiff = monthDiff(startTbtDate, endTbtDate);
 	return (
-		<Container maxWidth={themeStretch ? false : 'xl'}>
-			<Grid container spacing={3}>
-				<Grid item xs={12} md={8}>
-					<AppWelcome
-						title='Health and Safety Management Software'
-						description="The Fiafi Group Safety Management Software makes it simple to administer the Health and Safety program of an organization. Capture, monitor, and report safety program data, analyze trends, and gain insights from user- friendly interfaces, all while meeting workplace compliance requirements and reducing administrative work."
-						img={
-							<WelcomeIllustration
-								sx={{
-									p: 3,
-									width: 1,
-									margin: { xs: 'auto', md: 'inherit' },
-								}}
-							/>
-						}
-						action={
-							<Stack direction="row" spacing={2.5} alignItems="center">
-								<Button variant="contained">Go Now</Button>
-								<Typography paragraph variant="h5" sx={{ whiteSpace: 'pre-line' }}>
-									{`Welcome back! \n ${user?.employee?.fullname || user?.firstname}`}
-								</Typography>
-							</Stack>
-						}
-					/>
+		<>
+			<Container maxWidth={themeStretch ? false : 'xl'}>
+				<Grid container spacing={3}>
+					<Grid item xs={12} md={8}>
+						<AppWelcome
+							title='Health and Safety Management Software'
+							description="The Fiafi Group Safety Management Software makes it simple to administer the Health and Safety program of an organization. Capture, monitor, and report safety program data, analyze trends, and gain insights from user- friendly interfaces, all while meeting workplace compliance requirements and reducing administrative work."
+							img={
+								<WelcomeIllustration
+									sx={{
+										p: 3,
+										width: 1,
+										margin: { xs: 'auto', md: 'inherit' },
+									}}
+								/>
+							}
+							action={
+								<Stack direction="row" spacing={2.5} alignItems="center">
+									<Button variant="contained">Go Now</Button>
+									<Typography paragraph variant="h5" sx={{ whiteSpace: 'pre-line' }}>
+										{`Welcome back! \n ${user?.employee?.fullname || user?.firstname}`}
+									</Typography>
+								</Stack>
+							}
+						/>
+					</Grid>
+
+					<Grid item xs={12} md={4}>
+						<HseSlider list={sliderImages} isLoading={isLoadingSlider} isError={isErrorSlider} />
+					</Grid>
+
+					<Grid item xs={12} sm={6} md={3}>
+						<AnalyticsWidgetSummary
+							isLoading={isLoadingTbtStat || tbtData === null}
+							title="Ave. MANPOWER/DAY"
+							// total={monthsDiff === 1 ?
+							// 	Math.round((tbtAnalytic?.totalManpower || 1) / new Date(+tbtData[0][2], +tbtData[0][0], 0).getDate())
+							// 	: Math.round((tbtAnalytic?.totalManpower || 1) / (monthsDiff || 1))
+							// }
+							total={Math.round((tbtAnalytic?.totalManpower || 1)) / (differenceInDays(endTbtDate, startTbtDate) + 1)}
+							color="info"
+							icon={'material-symbols:supervisor-account-outline'}
+						/>
+					</Grid>
+
+					<Grid item xs={12} sm={6} md={3}>
+						<AnalyticsWidgetSummary
+							isLoading={isLoadingTbtStat || tbtData === null}
+							title="MANPOWER"
+							total={Math.round(tbtAnalytic?.totalManpower || 0)}
+							icon={'simple-line-icons:user'}
+						/>
+					</Grid>
+
+					<Grid item xs={12} sm={6} md={3}>
+						<AnalyticsWidgetSummary
+							isLoading={isLoadingTbtStat || tbtData === null}
+							title="MANHOURS"
+							total={Math.round(tbtAnalytic?.totalManhours || 0)}
+							icon={'mdi:clock-time-four-outline'}
+							color="warning"
+						/>
+					</Grid>
+
+					<Grid item xs={12} sm={6} md={3}>
+						<AnalyticsWidgetSummary
+							isLoading={isLoadingTbtStat || tbtData === null}
+							title="SAFE MANHOURS"
+							total={Math.round(tbtAnalytic?.totalManhours || 0)}
+							color="success"
+							icon={'mdi:clock-time-four-outline'}
+						/>
+					</Grid>
 				</Grid>
 
-				<Grid item xs={12} md={4}>
-					<HseSlider list={sliderImages} isLoading={isLoadingSlider} isError={isErrorSlider} />
-				</Grid>
+				<Divider variant="middle" sx={{ my: 1 }} />
 
-				<Grid item xs={12} sm={6} md={3}>
-					<AnalyticsWidgetSummary
-						isLoading={isLoadingTbtStat || tbtData === null}
-						title="Ave. MANPOWER/DAY"
-						// total={monthsDiff === 1 ?
-						// 	Math.round((tbtAnalytic?.totalManpower || 1) / new Date(+tbtData[0][2], +tbtData[0][0], 0).getDate())
-						// 	: Math.round((tbtAnalytic?.totalManpower || 1) / (monthsDiff || 1))
-						// }
-						total={Math.round((tbtAnalytic?.totalManpower || 1)) / (differenceInDays(endTbtDate, startTbtDate) + 1)}
-						color="info"
-						icon={'material-symbols:supervisor-account-outline'}
-					/>
-				</Grid>
-
-				<Grid item xs={12} sm={6} md={3}>
-					<AnalyticsWidgetSummary
-						isLoading={isLoadingTbtStat || tbtData === null}
-						title="MANPOWER"
-						total={Math.round(tbtAnalytic?.totalManpower || 0)}
-						icon={'simple-line-icons:user'}
-					/>
-				</Grid>
-
-				<Grid item xs={12} sm={6} md={3}>
-					<AnalyticsWidgetSummary
-						isLoading={isLoadingTbtStat || tbtData === null}
-						title="MANHOURS"
-						total={Math.round(tbtAnalytic?.totalManhours || 0)}
-						icon={'mdi:clock-time-four-outline'}
-						color="warning"
-					/>
-				</Grid>
-
-				<Grid item xs={12} sm={6} md={3}>
-					<AnalyticsWidgetSummary
-						isLoading={isLoadingTbtStat || tbtData === null}
-						title="SAFE MANHOURS"
-						total={Math.round(tbtAnalytic?.totalManhours || 0)}
-						color="success"
-						icon={'mdi:clock-time-four-outline'}
-					/>
-				</Grid>
-			</Grid>
-
-			<Divider variant="middle" sx={{ my: 1 }} />
-
-			<Grid item md={12} sx={{ mb: 1 }}>
-				<Box display="flex" justifyContent="end">
-					<Box>
-						<Typography variant="subtitle2" fontWeight={700} mb={1} textAlign="right">Filter TBT By Date</Typography>
-						<Box display="flex" gap={2}>
-							<MobileDatePicker
-								label="Start Date"
-								value={startTbtDate}
-								onChange={handleStartTbtDateChange}
-								onAccept={handleAcceptDate}
-								inputFormat="MMM yyyy"
-								openTo="year"
-								showToolbar
-								views={['year', 'month']}
-								renderInput={(params) => (
-									<TextField
-										{...params}
-										size="small"
-										fullWidth
-										sx={{
-											maxWidth: { md: 160 },
-										}}
-										InputProps={{
-											endAdornment: (
-												<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
-											)
-										}}
-									/>
-								)}
-							/>
-							<MobileDatePicker
-								disabled={!startTbtDate}
-								label="End Date"
-								value={endTbtDate}
-								onChange={handleTbtEndDateChange}
-								onAccept={handleAcceptDate}
-								minDate={startTbtDate}
-								inputFormat="MMM yyyy"
-								openTo="year"
-								showToolbar
-								views={['year', 'month']}
-								ref={endTbtDateRef}
-								renderInput={(params) => (
-									<TextField
-										{...params}
-										size="small"
-										fullWidth
-										sx={{
-											maxWidth: { md: 160 },
-										}}
-										InputProps={{
-											endAdornment: (
-												<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
-											)
-										}}
-									/>
-								)}
-							/>
+				<Grid item md={12} sx={{ mb: 1 }}>
+					<Box display="flex" justifyContent="end">
+						<Box>
+							<Typography variant="subtitle2" fontWeight={700} mb={1} textAlign="right">Filter TBT By Date</Typography>
+							<Box display="flex" gap={2}>
+								<MobileDatePicker
+									label="Start Date"
+									value={startTbtDate}
+									onChange={handleStartTbtDateChange}
+									onAccept={handleAcceptDate}
+									inputFormat="MMM yyyy"
+									openTo="year"
+									showToolbar
+									views={['year', 'month']}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											size="small"
+											fullWidth
+											sx={{
+												maxWidth: { md: 160 },
+											}}
+											InputProps={{
+												endAdornment: (
+													<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
+												)
+											}}
+										/>
+									)}
+								/>
+								<MobileDatePicker
+									disabled={!startTbtDate}
+									label="End Date"
+									value={endTbtDate}
+									onChange={handleTbtEndDateChange}
+									onAccept={handleAcceptDate}
+									minDate={startTbtDate}
+									inputFormat="MMM yyyy"
+									openTo="year"
+									showToolbar
+									views={['year', 'month']}
+									ref={endTbtDateRef}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											size="small"
+											fullWidth
+											sx={{
+												maxWidth: { md: 160 },
+											}}
+											InputProps={{
+												endAdornment: (
+													<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
+												)
+											}}
+										/>
+									)}
+								/>
+							</Box>
 						</Box>
 					</Box>
-				</Box>
-			</Grid>
-
-			<Grid container spacing={2}>
-				<Grid item xs={12} md={7} lg={5} order={{ md: 1, lg: 1 }}>
-					<AnalyticsTable
-						isLoading={(isLoadingTbt || tbtAnalytic === null || tbtData === null) || isLoadingTraining}
-						headTitles={[{ title: "HSE Data" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
-						data={[
-							{
-								title: "Total Days Work",
-								month: tbtAnalytic?.daysWork,
-								itd: tbtDataItd?.daysWork,
-							},
-							{
-								title: "Total Days w/o Work",
-								month: tbtAnalytic?.daysWoWork,
-								itd: tbtDataItd?.daysWoWork,
-							},
-							{
-								title: "Total Work Location",
-								month: tbtAnalytic?.location?.size,
-								itd: tbtDataItd?.location?.size,
-							},
-							{
-								title: "Number of Training Hours Completed",
-								month: trainings?.totalHrsMonthCompleted || 0,
-								itd: trainings?.totalHrsCompleted || 0,
-							},
-							{
-								title: "Number of HSE Induction Completed",
-								month: trainings?.totalInductionMonthCompleted || 0,
-								itd: trainings?.totalInductionCompleted || 0,
-							},
-							{
-								title: "Number of HSE Enforcement Notices Issued",
-								month: 0,
-								itd: 0
-							},
-							{
-								title: "Number of HSE Audit (plan v actual) (%)",
-								month: 0,
-								itd: 0
-							},
-							{
-								title: "HSE Leadership Tours (plan v actual) (%)",
-								month: 0,
-								itd: 0
-							},
-						]}
-					/>
 				</Grid>
 
-				<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
-					{(tbtData && tbtMonthChartData) ? (
-						<AnalyticsTBTLine
-							height={isTablet ? 364 : 240}
-							title="Hours Worked / Month"
-							subheader="(12 month rolling)"
-							chart={{
-								labels: tbtMonthChartData.tbt.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
-								series: tbtMonthChartData.tbt.reduce((acc, curr) => {
-									acc[0].data.push(curr[1].totalManpower);
-									acc[1].data.push(curr[1].totalManhours);
-									acc[2].data.push(curr[1].totalManhours === 0 ? 0 : curr[1].safeManhours);
-									return acc;
-								}, [
-									{
-										name: 'Manpower',
-										type: 'column',
-										fill: 'solid',
-										data: [],
-									},
-									{
-										name: 'Man Hours',
-										type: 'column',
-										fill: 'solid',
-										data: [],
-									},
-									{
-										name: 'Safe Man Hours',
-										type: 'column',
-										fill: 'solid',
-										data: [],
-									}
-								]),
-								colors: [
-									theme.palette.primary.main,
-									theme.palette.error.main,
-								],
-							}}
+				<Grid container spacing={2}>
+					<Grid item xs={12} md={7} lg={5} order={{ md: 1, lg: 1 }}>
+						<AnalyticsTable
+							isLoading={(isLoadingTbt || tbtAnalytic === null || tbtData === null) || isLoadingTraining}
+							headTitles={[{ title: "HSE Data" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+							data={[
+								{
+									title: "Total Days Work",
+									month: tbtAnalytic?.daysWork,
+									itd: tbtDataItd?.daysWork,
+								},
+								{
+									title: "Total Days w/o Work",
+									month: tbtAnalytic?.daysWoWork,
+									itd: tbtDataItd?.daysWoWork,
+								},
+								{
+									title: "Total Work Location",
+									month: tbtAnalytic?.location?.size,
+									itd: tbtDataItd?.location?.size,
+								},
+								{
+									title: "Number of Training Hours Completed",
+									month: trainings?.totalHrsMonthCompleted || 0,
+									itd: trainings?.totalHrsCompleted || 0,
+								},
+								{
+									title: "Number of HSE Induction Completed",
+									month: trainings?.totalInductionMonthCompleted || 0,
+									itd: trainings?.totalInductionCompleted || 0,
+								},
+								{
+									title: "Number of HSE Enforcement Notices Issued",
+									month: 0,
+									itd: 0
+								},
+								{
+									title: "Number of HSE Audit (plan v actual) (%)",
+									month: 0,
+									itd: 0
+								},
+								{
+									title: "HSE Leadership Tours (plan v actual) (%)",
+									month: 0,
+									itd: 0
+								},
+							]}
 						/>
-					) : (
-						<Card sx={{ p: 2 }}>
-							<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width={200} />
-							<Skeleton animation='pulse' height={24} width={120} />
-							<Skeleton animation='pulse' height={320} width="100%" />
-						</Card>
-					)}
+					</Grid>
+
+					<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
+						{(tbtData && tbtMonthChartData) ? (
+							<AnalyticsTBTLine
+								height={isTablet ? 364 : 240}
+								title="Hours Worked / Month"
+								subheader="(12 month rolling)"
+								chart={{
+									labels: tbtMonthChartData.tbt.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
+									series: tbtMonthChartData.tbt.reduce((acc, curr) => {
+										acc[0].data.push(curr[1].totalManpower);
+										acc[1].data.push(curr[1].totalManhours);
+										acc[2].data.push(curr[1].totalManhours === 0 ? 0 : curr[1].safeManhours);
+										return acc;
+									}, [
+										{
+											name: 'Manpower',
+											type: 'column',
+											fill: 'solid',
+											data: [],
+										},
+										{
+											name: 'Man Hours',
+											type: 'column',
+											fill: 'solid',
+											data: [],
+										},
+										{
+											name: 'Safe Man Hours',
+											type: 'column',
+											fill: 'solid',
+											data: [],
+										}
+									]),
+									colors: [
+										theme.palette.primary.main,
+										theme.palette.error.main,
+									],
+								}}
+							/>
+						) : (
+							<Card sx={{ p: 2 }}>
+								<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width={200} />
+								<Skeleton animation='pulse' height={24} width={120} />
+								<Skeleton animation='pulse' height={320} width="100%" />
+							</Card>
+						)}
+					</Grid>
+					<Grid item xs={12} md={5} lg={2} order={{ md: 2, lg: 3 }}>
+						{(tbtData && tbtMonthChartData) ? (
+							<AnalyticsTBTWorkDays
+								title="Work Days"
+								chart={{
+									series: [
+										{ label: 'Days Work', value: tbtMonthChartData?.daysWork || 0 },
+										{ label: 'Days Without Work', value: tbtMonthChartData?.daysWoWork || 0 },
+									],
+									colors: [
+										theme.palette.primary.main,
+										theme.palette.error.main,
+									],
+								}}
+							/>
+						) : (
+							<Card sx={{ p: 2 }}>
+								<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width={90} />
+								<Skeleton animation='pulse' sx={{ my: 3 }} height={200} width="100%" variant="circular" />
+								<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width="100%" />
+								<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width="100%" />
+								<Skeleton animation='pulse' sx={{ mt: 1 }} height={28} width="100%" />
+							</Card>
+						)}
+					</Grid>
 				</Grid>
-				<Grid item xs={12} md={5} lg={2} order={{ md: 2, lg: 3 }}>
-					{(tbtData && tbtMonthChartData) ? (
-						<AnalyticsTBTWorkDays
-							title="Work Days"
-							chart={{
-								series: [
-									{ label: 'Days Work', value: tbtMonthChartData?.daysWork || 0 },
-									{ label: 'Days Without Work', value: tbtMonthChartData?.daysWoWork || 0 },
-								],
-								colors: [
-									theme.palette.primary.main,
-									theme.palette.error.main,
-								],
+
+				<Grid container spacing={2} sx={{ my: 2 }}>
+					<AnalyticsTrainingLine />
+				</Grid>
+
+
+				<Divider variant="middle" sx={{ my: 3 }} />
+
+				<Stack width={1} alignItems="flex-end" my={1} px={1}>
+					<Stack alignItems="flex-end">
+						<Typography variant="subtitle2" fontWeight={700} mb={1} textAlign="right">Inspection Year</Typography>
+						<ButtonBase
+							onClick={inspectionYearPopover.onOpen}
+							sx={{
+								pl: 1,
+								py: 0.5,
+								pr: 0.5,
+								borderRadius: 1,
+								typography: 'subtitle2',
+								bgcolor: 'background.neutral',
+								width: 90,
+								justifyContent: 'space-around'
 							}}
+						>
+							{inspectionYear}
+							<Iconify
+								width={16}
+								icon={inspectionYearPopover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
+								sx={{ ml: 0.5 }}
+							/>
+						</ButtonBase>
+					</Stack>
+				</Stack>
+
+				<Grid container spacing={3} >
+					<Grid item xs={12} md={7} lg={5} order={{ md: 1, lg: 1 }}>
+						<AnalyticsTable
+							isLoading={isLoadingIncident || !incidents}
+							headTitles={[{ title: "Accidents and Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+							data={[
+								{ title: "Fatality", month: incidents?.severity?.month.Fatality, itd: incidents?.severity?.itd?.Fatality },
+								{ title: "Major", month: incidents?.severity?.month.Major, itd: incidents?.severity?.itd?.Major },
+								{ title: "Significant", month: incidents?.severity?.month.Significant, itd: incidents?.severity?.itd?.Significant },
+								{ title: "Minor", month: incidents?.severity?.month.Minor, itd: incidents?.severity?.itd?.Minor },
+								{ title: "Number of Near Miss Reports Received", month: 0, itd: 0 },
+								{ title: "Total Recordable Injuries (TRIs)", month: 0, itd: 0 },
+								{ title: "Lost Time Injury Frequency Rate (LTIFR)", month: incidents?.ltifr?.month, itd: incidents?.ltifr?.itd },
+								{ title: "Lost Time Injury Severity Rate (LTISR)", month: incidents?.ltisr?.month, itd: incidents?.ltisr?.itd },
+								{ title: "Total Reportable Case Frequency (TRCF)", month: incidents?.trcf?.month, itd: incidents?.trcf?.itd },
+								{ title: "Fatal Accident Frequency Rate (FAFR)", month: incidents?.fafr?.month, itd: incidents?.fafr?.itd },
+							]}
+							color="error"
 						/>
-					) : (
-						<Card sx={{ p: 2 }}>
-							<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width={90} />
-							<Skeleton animation='pulse' sx={{ my: 3 }} height={200} width="100%" variant="circular" />
-							<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width="100%" />
-							<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width="100%" />
-							<Skeleton animation='pulse' sx={{ mt: 1 }} height={28} width="100%" />
-						</Card>
-					)}
-				</Grid>
-			</Grid>
+					</Grid>
 
-			<Grid container spacing={2} sx={{ my: 2 }}>
-				<AnalyticsTrainingLine />
-			</Grid>
-
-
-			<Divider variant="middle" sx={{ my: 3 }} />
-
-			{(incidents && inspectionData && inspectionData) && (
-				<>
-					<Grid container spacing={3} >
-						<Grid item xs={12} md={7} lg={5} order={{ md: 1, lg: 1 }}>
-							{incidents && (
-								<AnalyticsTable
-									isLoading={isLoadingIncident}
-									headTitles={[{ title: "Accidents and Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
-									data={[
-										{ title: "Fatality", month: incidents?.severity?.month.Fatality, itd: incidents?.severity?.itd?.Fatality },
-										{ title: "Major", month: incidents?.severity?.month.Major, itd: incidents?.severity?.itd?.Major },
-										{ title: "Significant", month: incidents?.severity?.month.Significant, itd: incidents?.severity?.itd?.Significant },
-										{ title: "Minor", month: incidents?.severity?.month.Minor, itd: incidents?.severity?.itd?.Minor },
-										{ title: "Number of Near Miss Reports Received", month: 0, itd: 0 },
-										{ title: "Total Recordable Injuries (TRIs)", month: 0, itd: 0 },
-										{ title: "Lost Time Injury Frequency Rate (LTIFR)", month: incidents?.ltifr?.month, itd: incidents?.ltifr?.itd },
-										{ title: "Lost Time Injury Severity Rate (LTISR)", month: incidents?.ltisr?.month, itd: incidents?.ltisr?.itd },
-										{ title: "Total Reportable Case Frequency (TRCF)", month: incidents?.trcf?.month, itd: incidents?.trcf?.itd },
-										{ title: "Fatal Accident Frequency Rate (FAFR)", month: incidents?.fafr?.month, itd: incidents?.fafr?.itd },
-									]}
-									color="error"
-								/>
-							)}
-						</Grid>
-
-						<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
-							<Box height={400}>
+					{/* Summary Open vs Close Observation */}
+					<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
+						<Card sx={{ height: 400 }}>
+							{isLoadingInspection || !inspections ? (
+								<>
+									<CardHeader title="Summary Open vs Close Observation" />
+									<ProgressLoadingScreen color={theme.palette.primary.main} height={400 - 52} />
+								</>
+							) : (
 								<Scrollbar>
 									<AnalyticsSummaryOpenCloseObservation
 										height={900}
 										title="Summary Open vs Close Observation"
 										chart={{
-											...inspectionData,
+											categories: inspections?.summary?.categories || [],
+											series: inspections?.summary?.series || [],
 											colors: [theme.palette.success.main, theme.palette.info.main]
 										}}
 									/>
 								</Scrollbar>
-							</Box>
-						</Grid>
-
-						<Grid item xs={12} md={5} lg={2} order={{ md: 2, lg: 3 }}>
-							{inspections && (
-								<AnalyticsOpenClose
-									title="Open vs Close"
-									height={160}
-									type="donut"
-									chart={{
-										series: [
-											{ label: 'Open', value: inspections?.total?.open || 0 },
-											{ label: 'Close', value: inspections?.total?.closed || 0 },
-										],
-										colors: [
-											theme.palette.info.main,
-											theme.palette.success.main,
-										],
-									}}
-									sx={{ height: "100%" }}
-								/>
 							)}
-						</Grid>
+						</Card>
 					</Grid>
 
-					<Divider variant="middle" sx={{ my: 3 }} />
+					{/* Open vs Close */}
+					<Grid item xs={12} md={5} lg={2} order={{ md: 2, lg: 3 }}>
+						{isLoadingInspection || !inspections ? (
+							<Card>
+								<CardHeader title="Open vs Close" />
+								<ProgressLoadingScreen color={theme.palette.primary.main} height={400 - 52} />
+							</Card>
+						) : (
+							<AnalyticsOpenClose
+								title="Open vs Close"
+								height={160}
+								type="donut"
+								chart={{
+									series: [
+										{ label: 'Open', value: inspections?.openVsClose?.open || 0 },
+										{ label: 'Close', value: inspections?.openVsClose?.close || 0 },
+									],
+									colors: [
+										theme.palette.info.main,
+										theme.palette.success.main,
+									],
+								}}
+								sx={{ height: "100%" }}
+							/>
+						)}
+					</Grid>
+				</Grid>
 
-					<Grid container spacing={3} >
-						<Grid item xs={12} md={12} lg={5}>
-							<Stack spacing={2}>
-								{incidents && (
-									<>
-										<AnalyticsTable
-											isLoading={isLoadingIncident}
-											headTitles={[{ title: "Recordable Cases" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
-											data={[
-												{ title: "No of Restricted Work Cases", month: incidents?.recordable?.rwc.month, itd: incidents?.recordable?.rwc.itd },
-												{ title: "No of Occupational Illnesses", month: incidents?.recordable?.ol.month, itd: incidents?.recordable?.ol.itd, },
-												{ title: "No of Occupational Fatalities", month: incidents?.recordable?.fat.month, itd: incidents?.recordable?.fat.itd },
-												{ title: "No of Medical Treatment Cases", month: incidents?.recordable?.mtc.month, itd: incidents?.recordable?.mtc.itd },
-												{ title: "No of Loss Consciousness Cases", month: incidents?.recordable?.lcc.month, itd: incidents?.recordable?.lcc.itd },
-											]}
-											color="warning"
-											sx={{ mb: 1 }}
-										/>
-										<AnalyticsTable
-											isLoading={isLoadingIncident}
-											headTitles={[{ title: "Non Recordable" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
-											data={[
-												{ title: "No of First Aid Cases", month: incidents?.nonrecordable?.fac.month, itd: incidents?.nonrecordable?.fac.itd },
-												{ title: "No of Near Misses", month: incidents?.nonrecordable?.nm.month, itd: incidents?.nonrecordable?.nm.itd }
-											]}
-										/>
-									</>
-								)}
-							</Stack>
-						</Grid>
+				<Divider variant="middle" sx={{ my: 3 }} />
 
-						<Grid item xs={12} md={12} lg={7}>
-							<Scrollbar>
-								{inspectionData && (
-									<Box sx={{ width: inspectionData.trendingObservation.series.length > 6 ? 800 : "100%" }}>
+				<Grid container spacing={3} >
+					<Grid item xs={12} md={12} lg={5}>
+						<Stack spacing={2}>
+							<AnalyticsTable
+								isLoading={isLoadingIncident || !incidents}
+								headTitles={[{ title: "Recordable Cases" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+								data={[
+									{ title: "No of Restricted Work Cases", month: incidents?.recordable?.rwc.month, itd: incidents?.recordable?.rwc.itd },
+									{ title: "No of Occupational Illnesses", month: incidents?.recordable?.ol.month, itd: incidents?.recordable?.ol.itd, },
+									{ title: "No of Occupational Fatalities", month: incidents?.recordable?.fat.month, itd: incidents?.recordable?.fat.itd },
+									{ title: "No of Medical Treatment Cases", month: incidents?.recordable?.mtc.month, itd: incidents?.recordable?.mtc.itd },
+									{ title: "No of Loss Consciousness Cases", month: incidents?.recordable?.lcc.month, itd: incidents?.recordable?.lcc.itd },
+								]}
+								color="warning"
+							/>
+							<Divider />
+							<AnalyticsTable
+								isLoading={isLoadingIncident || !incidents}
+								headTitles={[{ title: "Non Recordable" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+								data={[
+									{ title: "No of First Aid Cases", month: incidents?.nonrecordable?.fac.month, itd: incidents?.nonrecordable?.fac.itd },
+									{ title: "No of Near Misses", month: incidents?.nonrecordable?.nm.month, itd: incidents?.nonrecordable?.nm.itd }
+								]}
+							/>
+						</Stack>
+					</Grid>
+
+					{/* Trending Observation */}
+					<Grid item xs={12} md={12} lg={7}>
+						{isLoadingInspection || !inspections ? (
+							<ProgressLoadingScreen color={theme.palette.primary.main} />
+						) : (
+							<Card>
+								<Scrollbar>
+									<Box sx={{ width: 1800 }}>
 										<AnalyticsTrendingObservation
-											width={inspectionData.trendingObservation.series.length > 6 ? 1400 : "100%"}
-											height={isTablet ? 280 : 300}
+											height={280}
 											title="Trending Observation"
-											sx={{ height: "100%" }}
-											maxNegative={inspectionData.maxNegative}
+											trends={inspections?.trendingObservation?.trends}
 											chart={{
-												categories: inspectionData.trendingObservation.categories,
-												series: inspectionData.trendingObservation.series,
+												categories: inspections?.trendingObservation?.categories || [],
+												series: inspections?.trendingObservation?.series || [],
 											}}
 										/>
 									</Box>
-								)}
-							</Scrollbar>
-						</Grid>
+								</Scrollbar>
+							</Card>
+						)}
 					</Grid>
+				</Grid>
 
+				<Divider variant="middle" sx={{ my: 3 }} />
 
-					<Divider variant="middle" sx={{ my: 3 }} />
-
-
-					<Grid container spacing={3} >
-						<Grid item xs={12} md={12} lg={5} height={1}>
-							<Stack spacing={2} height={1}>
-								{incidents && (
+				{(incidents) && (
+					<>
+						<Grid container spacing={3} >
+							<Grid item xs={12} md={12} lg={5} height={1}>
+								<Stack spacing={2} height={1}>
+									{incidents && (
+										<AnalyticsTable
+											isLoading={isLoadingIncident}
+											headTitles={[{ title: "Other Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+											data={[
+												{ title: "No of Property Damage", month: incidents?.pd.month, itd: incidents?.pd.itd },
+												{ title: "No of Spill & Leaks", month: 0, itd: 0 },
+												{ title: "No of Other Environ. incidents", month: incidents?.env.month, itd: incidents?.env.itd },
+												{ title: "No of Fires", month: incidents?.fire.month, itd: incidents?.fire.itd },
+												{ title: "No of Vehicle Accidents", month: incidents?.traf.month, itd: incidents?.traf.itd },
+											]}
+											color="error"
+											sx={{ mb: 1 }}
+										/>
+									)}
 									<AnalyticsTable
-										isLoading={isLoadingIncident}
-										headTitles={[{ title: "Other Incidents" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+										headTitles={[{ title: "HSE KPI's" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 										data={[
-											{ title: "No of Property Damage", month: incidents?.pd.month, itd: incidents?.pd.itd },
-											{ title: "No of Spill & Leaks", month: 0, itd: 0 },
-											{ title: "No of Other Environ. incidents", month: incidents?.env.month, itd: incidents?.env.itd },
-											{ title: "No of Fires", month: incidents?.fire.month, itd: incidents?.fire.itd },
-											{ title: "No of Vehicle Accidents", month: incidents?.traf.month, itd: incidents?.traf.itd },
+											{ title: "Attended HSE Leadership Training (%)", month: 0, itd: 0 },
+											{ title: "Attended HSE Supervisors Training (%)", month: 0, itd: 0 },
+											{ title: "Incident Reports Submitted on Time (%)", month: 0, itd: 0 },
+											{ title: "Incident Recommendations Closed on Time", month: 0, itd: 0 },
+											{ title: "Corrective Actions Closed on Time", month: 0, itd: 0 },
+											{ title: "Accident Frequency Rate (12 month rolling)", month: 0, itd: 0 },
 										]}
-										color="error"
-										sx={{ mb: 1 }}
+										color="secondary"
 									/>
-								)}
-								<AnalyticsTable
-									headTitles={[{ title: "HSE KPI's" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+								</Stack>
+							</Grid>
+
+							<Grid item xs={12} md={6} lg={3}>
+								<FileGeneralStorageOverview
+									height={isTablet ? 364 : 240}
+									total={GB}
+									chart={{
+										series: 76,
+									}}
 									data={[
-										{ title: "Attended HSE Leadership Training (%)", month: 0, itd: 0 },
-										{ title: "Attended HSE Supervisors Training (%)", month: 0, itd: 0 },
-										{ title: "Incident Reports Submitted on Time (%)", month: 0, itd: 0 },
-										{ title: "Incident Recommendations Closed on Time", month: 0, itd: 0 },
-										{ title: "Corrective Actions Closed on Time", month: 0, itd: 0 },
-										{ title: "Accident Frequency Rate (12 month rolling)", month: 0, itd: 0 },
+										{
+											name: 'Images',
+											usedStorage: GB / 2,
+											filesCount: 223,
+											icon: <Box component="img" src="/storage/assets/icons/files/ic_img.svg" />,
+										},
+										{
+											name: 'Documents',
+											usedStorage: GB / 5,
+											filesCount: 223,
+											icon: <Box component="img" src="/storage/assets/icons/files/ic_document.svg" />,
+										},
+										{
+											name: 'Other',
+											usedStorage: GB / 10,
+											filesCount: 223,
+											icon: <Iconify icon="eva:file-fill" width={24} sx={{ color: 'text.disabled' }} />,
+										},
 									]}
-									color="secondary"
 								/>
-							</Stack>
+							</Grid>
+
+							<Grid item xs={12} md={6} lg={4}>
+								<BookingBookedRoom title="Analytic" data={_bookingsOverview} />
+							</Grid>
 						</Grid>
 
-						<Grid item xs={12} md={6} lg={3}>
-							<FileGeneralStorageOverview
-								height={isTablet ? 364 : 240}
-								total={GB}
-								chart={{
-									series: 76,
-								}}
-								data={[
-									{
-										name: 'Images',
-										usedStorage: GB / 2,
-										filesCount: 223,
-										icon: <Box component="img" src="/storage/assets/icons/files/ic_img.svg" />,
-									},
-									{
-										name: 'Documents',
-										usedStorage: GB / 5,
-										filesCount: 223,
-										icon: <Box component="img" src="/storage/assets/icons/files/ic_document.svg" />,
-									},
-									{
-										name: 'Other',
-										usedStorage: GB / 10,
-										filesCount: 223,
-										icon: <Iconify icon="eva:file-fill" width={24} sx={{ color: 'text.disabled' }} />,
-									},
-								]}
-							/>
-						</Grid>
 
-						<Grid item xs={12} md={6} lg={4}>
-							<BookingBookedRoom title="Analytic" data={_bookingsOverview} />
-						</Grid>
-					</Grid>
+						<Divider variant="middle" sx={{ my: 3 }} />
+					</>
+				)}
 
-
-					<Divider variant="middle" sx={{ my: 3 }} />
-				</>
-			)}
-
-		</Container>
+			</Container>
+			<CustomPopover open={inspectionYearPopover.open} onClose={inspectionYearPopover.onClose} sx={{ width: 140 }}>
+				<MenuItem
+					selected={"All" === inspectionYear}
+					onClick={() => handleInspectionYearChange("All")}
+				>
+					All
+				</MenuItem>
+				{LAST_TEN_YEARS.map((option) => (
+					<MenuItem
+						key={option}
+						selected={option === inspectionYear}
+						onClick={() => handleInspectionYearChange(option)}
+					>
+						{option}
+					</MenuItem>
+				))}
+			</CustomPopover>
+		</>
 	);
 }
 

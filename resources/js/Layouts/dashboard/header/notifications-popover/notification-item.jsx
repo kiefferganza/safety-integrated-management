@@ -20,7 +20,7 @@ import Label from '@/Components/label';
 
 export default function NotificationItem ({ notification, mutation }) {
 	const routeName = notification.data?.routeName ? notification.data?.params ? route(notification.data.routeName, notification.data.params) : route(data.routeName) : '#';
-	console.log(notification)
+
 	const renderAvatar = (
 		<ListItemAvatar>
 			{notification.data?.creator?.profile ? (
