@@ -96,10 +96,10 @@ class InspectionController extends Controller
 			$before = $item->getFirstMedia("before");
 			$after = $item->getFirstMedia("after");
 			if($before) {
-				$item->photo_before = $item->getFirstMediaUrl("before", "small");
+				$item->photo_before = $before->getUrl("small");
 			}
 			if($after) {
-				$item->photo_after = $item->getFirstMediaUrl("after", "small");
+				$item->photo_after = $after->getUrl("small");
 			}
 			return $item;
 		});

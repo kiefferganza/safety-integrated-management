@@ -186,7 +186,12 @@ const Review = ({ inspection, rolloutDate }) => {
 											<Typography sx={{ pl: 1 }} fontWeight={700}>Photo (After)</Typography>
 										</Box>
 										<Box height="340px" borderBottom={1} display="flex" alignItems="center" justifyContent="center">
-											<Upload sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={sec?.photo_after || sec?.photo_after_prev} onDrop={(file) => handleDropSingleFile(file, `reports.${index}.photo_after`)} />
+											<Upload
+												accept={{ 'image/*': [] }}
+												sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }}
+												file={sec?.photo_after || sec?.photo_after_prev}
+												onDrop={(file) => handleDropSingleFile(file, `reports.${index}.photo_after`)}
+											/>
 										</Box>
 										<Box height={1} sx={{ px: 1, pt: 1, minHeight: '140px' }}>
 											<Stack justifyContent="space-between" direction="row">

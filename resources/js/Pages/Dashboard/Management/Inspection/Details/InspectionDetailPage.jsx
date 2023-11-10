@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, lazy } from 'react';
 const { Box, Grid, Stack, Typography, Tab, Tabs } = await import("@mui/material");
 import { HeadingTH, TCell, TRow } from "@/sections/@dashboard/inspection/form/styledInspectionForm";
 import { getScoreColor } from "@/utils/inspection";
@@ -9,7 +9,7 @@ import { usePage } from '@inertiajs/inertia-react';
 import Edit from '@/sections/@dashboard/inspection/edit/Edit';
 import Review from '@/sections/@dashboard/inspection/edit/Review';
 import Verify from '@/sections/@dashboard/inspection/edit/Verify';
-import InspectionToolbar from '@/sections/@dashboard/inspection/details/InspectionToolbar';
+const InspectionToolbar = lazy(() => import('@/sections/@dashboard/inspection/details/InspectionToolbar'));
 import { fDate } from '@/utils/formatTime';
 
 const InspectionDetailPage = ({ inspection, rolloutDate }) => {
@@ -98,17 +98,6 @@ const InspectionDetailPage = ({ inspection, rolloutDate }) => {
 						<Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
 					))}
 				</Tabs>
-				{/* <Stack spacing={1} direction="row" alignItems="center">
-					{inspectionType === "submitted" && (inspection.status !== 3 || inspection.status !== 2) && (
-						<Button variant="contained" component={Link} href={PATH_DASHBOARD.inspection.edit(inspection.inspection_id)}>Edit</Button>
-					)}
-					{inspectionType === "review" && (inspection.status === 1 || inspection.status === 0) && (
-						<Button variant="contained" component={Link} href={PATH_DASHBOARD.inspection.review(inspection.inspection_id)}>Review</Button>
-					)}
-					{inspectionType === "verify" && inspection.status === 2 && (
-						<Button variant="contained" component={Link} href={PATH_DASHBOARD.inspection.verify(inspection.inspection_id)}>Verify</Button>
-					)}
-				</Stack> */}
 			</Stack>
 			{TABS.map((tab) => tab.value === currentTab && <Box key={tab.value}> {tab.component} </Box>)}
 		</Box >

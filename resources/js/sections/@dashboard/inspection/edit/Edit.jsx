@@ -13,6 +13,7 @@ import { fDate } from '@/utils/formatTime';
 
 const Edit = ({ inspection, rolloutDate }) => {
 	const [loading, setLoading] = useState(false);
+	
 	const defaultValues = useMemo(() => ({
 		reports: inspection?.report_list.map(sec => ({
 			photo_after: sec?.photo_after || "/storage/media/inspection/blank.png",
@@ -159,8 +160,12 @@ const Edit = ({ inspection, rolloutDate }) => {
 											<Typography sx={{ pl: 1 }} fontWeight={700}>Photo (Before)</Typography>
 										</Box>
 										<Box height="340px" borderBottom={1} display="flex">
-											<Upload sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={sec?.photo_before || sec?.photo_before_prev} onDrop={(file) => handleDropSingleFile(file, `reports.${index}.photo_before`)} />
-
+											<Upload
+												accept={{ 'image/*': [] }}
+												sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }}
+												file={sec?.photo_before || sec?.photo_before_prev}
+												onDrop={(file) => handleDropSingleFile(file, `reports.${index}.photo_before`)}
+											/>
 										</Box>
 										<Box height={1} sx={{ px: 1, pt: 1, minHeight: '140px' }}>
 											<Stack justifyContent="space-between" direction="row" sx={{ color: "#c00000", mb: 2 }}>
