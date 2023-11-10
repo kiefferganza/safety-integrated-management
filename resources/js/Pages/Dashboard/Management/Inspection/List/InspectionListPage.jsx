@@ -58,7 +58,7 @@ const TABLE_HEAD = [
 	{ id: 'inspected_by', label: 'Submitted', align: 'center' },
 	{ id: 'reviewer', label: 'Action', align: 'center' },
 	{ id: 'verifier', label: 'Verify', align: 'center' },
-	{ id: 'date_issued', label: 'Created', align: 'left' },
+	{ id: 'date_issued', label: 'Date Issued', align: 'left' },
 	{ id: 'totalObservation', label: 'O', align: 'right' },
 	{ id: 'negativeObservation', label: 'N', align: 'right' },
 	{ id: 'positiveObservation', label: 'P', align: 'right' },
@@ -89,10 +89,7 @@ const InspectionListPage = ({ user, inspections }) => {
 		onChangeDense,
 		onChangePage,
 		onChangeRowsPerPage,
-	} = useTable({
-		defaultOrderBy: "date_issued",
-		defaultOrder: "desc"
-	});
+	} = useTable();
 
 	const [openConfirm, setOpenConfirm] = useState(false);
 

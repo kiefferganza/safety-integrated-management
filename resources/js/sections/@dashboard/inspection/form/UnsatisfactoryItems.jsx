@@ -86,7 +86,7 @@ const UnsatisfactoryItems = () => {
 									<Typography sx={{ pl: 1 }} fontWeight={700}>Photo (Before)</Typography>
 								</Box>
 								<Box height="340px" borderBottom={1}>
-									<Upload sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={values.sectionA[sec.index]?.photo_before || "/storage/media/inspection/blank.png"} onDrop={(file) => handleDropSingleFile(file, `sectionA.${sec.index}.photo_before`)} />
+									<Upload accept={{ 'image/*': [] }} sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={values.sectionA[sec.index]?.photo_before || "/storage/media/inspection/blank.png"} onDrop={(file) => handleDropSingleFile(file, `sectionA.${sec.index}.photo_before`)} />
 								</Box>
 								<Box height={1} sx={{ px: 1, pt: 1, minHeight: '140px' }}>
 									<Stack justifyContent="space-between" direction="row" sx={{ color: "#c00000", mb: 2 }}>
@@ -144,7 +144,7 @@ const UnsatisfactoryItems = () => {
 										<Typography sx={{ pl: 1 }} fontWeight={700}>Photo (Before)</Typography>
 									</Box>
 									<Box height="340px" borderBottom={1}>
-										<Upload sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={values.sectionB[sec.index]?.photo_before || "/storage/media/inspection/blank.png"} onDrop={(file) => handleDropSingleFile(file, `sectionB.${sec.index}.photo_before`)} />
+										<Upload accept={{ 'image/*': [] }} sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={values.sectionB[sec.index]?.photo_before || "/storage/media/inspection/blank.png"} onDrop={(file) => handleDropSingleFile(file, `sectionB.${sec.index}.photo_before`)} />
 									</Box>
 									<Box height={1} sx={{ px: 1, pt: 1, minHeight: '140px' }}>
 										<Stack justifyContent="space-between" direction="row" sx={{ color: "#c00000", mb: 2 }}>
@@ -203,7 +203,7 @@ const UnsatisfactoryItems = () => {
 										<Typography sx={{ pl: 1 }} fontWeight={700}>Photo (Before)</Typography>
 									</Box>
 									<Box height="340px" borderBottom={1}>
-										<Upload sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={values.sectionC[sec.index]?.photo_before || "/storage/media/inspection/blank.png"} onDrop={(file) => handleDropSingleFile(file, `sectionC.${sec.index}.photo_before`)} />
+										<Upload accept={{ 'image/*': [] }} sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={values.sectionC[sec.index]?.photo_before || "/storage/media/inspection/blank.png"} onDrop={(file) => handleDropSingleFile(file, `sectionC.${sec.index}.photo_before`)} />
 									</Box>
 									<Box height={1} sx={{ px: 1, pt: 1, minHeight: '140px' }}>
 										<Stack justifyContent="space-between" direction="row" sx={{ color: "#c00000", mb: 2 }}>
@@ -262,7 +262,7 @@ const UnsatisfactoryItems = () => {
 										<Typography sx={{ pl: 1 }} fontWeight={700}>Photo (Before)</Typography>
 									</Box>
 									<Box height="340px" borderBottom={1}>
-										<Upload sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={values.sectionC_B[sec.index]?.photo_before || "/storage/media/inspection/blank.png"} onDrop={(file) => handleDropSingleFile(file, `sectionC_B.${sec.index}.photo_before`)} />
+										<Upload accept={{ 'image/*': [] }} sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={values.sectionC_B[sec.index]?.photo_before || "/storage/media/inspection/blank.png"} onDrop={(file) => handleDropSingleFile(file, `sectionC_B.${sec.index}.photo_before`)} />
 									</Box>
 									<Box height={1} sx={{ px: 1, pt: 1, minHeight: '140px' }}>
 										<Stack justifyContent="space-between" direction="row" sx={{ color: "#c00000", mb: 2 }}>
@@ -321,7 +321,7 @@ const UnsatisfactoryItems = () => {
 										<Typography sx={{ pl: 1 }} fontWeight={700}>Photo (Before)</Typography>
 									</Box>
 									<Box height="340px" borderBottom={1}>
-										<Upload sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={values.sectionD[sec.index]?.photo_before || "/storage/media/inspection/blank.png"} onDrop={(file) => handleDropSingleFile(file, `sectionD.${sec.index}.photo_before`)} />
+										<Upload accept={{ 'image/*': [] }} sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={values.sectionD[sec.index]?.photo_before || "/storage/media/inspection/blank.png"} onDrop={(file) => handleDropSingleFile(file, `sectionD.${sec.index}.photo_before`)} />
 									</Box>
 									<Box height={1} sx={{ px: 1, pt: 1, minHeight: '140px' }}>
 										<Stack justifyContent="space-between" direction="row" sx={{ color: "#c00000", mb: 2 }}>
@@ -380,7 +380,7 @@ const UnsatisfactoryItems = () => {
 										<Typography sx={{ pl: 1 }} fontWeight={700}>Photo (Before)</Typography>
 									</Box>
 									<Box height="340px" borderBottom={1}>
-										<Upload sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={values.sectionE[sec.index]?.photo_before || "/storage/media/inspection/blank.png"} onDrop={(file) => handleDropSingleFile(file, `sectionE.${sec.index}.photo_before`)} />
+										<Upload accept={{ 'image/*': [] }} sx={{ height: "100%", "&>div": { height: "100%", "& img": { objectFit: "fill" } } }} file={values.sectionE[sec.index]?.photo_before || "/storage/media/inspection/blank.png"} onDrop={(file) => handleDropSingleFile(file, `sectionE.${sec.index}.photo_before`)} />
 									</Box>
 									<Box height={1} sx={{ px: 1, pt: 1, minHeight: '140px' }}>
 										<Stack justifyContent="space-between" direction="row" sx={{ color: "#c00000", mb: 2 }}>

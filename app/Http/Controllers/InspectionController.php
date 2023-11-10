@@ -7,35 +7,12 @@ use App\Models\Employee;
 use App\Models\Inspection;
 use App\Models\InspectionReportList;
 use App\Services\InspectionService;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 class InspectionController extends Controller
 {
-
-	// public function move_files() { 
-	// 	// Inspection::where("is_deleted", 1)->delete();
-	// 	// InspectionReportList::where("is_deleted", 1)->delete();
-
-	// 	$inspectionReport = InspectionReportList::select("list_id", "photo_after", "photo_before")->where('photo_after', '!=', null)->orWhere('photo_before', '!=', null)->get();
-	// 	$inspectionReport->map(function ($report) {
-	// 		if($report->photo_before) {
-	// 			if(Storage::exists("public/media/inspection/".$report->photo_before)) {
-	// 				$report->addMedia(Storage::path("public/media/inspection/".$report->photo_before))->toMediaCollection("before");
-	// 			}
-	// 		}
-	// 		if($report->photo_after) {
-	// 			if(Storage::exists("public/media/inspection/".$report->photo_after)) {
-	// 				$report->addMedia(Storage::path("public/media/inspection/".$report->photo_after))->toMediaCollection("after");
-	// 			}
-	// 		}
-	// 		$report->update(["photo_before" => null, "photo_after" => null]);
-	// 		return $report;
-	// 	});
-	// 	return count($inspectionReport);
-	// }
 
 	public function index()
 	{
@@ -46,7 +23,7 @@ class InspectionController extends Controller
 		->where("is_deleted", 0);
 
 		if(!$isAdmin) {
-			$inspections->where(function (Builder $query) use ($user) {
+			$inspections = $inspections->where(function (Builder $query) use ($user) {
 				return $query->where("employee_id", $user->emp_id)
 					->orWhere("reviewer_id", $user->emp_id)
 					->orWhere("verifier_id", $user->emp_id);
@@ -60,7 +37,9 @@ class InspectionController extends Controller
 					"verifier",
 					"report_list" => fn($q) => $q->orderBy("ref_num")
 				])
-				->get(),
+				->get()
+				->reverse()
+				->flatten(),
 		]);
 	}
 

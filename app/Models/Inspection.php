@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Inspection extends Model
 {
@@ -22,12 +23,12 @@ class Inspection extends Model
 		parent::boot();
 
 		static::creating(function ($inspection) {
-			// Plus 82 there are 82 is_deleted items mixed must adjust.
-			$sequence = Inspection::where('is_deleted', 0)->count() + 82;
-			$inspection->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
+			$sequence = Inspection::where('is_deleted', 0)->count() + 1;
+			$sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
+			$inspection->sequence_no = $sequence_no;
+			$inspection->form_number = $inspection->form_number . $sequence_no;
 		});
 	}
-
 
 	public function submitted() {
 		return $this->hasOne(Employee::class, "employee_id");

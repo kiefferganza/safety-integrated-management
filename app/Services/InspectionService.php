@@ -26,6 +26,8 @@ class InspectionService {
 			"reviewer_id" => ["string", "required"],
 			"verifier_id" => ["string", "required"]
 		]);
+		
+		// TODO: GENERATE FORM NUMBER ON CREATING AND UPDATE ALL FORM NUMBER
 		$inspection = new Inspection;
 		$inspection->project_code = $request->project_code;
 		$inspection->form_number = $request->form_number;
@@ -48,14 +50,15 @@ class InspectionService {
 		$inspection->save();
 		$inspection_id = $inspection->inspection_id;
 
-		$sections_merged = array_merge($request->sectionA, $request->sectionB, $request->sectionC, $request->sectionC_B, $request->sectionD, $request->sectionE);
+		$sectionE = $request->sectionE ? $request->sectionE : [];
+		$sections_merged = array_merge($request->sectionA, $request->sectionB, $request->sectionC, $request->sectionC_B, $request->sectionD, $sectionE);
 		
 		$obs = [
 			"total" => 0,
 			"positive" => 0,
 			"negative" => 0
 		];
-
+		
 		foreach ($sections_merged as $section) {
 			if($section['score'] !== null) {
 				if($section["score"] !== "4") {

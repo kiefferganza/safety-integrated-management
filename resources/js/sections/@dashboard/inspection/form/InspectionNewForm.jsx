@@ -530,12 +530,12 @@ const InspectionNewForm = ({ projectDetails }) => {
 			case 0:
 				result = await trigger(["contract_no", "project_code", "originator", "discipline", "document_type", "location", "accompanied_by", "inspected_date", "inspected_time", "reviewer_id", "verifier_id"]);
 				if (result) {
-					const formNumber = `${values?.project_code}-${values?.originator}-${values?.discipline}-${values?.document_type}-${values?.document_zone ? values?.document_zone + "-" : ""}${values?.document_level ? values?.document_level + "-" : ""}${values?.sequence_no}`;
+					const formNumber = `${values?.project_code}-${values?.originator}-${values?.discipline}-${values?.document_type}-${values?.document_zone ? values?.document_zone + "-" : ""}${values?.document_level ? values?.document_level + "-" : ""}`;
 					setValue("form_number", formNumber);
 				}
 				break;
 			case 1:
-				result = await trigger(["sectionA", "sectionB", "sectionC", "sectionC_B", "sectionD"]);
+				result = await trigger(["sectionA", "sectionB", "sectionC", "sectionC_B", "sectionD", "sectionE"]);
 				break;
 			case 2:
 				result = await trigger("date_due");
@@ -558,6 +558,8 @@ const InspectionNewForm = ({ projectDetails }) => {
 	const onSubmit = async (data) => {
 		const result = await warning("Are you sure you want to save this form?", "Press cancel to undo this action.", "Yes");
 		if (result.isConfirmed) {
+			const sectionEData = data.sectionE.filter(sec => sec?.title);
+			data.sectionE = sectionEData;
 			Inertia.post(route('inspection.management.store'), data, {
 				preserveState: true,
 				onStart () {
@@ -599,14 +601,16 @@ const InspectionNewForm = ({ projectDetails }) => {
 				</Box>
 
 				<Box sx={{ display: 'flex', flexDirection: 'row', mt: 3 }}>
-					<Button
-						color="inherit"
-						disabled={activeStep === 0 || loading}
-						onClick={handleBack}
-						sx={{ mr: 1 }}
-					>
-						Back
-					</Button>
+					{activeStep !== 3 && (
+						<Button
+							color="inherit"
+							disabled={activeStep === 0 || loading}
+							onClick={handleBack}
+							sx={{ mr: 1 }}
+						>
+							Back
+						</Button>
+					)}
 					<Box sx={{ flex: '1 1 auto' }} />
 					<LoadingButton loading={loading} variant="contained" size="large" onClick={activeStep === steps.length - 1 || (completed[3] && activeStep === 2) ? handleSubmit(onSubmit) : handleNext}>
 						{activeStep === steps.length - 1 || (completed[3] && activeStep === 2) ? 'Create' : 'Next'}

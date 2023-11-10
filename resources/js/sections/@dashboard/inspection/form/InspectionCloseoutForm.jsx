@@ -6,7 +6,7 @@ import { getScoreColor } from "@/utils/inspection";
 import Image from "@/Components/image";
 import Iconify from "@/Components/iconify";
 
-const sectionE_arr = [
+const SECTION_E_OPTIONS = [
 	"Oil spillage",
 	"Traffic control",
 	"Parking",
@@ -65,8 +65,11 @@ const InspectionCloseoutForm = ({ setCompleted }) => {
 
 	const values = watch();
 
-	const handleChangeSecETitle = (e, name) => {
-		setValue(name, e.target.value);
+	const handleChangeSecETitle = (e, index) => {
+		if (e.target.value === "") {
+			setValue(`sectionE.${index}.score`, "", { shouldValidate: true });
+		}
+		setValue(`sectionE.${index}.title`, SECTION_E_OPTIONS[e.target.value] || "");
 	}
 
 	return (
@@ -354,10 +357,10 @@ const InspectionCloseoutForm = ({ setCompleted }) => {
 										<Typography fontWeight={700} variant="subtitle2">{item.refNumber}</Typography>
 									</TCell>
 									<TCell borderRight={1} borderBottom={1} sx={{ py: 0 }}>
-										<select value={values["sectionE"][index]?.title} onChange={(e) => handleChangeSecETitle(e, `sectionE.${index}.title`)} style={{ width: '100%', height: '100%', outline: 0, border: 0 }}>
+										<select onChange={(e) => handleChangeSecETitle(e, index)} style={{ width: '100%', height: '100%', outline: 0, border: 0 }}>
 											<option></option>
-											{sectionE_arr.map((sec, index) => (
-												<option key={index}>{sec}</option>
+											{SECTION_E_OPTIONS.map((sec, index) => (
+												<option key={index} value={index}>{sec}</option>
 											))}
 										</select>
 									</TCell>
@@ -466,15 +469,17 @@ function SSelect ({ name, setCompleted, ...other }) {
 		<Controller
 			name={name}
 			control={control}
-			render={({ field, fieldState: { error } }) => (
-				<ScoreSelect {...field} onChange={(e) => handleChange(e, field.onChange)} sx={{ color: field.value !== "4" ? "#fff" : "#000", backgroundColor: !!error ? "#ab003c" : "inherit" }} {...other}>
-					<option value="" style={{ backgroundColor: "#fff", color: "#000" }}></option>
-					<option value="1" style={{ backgroundColor: "#fff", color: "#000" }}>1</option>
-					<option value="2" style={{ backgroundColor: "#fff", color: "#000" }}>2</option>
-					<option value="3" style={{ backgroundColor: "#fff", color: "#000" }}>3</option>
-					<option value="4" style={{ backgroundColor: "#fff", color: "#000" }}>4</option>
-				</ScoreSelect>
-			)}
+			render={({ field, fieldState: { error } }) => {
+				return (
+					<ScoreSelect {...field} onChange={(e) => handleChange(e, field.onChange)} sx={{ color: field.value !== "4" ? "#fff" : "#000", backgroundColor: !!error ? "#ab003c" : "inherit" }} {...other}>
+						<option value="" style={{ backgroundColor: "#fff", color: "#000" }}></option>
+						<option value="1" style={{ backgroundColor: "#fff", color: "#000" }}>1</option>
+						<option value="2" style={{ backgroundColor: "#fff", color: "#000" }}>2</option>
+						<option value="3" style={{ backgroundColor: "#fff", color: "#000" }}>3</option>
+						<option value="4" style={{ backgroundColor: "#fff", color: "#000" }}>4</option>
+					</ScoreSelect>
+				)
+			}}
 		/>
 	)
 }

@@ -329,7 +329,18 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences, projectDetails = 
 								<Typography variant="h6" sx={{ color: 'text.disabled' }}>
 									Attached File
 								</Typography>
-								<Upload files={values.img_src || []} multiple onDrop={handleDropSingleFile} onRemove={handleRemoveFile} />
+								<Upload
+									files={values.img_src || []}
+									multiple
+									onDrop={handleDropSingleFile}
+									onRemove={handleRemoveFile}
+									accept={{
+										'application/pdf': ['.pdf'],
+										'application/msword': ['.doc', '.docx'],
+										'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+										'image/*': [],
+									}}
+								/>
 							</Box>
 						</Stack>
 
