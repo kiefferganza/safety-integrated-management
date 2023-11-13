@@ -16,30 +16,19 @@ class InspectionController extends Controller
 
 	public function index()
 	{
-		$user = auth()->user();
-		$isAdmin = $user->user_type === 0;
-
 		$inspections =	Inspection::select("inspection_id","employee_id", "reviewer_id", "verifier_id","accompanied_by", "form_number", "status", "revision_no", "location", "contract_no", "inspected_by", "inspected_date","inspected_time", "avg_score", "date_issued","date_due")
-		->where("is_deleted", 0);
-
-		if(!$isAdmin) {
-			$inspections = $inspections->where(function (Builder $query) use ($user) {
-				return $query->where("employee_id", $user->emp_id)
-					->orWhere("reviewer_id", $user->emp_id)
-					->orWhere("verifier_id", $user->emp_id);
-			});
-		}
+		->where("is_deleted", 0)
+		->with([
+			"reviewer",
+			"verifier",
+			"report_list" => fn($q) => $q->orderBy("ref_num")
+		])
+		->get()
+		->reverse()
+		->flatten();
 
 		return Inertia::render("Dashboard/Management/Inspection/List/index", [
 			"inspections" => $inspections
-				->with([
-					"reviewer",
-					"verifier",
-					"report_list" => fn($q) => $q->orderBy("ref_num")
-				])
-				->get()
-				->reverse()
-				->flatten(),
 		]);
 	}
 

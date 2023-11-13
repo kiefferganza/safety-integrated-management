@@ -663,7 +663,10 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 					{/* Trending Observation */}
 					<Grid item xs={12} md={12} lg={7}>
 						{isLoadingInspection || !inspections ? (
-							<ProgressLoadingScreen color={theme.palette.primary.main} />
+							<Card>
+								<CardHeader title="Trending Observation" />
+								<ProgressLoadingScreen color={theme.palette.primary.main} height={280} />
+							</Card>
 						) : (
 							<Card>
 								<Scrollbar>
