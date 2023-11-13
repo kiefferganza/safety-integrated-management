@@ -19,7 +19,7 @@ class ImagesController extends Controller
 				'cache' => $filesystem->getDriver(),
 				'cache_path_prefix' => '.glide-cache',
 		]);
-
+		
 		try {
 			return $server->getImageResponse("public/".$path, $request->all());
 		} catch (\Throwable $th) {

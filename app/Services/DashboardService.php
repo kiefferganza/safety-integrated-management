@@ -10,7 +10,7 @@ use App\Models\ToolboxTalk;
 use App\Models\ToolboxTalkParticipant;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\URL;
 // use Illuminate\Support\Str;
 
 class DashboardService {
@@ -391,8 +391,15 @@ class DashboardService {
 	public function getSliderImages() {
 		return Images::where("type", "slider")->get()->transform(function ($img) {
 			$image = $img->getFirstMedia("slider");
-			$img->url = $image->getFullUrl();
+			if(!$image) {
+				$img->name = 'transparent';
+				$path = "assets/transparent.png";
+				$img->url = URL::route("image", [ "path" => $path, "w" => 480, "h" => 320, "fit" => "crop" ]);
+			}
+			$path = "images/" . md5($image->id . config('app.key')). "/" .$image->file_name;
+			$img->url = URL::route("image", [ "path" => $path, "w" => 480, "h" => 320, "fit" => "crop" ]);
 			$img->name = $image->name;
+			unset($img->media);
 			return $img;
 		});
 	}

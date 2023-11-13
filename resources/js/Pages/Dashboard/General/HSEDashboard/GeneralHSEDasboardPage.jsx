@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, lazy, useCallback } from 'react';
-import { differenceInDays, format, isSameMonth, isSameYear } from 'date-fns';
+// import { differenceInDays, format, isSameMonth, isSameYear } from 'date-fns';
+import { differenceInDays, format } from 'date-fns';
 // @mui
 const { Box, Grid, Container, Button, TextField, Typography, Stack, Divider, useTheme } = await import('@mui/material');
 const { MobileDatePicker } = await import('@mui/x-date-pickers');
@@ -263,7 +264,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'xl'}>
-				<Grid container spacing={3}>
+				<Grid container spacing={3} sx={{ mb: 3 }}>
 					<Grid item xs={12} md={8}>
 						<AppWelcome
 							title='Health and Safety Management Software'
@@ -295,32 +296,38 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 					<Grid item xs={12} sm={6} md={3}>
 						<AnalyticsWidgetSummary
 							isLoading={isLoadingTbtStat || tbtData === null}
-							title="Ave. MANPOWER/DAY"
+							title="Average Manpower/Day"
+							// title="Ave. MANPOWER/DAY"
 							// total={monthsDiff === 1 ?
 							// 	Math.round((tbtAnalytic?.totalManpower || 1) / new Date(+tbtData[0][2], +tbtData[0][0], 0).getDate())
 							// 	: Math.round((tbtAnalytic?.totalManpower || 1) / (monthsDiff || 1))
 							// }
 							total={Math.round((tbtAnalytic?.totalManpower || 1)) / (differenceInDays(endTbtDate, startTbtDate) + 1)}
 							color="info"
-							icon={'material-symbols:supervisor-account-outline'}
+							// icon={'material-symbols:supervisor-account-outline'}
+							icon={'ic:twotone-people-alt'}
 						/>
 					</Grid>
 
 					<Grid item xs={12} sm={6} md={3}>
 						<AnalyticsWidgetSummary
 							isLoading={isLoadingTbtStat || tbtData === null}
-							title="MANPOWER"
+							title="Total Manpower"
+							// title="MANPOWER"
 							total={Math.round(tbtAnalytic?.totalManpower || 0)}
-							icon={'simple-line-icons:user'}
+							// icon={'simple-line-icons:user'}
+							icon={'fluent:people-team-16-filled'}
 						/>
 					</Grid>
 
 					<Grid item xs={12} sm={6} md={3}>
 						<AnalyticsWidgetSummary
 							isLoading={isLoadingTbtStat || tbtData === null}
-							title="MANHOURS"
+							title="Total Manhours"
+							// title="MANHOURS"
 							total={Math.round(tbtAnalytic?.totalManhours || 0)}
-							icon={'mdi:clock-time-four-outline'}
+							icon={'tabler:clock-hour-4'}
+							// icon={'mdi:clock-time-four-outline'}
 							color="warning"
 						/>
 					</Grid>
@@ -328,10 +335,12 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 					<Grid item xs={12} sm={6} md={3}>
 						<AnalyticsWidgetSummary
 							isLoading={isLoadingTbtStat || tbtData === null}
-							title="SAFE MANHOURS"
+							title="Total Safe Manhours"
+							// title="SAFE MANHOURS"
 							total={Math.round(tbtAnalytic?.totalManhours || 0)}
-							color="success"
-							icon={'mdi:clock-time-four-outline'}
+							color="error"
+							// icon={'mdi:clock-time-four-outline'}
+							icon={'mdi:shop-hours-outline'}
 						/>
 					</Grid>
 				</Grid>

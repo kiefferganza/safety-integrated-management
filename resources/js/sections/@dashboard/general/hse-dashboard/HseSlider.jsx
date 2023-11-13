@@ -51,21 +51,27 @@ export default function HseSlider ({ list, isLoading, isError, ...other }) {
 		}),
 	};
 
-	return (
-		<Card {...other}>
-			{isLoading || !list ? (
+	if(isLoading || !list) {
+		return (
+			<Card sx={{ p: 0, height: '100%' }}>
 				<Skeleton
 					sx={{
-						height: { xs: 280, xl: 320 },
+						height: "100%",
+						width: "100%",
+						transform: "none"
 					}}
 				/>
-			) : (
-				<Carousel {...carouselSettings}>
-					{list.map((item) => (
-						<CarouselItem key={item.id} item={item} />
-					))}
-				</Carousel>
-			)}
+			</Card>
+		)
+	}
+
+	return (
+		<Card {...other}>
+			<Carousel {...carouselSettings}>
+				{list.map((item) => (
+					<CarouselItem key={item.id} item={item} />
+				))}
+			</Carousel>
 		</Card>
 	);
 }
