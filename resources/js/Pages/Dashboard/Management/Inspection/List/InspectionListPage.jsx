@@ -22,6 +22,8 @@ import {
 	Typography,
 	Box,
 	Popover,
+	FormControlLabel,
+	Switch,
 } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths';
@@ -97,6 +99,8 @@ const InspectionListPage = ({ user, inspections }) => {
 
 	const [tableData, setTableData] = useState([]);
 
+	const [filterRelated, setFilterRelated] = useState(false);
+
 	const [filterName, setFilterName] = useState('');
 
 	const [filterType, setFilterType] = useState('all');
@@ -112,7 +116,9 @@ const InspectionListPage = ({ user, inspections }) => {
 		comparator: getComparator(order, orderBy),
 		filterName,
 		filterStartDate,
-		filterEndDate
+		filterEndDate,
+		filterRelated,
+		user
 	});
 
 	const dataFilteredStatusAndType = applyFilterStatusType({
@@ -131,9 +137,6 @@ const InspectionListPage = ({ user, inspections }) => {
 			status: getInspectionStatus(inspection.status),
 			type: getInspectionType({ status: inspection.status }),
 			...getObservation(inspection.report_list),
-			// totalObservation: getNumberOfObservation(inspection.report_list),
-			// positiveObservation: getNumberOfPositiveObservation(inspection.report_list),
-			// negativeObservation: getNumberOfNegativeObservation(inspection.report_list),
 			dueStatus: getDueDateStatus(inspection.date_due)
 		}));
 		setTableData(data || []);
@@ -247,6 +250,7 @@ const InspectionListPage = ({ user, inspections }) => {
 		setFilterStartDate(null);
 		setFilterEndDate(null);
 		setFilterStatus('');
+		setFilterRelated(false);
 	};
 
 	const handlePopoverLegendOpen = (event) => {
@@ -284,14 +288,31 @@ const InspectionListPage = ({ user, inspections }) => {
 						},
 					]}
 					action={
-						canCreate && (<Button
-							href={PATH_DASHBOARD.inspection.new}
-							component={Link}
-							variant="contained"
-							startIcon={<Iconify icon="eva:plus-fill" />}
-						>
-							New Inspection
-						</Button>)
+						canCreate && (
+							<Stack>
+								<Button
+									href={PATH_DASHBOARD.inspection.new}
+									component={Link}
+									variant="contained"
+									startIcon={<Iconify icon="eva:plus-fill" />}
+								>
+									New Inspection
+								</Button>
+								<FormControlLabel
+									control={
+										<Switch
+											checked={filterRelated}
+											onChange={() => {
+												setFilterRelated((currState) => !currState);
+												setPage(0);
+											}}
+											name="related"
+										/>
+									}
+									label={<Typography variant="subtitle2">Related to you</Typography>}
+								/>
+							</Stack>
+						)
 					}
 				/>
 
@@ -566,12 +587,6 @@ const InspectionListPage = ({ user, inspections }) => {
 	);
 }
 
-// const getNumberOfObservation = (reports) => reports.filter(report => report.ref_score !== 0 && report.ref_score !== 4 && report.ref_score !== null).length;
-
-// const getNumberOfPositiveObservation = (reports) => reports.filter(report => report.ref_score === 1).length;
-
-// const getNumberOfNegativeObservation = (reports) => reports.filter(report => (report.ref_score === 2 || report.ref_score === 3) && report.item_status !== "2").length;
-
 
 const getInspectionStatus = (status) => {
 	let result = {
@@ -633,7 +648,9 @@ function applyFilter ({
 	comparator,
 	filterName,
 	filterStartDate,
-	filterEndDate
+	filterEndDate,
+	filterRelated,
+	user
 }) {
 	const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -644,6 +661,11 @@ function applyFilter ({
 	});
 
 	inputData = stabilizedThis.map((el) => el[0]);
+	console.log(inputData)
+
+	if (filterRelated) {
+		inputData = inputData.filter((ins) => ins.employee_id === user.emp_id || ins.verifier_id === user.emp_id || ins.reviewer_id === user.emp_id);
+	}
 
 	if (filterName) {
 		inputData = inputData.filter((inspection) =>

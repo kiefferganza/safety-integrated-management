@@ -120,7 +120,7 @@ const Findings = ({ inspection, rolloutDate }) => {
 											</Box>
 										</Stack>
 										{sec?.findings && (
-											<Typography sx={{ wordBreak: "break-all", fontSize: "13px" }}>{sec.findings}</Typography>
+											<Typography sx={{ wordBreak: "break-word", fontSize: "13px", ttextAlign: "justify" }}>{sec.findings}</Typography>
 										)}
 									</Box>
 								</Stack>
@@ -152,7 +152,7 @@ const Findings = ({ inspection, rolloutDate }) => {
 											</Box>
 										</Stack>
 										{sec?.action_taken && (
-											<Typography sx={{ wordBreak: "break-all", fontSize: "13px" }}>{sec.action_taken}</Typography>
+											<Typography sx={{ wordBreak: "break-word", fontSize: "13px", textAlign: "justify" }}>{sec.action_taken}</Typography>
 										)}
 									</Box>
 								</Stack>

@@ -280,7 +280,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 							}
 							action={
 								<Stack direction="row" spacing={2.5} alignItems="center">
-									<Button variant="contained">Go Now</Button>
+									{/* <Button variant="contained">Go Now</Button> */}
 									<Typography paragraph variant="h5" sx={{ whiteSpace: 'pre-line' }}>
 										{`Welcome back! \n ${user?.employee?.fullname || user?.firstname}`}
 									</Typography>

@@ -75,12 +75,6 @@ export default function InspectionToolbar ({ inspection, cms, reports, findings,
 						</IconButton>
 					</Tooltip>
 				</Stack>
-				<Label
-					variant="soft"
-					color={inspection?.status === "1" ? "success" : "warning"}
-				>
-					{inspection?.status === "1" ? "Completed" : "Incomplete"}
-				</Label>
 			</Stack>
 
 			<Dialog fullScreen open={open}>
