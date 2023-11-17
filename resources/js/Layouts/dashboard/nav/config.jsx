@@ -63,10 +63,19 @@ const navConfig = [
 				path: PATH_DASHBOARD.companyInformation.register,
 				icon: ICONS.companyInformation,
 				routeNames: [
-					'management.company_information.register'
+					'management.company_information.register',
+					'management.position.list',
+					'management.department.list',
+					'management.company.list',
 				],
 				children: [
-					{ title: 'register', path: PATH_DASHBOARD.companyInformation.register, routeNames: ['management.company_information.register'] },
+					{ title: 'Project Details', path: PATH_DASHBOARD.companyInformation.register, routeNames: ['management.company_information.register'] },
+					// Position
+					{ title: 'positions', gate: 'position_show', path: PATH_DASHBOARD.position.root, routeNames: ['management.position.list'] },
+					// Department
+					{ title: 'departments', gate: 'department_show', path: PATH_DASHBOARD.department.root, routeNames: ['management.department.list'] },
+					// Company
+					{ title: 'company', gate: 'company_show', path: PATH_DASHBOARD.company.root, routeNames: ['management.company.list'] },
 				],
 			},
 			// USER
@@ -102,20 +111,11 @@ const navConfig = [
 					'management.employee.show',
 					'management.employee.profileGallery',
 					'management.employee.profileTrainings',
-					'management.employee.update',
-					'management.position.list',
-					'management.department.list',
-					'management.company.list',
+					'management.employee.update'
 				],
 				children: [
 					{ title: 'create', gate: 'employee_create', path: PATH_DASHBOARD.employee.new, routeNames: ['management.employee.create'] },
 					{ title: 'list', gate: 'employee_show', path: PATH_DASHBOARD.employee.root, routeNames: ['management.employee.list', 'management.employee.show', 'management.employee.profileGallery', 'management.employee.profileTrainings'] },
-					// Position
-					{ title: 'position', gate: 'position_show', path: PATH_DASHBOARD.position.root, routeNames: ['management.position.list'] },
-					// Department
-					{ title: 'department', gate: 'department_show', path: PATH_DASHBOARD.department.root, routeNames: ['management.department.list'] },
-					// Company
-					{ title: 'company', gate: 'company_show', path: PATH_DASHBOARD.company.root, routeNames: ['management.company.list'] },
 				],
 			},
 

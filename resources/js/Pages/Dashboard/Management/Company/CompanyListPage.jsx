@@ -41,7 +41,7 @@ const TABLE_HEAD = [
 	{ id: 'index', label: '#', align: 'left' },
 	{ id: 'company_name', label: 'Company', align: 'left' },
 	{ id: 'date_created', label: 'Date Created', align: 'left' },
-	{ id: '' },
+	{ id: '', label: 'Action', align: 'right' },
 ];
 
 
@@ -142,14 +142,14 @@ const CompanyListPage = ({ companies }) => {
 	const handleCompanyNameChanged = (e) => setCompanyName(e.target.value);
 
 	const handleCreateCompany = () => {
-		Inertia.post(route('management.company.new'), { company: companyName }, {
-			onStart: () => {
-				handleCloseAddCompany();
-				load("Adding new company", "Please wait...");
-				setCompanyName("");
-			},
-			onFinish: stop
-		});
+		// Inertia.post(route('management.company.new'), { company: companyName }, {
+		// 	onStart: () => {
+		// 		handleCloseAddCompany();
+		// 		load("Adding new company", "Please wait...");
+		// 		setCompanyName("");
+		// 	},
+		// 	onFinish: stop
+		// });
 	}
 
 	const handleUpdateCompany = () => {
@@ -172,24 +172,24 @@ const CompanyListPage = ({ companies }) => {
 	};
 
 	const handleDeleteRow = (id) => {
-		Inertia.delete(`/dashboard/company/${id}`, {
-			onStart: () => {
-				load("Deleting company", "Please wait...");
-			},
-			onFinish: stop
-		});
+		// Inertia.delete(`/dashboard/company/${id}`, {
+		// 	onStart: () => {
+		// 		load("Deleting company", "Please wait...");
+		// 	},
+		// 	onFinish: stop
+		// });
 	}
 
 	const handleDeleteRows = (sel) => {
-		Inertia.post(route('management.company.delete-multiple'), { ids: sel }, {
-			onStart: () => {
-				load(`Deleting ${selected.length} companies`, "Please wait...");
-			},
-			onFinish: () => {
-				setSelected([]);
-				stop();
-			}
-		});
+		// Inertia.post(route('management.company.delete-multiple'), { ids: sel }, {
+		// 	onStart: () => {
+		// 		load(`Deleting ${selected.length} companies`, "Please wait...");
+		// 	},
+		// 	onFinish: () => {
+		// 		setSelected([]);
+		// 		stop();
+		// 	}
+		// });
 	}
 
 	return (
@@ -210,15 +210,15 @@ const CompanyListPage = ({ companies }) => {
 							name: 'Company List',
 						},
 					]}
-					action={
-						<Button
-							variant="contained"
-							startIcon={<Iconify icon="eva:plus-fill" />}
-							onClick={handleOpenAddCompany}
-						>
-							New Company
-						</Button>
-					}
+				// action={
+				// 	<Button
+				// 		variant="contained"
+				// 		startIcon={<Iconify icon="eva:plus-fill" />}
+				// 		onClick={handleOpenAddCompany}
+				// 	>
+				// 		New Company
+				// 	</Button>
+				// }
 				/>
 
 				<Card>

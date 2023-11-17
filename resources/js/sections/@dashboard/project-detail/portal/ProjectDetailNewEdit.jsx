@@ -25,6 +25,8 @@ const ProjectDetailNewEdit = ({
 	title = '',
 	value = '',
 	titles = [],
+	list = [],
+	setPage,
 	editDetail,
 	...other
 }) => {
@@ -36,9 +38,15 @@ const ProjectDetailNewEdit = ({
 		},
 		resolver: yupResolver(newProjectDetailSchema)
 	});
-	const { handleSubmit, reset, formState: { isDirty } } = methods;
+	const { handleSubmit, reset, setError, formState: { isDirty } } = methods;
 
 	const onCreate = (data) => {
+		data.value = data.value.trim();
+		const exist = list.some(l => l.title.toLowerCase() === data.title.toLowerCase() && l.value.toLowerCase() === data.value.toLowerCase());
+		if (exist) {
+			setError("value", { message: "Value already exist of that same title" });
+			return;
+		}
 		Inertia.post(route('management.company_information.store'), data, {
 			preserveScroll: true,
 			onStart: () => {
@@ -48,6 +56,7 @@ const ProjectDetailNewEdit = ({
 				});
 				onClose();
 				load("", "Please wait...");
+				setPage(0);
 			},
 			onFinish: function () {
 				stop()
@@ -56,6 +65,12 @@ const ProjectDetailNewEdit = ({
 	}
 
 	const onUpdate = (data) => {
+		data.value = data.value.trim();
+		const exist = list.some(l => editDetail.id !== l.id && (l.title.toLowerCase() === data.title.toLowerCase() && l.value.toLowerCase() === data.value.toLowerCase()));
+		if (exist) {
+			setError("value", { message: "Value already exist of that same title" });
+			return;
+		}
 		Inertia.post(route('management.company_information.update', editDetail.id), data, {
 			preserveScroll: true,
 			onStart: () => {
@@ -65,6 +80,7 @@ const ProjectDetailNewEdit = ({
 				});
 				onClose();
 				load("Updating " + editDetail.title, "Please wait...");
+				setPage(0);
 			},
 			onFinish: function () {
 				stop()

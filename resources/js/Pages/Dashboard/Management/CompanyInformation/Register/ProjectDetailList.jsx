@@ -66,7 +66,8 @@ const ProjectDetailList = ({ projectDetails = [], titles }) => {
 		onChangePage,
 		onChangeRowsPerPage,
 	} = useTable({
-		defaultRowsPerPage: 10
+		defaultRowsPerPage: 10,
+		defaultDense: true
 	});
 
 	const [openAdd, setOpenAdd] = useState(false);
@@ -273,12 +274,16 @@ const ProjectDetailList = ({ projectDetails = [], titles }) => {
 				</Card>
 			</Container>
 			<ProjectDetailNewEdit
+				setPage={setPage}
+				list={projectDetails}
 				open={openAdd}
 				onClose={handleCloseNewDetail}
 				titles={titles}
 			/>
 			{editDetail && (
 				<ProjectDetailNewEdit
+					setPage={setPage}
+					list={projectDetails}
 					dialogTitle='Edit Project Detail'
 					open={openEdit}
 					onClose={handleCloseEditCompany}

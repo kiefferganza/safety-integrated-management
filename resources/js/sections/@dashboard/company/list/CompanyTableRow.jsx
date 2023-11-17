@@ -61,13 +61,19 @@ export default function CompanyTableRow ({ row, selected, onSelectRow, onDeleteR
 				<TableCell align="left">{fDate(row.created_at)}</TableCell>
 
 				<TableCell align="right">
-					<IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
+					{/* <IconButton color={openPopover ? 'inherit' : 'default'} onClick={handleOpenPopover}>
 						<Iconify icon="eva:more-vertical-fill" />
+					</IconButton> */}
+					<IconButton color={openPopover ? 'inherit' : 'default'} onClick={() => {
+						onUpdateRow();
+						handleClosePopover();
+					}}>
+						<Iconify icon="eva:edit-fill" />
 					</IconButton>
 				</TableCell>
 			</TableRow>
 
-			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
+			{/* <MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
 				<MenuItem onClick={() => {
 					onUpdateRow();
 					handleClosePopover();
@@ -85,7 +91,7 @@ export default function CompanyTableRow ({ row, selected, onSelectRow, onDeleteR
 					<Iconify icon="eva:trash-2-outline" />
 					Delete
 				</MenuItem>
-			</MenuPopover>
+			</MenuPopover> */}
 
 			<ConfirmDialog
 				open={openConfirm}
