@@ -462,43 +462,49 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 
 					<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
 						{(tbtData && tbtMonthChartData) ? (
-							<AnalyticsTBTLine
-								height={isTablet ? 364 : 240}
-								title="Hours Worked / Month"
-								subheader="(12 month rolling)"
-								chart={{
-									labels: tbtMonthChartData.tbt.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
-									series: tbtMonthChartData.tbt.reduce((acc, curr) => {
-										acc[0].data.push(curr[1].totalManpower);
-										acc[1].data.push(curr[1].totalManhours);
-										acc[2].data.push(curr[1].totalManhours === 0 ? 0 : curr[1].safeManhours);
-										return acc;
-									}, [
-										{
-											name: 'Manpower',
-											type: 'column',
-											fill: 'solid',
-											data: [],
-										},
-										{
-											name: 'Man Hours',
-											type: 'column',
-											fill: 'solid',
-											data: [],
-										},
-										{
-											name: 'Safe Man Hours',
-											type: 'column',
-											fill: 'solid',
-											data: [],
-										}
-									]),
-									colors: [
-										theme.palette.primary.main,
-										theme.palette.error.main,
-									],
-								}}
-							/>
+							<Card>
+								<Scrollbar>
+									<Box sx={{ width: 980 }}>
+										<AnalyticsTBTLine
+											height={isTablet ? 364 : 240}
+											title="Hours Worked / Month"
+											subheader="(12 month rolling)"
+											chart={{
+												labels: tbtMonthChartData.tbt.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
+												series: tbtMonthChartData.tbt.reduce((acc, curr) => {
+													acc[0].data.push(curr[1].totalManpower);
+													acc[1].data.push(curr[1].totalManhours);
+													acc[2].data.push(curr[1].totalManhours === 0 ? 0 : curr[1].safeManhours);
+													return acc;
+												}, [
+													{
+														name: 'Manpower',
+														type: 'column',
+														fill: 'solid',
+														data: [],
+													},
+													{
+														name: 'Man Hours',
+														type: 'column',
+														fill: 'solid',
+														data: [],
+													},
+													{
+														name: 'Safe Man Hours',
+														type: 'column',
+														fill: 'solid',
+														data: [],
+													}
+												]),
+												colors: [
+													theme.palette.primary.main,
+													theme.palette.error.main,
+												],
+											}}
+										/>
+									</Box>
+								</Scrollbar>
+							</Card>
 						) : (
 							<Card sx={{ p: 2 }}>
 								<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width={200} />

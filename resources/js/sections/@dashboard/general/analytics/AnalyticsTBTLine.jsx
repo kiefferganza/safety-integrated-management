@@ -1,5 +1,5 @@
 // @mui
-import { Card, CardHeader, Box } from '@mui/material';
+import { CardHeader, Box } from '@mui/material';
 // components
 import Chart, { useChart } from '@/Components/chart';
 
@@ -8,9 +8,17 @@ const AnalyticsTBTLine = ({ title, subheader = "", chart, action, height = 364, 
 
 	const chartOptions = useChart({
 		colors,
+		stroke: {
+			show: true,
+			width: 2,
+			colors: ['transparent'],
+		},
 		plotOptions: {
 			bar: {
-				columnWidth: '80%'
+				columnWidth: '60%',
+				barHeight: '100%',
+				borderRadius: 2,
+				borderRadiusApplication: 'end',
 			},
 		},
 		dataLabels: {
@@ -20,6 +28,7 @@ const AnalyticsTBTLine = ({ title, subheader = "", chart, action, height = 364, 
 				return val.toLocaleString("en-US");
 			},
 			offsetX: 0,
+			offsetY: 4,
 			style: {
 				fontSize: '8px'
 			}
@@ -28,12 +37,6 @@ const AnalyticsTBTLine = ({ title, subheader = "", chart, action, height = 364, 
 			type: series.map((i) => i.fill),
 		},
 		labels,
-		// xaxis: {
-		// 	type: 'datetime',
-		// 	labels: {
-		// 		format: 'MMM yyyy'
-		// 	}
-		// },
 		yaxis: {
 			show: false
 		},
@@ -53,13 +56,13 @@ const AnalyticsTBTLine = ({ title, subheader = "", chart, action, height = 364, 
 	});
 
 	return (
-		<Card sx={{ height: "100%" }} {...other}>
+		<>
 			<CardHeader title={title} subheader={subheader} action={action} />
 
 			<Box sx={{ p: 3, pb: 1 }} dir="ltr">
 				<Chart type="line" series={series} options={chartOptions} height={height} />
 			</Box>
-		</Card>
+		</>
 	);
 }
 
