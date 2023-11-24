@@ -1,6 +1,6 @@
 import { Card, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
-const AnalyticsTable = ({ isLoading, headTitles = [], data = [], color = 'primary', ...other }) => {
+const AnalyticsTable = ({ isLoading, headTitles = [], data = [], color = 'primary', sx = {}, ...other }) => {
 
 	return (
 		<Card
@@ -9,6 +9,7 @@ const AnalyticsTable = ({ isLoading, headTitles = [], data = [], color = 'primar
 				bgcolor: (theme) => theme.palette[color].lighter,
 				height: "100%",
 				pb: 1,
+				...sx,
 				...other
 			}}
 		>

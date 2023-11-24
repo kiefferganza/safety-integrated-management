@@ -649,34 +649,8 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 				<Divider variant="middle" sx={{ my: 3 }} />
 
 				<Grid container spacing={3} >
-					<Grid item xs={12} md={12} lg={5}>
-						<Stack spacing={2}>
-							<AnalyticsTable
-								isLoading={isLoadingIncident || !incidents}
-								headTitles={[{ title: "Recordable Cases" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
-								data={[
-									{ title: "No of Restricted Work Cases", month: incidents?.recordable?.rwc.month, itd: incidents?.recordable?.rwc.itd },
-									{ title: "No of Occupational Illnesses", month: incidents?.recordable?.ol.month, itd: incidents?.recordable?.ol.itd, },
-									{ title: "No of Occupational Fatalities", month: incidents?.recordable?.fat.month, itd: incidents?.recordable?.fat.itd },
-									{ title: "No of Medical Treatment Cases", month: incidents?.recordable?.mtc.month, itd: incidents?.recordable?.mtc.itd },
-									{ title: "No of Loss Consciousness Cases", month: incidents?.recordable?.lcc.month, itd: incidents?.recordable?.lcc.itd },
-								]}
-								color="warning"
-							/>
-							<Divider />
-							<AnalyticsTable
-								isLoading={isLoadingIncident || !incidents}
-								headTitles={[{ title: "Non Recordable" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
-								data={[
-									{ title: "No of First Aid Cases", month: incidents?.nonrecordable?.fac.month, itd: incidents?.nonrecordable?.fac.itd },
-									{ title: "No of Near Misses", month: incidents?.nonrecordable?.nm.month, itd: incidents?.nonrecordable?.nm.itd }
-								]}
-							/>
-						</Stack>
-					</Grid>
-
 					{/* Trending Observation */}
-					<Grid item xs={12} md={12} lg={7}>
+					<Grid item xs={12} md={12} lg={12}>
 						{isLoadingInspection || !inspections ? (
 							<Card>
 								<CardHeader title="Trending Observation" />
@@ -707,7 +681,32 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 				{(incidents) && (
 					<>
 						<Grid container spacing={3} >
-							<Grid item xs={12} md={12} lg={5} height={1}>
+							<Grid item xs={12} md={12} lg={6}>
+								<Stack spacing={2}>
+									<AnalyticsTable
+										isLoading={isLoadingIncident || !incidents}
+										headTitles={[{ title: "Recordable Cases" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+										data={[
+											{ title: "No of Restricted Work Cases", month: incidents?.recordable?.rwc.month, itd: incidents?.recordable?.rwc.itd },
+											{ title: "No of Occupational Illnesses", month: incidents?.recordable?.ol.month, itd: incidents?.recordable?.ol.itd, },
+											{ title: "No of Occupational Fatalities", month: incidents?.recordable?.fat.month, itd: incidents?.recordable?.fat.itd },
+											{ title: "No of Medical Treatment Cases", month: incidents?.recordable?.mtc.month, itd: incidents?.recordable?.mtc.itd },
+											{ title: "No of Loss Consciousness Cases", month: incidents?.recordable?.lcc.month, itd: incidents?.recordable?.lcc.itd },
+										]}
+										color="warning"
+									/>
+									<Divider />
+									<AnalyticsTable
+										isLoading={isLoadingIncident || !incidents}
+										headTitles={[{ title: "Non Recordable" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
+										data={[
+											{ title: "No of First Aid Cases", month: incidents?.nonrecordable?.fac.month, itd: incidents?.nonrecordable?.fac.itd },
+											{ title: "No of Near Misses", month: incidents?.nonrecordable?.nm.month, itd: incidents?.nonrecordable?.nm.itd }
+										]}
+									/>
+								</Stack>
+							</Grid>
+							<Grid item xs={12} md={12} lg={6} height={1}>
 								<Stack spacing={2} height={1}>
 									{incidents && (
 										<AnalyticsTable
@@ -739,7 +738,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 								</Stack>
 							</Grid>
 
-							<Grid item xs={12} md={6} lg={3}>
+							{/* <Grid item xs={12} md={6} lg={3}>
 								<FileGeneralStorageOverview
 									height={isTablet ? 364 : 240}
 									total={GB}
@@ -771,7 +770,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 
 							<Grid item xs={12} md={6} lg={4}>
 								<BookingBookedRoom title="Analytic" data={_bookingsOverview} />
-							</Grid>
+							</Grid> */}
 						</Grid>
 
 
