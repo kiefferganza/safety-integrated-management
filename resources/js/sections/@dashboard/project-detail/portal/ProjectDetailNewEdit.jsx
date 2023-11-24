@@ -21,9 +21,6 @@ const ProjectDetailNewEdit = ({
 	onClose,
 	//
 	isEdit = false,
-	//
-	title = '',
-	value = '',
 	titles = [],
 	list = [],
 	setPage,
@@ -33,8 +30,9 @@ const ProjectDetailNewEdit = ({
 	const { load, stop } = useSwal();
 	const methods = useForm({
 		defaultValues: {
-			title: isEdit ? editDetail.title || '' : title,
-			value: isEdit ? editDetail.value || '' : value
+			title: isEdit ? editDetail.title || '' : '',
+			value: isEdit ? editDetail.value || '' : '',
+			name: isEdit ? editDetail.name || '' : ''
 		},
 		resolver: yupResolver(newProjectDetailSchema)
 	});
@@ -52,7 +50,8 @@ const ProjectDetailNewEdit = ({
 			onStart: () => {
 				reset({
 					title: '',
-					value: ''
+					value: '',
+					name: ''
 				});
 				onClose();
 				load("", "Please wait...");
@@ -76,7 +75,8 @@ const ProjectDetailNewEdit = ({
 			onStart: () => {
 				reset({
 					title: '',
-					value: ''
+					value: '',
+					name: ''
 				});
 				onClose();
 				load("Updating " + editDetail.title, "Please wait...");
@@ -97,6 +97,7 @@ const ProjectDetailNewEdit = ({
 					<FormProvider methods={methods}>
 						<Stack spacing={1.5}>
 							<RHFMuiSelect label="Title" name="title" fullWidth options={titles} />
+							<RHFTextField label="Name (Optional)" name="name" fullWidth />
 							<RHFTextField label="Value" name="value" fullWidth />
 						</Stack>
 					</FormProvider>

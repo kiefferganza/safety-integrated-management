@@ -39,6 +39,7 @@ import { ProjectDetailTableRow, ProjectDetailTableToolbar } from '@/sections/@da
 const TABLE_HEAD = [
 	{ id: 'index', label: '#', align: 'left' },
 	{ id: 'value', label: 'Value', align: 'left' },
+	{ id: 'name', label: 'Name', align: 'left' },
 	{ id: 'title', label: 'Type', align: 'left' },
 	{ id: '' },
 ];
@@ -67,7 +68,8 @@ const ProjectDetailList = ({ projectDetails = [], titles }) => {
 		onChangeRowsPerPage,
 	} = useTable({
 		defaultRowsPerPage: 10,
-		defaultDense: true
+		defaultDense: true,
+		defaultOrderBy: 'index'
 	});
 
 	const [openAdd, setOpenAdd] = useState(false);
@@ -115,6 +117,7 @@ const ProjectDetailList = ({ projectDetails = [], titles }) => {
 	}
 
 	const handleResetFilter = () => {
+		setPage(0);
 		setFilterName('');
 		setFilterType('all');
 	}
@@ -147,7 +150,10 @@ const ProjectDetailList = ({ projectDetails = [], titles }) => {
 			onStart: () => {
 				load("Deleting", "Please wait...");
 			},
-			onFinish: stop
+			onFinish: () => {
+				setPage(0);
+				stop();
+			}
 		});
 	}
 
@@ -158,6 +164,7 @@ const ProjectDetailList = ({ projectDetails = [], titles }) => {
 				load(`Deleting ${selected.length} item`, "Please wait...");
 			},
 			onFinish: () => {
+				setPage(0);
 				setSelected([]);
 				stop();
 			}
@@ -175,8 +182,12 @@ const ProjectDetailList = ({ projectDetails = [], titles }) => {
 							href: PATH_DASHBOARD.root,
 						},
 						{
-							name: 'Folders',
-							href: PATH_DASHBOARD.fileManager.root
+							name: 'Departments',
+							href: PATH_DASHBOARD.department.root
+						},
+						{
+							name: 'Positions',
+							href: PATH_DASHBOARD.position.root
 						},
 						{
 							name: 'Project Detail',
@@ -335,7 +346,7 @@ function applyFilter ({
 	inputData = stabilizedThis.map((el) => el[0]);
 
 	if (filterName) {
-		inputData = inputData.filter(({ value }) => value.toLowerCase().includes(filterName.toLowerCase()));
+		inputData = inputData.filter(({ value, name }) => value.toLowerCase().includes(filterName.toLowerCase()) || name?.toLowerCase().includes(filterName.toLowerCase()));
 	}
 
 	if (filterType !== 'all') {

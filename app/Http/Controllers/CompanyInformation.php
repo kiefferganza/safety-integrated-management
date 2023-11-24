@@ -10,7 +10,10 @@ class CompanyInformation extends Controller
 {
     public function register() {
 		$user = auth()->user();
-		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)
+		->orderBy("updated_at", "desc")
+		->get();
+
 		$titles = [
 			['label' => 'Project Code', 'value' => 'Project Code'],
 			['label' => 'Originator', 'value' => 'Originator'],
@@ -31,14 +34,16 @@ class CompanyInformation extends Controller
 	public function store(Request $request) {
 		$request->validate([
 			'title' => ['string', 'required'],
-			'value' => ['string', 'required']
+			'value' => ['string', 'required'],
+			'name' => ['string', 'nullable']
 		]);
 		$user = auth()->user();
 
 		DocumentProjectDetail::create([
 			'sub_id' => $user->subscriber_id,
 			'title' => $request->title,
-			'value' => $request->value
+			'value' => $request->value,
+			'name' => $request->name
 		]);
 
 		return redirect()->back()
@@ -50,10 +55,12 @@ class CompanyInformation extends Controller
 	public function update(Request $request, DocumentProjectDetail $documentProjectDetail) {
 		$request->validate([
 			'title' => ['string', 'required'],
-			'value' => ['string', 'required']
+			'value' => ['string', 'required'],
+			'name' => ['string', 'nullable']
 		]);
 		$documentProjectDetail->title = $request->title;
 		$documentProjectDetail->value = $request->value;
+		$documentProjectDetail->name = $request->name;
 		$documentProjectDetail->save();
 		
 		return redirect()->back()

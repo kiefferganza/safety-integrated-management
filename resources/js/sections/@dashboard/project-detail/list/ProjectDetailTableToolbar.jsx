@@ -6,7 +6,7 @@ import Iconify from '@/Components/iconify';
 
 // ----------------------------------------------------------------------
 
-const INPUT_WIDTH = 160;
+// const INPUT_WIDTH = 160;
 
 ProjectDetailTableToolbar.propTypes = {
 	isFiltered: PropTypes.bool,

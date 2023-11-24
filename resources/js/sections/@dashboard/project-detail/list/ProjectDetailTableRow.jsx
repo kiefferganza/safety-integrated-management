@@ -56,6 +56,8 @@ export default function ProjectDetailTableRow ({ row, selected, onSelectRow, onD
 
 				<TableCell align="left">{row.value}</TableCell>
 
+				<TableCell align="left">{row.name}</TableCell>
+
 				<TableCell align="left">{row.title}</TableCell>
 
 				<TableCell align="right">
