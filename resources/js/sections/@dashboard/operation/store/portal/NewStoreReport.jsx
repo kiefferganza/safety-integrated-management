@@ -180,21 +180,21 @@ export const NewStoreReport = ({ open, onClose, stores, employees, sequence_no, 
 									label="Project Code"
 									name="project_code"
 									fullWidth
-									options={projectDetails['Project Code'] ? [{ label: '', value: '' }, ...projectDetails['Project Code'].map((d) => ({ label: d.value, value: d.value }))] : []}
+									options={projectDetails['Project Code'] ? [{ label: '', value: '' }, ...projectDetails['Project Code'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 								/>
 
 								<RHFMuiSelect
 									label="Originator"
 									name="originator"
 									fullWidth
-									options={projectDetails['Originator'] ? [{ label: '', value: '' }, ...projectDetails['Originator'].map((d) => ({ label: d.value, value: d.value }))] : []}
+									options={projectDetails['Originator'] ? [{ label: '', value: '' }, ...projectDetails['Originator'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 								/>
 
 								<RHFMuiSelect
 									label="Discipline"
 									name="discipline"
 									fullWidth
-									options={projectDetails['Discipline'] ? [{ label: '', value: '' }, ...projectDetails['Discipline'].map((d) => ({ label: d.value, value: d.value }))] : []}
+									options={projectDetails['Discipline'] ? [{ label: '', value: '' }, ...projectDetails['Discipline'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 								/>
 
 							</Stack>
@@ -204,21 +204,21 @@ export const NewStoreReport = ({ open, onClose, stores, employees, sequence_no, 
 									label="Type"
 									name="document_type"
 									fullWidth
-									options={projectDetails['Type'] ? [{ label: '', value: '' }, ...projectDetails['Type'].map((d) => ({ label: d.value, value: d.value }))] : []}
+									options={projectDetails['Type'] ? [{ label: '', value: '' }, ...projectDetails['Type'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 								/>
 
 								<RHFMuiSelect
 									label="Zone (Optional)"
 									name="document_zone"
 									fullWidth
-									options={projectDetails['Zone'] ? [{ label: '', value: '' }, ...projectDetails['Zone'].map((d) => ({ label: d.value, value: d.value }))] : []}
+									options={projectDetails['Zone'] ? [{ label: '', value: '' }, ...projectDetails['Zone'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 								/>
 
 								<RHFMuiSelect
 									label="Level (Optional)"
 									name="document_level"
 									fullWidth
-									options={projectDetails['Level'] ? [{ label: '', value: '' }, ...projectDetails['Level'].map((d) => ({ label: d.value, value: d.value }))] : []}
+									options={projectDetails['Level'] ? [{ label: '', value: '' }, ...projectDetails['Level'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 								/>
 
 							</Stack>
@@ -244,14 +244,14 @@ export const NewStoreReport = ({ open, onClose, stores, employees, sequence_no, 
 									label="Contract No."
 									name="contract_no"
 									fullWidth
-									options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value, value: d.value }))] : []}
+									options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 								/>
 
 								<RHFMuiSelect
 									label="Location"
 									name="location"
 									fullWidth
-									options={projectDetails['Location'] ? [{ label: '', value: '' }, ...projectDetails['Location'].map((d) => ({ label: d.value, value: d.value }))] : []}
+									options={projectDetails['Location'] ? [{ label: '', value: '' }, ...projectDetails['Location'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 								/>
 
 								<PersonelAutocomplete

@@ -142,14 +142,14 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit, projectDetails }) => 
 							label="Contract No."
 							name="contract_no"
 							fullWidth
-							options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value, value: d.value }))] : []}
+							options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 						/>
 
 						<RHFMuiSelect
 							label="Training Location"
 							name="location"
 							fullWidth
-							options={projectDetails['Location'] ? [{ label: '', value: '' }, ...projectDetails['Location'].map((d) => ({ label: d.value, value: d.value }))] : []}
+							options={projectDetails['Location'] ? [{ label: '', value: '' }, ...projectDetails['Location'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 						/>
 
 					</Stack>
