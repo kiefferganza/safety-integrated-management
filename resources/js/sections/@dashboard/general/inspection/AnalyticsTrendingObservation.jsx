@@ -20,26 +20,46 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, width, 
 		plotOptions: {
 			bar: {
 				columnWidth: '80%',
+				dataLabels: {
+					position: 'top'
+				},
 			},
+		},
+		dataLabels: {
+			enabled: true,
+			dropShadow: {
+				enabled: true,
+				blur: 1,
+				opacity: 0.25,
+			},
+			offsetY: 0,
+			offsetX: 0,
+			style: {
+				fontSize: '9px', // Customize the font size of data labels
+			},
+			value: true, // Display data labels for 0 values
 		},
 		xaxis: {
 			categories,
 			labels: {
 				trim: true, // Enable label trimming
 				maxWidth: 16, // Set the maximum width for labels
-				maxHeight: 80,
+				maxHeight: 95,
 				show: true,
 				rotate: -75,
 				style: {
 					fontSize: '10px',
-				}
+				},
+				formatter: function (val) {
+					return val;
+				},
 			},
 		},
 		tooltip: {
 			enabled: true,
 			y: {
 				formatter: function (val) {
-					return val; // Display the full value on the tooltip
+					return val !== 0 ? val.toLocaleString("en-US") : ''; // Display the full value on the tooltip
 				},
 			},
 		},
@@ -47,13 +67,6 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, width, 
 			hover: {
 				filter: 'none'
 			}
-		},
-		dataLabels: {
-			enabled: true,
-			style: {
-				fontSize: '8px', // Customize the font size of data labels
-			},
-			value: true, // Display data labels for 0 values
 		},
 		legend: {
 			showForZeroSeries: true

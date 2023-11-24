@@ -19,18 +19,24 @@ const AnalyticsTBTLine = ({ title, subheader = "", chart, action, height = 364, 
 				barHeight: '100%',
 				borderRadius: 2,
 				borderRadiusApplication: 'end',
+				dataLabels: {
+					position: 'top',
+				}
 			},
 		},
 		dataLabels: {
 			enabled: true,
-			position: 'top',
+			dropShadow: {
+				enabled: true,
+				blur: 1,
+				opacity: 0.25,
+			},
 			formatter: function (val) {
 				return val.toLocaleString("en-US");
 			},
 			offsetX: 0,
-			offsetY: 4,
 			style: {
-				fontSize: '8px'
+				fontSize: '9px'
 			}
 		},
 		fill: {

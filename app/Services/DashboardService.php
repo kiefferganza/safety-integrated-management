@@ -101,7 +101,7 @@ class DashboardService {
 				"categories" => [],
 				"series" => [
 					[
-						"name" => "Negative: ",
+						"name" => "Negative",
 						"data" => [],
 					],
 				],

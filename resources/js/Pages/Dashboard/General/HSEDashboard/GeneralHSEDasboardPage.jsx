@@ -32,13 +32,13 @@ import AnalyticsTable from '@/sections/@dashboard/general/analytics/AnalyticsTab
 import AnalyticsSummaryOpenCloseObservation from '@/sections/@dashboard/general/inspection/AnalyticsSummaryOpenCloseObservation';
 import AnalyticsTrendingObservation from '@/sections/@dashboard/general/inspection/AnalyticsTrendingObservation';
 import AnalyticsOpenClose from '@/sections/@dashboard/general/inspection/AnalyticsOpenClose';
-import FileGeneralStorageOverview from '@/sections/@dashboard/general/file/FileGeneralStorageOverview';
-import BookingBookedRoom from '@/sections/@dashboard/general/booking/BookingBookedRoom';
+// import FileGeneralStorageOverview from '@/sections/@dashboard/general/file/FileGeneralStorageOverview';
+// import BookingBookedRoom from '@/sections/@dashboard/general/booking/BookingBookedRoom';
 import AnalyticsTrainingLine from '@/sections/@dashboard/general/analytics/AnalyticsTrainingLine';
 import { ProgressLoadingScreen } from '@/Components/loading-screen';
 
 // ----------------------------------------------------------------------
-const GB = 1000000000 * 24;
+// const GB = 1000000000 * 24;
 
 const MONTH_NAMES = {
 	1: 'Jan',
@@ -654,14 +654,14 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 						{isLoadingInspection || !inspections ? (
 							<Card>
 								<CardHeader title="Trending Observation" />
-								<ProgressLoadingScreen color={theme.palette.primary.main} height={280} />
+								<ProgressLoadingScreen color={theme.palette.primary.main} height={460} />
 							</Card>
 						) : (
 							<Card>
 								<Scrollbar>
 									<Box sx={{ width: 1800 }}>
 										<AnalyticsTrendingObservation
-											height={280}
+											height={480}
 											title="Trending Observation"
 											trends={inspections?.trendingObservation?.trends}
 											chart={{
