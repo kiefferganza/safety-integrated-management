@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 // @mui
-import { Box, Card, CardHeader, Stack, Typography, useTheme } from '@mui/material';
+import { Box, Card, CardHeader } from '@mui/material';
 import { red } from '@mui/material/colors';
 // components
 import Chart, { useChart } from '@/Components/chart';
@@ -9,7 +9,6 @@ import Chart, { useChart } from '@/Components/chart';
 
 const AnalyticsTrendingObservation = ({ title, subheader, chart, height, width, trends, ...other }) => {
 	const { series, categories, options } = chart;
-	const theme = useTheme();
 
 	const chartOptions = useChart({
 		colors: [function ({ value }) {
@@ -85,24 +84,6 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, width, 
 	return (
 		<Card {...other}>
 			<CardHeader title={title} subheader={subheader} />
-			<Stack direction="row" alignItems="center" flexWrap="wrap" pl={3} gap={0.5}>
-				{trends.map(trend => (
-					<Stack direction="row" alignItems="center" key={trend.name}>
-						<Typography
-							variant="subtitle2"
-							sx={{
-								"&:before": {
-									content: '"•"',
-									marginRight: .5,
-									color: theme.palette.error.main
-								}
-							}}
-						>
-							{trend.name}
-						</Typography>
-					</Stack>
-				))}
-			</Stack>
 			<Box sx={{ mx: 3 }} dir="ltr">
 				<Chart type="bar" series={series} options={chartOptions} height={height} width={width} />
 			</Box>

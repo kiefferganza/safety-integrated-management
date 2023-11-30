@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, lazy, useCallback } from 'react';
 // import { differenceInDays, format, isSameMonth, isSameYear } from 'date-fns';
-import { differenceInDays, format } from 'date-fns';
+import { differenceInDays, format, getMonth, getYear } from 'date-fns';
 // @mui
 const { Box, Grid, Container, Button, TextField, Typography, Stack, Divider, useTheme } = await import('@mui/material');
 const { MobileDatePicker } = await import('@mui/x-date-pickers');
@@ -20,7 +20,7 @@ import { Inertia } from '@inertiajs/inertia';
 import Scrollbar from '@/Components/scrollbar/Scrollbar';
 import { useQueries } from '@tanstack/react-query';
 import axiosInstance from '@/utils/axios';
-import { ButtonBase, Card, CardHeader, MenuItem, Skeleton } from '@mui/material';
+import { ButtonBase, Card, CardHeader, MenuItem, Skeleton, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
 const AppWelcome = lazy(() => import('@/sections/@dashboard/general/app/AppWelcome'));
 const WelcomeIllustration = lazy(() => import('@/assets/illustrations/WelcomeIllustration'));
 const HseSlider = lazy(() => import('@/sections/@dashboard/general/hse-dashboard/HseSlider'));
@@ -36,6 +36,7 @@ import AnalyticsOpenClose from '@/sections/@dashboard/general/inspection/Analyti
 // import BookingBookedRoom from '@/sections/@dashboard/general/booking/BookingBookedRoom';
 import AnalyticsTrainingLine from '@/sections/@dashboard/general/analytics/AnalyticsTrainingLine';
 import { ProgressLoadingScreen } from '@/Components/loading-screen';
+import { TableHeadCustom } from '@/Components/table';
 
 // ----------------------------------------------------------------------
 // const GB = 1000000000 * 24;
@@ -92,9 +93,21 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 
 
 	useEffect(() => {
-		if (totalTbtByYear && tbtStatistics && (!isLoadingTbt || !isLoadingTbtStat)) {
+		if (totalTbtByYear && tbtStatistics && incidents && (!isLoadingTbt || !isLoadingTbtStat)) {
+			// take day_loss to tbt exact date
+			if (incidents.incidents.length > 0) {
+				incidents.incidents.forEach(incident => {
+					const incidentDate = new Date(incident.incident_date);
+					const year = getYear(incidentDate);
+					const month = getMonth(incidentDate) + 1;
+					if (year in totalTbtByYear) {
+						totalTbtByYear[year][month]['safeManhours'] -= incident.day_loss;
+					}
+				});
+			}
+
 			const tmpTotalTbtByYear = { ...totalTbtByYear };
-			const tbtAndStatistics = tbtStatistics.reduce((acc, curr) => {
+			let tbtAndStatistics = tbtStatistics.reduce((acc, curr) => {
 				const statInTbtTotal = curr.year in tmpTotalTbtByYear;
 				let months = {};
 				if (statInTbtTotal) {
@@ -125,15 +138,17 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 					[curr.year]: months
 				};
 			}, totalTbtByYear);
+
 			const tbt = Object.entries(tbtAndStatistics).reduce((acc, curr) => {
 				const monthsData = Object.entries(curr[1]);
 				monthsData.forEach(d => d.push(curr[0]));
 				acc.push(...monthsData);
 				return acc;
 			}, []);
+
 			setTbtData(tbt);
 		}
-	}, [totalTbtByYear, tbtStatistics, isLoadingTbt, isLoadingTbtStat]);
+	}, [totalTbtByYear, tbtStatistics, incidents, isLoadingTbt, isLoadingTbtStat]);
 
 
 	const handleInspectionYearChange = useCallback((newValue) => {
@@ -177,7 +192,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 			if (total) {
 				acc.tbtAnalytic.totalManpower += Math.round(total[1].totalManpower);
 				acc.tbtAnalytic.totalManhours += Math.round(total[1].totalManhours);
-				acc.tbtAnalytic.safeManhours += total[1].totalManhours === 0 ? 0 : Math.round(total[1].safeManhours);
+				acc.tbtAnalytic.safeManhours += Math.round(total[1].safeManhours);
 				acc.tbtAnalytic.daysWork += total[1].daysWork;
 				acc.tbtAnalytic.daysWoWork += total[1].daysWoWork;
 				acc.tbtAnalytic.location = new Set([
@@ -260,7 +275,6 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 	}
 
 	const tbtMonthChartData = getTbtMonthChartData();
-	// const monthsDiff = monthDiff(startTbtDate, endTbtDate);
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -337,7 +351,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 							isLoading={isLoadingTbtStat || tbtData === null}
 							title="Total Safe Manhours"
 							// title="SAFE MANHOURS"
-							total={Math.round(tbtAnalytic?.totalManhours || 0)}
+							total={Math.round(tbtAnalytic?.safeManhours || 0)}
 							color="error"
 							// icon={'mdi:clock-time-four-outline'}
 							icon={'mdi:shop-hours-outline'}
@@ -650,29 +664,47 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 
 				<Grid container spacing={3} >
 					{/* Trending Observation */}
-					<Grid item xs={12} md={12} lg={12}>
+					<Grid item xs={12} md={12} lg={9}>
 						{isLoadingInspection || !inspections ? (
 							<Card>
 								<CardHeader title="Trending Observation" />
 								<ProgressLoadingScreen color={theme.palette.primary.main} height={460} />
 							</Card>
 						) : (
-							<Card>
-								<Scrollbar>
-									<Box sx={{ width: 1800 }}>
-										<AnalyticsTrendingObservation
-											height={480}
-											title="Trending Observation"
-											trends={inspections?.trendingObservation?.trends}
-											chart={{
-												categories: inspections?.trendingObservation?.categories || [],
-												series: inspections?.trendingObservation?.series || [],
-											}}
-										/>
-									</Box>
-								</Scrollbar>
-							</Card>
+							<AnalyticsTrendingObservation
+								height={420}
+								title="Trending Observation"
+								trends={inspections?.trendingObservation?.trends}
+								chart={{
+									categories: inspections?.trendingObservation?.categories || [],
+									series: inspections?.trendingObservation?.series || [],
+								}}
+							/>
 						)}
+					</Grid>
+					<Grid item xs={12} md={12} lg={3}>
+						<Card sx={{ height: '100%' }}>
+							<CardHeader title="Top 5 HSE Hazards (Month)" sx={{ mb: 1.5 }} />
+							<TableContainer sx={{ overflow: 'unset', height: 'calc(100% - 68px)' }}>
+								<Table>
+									<TableBody>
+										{inspections?.trendingObservation?.trends.map((trend, idx) => (
+											<TableRow key={trend.name}>
+												<TableCell>
+													<Typography variant="subtitle2">{idx + 1}</Typography>
+												</TableCell>
+												<TableCell>
+													<Typography variant="subtitle2">{trend.name}</Typography>
+												</TableCell>
+												<TableCell>
+													<Typography variant="subtitle2" color="error.dark" sx={{ textDecoration: 'underline' }}>{trend.value}</Typography>
+												</TableCell>
+											</TableRow>
+										))}
+									</TableBody>
+								</Table>
+							</TableContainer>
+						</Card>
 					</Grid>
 				</Grid>
 

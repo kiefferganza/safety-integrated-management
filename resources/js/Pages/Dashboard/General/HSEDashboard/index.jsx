@@ -26,7 +26,7 @@ const index = ({ auth: { user }, inspections, trainings, incidents, from, to }) 
 
 	useEffect(() => {
 		if (toolboxtalks && tbtStatistics) {
-			const convertedTbt = convertTbtByYear({ tbt: toolboxtalks })
+			const convertedTbt = convertTbtByYear({ tbt: toolboxtalks });
 			setTotalTbtByYear(convertedTbt.totalTbtByYear);
 		}
 		if (isErrorTbtStat || isErrorTbt) {
