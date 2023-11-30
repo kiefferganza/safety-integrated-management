@@ -114,7 +114,6 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences, projectDetails = 
 						Toolbox Talk Details
 					</Typography>
 					<RHFSelect
-						disabled={isEdit}
 						size="small"
 						name="tbt_type"
 						label="TBT Type"
