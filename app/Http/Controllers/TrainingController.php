@@ -20,6 +20,7 @@ use App\Services\TrainingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -849,8 +850,10 @@ class TrainingController extends Controller
 				abort(404);
 			}
 			$currentYear = Carbon::now()->year;
+			// $currentYear = 2014;
 			$from = Carbon::create($currentYear, 1, 1);
 			$to = Carbon::create($currentYear, 12, 31);
+			// $to = Carbon::create(2023, 12, 31);
 		}
 
 
@@ -866,7 +869,16 @@ class TrainingController extends Controller
 		->select('employee_id', 'firstname', 'lastname', 'tbl_position.position')
 		->has('participated_trainings')
 		->with('participated_trainings', function($q) use($from, $to) {
-			return $q->select(['trainee_id', 'tbl_training_trainees.training_id',  'tbl_training_trainees.employee_id', 'tbl_trainings_files.src', 'tbl_trainings.training_date', 'tbl_trainings.date_expired', 'tbl_trainings.title'])
+			return $q->select([
+					'trainee_id', 
+					'tbl_training_trainees.training_id', 
+					'tbl_training_trainees.employee_id', 
+					'tbl_trainings_files.src', 
+					'tbl_trainings.training_date', 
+					'tbl_trainings.date_expired', 
+					'tbl_trainings.title', 
+					'tbl_trainings.training_hrs'
+				])
 				->where('tbl_trainings.is_deleted', 0)
 				->whereBetween('training_date', [$from, $to])
 				->join('tbl_trainings', 'tbl_trainings.training_id', 'tbl_training_trainees.training_id')
@@ -898,6 +910,7 @@ class TrainingController extends Controller
 						'fullName' => $employeeFullName,
 						'position' => $employeePosition,
 						'completed_count' => 0,
+						'total_hrs' => 0,
 						'data' => collect([])
 					]
 				]));
@@ -912,9 +925,11 @@ class TrainingController extends Controller
 						'fullName' => $employeeFullName,
 						'position' => $employeePosition,
 						'completed_count' => 0,
+						'total_hrs' => 0,
 						'data' => collect([])
 					]);
 				}
+				
 				$years->put($year, $existingYear);
 				
 				$course = '';
@@ -928,11 +943,6 @@ class TrainingController extends Controller
 					}else {
 						$course = $title;
 					}
-					// $lowercaseTitles = array_map('strtolower', $titles);
-					// $lowerNewTitle = strtolower($title);
-					// if (!in_array($lowerNewTitle, $lowercaseTitles)) {
-					// 	$titles[] = $title;
-					// }
 				}
 				
 				
@@ -954,6 +964,7 @@ class TrainingController extends Controller
 							if($isCompleted) {
 								$val['completed_count'] += 1;
 							}
+							$val['total_hrs'] += $parTraining->training_hrs;
 						}
 						return $val;
 					});
@@ -961,7 +972,6 @@ class TrainingController extends Controller
 				}
 			}
 		}
-
 		$years->transform(function($year) {
 			return $year->sortBy('fullName')->values();
 		});

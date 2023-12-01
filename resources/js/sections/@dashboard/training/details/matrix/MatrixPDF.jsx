@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Page, View, Text, Image, Document } from '@react-pdf/renderer';
 
 import styles from './MatrixPDFStyle';
-import { format } from 'date-fns';
+import { format, getDaysInMonth, eachYearOfInterval, getMonth } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
@@ -36,25 +36,62 @@ const POSITIONS = {
 };
 
 
-const PER_PAGE = 40;
+const PER_PAGE = 35;
 
-function addSummary (curr, prev) {
+function generateDateRanges (startDate, endDate) {
+	const startMonth = startDate.toLocaleString('default', { month: 'short' });
+	const endMonth = endDate.toLocaleString('default', { month: 'short' });
+
+	const yearsArray = eachYearOfInterval({ start: startDate, end: endDate });
+	// if multiple years
+	if (yearsArray.length > 1) {
+		const dateRange = {};
+		// If the last year is January
+		let isLastDateJan = getMonth(endDate) === 0
+
+		dateRange[yearsArray.at(0).getFullYear()] = `${startMonth.toLocaleString('default', { month: 'short' })} - Dec`;
+
+		if (yearsArray.length > 1) {
+			for (let i = 1; i < yearsArray.length - 1; i++) {
+				const date = yearsArray.at(i);
+				dateRange[date.getFullYear()] = `Jan - Dec`;
+			}
+		}
+
+		if (isLastDateJan) {
+			dateRange[yearsArray.at(-1).getFullYear()] = `Jan 1-${getDaysInMonth(endDate)}`;
+			return dateRange;
+		}
+		dateRange[yearsArray.at(-1).getFullYear()] = `Jan - ${endMonth}`;
+		return dateRange;
+	}
+
+	const year = startDate.getFullYear();
+	console.log(startDate.getMonth(), endDate.getMonth())
+	if (startDate.getMonth() === endDate.getMonth()) {
+		return {
+			[year]: `${startMonth.toLocaleString('default', { month: 'short' })} 1-${getDaysInMonth(startDate)}`
+		}
+	}
+
+	return {
+		[year]: `${startMonth} - ${endMonth}`
+	}
+}
+
+function populateSummary (curr, prev) {
 	const newObj = {};
 	let total = 0;
 	for (const key in curr) {
 		if (key === 'summary' || key === 'total') continue;
-		// if (key === 'positions') {
-		// 	newObj[key] = new Set([...curr['positions'], ...prev['positions']]);
-		// 	continue;
-		// }
 		newObj[key] = (curr[key] || 0) + (prev[key] || 0);
 		total += (curr[key] || 0) + (prev[key] || 0);
 	}
-	newObj['total'] = total;
 	return newObj;
 }
 
-export default function MatrixPDF ({ years, titles }) {
+export default function MatrixPDF ({ years, titles, from, to }) {
+	const dates = generateDateRanges(new Date(from), new Date(to));
 
 	const coursesLowerObj = titles.reduce((acc, curr) => {
 		acc[curr.toLowerCase()] = 0;
@@ -88,16 +125,23 @@ export default function MatrixPDF ({ years, titles }) {
 					const course = comp.courseName.toLowerCase();
 					if (!total[year]) {
 						total[year] = {
-							...coursesLowerObj,
-							// 'positions': new Set(),
-							summary: null,
-							total: 0,
+							completed: {
+								...coursesLowerObj,
+								summary: null,
+								total: 0,
+							},
+							hours: {
+								...coursesLowerObj,
+								summary: null,
+								total: 0,
+							}
 						};
 					}
-					// total[year]['positions'].add(comp.position);
+					total[year]['hours'][course] += comp.training_hrs;
+					total[year]['hours']['total'] += comp.training_hrs;
 					if (comp.isCompleted) {
-						total[year][course] = total[year][course] ? total[year][course] + 1 : 1;
-						total[year]['total'] += 1;
+						total[year]['completed'][course] += 1;
+						total[year]['completed']['total'] += 1;
 					}
 				});
 			})
@@ -106,103 +150,114 @@ export default function MatrixPDF ({ years, titles }) {
 
 	for (const year in total) {
 		const yearTupple = year.split("_");
-		if (yearTupple[1] && yearTupple[1] !== "1") {
-			if (+yearTupple[1] > 1) {
-				const prevTotal = total[`${yearTupple[0]}_${+yearTupple[1] - 1}`];
-				if (prevTotal) {
-					const prev = prevTotal?.summary || prevTotal;
-					total[year]['summary'] = addSummary(total[year], prev);
-				}
-			}
+		// skip first itteration
+		if (yearTupple[1] === '1') continue;
+
+		if (yearTupple[1]) {
+			const prevIndex = `${yearTupple[0]}_${(+yearTupple[1] - 1)}`;
+
+			const prevComp = total[prevIndex]['completed'];
+			total[year]['completed']['summary'] = populateSummary(total[year]['completed'], prevComp);
+			total[year]['completed']['summary'].total = (total[year]['completed']['summary']?.total || 0) + (total[year]['completed'].total + (prevComp.summary?.total || prevComp.total))
+
+			const prevHours = total[prevIndex]['hours'];
+			total[year]['hours']['summary'] = populateSummary(total[year]['hours'], prevHours)
+			total[year]['hours']['summary'].total = (total[year]['hours']['summary']?.total || 0) + (total[year]['hours'].total + (prevHours.summary?.total || prevHours.total));
 		}
 	}
 
 	return (
 		<Document title={"Training Matrix"}>
 			{pages.map((page) => (
-				page.map(([year, data], pageIdx) => (
-					<Page size="A3" style={styles.page} key={year + pageIdx}>
-						<View>
-							<View style={{ marginBottom: 16 }}>
-								<View style={styles.mb16}>
+				page.map(([year, data], pageIdx) => {
+					const y = year.split("_")[0];
+					return (
+						<Page size="A3" style={styles.page} key={year + pageIdx}>
+							<View>
+								<View style={{ marginBottom: 12 }}>
+									<View style={styles.mb16}>
+										<View style={styles.gridContainer}>
+											<Image source="/logo/Fiafi-logo.png" style={{ height: 48, padding: 2 }} />
+										</View>
+										<View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+											<Text style={styles.h2}>{`Training Matrix - YEAR ${y}`}</Text>
+										</View>
+									</View>
+								</View>
+								<View style={{ marginLeft: 34 }}>
+									<Text style={[styles.h4, { color: '#305496' }]}>{dates[y]}, {y}</Text>
+								</View>
+								<View style={{ alignItems: 'center', justifyContent: 'center' }}>
+									<MatrixTable pageIndex={pageIdx} titles={titles} data={data} year={year} total={total} />
+								</View>
+							</View>
+							<View style={[styles.footer]}>
+								<View style={{ marginBottom: 32 }}>
 									<View style={styles.gridContainer}>
-										<Image source="/logo/Fiafi-logo.png" style={{ height: 48, padding: 2 }} />
-									</View>
-									<View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
-										<Text style={styles.h2}>{`Training Matrix - YEAR ${year.split("_")[0]}`}</Text>
-									</View>
-								</View>
-							</View>
-							<View style={{ alignItems: 'center', justifyContent: 'center' }}>
-								<MatrixTable pageIndex={pageIdx} titles={titles} data={data} year={year} total={total} />
-							</View>
-						</View>
-						<View style={[styles.footer]}>
-							<View style={{ marginBottom: data.length > 25 ? 8 : 32 }}>
-								<View style={styles.gridContainer}>
-									<View style={{ width: '14%' }} />
-									<View style={{ width: '72%' }}>
-										<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 8 }}>
-											<View style={{ width: '35%' }}>
-												<Text style={[styles.h5]}>Position Legend:</Text>
-											</View>
-											<View style={{ flexDirection: 'row', alignItems: 'center', width: '65%' }}>
-												<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-													<View style={{ height: 16 }}>
-														<Text style={[styles.subtitle2]}>Completed: </Text>
-													</View>
-													<View style={{ width: '35%' }}>
-														<View style={{ width: 60, height: 16, backgroundColor: "#808080", border: '0.25px solid #000' }} />
-													</View>
+										<View style={{ width: '14%' }} />
+										<View style={{ width: '72%' }}>
+											<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 8 }}>
+												<View style={{ width: '35%' }}>
+													<Text style={[styles.h5]}>Position Legend:</Text>
 												</View>
-												<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-													<View style={{ height: 16 }}>
-														<Text style={[styles.subtitle2]}>Not Completed: </Text>
+												<View style={{ flexDirection: 'row', alignItems: 'center', width: '65%' }}>
+													<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+														<View style={{ height: 16 }}>
+															<Text style={[styles.subtitle2]}>Completed: </Text>
+														</View>
+														<View style={{ width: '35%' }}>
+															<View style={{ width: 60, height: 16, backgroundColor: "#808080", border: '0.25px solid #000' }} />
+														</View>
 													</View>
-													<View style={{ width: '35%' }}>
-														<View style={{ width: 60, height: 16, backgroundColor: "#ffa500", border: '0.25px solid #000' }} />
+													<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+														<View style={{ height: 16 }}>
+															<Text style={[styles.subtitle2]}>Not Completed: </Text>
+														</View>
+														<View style={{ width: '35%' }}>
+															<View style={{ width: 60, height: 16, backgroundColor: "#ffa500", border: '0.25px solid #000' }} />
+														</View>
 													</View>
-												</View>
-												<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-													<View style={{ height: 16 }}>
-														<Text style={[styles.subtitle2]}>Expired: </Text>
-													</View>
-													<View style={{ width: '35%' }}>
-														<View style={{ width: 60, height: 16, backgroundColor: "#d50000", border: '0.25px solid #000' }} />
+													<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+														<View style={{ height: 16 }}>
+															<Text style={[styles.subtitle2]}>Expired: </Text>
+														</View>
+														<View style={{ width: '35%' }}>
+															<View style={{ width: 60, height: 16, backgroundColor: "#d50000", border: '0.25px solid #000' }} />
+														</View>
 													</View>
 												</View>
 											</View>
-										</View>
-										<View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-											{Object.entries(POSITIONS).map(([pos, color]) => (
-												<View style={{ flexDirection: 'row', width: '33%' }} key={pos}>
-													<View style={{ width: '65%' }}>
-														<Text style={[styles.subtitle2]}>{pos}</Text>
+											<View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+												{Object.entries(POSITIONS).map(([pos, color]) => (
+													<View style={{ flexDirection: 'row', width: '33%' }} key={pos}>
+														<View style={{ width: '65%' }}>
+															<Text style={[styles.subtitle2]}>{pos}</Text>
+														</View>
+														<View style={{ width: '35%' }}>
+															<View style={{ width: 60, height: 16, backgroundColor: color, border: '0.25px solid #000' }} />
+														</View>
 													</View>
-													<View style={{ width: '35%' }}>
-														<View style={{ width: 60, height: 16, backgroundColor: color, border: '0.25px solid #000' }} />
-													</View>
-												</View>
-											))}
+												))}
+											</View>
 										</View>
+										<View style={{ width: '14%' }} />
 									</View>
-									<View style={{ width: '14%' }} />
+								</View>
+								<View style={[styles.gridContainer]}>
+									<View style={styles.col4}>
+										<Text style={[styles.subtitle2, { textAlign: 'left' }]}>Uncontrolled Copy if Printed</Text>
+									</View>
+									<View style={styles.col6}>
+										<Text style={[styles.subtitle2, { textAlign: 'center' }]}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
+									</View>
+									<View style={styles.col4}>
+										<Text style={[styles.subtitle2, { textAlign: 'right' }]}>{format(new Date(), 'MM/dd/yy')} Page {pageIdx + 1}</Text>
+									</View>
 								</View>
 							</View>
-							<View style={[styles.gridContainer]}>
-								<View style={styles.col4}>
-									<Text style={[styles.subtitle2, { textAlign: 'left' }]}>Uncontrolled Copy if Printed</Text>
-								</View>
-								<View style={styles.col6}>
-									<Text style={[styles.subtitle2, { textAlign: 'center' }]}>&copy; FIAFI Group Company, {new Date().getFullYear()}. All Rights Reserved.</Text>
-								</View>
-								<View style={styles.col4}>
-									<Text style={[styles.subtitle2, { textAlign: 'right' }]}>{format(new Date(), 'MM/dd/yy')} Page {pageIdx + 1}</Text>
-								</View>
-							</View>
-						</View>
-					</Page>
-				))
+						</Page>
+					)
+				})
 			))}
 		</Document >
 	)
@@ -210,7 +265,6 @@ export default function MatrixPDF ({ years, titles }) {
 
 
 function MatrixTable ({ titles, data, year, total, pageIndex }) {
-
 	return (
 		<View style={[styles.gridContainer, { justifyContent: 'center' }]}>
 			<View>
@@ -263,31 +317,38 @@ function MatrixTable ({ titles, data, year, total, pageIndex }) {
 							<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0 }]}>
 								<Text style={[styles.tableHeadCellText, { fontWeight: 500, paddingBottom: 0, paddingTop: 1.5, paddingLeft: 4.2, color: "#000" }]}>{d?.completed_count}</Text>
 							</View>
+							<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0 }]}>
+								<Text style={[styles.tableHeadCellText, { fontWeight: 500, paddingBottom: 0, paddingTop: 1.5, paddingLeft: 4.2, color: "#000" }]}>{d?.total_hrs}</Text>
+							</View>
 						</View>
 					)
 				})}
-				<View style={{ flexDirection: 'row', marginVertical: 2 }}>
+
+				{/* Total Hours */}
+				<View style={{ flexDirection: 'row' }}>
 					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 16, padding: 0 }]}></View>
 					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 16, padding: 0 }]}>
-						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total</Text>
+						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Hours</Text>
 					</View>
 
 					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}>
 						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>
 							{data.length}
-							{/* {total[year]?.positions?.size || 0} */}
 						</Text>
 					</View>
 					{titles?.map((title, idx) => (
 						<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 18, padding: 0 }]} key={idx}>
-							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', color: "#000", fontWeight: 700 }]}>{total[year][title.toLowerCase()] || 0}</Text>
+							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', color: "#000", fontWeight: 700 }]}>{total[year]['hours'][title.toLowerCase()] || 0}</Text>
 						</View>
 					))}
 					<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}>
-						<Text style={[styles.tableHeadCellText, { fontWeight: 700, color: "#000" }]}>{total[year]?.total || 0}</Text>
+						<Text style={[styles.tableHeadCellText]}></Text>
+					</View>
+					<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}>
+						<Text style={[styles.tableHeadCellText, { fontWeight: 700, color: "#000" }]}>{(total[year]['hours']?.total || 0).toLocaleString()}</Text>
 					</View>
 				</View>
-				{total[year]['summary'] && (
+				{total[year]['hours']['summary'] && (
 					<View style={{ flexDirection: 'row', marginVertical: 2 }}>
 						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 16, padding: 0 }]}></View>
 						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 16, padding: 0 }]}>
@@ -296,17 +357,63 @@ function MatrixTable ({ titles, data, year, total, pageIndex }) {
 
 						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}>
 							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>
-								{/* {total[year]['summary']?.positions?.size || 0} */}
 								{(PER_PAGE * pageIndex) + data.length}
 							</Text>
 						</View>
 						{titles?.map((title, idx) => (
 							<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 18, padding: 0 }]} key={idx}>
-								<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 9, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year]['summary'][title.toLowerCase()] || 0}</Text>
+								<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 9, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year]['hours']['summary'][title.toLowerCase()] || 0}</Text>
+							</View>
+						))}
+						<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}></View>
+						<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}>
+							<Text style={[styles.tableHeadCellText, { fontWeight: 700, color: "#000" }]}>{(total[year]['hours']['summary'].total || 0).toLocaleString()}</Text>
+						</View>
+					</View>
+				)}
+
+				<View style={{ width: '100%', borderTop: '1px solid #ccc', marginBottom: 8 }} />
+
+				{/* Total Completed */}
+				<View style={{ flexDirection: 'row' }}>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 16, padding: 0 }]}></View>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 16, padding: 0 }]}>
+						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Completed</Text>
+					</View>
+
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}>
+						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>
+							{data.length}
+						</Text>
+					</View>
+					{titles?.map((title, idx) => (
+						<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 18, padding: 0 }]} key={idx}>
+							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', color: "#000", fontWeight: 700 }]}>{total[year]['completed'][title.toLowerCase()] || 0}</Text>
+						</View>
+					))}
+					<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}>
+						<Text style={[styles.tableHeadCellText, { fontWeight: 700, color: "#000" }]}>{(total[year]['completed']?.total || 0).toLocaleString()}</Text>
+					</View>
+				</View>
+				{total[year]['completed']['summary'] && (
+					<View style={{ flexDirection: 'row', marginVertical: 2 }}>
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 16, padding: 0 }]}></View>
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 16, padding: 0 }]}>
+							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Summary Total</Text>
+						</View>
+
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}>
+							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>
+								{(PER_PAGE * pageIndex) + data.length}
+							</Text>
+						</View>
+						{titles?.map((title, idx) => (
+							<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 18, padding: 0 }]} key={idx}>
+								<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 9, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year]['completed']['summary'][title.toLowerCase()] || 0}</Text>
 							</View>
 						))}
 						<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}>
-							<Text style={[styles.tableHeadCellText, { fontWeight: 700, color: "#000" }]}>{total[year]['summary']?.total || 0}</Text>
+							<Text style={[styles.tableHeadCellText, { fontWeight: 700, color: "#000" }]}>{(total[year]['completed']['summary']?.total || 0).toLocaleString()}</Text>
 						</View>
 					</View>
 				)}

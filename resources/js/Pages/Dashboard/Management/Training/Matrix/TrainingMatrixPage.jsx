@@ -6,7 +6,7 @@ import LoadingScreen from "@/Components/loading-screen";
 import Scrollbar from "@/Components/scrollbar/Scrollbar";
 import { Inertia } from "@inertiajs/inertia";
 import { Box, Button, Card, Divider, Grid, IconButton, Stack, Tooltip, Typography, styled } from "@mui/material";
-import { endOfMonth, format, startOfMonth } from "date-fns";
+import { format, startOfMonth, endOfMonth } from 'date-fns';
 
 const TableHead = styled(Stack)(() => ({
 	backgroundColor: '#305496',
@@ -157,7 +157,7 @@ export default function TrainingMatrixPage ({ titles, years, yearList, from, to 
 			<LoadingScreen />
 		)
 	}
-	console.log({ titles });
+
 	return (
 		<>
 			<Card sx={{ p: 2 }}>
@@ -265,6 +265,7 @@ export default function TrainingMatrixPage ({ titles, years, yearList, from, to 
 
 
 function MatrixTable ({ titles, data }) {
+
 	return (
 		<Scrollbar autoHide={false}>
 			<Box>

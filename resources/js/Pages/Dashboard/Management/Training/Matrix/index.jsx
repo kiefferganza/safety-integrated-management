@@ -4,7 +4,7 @@ import DashboardLayout from '@/Layouts/dashboard/DashboardLayout';
 import { Head } from '@inertiajs/inertia-react';
 import { useSettingsContext } from '@/Components/settings';
 import { PATH_DASHBOARD } from '@/routes/paths';
-import MatrixToolbar from '@/sections/@dashboard/training/details/matrix/MatrixToolbar';
+const MatrixToolbar = lazy(() => import('@/sections/@dashboard/training/details/matrix/MatrixToolbar'));
 const CustomBreadcrumbs = lazy(() => import('@/Components/custom-breadcrumbs/CustomBreadcrumbs'));
 const Container = lazy(() => import('@mui/material/Container'));
 const TrainingMatrixPage = lazy(() => import('./TrainingMatrixPage'));
@@ -36,7 +36,7 @@ const index = ({ titles, years, yearList, from, to }) => {
 							},
 						]}
 					/>
-					<MatrixToolbar titles={titles} years={years} />
+					<MatrixToolbar titles={titles} years={years} from={from} to={to} />
 					<TrainingMatrixPage
 						titles={titles}
 						years={years}
