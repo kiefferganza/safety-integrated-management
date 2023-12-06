@@ -972,6 +972,7 @@ class TrainingController extends Controller
 				}
 			}
 		}
+    
 		$years->transform(function($year) {
 			return $year->sortBy('fullName')->values();
 		});

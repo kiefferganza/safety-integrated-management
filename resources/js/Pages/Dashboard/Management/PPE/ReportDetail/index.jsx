@@ -44,7 +44,7 @@ const index = ({ report }) => {
 						/>
 						<PpeReportDetailToolbar inventoryReport={report} />
 						<Card sx={{ p: 3 }}>
-							<ReportDetailHead inventoryReport={report} title="Monthly HSE Inventory Report & Budget Forecast" />
+							<ReportDetailHead inventoryReport={report} title="Monthly PPE Inventory Report & Budget Forecast" />
 							<ReportDetailPage inventoryReport={report} />
 						</Card>
 					</Container>

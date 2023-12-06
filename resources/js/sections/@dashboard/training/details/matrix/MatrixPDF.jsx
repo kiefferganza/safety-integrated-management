@@ -36,7 +36,7 @@ const POSITIONS = {
 };
 
 
-const PER_PAGE = 35;
+const PER_PAGE = 20;
 
 function generateDateRanges (startDate, endDate) {
 	const startMonth = startDate.toLocaleString('default', { month: 'short' });
@@ -67,7 +67,6 @@ function generateDateRanges (startDate, endDate) {
 	}
 
 	const year = startDate.getFullYear();
-	console.log(startDate.getMonth(), endDate.getMonth())
 	if (startDate.getMonth() === endDate.getMonth()) {
 		return {
 			[year]: `${startMonth.toLocaleString('default', { month: 'short' })} 1-${getDaysInMonth(startDate)}`
@@ -79,13 +78,16 @@ function generateDateRanges (startDate, endDate) {
 	}
 }
 
-function populateSummary (curr, prev) {
+function populateSummary (curr, prev, titles) {
 	const newObj = {};
-	let total = 0;
+	// let total = 0;
 	for (const key in curr) {
-		if (key === 'summary' || key === 'total') continue;
-		newObj[key] = (curr[key] || 0) + (prev[key] || 0);
-		total += (curr[key] || 0) + (prev[key] || 0);
+    if(key in titles) {
+      newObj[key] = (curr[key] || 0) + (prev[key] || 0);
+    }else if(key !== 'total' && key !== 'summary') {
+      delete curr[key];
+    }
+		// total += (curr[key] || 0) + (prev[key] || 0);
 	}
 	return newObj;
 }
@@ -97,7 +99,6 @@ export default function MatrixPDF ({ years, titles, from, to }) {
 		acc[curr.toLowerCase()] = 0;
 		return acc;
 	}, {});
-
 	const pages = useMemo(() => {
 		return Object.entries(years).map(yd => {
 			const [year, data] = yd;
@@ -134,15 +135,35 @@ export default function MatrixPDF ({ years, titles, from, to }) {
 								...coursesLowerObj,
 								summary: null,
 								total: 0,
-							}
+							},
+              notCompleted: {
+                ...coursesLowerObj,
+                summary: null,
+                total: 0
+              },
+              expired: {
+                ...coursesLowerObj,
+                summary: null,
+                total: 0
+              }
 						};
 					}
-					total[year]['hours'][course] += comp.training_hrs;
-					total[year]['hours']['total'] += comp.training_hrs;
-					if (comp.isCompleted) {
-						total[year]['completed'][course] += 1;
-						total[year]['completed']['total'] += 1;
-					}
+          if(course in coursesLowerObj) {
+            total[year]['hours'][course] += comp.training_hrs;
+            total[year]['hours']['total'] += comp.training_hrs;
+            if (comp.isCompleted) {
+              total[year]['completed'][course] += 1;
+              total[year]['completed']['total'] += 1;
+            }else {
+              if(comp.expired) {
+                total[year]['expired'][course] += 1;
+                total[year]['expired']['total'] += 1;
+              }else {
+                total[year]['notCompleted'][course] += 1;
+                total[year]['notCompleted']['total'] += 1;
+              }
+            }
+          }
 				});
 			})
 		});
@@ -156,13 +177,23 @@ export default function MatrixPDF ({ years, titles, from, to }) {
 		if (yearTupple[1]) {
 			const prevIndex = `${yearTupple[0]}_${(+yearTupple[1] - 1)}`;
 
-			const prevComp = total[prevIndex]['completed'];
-			total[year]['completed']['summary'] = populateSummary(total[year]['completed'], prevComp);
-			total[year]['completed']['summary'].total = (total[year]['completed']['summary']?.total || 0) + (total[year]['completed'].total + (prevComp.summary?.total || prevComp.total))
+			const prevComp = total[prevIndex].completed;
+			total[year].completed.summary = populateSummary(total[year].completed, prevComp, coursesLowerObj);
+			total[year].completed.summary.total = (total[year].completed.summary?.total || 0) + (total[year].completed.total + (prevComp.summary?.total || prevComp.total));
 
-			const prevHours = total[prevIndex]['hours'];
-			total[year]['hours']['summary'] = populateSummary(total[year]['hours'], prevHours)
-			total[year]['hours']['summary'].total = (total[year]['hours']['summary']?.total || 0) + (total[year]['hours'].total + (prevHours.summary?.total || prevHours.total));
+      // not completed
+			const prevNotComp = total[prevIndex].notCompleted;
+			total[year].notCompleted.summary = populateSummary(total[year].notCompleted, prevNotComp, coursesLowerObj);
+			total[year].notCompleted.summary.total = (total[year].notCompleted.summary?.total || 0) + (total[year].notCompleted.total + (prevNotComp.summary?.total || prevNotComp.total));
+      
+      // not completed
+			const prevExp = total[prevIndex].expired;
+			total[year].expired.summary = populateSummary(total[year].expired, prevExp, coursesLowerObj);
+			total[year].expired.summary.total = (total[year].expired.summary?.total || 0) + (total[year].expired.total + (prevExp.summary?.total || prevExp.total));
+
+			const prevHours = total[prevIndex].hours;
+			total[year].hours.summary = populateSummary(total[year].hours, prevHours, coursesLowerObj)
+			total[year].hours.summary.total = (total[year].hours.summary?.total || 0) + (total[year].hours.total + (prevHours.summary?.total || prevHours.total));
 		}
 	}
 
@@ -314,61 +345,42 @@ function MatrixTable ({ titles, data, year, total, pageIndex }) {
 									</View>
 								)
 							})}
-							<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0 }]}>
-								<Text style={[styles.tableHeadCellText, { fontWeight: 500, paddingBottom: 0, paddingTop: 1.5, paddingLeft: 4.2, color: "#000" }]}>{d?.completed_count}</Text>
-							</View>
-							<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0 }]}>
-								<Text style={[styles.tableHeadCellText, { fontWeight: 500, paddingBottom: 0, paddingTop: 1.5, paddingLeft: 4.2, color: "#000" }]}>{d?.total_hrs}</Text>
-							</View>
 						</View>
 					)
 				})}
 
 				{/* Total Hours */}
 				<View style={{ flexDirection: 'row' }}>
-					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 16, padding: 0 }]}></View>
-					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 16, padding: 0 }]}>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
 						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Hours</Text>
 					</View>
-
-					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}>
-						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>
-							{data.length}
-						</Text>
-					</View>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 32, padding: 0 }]}/>
 					{titles?.map((title, idx) => (
-						<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 18, padding: 0 }]} key={idx}>
+						<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
 							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', color: "#000", fontWeight: 700 }]}>{total[year]['hours'][title.toLowerCase()] || 0}</Text>
+              {(idx + 1) === titles.length && (
+                <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', color: "#000", fontWeight: 700 }]}>{(total[year]['hours']?.total || 0).toLocaleString()}</Text>
+              )}
 						</View>
 					))}
-					<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}>
-						<Text style={[styles.tableHeadCellText]}></Text>
-					</View>
-					<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}>
-						<Text style={[styles.tableHeadCellText, { fontWeight: 700, color: "#000" }]}>{(total[year]['hours']?.total || 0).toLocaleString()}</Text>
-					</View>
 				</View>
 				{total[year]['hours']['summary'] && (
 					<View style={{ flexDirection: 'row', marginVertical: 2 }}>
-						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 16, padding: 0 }]}></View>
-						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 16, padding: 0 }]}>
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
 							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Summary Total</Text>
 						</View>
 
-						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}>
-							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>
-								{(PER_PAGE * pageIndex) + data.length}
-							</Text>
-						</View>
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 32, padding: 0 }]}/>
 						{titles?.map((title, idx) => (
-							<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 18, padding: 0 }]} key={idx}>
+							<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
 								<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 9, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year]['hours']['summary'][title.toLowerCase()] || 0}</Text>
+                {(idx + 1) === titles.length && (
+                  <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', fontWeight: 700, color: "#000" }]}>{(total[year]['hours']['summary'].total || 0).toLocaleString()}</Text>
+                )}
 							</View>
 						))}
-						<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}></View>
-						<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}>
-							<Text style={[styles.tableHeadCellText, { fontWeight: 700, color: "#000" }]}>{(total[year]['hours']['summary'].total || 0).toLocaleString()}</Text>
-						</View>
 					</View>
 				)}
 
@@ -376,47 +388,116 @@ function MatrixTable ({ titles, data, year, total, pageIndex }) {
 
 				{/* Total Completed */}
 				<View style={{ flexDirection: 'row' }}>
-					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 16, padding: 0 }]}></View>
-					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 16, padding: 0 }]}>
-						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Completed</Text>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
+						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Training Completed</Text>
 					</View>
 
-					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}>
-						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>
-							{data.length}
-						</Text>
-					</View>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}/>
 					{titles?.map((title, idx) => (
-						<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 18, padding: 0 }]} key={idx}>
+						<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
 							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', color: "#000", fontWeight: 700 }]}>{total[year]['completed'][title.toLowerCase()] || 0}</Text>
+              {(idx + 1) === titles.length && (
+               <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', fontWeight: 700, color: "#000" }]}>{(total[year]['completed']?.total || 0).toLocaleString()}</Text>
+              )}
 						</View>
 					))}
-					<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}>
-						<Text style={[styles.tableHeadCellText, { fontWeight: 700, color: "#000" }]}>{(total[year]['completed']?.total || 0).toLocaleString()}</Text>
-					</View>
 				</View>
-				{total[year]['completed']['summary'] && (
+				{(total[year].completed.summary && total[year].completed.summary.total > 0) && (
 					<View style={{ flexDirection: 'row', marginVertical: 2 }}>
-						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 16, padding: 0 }]}></View>
-						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 16, padding: 0 }]}>
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
 							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Summary Total</Text>
 						</View>
 
-						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}>
-							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>
-								{(PER_PAGE * pageIndex) + data.length}
-							</Text>
-						</View>
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}/>
 						{titles?.map((title, idx) => (
-							<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 18, padding: 0 }]} key={idx}>
-								<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 9, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year]['completed']['summary'][title.toLowerCase()] || 0}</Text>
+							<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
+								<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 9, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year].completed.summary[title.toLowerCase()] || 0}</Text>
+                {(idx + 1) === titles.length && (
+                  <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', fontWeight: 700, color: "#000" }]}>{(total[year].completed.summary?.total || 0).toLocaleString()}</Text>
+                )}
 							</View>
 						))}
-						<View style={[{ minWidth: 16, width: 16, height: 16, padding: 0, paddingLeft: 4.5 }]}>
-							<Text style={[styles.tableHeadCellText, { fontWeight: 700, color: "#000" }]}>{(total[year]['completed']['summary']?.total || 0).toLocaleString()}</Text>
-						</View>
 					</View>
 				)}
+
+				<View style={{ width: '100%', borderTop: '1px solid #ccc', marginBottom: 8 }} />
+
+				{/* Total Not Completed */}
+				<View style={{ flexDirection: 'row' }}>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 140, height: 32, padding: 0 }]}>
+						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Training Not Completed</Text>
+					</View>
+
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 70, height: 18, padding: 0 }]}/>
+					{titles?.map((title, idx) => (
+						<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
+							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', color: "#000", fontWeight: 700 }]}>{total[year].notCompleted[title.toLowerCase()] || 0}</Text>
+              {(idx + 1) === titles.length && (
+               <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', fontWeight: 700, color: "#000" }]}>{(total[year].notCompleted?.total || 0).toLocaleString()}</Text>
+              )}
+						</View>
+					))}
+				</View>
+				{(total[year].notCompleted.summary && total[year].notCompleted.summary.total > 0) && (
+					<View style={{ flexDirection: 'row', marginVertical: 2 }}>
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
+							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Summary Total</Text>
+						</View>
+
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}/>
+						{titles?.map((title, idx) => (
+							<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
+								<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 9, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year].notCompleted.summary[title.toLowerCase()] || 0}</Text>
+                {(idx + 1) === titles.length && (
+                  <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', fontWeight: 700, color: "#000" }]}>{(total[year].notCompleted.summary?.total || 0).toLocaleString()}</Text>
+                )}
+							</View>
+						))}
+					</View>
+				)}
+
+				<View style={{ width: '100%', borderTop: '1px solid #ccc', marginBottom: 8 }} />
+
+				{/* Total Expired */}
+				<View style={{ flexDirection: 'row' }}>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 140, height: 32, padding: 0 }]}>
+						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Expired Training</Text>
+					</View>
+
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 70, height: 18, padding: 0 }]}/>
+					{titles?.map((title, idx) => (
+						<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
+							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', color: "#000", fontWeight: 700 }]}>{total[year].expired[title.toLowerCase()] || 0}</Text>
+              {(idx + 1) === titles.length && (
+               <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', fontWeight: 700, color: "#000" }]}>{(total[year].expired?.total || 0).toLocaleString()}</Text>
+              )}
+						</View>
+					))}
+				</View>
+				{(total[year].expired.summary && total[year].expired.summary.total > 0) && (
+					<View style={{ flexDirection: 'row', marginVertical: 2 }}>
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
+							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Summary Total</Text>
+						</View>
+
+						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}/>
+						{titles?.map((title, idx) => (
+							<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
+								<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 9, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year].expired.summary[title.toLowerCase()] || 0}</Text>
+                {(idx + 1) === titles.length && (
+                  <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', fontWeight: 700, color: "#000" }]}>{(total[year].expired.summary?.total || 0).toLocaleString()}</Text>
+                )}
+							</View>
+						))}
+					</View>
+				)}
+
 			</View>
 		</View >
 	)

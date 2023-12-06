@@ -44,7 +44,7 @@ export default function PpePDF ({ report, title = "PPE REPORT PREVIEW" }) {
 								<Image source="/logo/Fiafi-logo.png" style={{ height: 32, padding: 2 }} />
 							</View>
 							<View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
-								<Text style={styles.h4}>Monthly HSE Inventory Report & Budget Forecast Report</Text>
+								<Text style={styles.h4}>Monthly PPE Inventory Report & Budget Forecast Report</Text>
 							</View>
 							<View style={styles.gridContainer}>
 								<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
