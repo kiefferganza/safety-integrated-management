@@ -88,6 +88,7 @@ class HandleInertiaRequests extends Middleware
 							"cover" => URL::route("image", [ "path" => $path, "w" => 1200, "h" => 280, "fit" => "crop" ]),
 						];
 					}
+          $user->password = null;
 					return [
 						"user" => $userData
 					];

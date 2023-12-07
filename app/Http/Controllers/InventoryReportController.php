@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DocumentProjectDetail;
 use App\Models\Employee;
 use App\Models\InventoryReport;
 use Illuminate\Http\Request;
@@ -10,6 +9,7 @@ use Inertia\Inertia;
 use App\Models\Inventory;
 use App\Models\InventoryBound;
 use App\Models\InventoryReportComments;
+use App\Services\ProjectDetailService;
 use Illuminate\Support\Facades\DB;
 
 class InventoryReportController extends Controller
@@ -45,8 +45,6 @@ class InventoryReportController extends Controller
 			return $inventory;
 		});
 
-		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
-
 		$latestReport = InventoryReport::select("sequence_no")->latest()->first();
 		$submittedDates = InventoryReport::select("submitted_date")->get()->pluck("submitted_date");
 		$sequence = $latestReport ? (int)ltrim($latestReport->sequence_no) + 1 : 1;
@@ -62,7 +60,7 @@ class InventoryReportController extends Controller
 				->where("user_id", "!=", null)
 				->where("user_id", "!=", $user->user_id)
 				->get(),
-			"projectDetails" => $projectDetails
+			"projectDetails" => ProjectDetailService::getProjectDetails($user)
 		]);
 	}
 
@@ -146,7 +144,7 @@ class InventoryReportController extends Controller
 	 */
 	public function edit(InventoryReport $inventoryReport)
 	{
-
+    
 	}
 
 	/**
@@ -158,7 +156,32 @@ class InventoryReportController extends Controller
 	 */
 	public function update(Request $request, InventoryReport $inventoryReport)
 	{
+    $validated = $request->validate([
+			'originator' => 'string|required',
+			'project_code' => 'string|required',
+			'discipline' => 'string|required',
+			'document_type' => 'string|required',
+      'document_zone' => ['string', 'nullable'],
+      'document_level' => ['string', 'nullable'],
+			'location' => 'string|required',
+			'contract_no' => 'string|required',
+			'budget_forcast_date' => 'date|required',
+			'inventory_start_date' => 'date|required',
+			'inventory_end_date' => 'date|required',
+			'submitted_date' => 'date|required',
+		]);
+    
+    $updated = $inventoryReport->update($validated);
 
+    if(!$updated) {
+      return redirect()->back()
+      ->with("message", "Something went wrong updating " . $inventoryReport->form_number  ."!")
+      ->with("type", "error");
+    }
+    
+    return redirect()->back()
+		->with("message", "Report" . $inventoryReport->form_number  ." updated successfully!")
+		->with("type", "success");
 	}
 
 	/**
@@ -205,6 +228,7 @@ class InventoryReportController extends Controller
 
 
 	public function reportList() {
+    $user = auth()->user();
 		$inventoryReports = InventoryReport::with([
 			"comments",
 			"inventories",
@@ -238,9 +262,12 @@ class InventoryReportController extends Controller
 
 			}
 		}
+		$submittedDates = InventoryReport::select("submitted_date")->get()->pluck("submitted_date");
 		
 		return Inertia::render("Dashboard/Management/PPE/ReportList/index", [
-			"inventoryReports" => $inventoryReports
+      "submittedDates" => $submittedDates,
+			"inventoryReports" => $inventoryReports,
+      "projectDetails" => ProjectDetailService::getProjectDetails($user)
 		]);
 	}
 

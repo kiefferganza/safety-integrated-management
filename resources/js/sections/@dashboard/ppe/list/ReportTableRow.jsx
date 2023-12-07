@@ -1,294 +1,415 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react';
+import PropTypes from "prop-types";
+import { useState } from "react";
 // @mui
-const { Button, CircularProgress, TableRow, MenuItem, TableCell, IconButton, Divider, Box, Dialog, DialogActions, Tooltip, useTheme } = await import('@mui/material');
+const {
+    Button,
+    CircularProgress,
+    TableRow,
+    MenuItem,
+    TableCell,
+    IconButton,
+    Divider,
+    Box,
+    Dialog,
+    DialogActions,
+    Tooltip,
+    useTheme,
+} = await import("@mui/material");
 // utils
-import { fDate } from '@/utils/formatTime';
-import { endOfMonth, startOfMonth } from 'date-fns';
+import { fDate } from "@/utils/formatTime";
+import { endOfMonth, startOfMonth } from "date-fns";
 // components
-import Iconify from '@/Components/iconify';
-import MenuPopover from '@/Components/menu-popover';
-import ConfirmDialog from '@/Components/confirm-dialog';
-import { useDateRangePicker } from '@/Components/date-range-picker';
-const { PDFViewer } = await import('@react-pdf/renderer');
-import PpePDF from '../details/PpePDF';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import { Link, usePage } from '@inertiajs/inertia-react';
-import ReportTableSubRow from './ReportTableSubrow';
-import { sentenceCase } from 'change-case';
-import Label from '@/Components/label/Label';
-import { PATH_DASHBOARD } from '@/routes/paths';
-import PpeFileList from '../portal/PpeFileList';
+import Iconify from "@/Components/iconify";
+import MenuPopover from "@/Components/menu-popover";
+import ConfirmDialog from "@/Components/confirm-dialog";
+import { useDateRangePicker } from "@/Components/date-range-picker";
+const { PDFViewer } = await import("@react-pdf/renderer");
+import PpePDF from "../details/PpePDF";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { Link, usePage } from "@inertiajs/inertia-react";
+import ReportTableSubRow from "./ReportTableSubrow";
+import { sentenceCase } from "change-case";
+import Label from "@/Components/label/Label";
+import { PATH_DASHBOARD } from "@/routes/paths";
+import PpeFileList from "../portal/PpeFileList";
+import { NewPpeReport } from "../portal/NewPpeReport";
 
 // ----------------------------------------------------------------------
 
 ReportTableRow.propTypes = {
-	row: PropTypes.object,
-	onDeleteRow: PropTypes.func,
+    row: PropTypes.object,
+    onDeleteRow: PropTypes.func,
 };
 
-export default function ReportTableRow ({ row, onDeleteRow }) {
-	const { auth: { user } } = usePage().props;
+export default function ReportTableRow({
+    row,
+    onDeleteRow,
+    projectDetails,
+    submittedDates,
+}) {
+    const {
+        auth: { user },
+    } = usePage().props;
 
-	const {
-		form_number,
-		contract_no,
-		location,
-		conducted_by,
-		inventory_start_date,
-		inventory_end_date,
-		budget_forcast_date,
-		submitted_date,
-		submitted
-	} = row;
+    const {
+        form_number,
+        contract_no,
+        location,
+        conducted_by,
+        inventory_start_date,
+        inventory_end_date,
+        budget_forcast_date,
+        submitted_date,
+        submitted,
+    } = row;
 
-	const { shortLabel } = useDateRangePicker(
-		new Date(inventory_start_date),
-		new Date(inventory_end_date)
-	);
+    const { shortLabel } = useDateRangePicker(
+        new Date(inventory_start_date),
+        new Date(inventory_end_date)
+    );
 
-	const [openCollapse, setOpenCollapse] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
 
-	const [open, setOpen] = useState(false);
+    const [openCollapse, setOpenCollapse] = useState(false);
 
-	const [openConfirm, setOpenConfirm] = useState(false);
+    const [open, setOpen] = useState(false);
 
-	const [openPopover, setOpenPopover] = useState(null);
+    const [openConfirm, setOpenConfirm] = useState(false);
 
-	const [openFileList, setOpenFileList] = useState(false);
+    const [openPopover, setOpenPopover] = useState(null);
 
-	const handleOpenFileList = () => {
-		handleClosePopover();
-		setOpenFileList(true);
-	}
+    const [openFileList, setOpenFileList] = useState(false);
 
-	const handleCloseFileList = () => {
-		setOpenFileList(false);
-	}
+    const handleOpenFileList = () => {
+        handleClosePopover();
+        setOpenFileList(true);
+    };
 
-	const handleOpen = () => {
-		setOpen(true);
-	}
+    const handleCloseFileList = () => {
+        setOpenFileList(false);
+    };
 
-	const handleClose = () => {
-		setOpen(false);
-	}
+    const handleOpen = () => {
+        setOpen(true);
+    };
 
-	const handleOpenConfirm = () => {
-		setOpenConfirm(true);
-	};
+    const handleClose = () => {
+        setOpen(false);
+    };
 
-	const handleCloseConfirm = () => {
-		setOpenConfirm(false);
-	};
+    const handleOpenConfirm = () => {
+        setOpenConfirm(true);
+    };
 
-	const handleOpenPopover = (event) => {
-		setOpenPopover(event.currentTarget);
-	};
+    const handleCloseConfirm = () => {
+        setOpenConfirm(false);
+    };
 
-	const handleClosePopover = () => {
-		setOpenPopover(null);
-	};
+    const handleOpenPopover = (event) => {
+        setOpenPopover(event.currentTarget);
+    };
 
-	const handleTriggerCollapse = () => {
-		setOpenCollapse((currState) => !currState);
-	}
+    const handleClosePopover = () => {
+        setOpenPopover(null);
+    };
 
-	const getStatusColor = (status) => {
-		let statusColor = "warning";
-		switch (status) {
-			case "for_review":
-				statusColor = "warning";
-				break;
-			case "for_approval":
-				statusColor = "info";
-				break;
-			case "approved":
-			case "closed":
-				statusColor = "success";
-				break;
-			case "fail":
-				statusColor = "error";
-				break;
-			default:
-				break;
-		}
-		return statusColor;
-	}
+    const handleTriggerCollapse = () => {
+        setOpenCollapse((currState) => !currState);
+    };
 
-	const forcastDate = new Date(budget_forcast_date);
-	const forcastMonth = `${fDate(startOfMonth(forcastDate), 'dd')} - ${fDate(endOfMonth(forcastDate), 'dd MMM yyyy')}`;
-	return (
-		<>
-			<TableRow hover>
-				<TableCell sx={{ whiteSpace: "nowrap" }} align="left">{form_number}</TableCell>
+    const getStatusColor = (status) => {
+        let statusColor = "warning";
+        switch (status) {
+            case "for_review":
+                statusColor = "warning";
+                break;
+            case "for_approval":
+                statusColor = "info";
+                break;
+            case "approved":
+            case "closed":
+                statusColor = "success";
+                break;
+            case "fail":
+                statusColor = "error";
+                break;
+            default:
+                break;
+        }
+        return statusColor;
+    };
 
-				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }} align="left">{contract_no}</TableCell>
+    const forcastDate = new Date(budget_forcast_date);
+    const forcastMonth = `${fDate(startOfMonth(forcastDate), "dd")} - ${fDate(
+        endOfMonth(forcastDate),
+        "dd MMM yyyy"
+    )}`;
+    const canEdit = user.user_type === 0 || user.emp_id == row.submitted_id;
+    return (
+        <>
+            <TableRow hover>
+                <TableCell sx={{ whiteSpace: "nowrap" }} align="left">
+                    {form_number}
+                </TableCell>
 
-				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }} align="left">{location}</TableCell>
+                <TableCell
+                    onClick={handleTriggerCollapse}
+                    sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }}
+                    align="left"
+                >
+                    {contract_no}
+                </TableCell>
 
-				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }} align="left">{conducted_by}</TableCell>
+                <TableCell
+                    onClick={handleTriggerCollapse}
+                    sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }}
+                    align="left"
+                >
+                    {location}
+                </TableCell>
 
-				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap" }}>{shortLabel}</TableCell>
+                <TableCell
+                    onClick={handleTriggerCollapse}
+                    sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }}
+                    align="left"
+                >
+                    {conducted_by}
+                </TableCell>
 
-				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap" }}>{forcastMonth}</TableCell>
+                <TableCell
+                    onClick={handleTriggerCollapse}
+                    sx={{ whiteSpace: "nowrap" }}
+                >
+                    {shortLabel}
+                </TableCell>
 
-				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap" }}>{fDate(submitted_date)}</TableCell>
+                <TableCell
+                    onClick={handleTriggerCollapse}
+                    sx={{ whiteSpace: "nowrap" }}
+                >
+                    {forcastMonth}
+                </TableCell>
 
-				<TableCell onClick={handleTriggerCollapse} sx={{ whiteSpace: "nowrap" }}>{submitted?.fullname}</TableCell>
+                <TableCell
+                    onClick={handleTriggerCollapse}
+                    sx={{ whiteSpace: "nowrap" }}
+                >
+                    {fDate(submitted_date)}
+                </TableCell>
 
-				<TableCell onClick={handleTriggerCollapse} align="center">
-					<Label
-						variant="soft"
-						color={getStatusColor(row.status)}
-						sx={{ textTransform: "capitalize" }}
-					>
-						{sentenceCase(row.status)}
-					</Label>
-				</TableCell>
+                <TableCell
+                    onClick={handleTriggerCollapse}
+                    sx={{ whiteSpace: "nowrap" }}
+                >
+                    {submitted?.fullname}
+                </TableCell>
 
-				<TableCell sx={{ whiteSpace: "nowrap" }} align="right">
-					<IconButton
-						aria-label="expand row"
-						color={openCollapse ? 'inherit' : 'default'}
-						onClick={handleTriggerCollapse}
-					>
-						<Iconify icon={openCollapse ? "material-symbols:keyboard-arrow-up" : "material-symbols:keyboard-arrow-down"} />
-					</IconButton>
-					<IconButton color={openPopover ? 'primary' : 'default'} onClick={handleOpenPopover}>
-						<Iconify icon="eva:more-vertical-fill" />
-					</IconButton>
-				</TableCell>
-			</TableRow>
+                <TableCell onClick={handleTriggerCollapse} align="center">
+                    <Label
+                        variant="soft"
+                        color={getStatusColor(row.status)}
+                        sx={{ textTransform: "capitalize" }}
+                    >
+                        {sentenceCase(row.status)}
+                    </Label>
+                </TableCell>
 
-			<ReportTableSubRow row={row} open={openCollapse} />
+                <TableCell sx={{ whiteSpace: "nowrap" }} align="right">
+                    <IconButton
+                        aria-label="expand row"
+                        color={openCollapse ? "inherit" : "default"}
+                        onClick={handleTriggerCollapse}
+                    >
+                        <Iconify
+                            icon={
+                                openCollapse
+                                    ? "material-symbols:keyboard-arrow-up"
+                                    : "material-symbols:keyboard-arrow-down"
+                            }
+                        />
+                    </IconButton>
+                    <IconButton
+                        color={openPopover ? "primary" : "default"}
+                        onClick={handleOpenPopover}
+                    >
+                        <Iconify icon="eva:more-vertical-fill" />
+                    </IconButton>
+                </TableCell>
+            </TableRow>
 
-			<MenuPopover open={openPopover} onClose={handleClosePopover} arrow="right-top" sx={{ width: 160 }}>
-				<MenuItem
-					component={Link}
-					href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
-					preserveScroll
-					onClick={handleClosePopover}
-				>
-					<Iconify icon="eva:eye-outline" />
-					View
-				</MenuItem>
-				<MenuItem
-					onClick={handleOpenFileList}
-				>
-					<Iconify icon="heroicons:document-magnifying-glass-20-solid" />
-					View Files
-				</MenuItem>
-				<MenuItem
-					disabled={row.type !== "review"}
-					component={Link}
-					href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
-					preserveScroll
-					onClick={handleClosePopover}
-				>
-					<Iconify width={16} icon="fontisto:preview" />
-					Review
-				</MenuItem>
-				<MenuItem
-					disabled={row.type !== "approve"}
-					component={Link}
-					href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
-					preserveScroll
-					onClick={handleClosePopover}
-				>
-					<Iconify icon="pajamas:review-checkmark" />
-					Verify
-				</MenuItem>
-				<Divider />
-				<MenuItem
-					onClick={() => {
-						handleOpen();
-						handleClosePopover();
-					}}
-				>
-					<Iconify icon="eva:eye-fill" />
-					View Report
-				</MenuItem>
-				<PDFDownloadLink
-					document={<PpePDF report={{ ...row, shortLabel }} title={form_number} />}
-					fileName={form_number}
-					style={{ textDecoration: 'none' }}
-				>
-					{({ loading }) => (
-						<MenuItem
-							onClick={() => {
-								handleClosePopover();
-							}}
-						>
-							{loading ? <CircularProgress size={18} color="inherit" sx={{ marginRight: 1.5 }} /> : <Iconify icon="eva:download-fill" />}
-							Download
-						</MenuItem>
-					)}
-				</PDFDownloadLink>
-				{/* <MenuItem
-					href={PATH_DASHBOARD.ppe.edit(slug)}
-					component={Link}
-					onClick={handleClosePopover}
-				>
-					<Iconify icon="eva:edit-fill" />
-					Edit
-				</MenuItem> */}
-				<Divider />
-				<MenuItem
-					onClick={() => {
-						handleOpenConfirm();
-						handleClosePopover();
-					}}
-					sx={{ color: 'error.main' }}
-					disabled={user?.emp_id !== submitted?.employee_id}
-				>
-					<Iconify icon="eva:trash-2-outline" />
-					Delete
-				</MenuItem>
-			</MenuPopover>
+            <ReportTableSubRow row={row} open={openCollapse} />
 
-			<PpeFileList
-				open={openFileList}
-				onClose={handleCloseFileList}
-				files={row.media}
-				title={`${row.form_number} File List`}
-			/>
+            <MenuPopover
+                open={openPopover}
+                onClose={handleClosePopover}
+                arrow="right-top"
+                sx={{ width: 160 }}
+            >
+                <MenuItem
+                    component={Link}
+                    href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
+                    preserveScroll
+                    onClick={handleClosePopover}
+                >
+                    <Iconify icon="eva:eye-outline" />
+                    View
+                </MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        handleClosePopover();
+                        setOpenEdit(true);
+                    }}
+                >
+                    <Iconify icon="eva:edit-fill" />
+                    Edit
+                </MenuItem>
+                <MenuItem onClick={handleOpenFileList}>
+                    <Iconify icon="heroicons:document-magnifying-glass-20-solid" />
+                    View Files
+                </MenuItem>
+                <MenuItem
+                    disabled={row.type !== "review"}
+                    component={Link}
+                    href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
+                    preserveScroll
+                    onClick={handleClosePopover}
+                >
+                    <Iconify width={16} icon="fontisto:preview" />
+                    Review
+                </MenuItem>
+                <MenuItem
+                    disabled={row.type !== "approve"}
+                    component={Link}
+                    href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
+                    preserveScroll
+                    onClick={handleClosePopover}
+                >
+                    <Iconify icon="pajamas:review-checkmark" />
+                    Verify
+                </MenuItem>
+                <Divider />
+                <MenuItem
+                    onClick={() => {
+                        handleOpen();
+                        handleClosePopover();
+                    }}
+                >
+                    <Iconify icon="eva:eye-fill" />
+                    View Report
+                </MenuItem>
+                <PDFDownloadLink
+                    document={
+                        <PpePDF
+                            report={{ ...row, shortLabel }}
+                            title={form_number}
+                        />
+                    }
+                    fileName={form_number}
+                    style={{ textDecoration: "none" }}
+                >
+                    {({ loading }) => (
+                        <MenuItem
+                            onClick={() => {
+                                handleClosePopover();
+                            }}
+                        >
+                            {loading ? (
+                                <CircularProgress
+                                    size={18}
+                                    color="inherit"
+                                    sx={{ marginRight: 1.5 }}
+                                />
+                            ) : (
+                                <Iconify icon="eva:download-fill" />
+                            )}
+                            Download
+                        </MenuItem>
+                    )}
+                </PDFDownloadLink>
+                <Divider />
+                <MenuItem
+                    onClick={() => {
+                        handleOpenConfirm();
+                        handleClosePopover();
+                    }}
+                    sx={{ color: "error.main" }}
+                    disabled={user?.emp_id !== submitted?.employee_id}
+                >
+                    <Iconify icon="eva:trash-2-outline" />
+                    Delete
+                </MenuItem>
+            </MenuPopover>
 
-			<ConfirmDialog
-				open={openConfirm}
-				onClose={handleCloseConfirm}
-				title="Delete"
-				content="Are you sure want to delete?"
-				action={
-					<Button variant="contained" color="error" onClick={onDeleteRow}>
-						Delete
-					</Button>
-				}
-			/>
+            <PpeFileList
+                open={openFileList}
+                onClose={handleCloseFileList}
+                files={row.media}
+                title={`${row.form_number} File List`}
+            />
 
-			<Dialog fullScreen open={open}>
-				<Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-					<DialogActions
-						sx={{
-							zIndex: 9,
-							padding: '12px !important',
-							boxShadow: (theme) => theme.customShadows.z8,
-						}}
-					>
-						<Tooltip title="Close">
-							<IconButton color="inherit" onClick={handleClose}>
-								<Iconify icon="eva:close-fill" />
-							</IconButton>
-						</Tooltip>
-					</DialogActions>
+            <ConfirmDialog
+                open={openConfirm}
+                onClose={handleCloseConfirm}
+                title="Delete"
+                content="Are you sure want to delete?"
+                action={
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={onDeleteRow}
+                    >
+                        Delete
+                    </Button>
+                }
+            />
 
-					<Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
-						<PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-							<PpePDF report={{ ...row, shortLabel }} title={form_number} />
-						</PDFViewer>
-					</Box>
-				</Box>
-			</Dialog>
-		</>
-	);
+            <NewPpeReport
+                open={openEdit}
+                onClose={() => setOpenEdit(false)}
+                report={row}
+                submittedDates={submittedDates}
+                projectDetails={projectDetails}
+                isEdit={true}
+            />
+
+            <Dialog fullScreen open={open}>
+                <Box
+                    sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                    }}
+                >
+                    <DialogActions
+                        sx={{
+                            zIndex: 9,
+                            padding: "12px !important",
+                            boxShadow: (theme) => theme.customShadows.z8,
+                        }}
+                    >
+                        <Tooltip title="Close">
+                            <IconButton color="inherit" onClick={handleClose}>
+                                <Iconify icon="eva:close-fill" />
+                            </IconButton>
+                        </Tooltip>
+                    </DialogActions>
+
+                    <Box
+                        sx={{ flexGrow: 1, height: "100%", overflow: "hidden" }}
+                    >
+                        <PDFViewer
+                            width="100%"
+                            height="100%"
+                            style={{ border: "none" }}
+                        >
+                            <PpePDF
+                                report={{ ...row, shortLabel }}
+                                title={form_number}
+                            />
+                        </PDFViewer>
+                    </Box>
+                </Box>
+            </Dialog>
+        </>
+    );
 }
