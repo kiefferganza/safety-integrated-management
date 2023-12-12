@@ -32,6 +32,8 @@ export default function AnalyticsWidgetSummary ({ isLoading, title, total = 0, i
 					boxShadow: 0,
 					color: (theme) => theme.palette[color].darker,
 					bgcolor: (theme) => theme.palette[color].lighter,
+          flexGrow: 1,
+          flexBasis: 300,
 					...sx,
 				}}
 				{...other}
@@ -54,6 +56,8 @@ export default function AnalyticsWidgetSummary ({ isLoading, title, total = 0, i
 				boxShadow: 0,
 				color: (theme) => theme.palette[color].darker,
 				bgcolor: (theme) => theme.palette[color].lighter,
+        flexGrow: 1,
+        flexBasis: 300,
 				...sx
 			}}
 			{...other}

@@ -307,7 +307,44 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 						<HseSlider list={sliderImages} isLoading={isLoadingSlider} isError={isErrorSlider} />
 					</Grid>
 
-					<Grid item xs={12} sm={6} md={3}>
+
+          {/* ANALYTICS */}
+          <Grid item xs={12}>
+            <Stack flexDirection="row" gap={3} flexWrap="wrap">
+              <AnalyticsWidgetSummary
+                isLoading={isLoadingTbtStat || tbtData === null}
+                title="Average Manpower/Day"
+                total={Math.round((tbtAnalytic?.totalManpower || 1)) / (differenceInDays(endTbtDate, startTbtDate) + 1)}
+                color="info"
+                icon={'ic:twotone-people-alt'}
+              />
+
+              <AnalyticsWidgetSummary
+                isLoading={isLoadingTbtStat || tbtData === null}
+                title="Total Manpower"
+                total={Math.round(tbtAnalytic?.totalManpower || 0)}
+                icon={'fluent:people-team-16-filled'}
+              />
+
+              <AnalyticsWidgetSummary
+                isLoading={isLoadingTbtStat || tbtData === null}
+                title="Total Manhours"
+                total={Math.round(tbtAnalytic?.totalManhours || 0)}
+                icon={'tabler:clock-hour-4'}
+                color="warning"
+              />
+
+            <AnalyticsWidgetSummary
+							isLoading={isLoadingTbtStat || tbtData === null}
+							title="Total Safe Manhours"
+							total={Math.round(tbtAnalytic?.safeManhours || 0)}
+							color="error"
+							icon={'mdi:shop-hours-outline'}
+						/>
+            </Stack>
+          </Grid>
+
+					{/* <Grid item xs={12} md={6} lg={3}>
 						<AnalyticsWidgetSummary
 							isLoading={isLoadingTbtStat || tbtData === null}
 							title="Average Manpower/Day"
@@ -323,7 +360,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 						/>
 					</Grid>
 
-					<Grid item xs={12} sm={6} md={3}>
+					<Grid item xs={12} md={6} lg={3}>
 						<AnalyticsWidgetSummary
 							isLoading={isLoadingTbtStat || tbtData === null}
 							title="Total Manpower"
@@ -334,7 +371,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 						/>
 					</Grid>
 
-					<Grid item xs={12} sm={6} md={3}>
+					<Grid item xs={12} md={6} lg={3}>
 						<AnalyticsWidgetSummary
 							isLoading={isLoadingTbtStat || tbtData === null}
 							title="Total Manhours"
@@ -346,7 +383,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 						/>
 					</Grid>
 
-					<Grid item xs={12} sm={6} md={3}>
+					<Grid item xs={12} md={6} lg={3}>
 						<AnalyticsWidgetSummary
 							isLoading={isLoadingTbtStat || tbtData === null}
 							title="Total Safe Manhours"
@@ -356,7 +393,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 							// icon={'mdi:clock-time-four-outline'}
 							icon={'mdi:shop-hours-outline'}
 						/>
-					</Grid>
+					</Grid> */}
 				</Grid>
 
 				<Divider variant="middle" sx={{ my: 1 }} />
@@ -476,7 +513,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 
 					<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
 						{(tbtData && tbtMonthChartData) ? (
-							<Card>
+							<Card sx={{ height: '100%' }}>
 								<Scrollbar>
 									<Box sx={{ width: 980 }}>
 										<AnalyticsTBTLine
@@ -610,7 +647,7 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 
 					{/* Summary Open vs Close Observation */}
 					<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
-						<Card sx={{ height: 400 }}>
+						<Card sx={{ height: '100%', maxHeight: 600 }}>
 							{isLoadingInspection || !inspections ? (
 								<>
 									<CardHeader title="Summary Open vs Close Observation" />
@@ -685,25 +722,27 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 					<Grid item xs={12} md={12} lg={3}>
 						<Card sx={{ height: '100%' }}>
 							<CardHeader title="Top 5 HSE Hazards (Month)" sx={{ mb: 1.5 }} />
-							<TableContainer sx={{ overflow: 'unset', height: 'calc(100% - 68px)' }}>
-								<Table>
-									<TableBody>
-										{inspections?.trendingObservation?.trends.map((trend, idx) => (
-											<TableRow key={trend.name}>
-												<TableCell>
-													<Typography variant="subtitle2">{idx + 1}</Typography>
-												</TableCell>
-												<TableCell>
-													<Typography variant="subtitle2">{trend.name}</Typography>
-												</TableCell>
-												<TableCell>
-													<Typography variant="subtitle2" color="error.dark" sx={{ textDecoration: 'underline' }}>{trend.value}</Typography>
-												</TableCell>
-											</TableRow>
-										))}
-									</TableBody>
-								</Table>
-							</TableContainer>
+							<Scrollbar>
+                <TableContainer sx={{ overflow: 'unset', height: 'calc(100% - 68px)' }}>
+                  <Table>
+                    <TableBody>
+                      {inspections?.trendingObservation?.trends.map((trend, idx) => (
+                        <TableRow key={trend.name}>
+                          <TableCell>
+                            <Typography variant="subtitle2">{idx + 1}</Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="subtitle2">{trend.name}</Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="subtitle2" color="error.dark" sx={{ textDecoration: 'underline' }}>{trend.value}</Typography>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Scrollbar>
 						</Card>
 					</Grid>
 				</Grid>

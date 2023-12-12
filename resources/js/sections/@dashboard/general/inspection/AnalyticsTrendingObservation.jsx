@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 // @mui
 import { Box, Card, CardHeader } from '@mui/material';
-import { red } from '@mui/material/colors';
+import { red, orange } from '@mui/material/colors';
 // components
 import Chart, { useChart } from '@/Components/chart';
 
@@ -13,7 +13,7 @@ const AnalyticsTrendingObservation = ({ title, subheader, chart, height, width, 
 	const chartOptions = useChart({
 		colors: [function ({ value }) {
 			const isTrend = trends.some(t => t.value === value);
-			return isTrend ? red[900] : red[400];
+			return isTrend ? red[500] : orange[500];
 		}],
 		series,
 		plotOptions: {
