@@ -332,14 +332,14 @@ function MatrixTable ({ titles, data, year, total, pageIndex, pageLength }) {
 					))}
 
           {/* TOTAL PER ROW */}
-          <View style={[styles.tableHeadCell, { borderTop: '1px solid #000', backgroundColor: '#305496', width: 20, minWidth: 20, padding: 0 }]}>
+          <View style={[styles.tableHeadCell, { borderTop: '1px solid #000', backgroundColor: '#305496', width: 35, minWidth: 35, padding: 0 }]}>
             <View style={styles.tableTextVerticialWrapper}>
-              <Text style={[styles.tableHeadCellText, styles.tableTextVerticial, { padding: 0 }]}>Course Completed</Text>
+              <Text style={[styles.tableHeadCellText, styles.tableTextVerticial, { padding: 0 }]}>Total Course Completed per/Personel</Text>
             </View>
           </View>
 
 				</View>
-				{(data || [])?.map((d, i, dataArr) => {
+				{(data || [])?.map((d, i) => {
           let sNo = 0;
           if(pageIndex === 0) {
             sNo = pageIndex * FIRST_AND_LAST_PAGE + (i + 1);
@@ -364,14 +364,9 @@ function MatrixTable ({ titles, data, year, total, pageIndex, pageLength }) {
 									</View>
 								)
 							})}
-              <View style={[{ minWidth: 20, width: 20, height: 16, padding: 0, borderRight: '1px solid #000', borderBottom: '1px solid #000' }]}>
+              <View style={[{ minWidth: 35, width: 35, height: 16, padding: 0 }]}>
 								<Text style={[styles.tableHeadCellText, { fontWeight: 500, color: "#000", paddingTop: 0.5, textAlign: 'center' }]}>{d?.completed_count}</Text>
 							</View>
-              {(dataArr.length - 1 === i) && (
-                <View style={[{ minWidth: 50, width: 50, height: 16, padding: 0 }]}>
-                  <Text style={[styles.tableHeadCellText, { fontWeight: 500, color: "#000", paddingLeft: 4, paddingTop: 0.5 }]}>{total[year]?.completed?.total}</Text>
-                </View>
-              )}
 						</View>
 					)
 				})}
@@ -417,7 +412,7 @@ function MatrixTable ({ titles, data, year, total, pageIndex, pageLength }) {
 				<View style={{ flexDirection: 'row' }}>
 					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
 					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
-						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Personel Per Course Completed</Text>
+						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Personel per/Course Completed</Text>
 					</View>
 
 					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}/>

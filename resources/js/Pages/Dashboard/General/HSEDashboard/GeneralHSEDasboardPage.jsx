@@ -36,7 +36,6 @@ import AnalyticsOpenClose from '@/sections/@dashboard/general/inspection/Analyti
 // import BookingBookedRoom from '@/sections/@dashboard/general/booking/BookingBookedRoom';
 import AnalyticsTrainingLine from '@/sections/@dashboard/general/analytics/AnalyticsTrainingLine';
 import { ProgressLoadingScreen } from '@/Components/loading-screen';
-import { TableHeadCustom } from '@/Components/table';
 
 // ----------------------------------------------------------------------
 // const GB = 1000000000 * 24;
