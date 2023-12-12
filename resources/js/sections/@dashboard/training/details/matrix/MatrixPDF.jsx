@@ -35,8 +35,8 @@ const POSITIONS = {
 	"Planner Engineer": "#e6ee9c",
 };
 
-
-const PER_PAGE = 20;
+const PER_PAGE = 40;
+const FIRST_AND_LAST_PAGE = PER_PAGE - 10;
 
 function generateDateRanges (startDate, endDate) {
 	const startMonth = startDate.toLocaleString('default', { month: 'short' });
@@ -100,17 +100,19 @@ export default function MatrixPDF ({ years, titles, from, to }) {
 		return acc;
 	}, {});
 	const pages = useMemo(() => {
-		return Object.entries(years).map(yd => {
-			const [year, data] = yd;
+		return Object.entries(years).map(([year, data]) => {
 			if (data?.length > PER_PAGE) {
-				const chunkSize = PER_PAGE;
 				let arr = [];
+        let i = 0;
 				let j = 1;
-				for (let i = 0; i < data.length; i += chunkSize) {
+        while(i < data.length) {
+          const isFirstOrLastPage = (i === 0 || (i + PER_PAGE >= data.length));
+          const chunkSize = isFirstOrLastPage ? FIRST_AND_LAST_PAGE : PER_PAGE
 					const chunk = data.slice(i, i + chunkSize);
 					arr.push([year + "_" + j, chunk]);
 					j++;
-				}
+          i += chunkSize;
+        }
 				return arr;
 			} else {
 				return [[year, data]];
@@ -199,8 +201,8 @@ export default function MatrixPDF ({ years, titles, from, to }) {
 
 	return (
 		<Document title={"Training Matrix"}>
-			{pages.map((page) => (
-				page.map(([year, data], pageIdx) => {
+			{pages.map((page, index) => (
+				page.map(([year, data], pageIdx, pageArr) => {
 					const y = year.split("_")[0];
 					return (
 						<Page size="A3" style={styles.page} key={year + pageIdx}>
@@ -215,65 +217,71 @@ export default function MatrixPDF ({ years, titles, from, to }) {
 										</View>
 									</View>
 								</View>
+
+                {pageIdx === 0 && (
+                  <View>
+                    <View style={{ marginBottom: 32 }}>
+                      <View style={styles.gridContainer}>
+                        <View style={{ width: '14%' }} />
+                        <View style={{ width: '72%' }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 8 }}>
+                            <View style={{ width: '35%' }}>
+                              <Text style={[styles.h5]}>Position Legend:</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', width: '65%' }}>
+                              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={{ height: 16 }}>
+                                  <Text style={[styles.subtitle2]}>Completed: </Text>
+                                </View>
+                                <View style={{ width: '35%' }}>
+                                  <View style={{ width: 60, height: 16, backgroundColor: "#808080", border: '0.25px solid #000' }} />
+                                </View>
+                              </View>
+                              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={{ height: 16 }}>
+                                  <Text style={[styles.subtitle2]}>Not Completed: </Text>
+                                </View>
+                                <View style={{ width: '35%' }}>
+                                  <View style={{ width: 60, height: 16, backgroundColor: "#ffa500", border: '0.25px solid #000' }} />
+                                </View>
+                              </View>
+                              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={{ height: 16 }}>
+                                  <Text style={[styles.subtitle2]}>Expired: </Text>
+                                </View>
+                                <View style={{ width: '35%' }}>
+                                  <View style={{ width: 60, height: 16, backgroundColor: "#d50000", border: '0.25px solid #000' }} />
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                          <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                            {Object.entries(POSITIONS).map(([pos, color]) => (
+                              <View style={{ flexDirection: 'row', width: '33%' }} key={pos}>
+                                <View style={{ width: '65%' }}>
+                                  <Text style={[styles.subtitle2]}>{pos}</Text>
+                                </View>
+                                <View style={{ width: '35%' }}>
+                                  <View style={{ width: 60, height: 16, backgroundColor: color, border: '0.25px solid #000' }} />
+                                </View>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                        <View style={{ width: '14%' }} />
+                      </View>
+                    </View>
+                  </View>
+                )}
+
 								<View style={{ marginLeft: 34 }}>
 									<Text style={[styles.h4, { color: '#305496' }]}>{dates[y]}, {y}</Text>
 								</View>
 								<View style={{ alignItems: 'center', justifyContent: 'center' }}>
-									<MatrixTable pageIndex={pageIdx} titles={titles} data={data} year={year} total={total} />
+									<MatrixTable pageIndex={pageIdx} titles={titles} data={data} year={year} total={total} pageLength={pageArr.length} />
 								</View>
 							</View>
 							<View style={[styles.footer]}>
-								<View style={{ marginBottom: 32 }}>
-									<View style={styles.gridContainer}>
-										<View style={{ width: '14%' }} />
-										<View style={{ width: '72%' }}>
-											<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 8 }}>
-												<View style={{ width: '35%' }}>
-													<Text style={[styles.h5]}>Position Legend:</Text>
-												</View>
-												<View style={{ flexDirection: 'row', alignItems: 'center', width: '65%' }}>
-													<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-														<View style={{ height: 16 }}>
-															<Text style={[styles.subtitle2]}>Completed: </Text>
-														</View>
-														<View style={{ width: '35%' }}>
-															<View style={{ width: 60, height: 16, backgroundColor: "#808080", border: '0.25px solid #000' }} />
-														</View>
-													</View>
-													<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-														<View style={{ height: 16 }}>
-															<Text style={[styles.subtitle2]}>Not Completed: </Text>
-														</View>
-														<View style={{ width: '35%' }}>
-															<View style={{ width: 60, height: 16, backgroundColor: "#ffa500", border: '0.25px solid #000' }} />
-														</View>
-													</View>
-													<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-														<View style={{ height: 16 }}>
-															<Text style={[styles.subtitle2]}>Expired: </Text>
-														</View>
-														<View style={{ width: '35%' }}>
-															<View style={{ width: 60, height: 16, backgroundColor: "#d50000", border: '0.25px solid #000' }} />
-														</View>
-													</View>
-												</View>
-											</View>
-											<View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-												{Object.entries(POSITIONS).map(([pos, color]) => (
-													<View style={{ flexDirection: 'row', width: '33%' }} key={pos}>
-														<View style={{ width: '65%' }}>
-															<Text style={[styles.subtitle2]}>{pos}</Text>
-														</View>
-														<View style={{ width: '35%' }}>
-															<View style={{ width: 60, height: 16, backgroundColor: color, border: '0.25px solid #000' }} />
-														</View>
-													</View>
-												))}
-											</View>
-										</View>
-										<View style={{ width: '14%' }} />
-									</View>
-								</View>
 								<View style={[styles.gridContainer]}>
 									<View style={styles.col4}>
 										<Text style={[styles.subtitle2, { textAlign: 'left' }]}>Uncontrolled Copy if Printed</Text>
@@ -295,7 +303,7 @@ export default function MatrixPDF ({ years, titles, from, to }) {
 }
 
 
-function MatrixTable ({ titles, data, year, total, pageIndex }) {
+function MatrixTable ({ titles, data, year, total, pageIndex, pageLength }) {
 	return (
 		<View style={[styles.gridContainer, { justifyContent: 'center' }]}>
 			<View>
@@ -322,21 +330,32 @@ function MatrixTable ({ titles, data, year, total, pageIndex }) {
 							</View>
 						</View>
 					))}
-					<View style={[styles.tableHeadCell, { minWidth: 16, width: 16, border: 0 }]}>
-					</View>
+
+          {/* TOTAL PER ROW */}
+          <View style={[styles.tableHeadCell, { borderTop: '1px solid #000', backgroundColor: '#305496', width: 20, minWidth: 20, padding: 0 }]}>
+            <View style={styles.tableTextVerticialWrapper}>
+              <Text style={[styles.tableHeadCellText, styles.tableTextVerticial, { padding: 0 }]}>Course Completed</Text>
+            </View>
+          </View>
+
 				</View>
-				{(data || [])?.map((d, i) => {
-					const sNo = (PER_PAGE * pageIndex) + (i + 1);
+				{(data || [])?.map((d, i, dataArr) => {
+          let sNo = 0;
+          if(pageIndex === 0) {
+            sNo = pageIndex * FIRST_AND_LAST_PAGE + (i + 1);
+          }else {
+            sNo = pageIndex * PER_PAGE - (PER_PAGE - FIRST_AND_LAST_PAGE) + (i + 1);
+          }
 					return (
 						<View key={i} style={styles.tableBody}>
 							<View style={[styles.tableHeadCell, { justifyContent: 'center', minWidth: 26, width: 26, height: 16, padding: 0 }]}>
 								<Text style={[styles.tableHeadCellText, { fontWeight: 500, color: "#000", paddingBottom: 0, paddingTop: 0.5, paddingLeft: 1 }]}>{sNo}</Text>
 							</View>
 							<View style={[styles.tableHeadCell, { justifyContent: 'center', width: 120, height: 16, padding: 0 }]}>
-								<Text style={[styles.tableHeadCellText, { fontWeight: 500, color: "#000", paddingBottom: 0, paddingTop: 0.5, paddingLeft: 1 }]}>{d.fullName}</Text>
+								<Text style={[styles.tableHeadCellText, { fontWeight: 500, color: "#000", paddingBottom: 0, paddingTop: 0.5, paddingLeft: 1, textTransform: 'capitalize' }]}>{d.fullName}</Text>
 							</View>
 							<View style={[styles.tableHeadCell, { justifyContent: 'center', width: 90, height: 16, padding: 0 }]}>
-								<Text style={[styles.tableHeadCellText, { fontWeight: 500, color: "#000", paddingBottom: 0, paddingTop: 0.5, paddingLeft: 1 }]}>{d.position}</Text>
+								<Text style={[styles.tableHeadCellText, { fontWeight: 500, color: "#000", paddingBottom: 0, paddingTop: 0.5, paddingLeft: 1, textTransform: 'capitalize' }]}>{d.position}</Text>
 							</View>
 							{titles?.map((title, idx) => {
 								const course = d?.data?.find(d => d?.courseName?.trim()?.toLowerCase() === title?.trim()?.toLowerCase());
@@ -345,6 +364,14 @@ function MatrixTable ({ titles, data, year, total, pageIndex }) {
 									</View>
 								)
 							})}
+              <View style={[{ minWidth: 20, width: 20, height: 16, padding: 0, borderRight: '1px solid #000', borderBottom: '1px solid #000' }]}>
+								<Text style={[styles.tableHeadCellText, { fontWeight: 500, color: "#000", paddingTop: 0.5, textAlign: 'center' }]}>{d?.completed_count}</Text>
+							</View>
+              {(dataArr.length - 1 === i) && (
+                <View style={[{ minWidth: 50, width: 50, height: 16, padding: 0 }]}>
+                  <Text style={[styles.tableHeadCellText, { fontWeight: 500, color: "#000", paddingLeft: 4, paddingTop: 0.5 }]}>{total[year]?.completed?.total}</Text>
+                </View>
+              )}
 						</View>
 					)
 				})}
@@ -365,7 +392,7 @@ function MatrixTable ({ titles, data, year, total, pageIndex }) {
 						</View>
 					))}
 				</View>
-				{total[year]['hours']['summary'] && (
+				{(total[year]['hours']['summary'] && ((pageLength - 1) === pageIndex)) && (
 					<View style={{ flexDirection: 'row', marginVertical: 2 }}>
 						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
 						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
@@ -390,7 +417,7 @@ function MatrixTable ({ titles, data, year, total, pageIndex }) {
 				<View style={{ flexDirection: 'row' }}>
 					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
 					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
-						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Training Completed</Text>
+						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Personel Per Course Completed</Text>
 					</View>
 
 					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}/>
@@ -403,7 +430,7 @@ function MatrixTable ({ titles, data, year, total, pageIndex }) {
 						</View>
 					))}
 				</View>
-				{(total[year].completed.summary && total[year].completed.summary.total > 0) && (
+				{total[year].completed.summary  && ((pageLength - 1) === pageIndex) && (
 					<View style={{ flexDirection: 'row', marginVertical: 2 }}>
 						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
 						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
@@ -427,11 +454,11 @@ function MatrixTable ({ titles, data, year, total, pageIndex }) {
 				{/* Total Not Completed */}
 				<View style={{ flexDirection: 'row' }}>
 					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
-					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 140, height: 32, padding: 0 }]}>
-						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Training Not Completed</Text>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 100, height: 32, padding: 0 }]}>
+						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Personel w/Inc. Requirements</Text>
 					</View>
 
-					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 70, height: 18, padding: 0 }]}/>
+					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 110, height: 18, padding: 0 }]}/>
 					{titles?.map((title, idx) => (
 						<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
 							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', color: "#000", fontWeight: 700 }]}>{total[year].notCompleted[title.toLowerCase()] || 0}</Text>
@@ -441,7 +468,7 @@ function MatrixTable ({ titles, data, year, total, pageIndex }) {
 						</View>
 					))}
 				</View>
-				{(total[year].notCompleted.summary && total[year].notCompleted.summary.total > 0) && (
+				{total[year].notCompleted.summary && ((pageLength - 1) === pageIndex) && (
 					<View style={{ flexDirection: 'row', marginVertical: 2 }}>
 						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
 						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
@@ -460,43 +487,43 @@ function MatrixTable ({ titles, data, year, total, pageIndex }) {
 					</View>
 				)}
 
-				<View style={{ width: '100%', borderTop: '1px solid #ccc', marginBottom: 8 }} />
+      {/* <View style={{ width: '100%', borderTop: '1px solid #ccc', marginBottom: 8 }} /> */}
 
-				{/* Total Expired */}
-				<View style={{ flexDirection: 'row' }}>
-					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
-					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 140, height: 32, padding: 0 }]}>
-						<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Expired Training</Text>
-					</View>
+      {/* Total Expired */}
+      {/* <View style={{ flexDirection: 'row' }}>
+        <View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
+        <View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 140, height: 32, padding: 0 }]}>
+          <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Total Expired Training</Text>
+        </View>
 
-					<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 70, height: 18, padding: 0 }]}/>
-					{titles?.map((title, idx) => (
-						<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
-							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', color: "#000", fontWeight: 700 }]}>{total[year].expired[title.toLowerCase()] || 0}</Text>
+        <View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 70, height: 18, padding: 0 }]}/>
+        {titles?.map((title, idx) => (
+          <View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
+            <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', color: "#000", fontWeight: 700 }]}>{total[year].expired[title.toLowerCase()] || 0}</Text>
+            {(idx + 1) === titles.length && (
+            <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', fontWeight: 700, color: "#000" }]}>{(total[year].expired?.total || 0).toLocaleString()}</Text>
+            )}
+          </View>
+        ))}
+      </View>
+      {total[year].expired.summary && ((pageLength - 1) === pageIndex)  && (
+        <View style={{ flexDirection: 'row', marginVertical: 2 }}>
+          <View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
+          <View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
+            <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Summary Total</Text>
+          </View>
+
+          <View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}/>
+          {titles?.map((title, idx) => (
+            <View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
+              <Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 9, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year].expired.summary[title.toLowerCase()] || 0}</Text>
               {(idx + 1) === titles.length && (
-               <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', fontWeight: 700, color: "#000" }]}>{(total[year].expired?.total || 0).toLocaleString()}</Text>
+                <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', fontWeight: 700, color: "#000" }]}>{(total[year].expired.summary?.total || 0).toLocaleString()}</Text>
               )}
-						</View>
-					))}
-				</View>
-				{(total[year].expired.summary && total[year].expired.summary.total > 0) && (
-					<View style={{ flexDirection: 'row', marginVertical: 2 }}>
-						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', minWidth: 26, width: 26, height: 32, padding: 0 }]}></View>
-						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 120, height: 32, padding: 0 }]}>
-							<Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, color: "#000", fontWeight: 700 }]}>Summary Total</Text>
-						</View>
-
-						<View style={[styles.tableHeadCell, { border: 0, justifyContent: 'center', width: 90, height: 18, padding: 0 }]}/>
-						{titles?.map((title, idx) => (
-							<View style={[styles.tableHeadCell, { border: 0, width: 30, height: 32, padding: 0 }]} key={idx}>
-								<Text style={[styles.tableHeadCellText, { paddingVertical: 0, fontSize: 9, textAlign: 'center', paddingLeft: 4, color: "#000", fontWeight: 700 }]}>{total[year].expired.summary[title.toLowerCase()] || 0}</Text>
-                {(idx + 1) === titles.length && (
-                  <Text style={[styles.tableHeadCellText, { paddingVertical: 0, paddingLeft: 4, fontSize: 9, textAlign: 'center', fontWeight: 700, color: "#000" }]}>{(total[year].expired.summary?.total || 0).toLocaleString()}</Text>
-                )}
-							</View>
-						))}
-					</View>
-				)}
+            </View>
+          ))}
+        </View>
+      )} */}
 
 			</View>
 		</View >

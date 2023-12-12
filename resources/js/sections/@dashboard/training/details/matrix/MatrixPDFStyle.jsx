@@ -40,7 +40,6 @@ const styles = StyleSheet.create({
 		lineHeight: 1.6,
 		fontFamily: 'Roboto',
 		backgroundColor: '#fff',
-		textTransform: 'capitalize',
 	},
 	footer: {
 		left: 0,
