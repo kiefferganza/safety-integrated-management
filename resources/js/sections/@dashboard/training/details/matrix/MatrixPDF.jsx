@@ -201,7 +201,7 @@ export default function MatrixPDF ({ years, titles, from, to }) {
 
 	return (
 		<Document title={"Training Matrix"}>
-			{pages.map((page, index) => (
+			{pages.map((page) => (
 				page.map(([year, data], pageIdx, pageArr) => {
 					const y = year.split("_")[0];
 					return (
@@ -332,9 +332,9 @@ function MatrixTable ({ titles, data, year, total, pageIndex, pageLength }) {
 					))}
 
           {/* TOTAL PER ROW */}
-          <View style={[styles.tableHeadCell, { borderTop: '1px solid #000', backgroundColor: '#305496', width: 35, minWidth: 35, padding: 0 }]}>
-            <View style={styles.tableTextVerticialWrapper}>
-              <Text style={[styles.tableHeadCellText, styles.tableTextVerticial, { padding: 0 }]}>Total Course Completed per/Personel</Text>
+          <View style={[styles.tableHeadCell, { border: '0px solid #fff', width: 35, minWidth: 35, padding: 0 }]}>
+            <View style={[styles.tableTextVerticialWrapper, { width: 120, marginLeft: 10 }]}>
+              <Text style={[styles.tableTextVerticial, { padding: 0, fontWeight: 'bold' }]}>Total Course Completed per/ Personel</Text>
             </View>
           </View>
 
