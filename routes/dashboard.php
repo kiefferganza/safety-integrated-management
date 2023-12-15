@@ -7,6 +7,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FilePageController;
+use App\Http\Controllers\HSE\InhouseTrainingController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\InspectionController;
@@ -165,9 +166,15 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::post('/delete-course', [TrainingController::class, 'deleteCourse'])->name('delete_courses');
 
 			Route::get('/client', [TrainingController::class, 'index'])->name('client');
-			Route::get('/in-house', [TrainingController::class, 'in_house'])->name('in_house');
 			Route::get('/induction', [TrainingController::class, 'induction'])->name('induction');
 			Route::get('/third-party', [TrainingController::class, 'external'])->name('external');
+
+      // In house
+      Route::get('/in-house', [TrainingController::class, 'in_house'])->name('in_house');
+      Route::get('/register-in-house-course', [InhouseTrainingController::class, 'inHouseCourses'])->name('in_house_course');
+      Route::post('/register-in-house-course', [InhouseTrainingController::class, 'storeInHouseCourse'])->name('sotre_in_house_course');
+      Route::post('/update-in-house-course/{course}', [InhouseTrainingController::class, 'updateInHouseCourse'])->name('update_in_house_course');
+
 			// Show
 			Route::get('/client/{training}', [TrainingController::class, 'show_client'])->name('client.show');
 			Route::get('/induction/{training}', [TrainingController::class, 'show_induction'])->name('induction.show');

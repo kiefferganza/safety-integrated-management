@@ -4,3 +4,4 @@ export { default as TrainingTableToolbar } from './TrainingTableToolbar';
 
 export { default as RegisterTableToolbar } from './register/RegisterTableToolbar';
 export { default as RegisterTableRow } from './register/RegisterTableRow';
+export { default as InHouseRegisterTableRow } from './register/InHouseRegisterTableRow';

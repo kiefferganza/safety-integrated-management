@@ -5,7 +5,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { RHFTextField } from '@/Components/hook-form';
 
 const NewRegisterDialog = ({
-	title = 'Add Position',
+	title = 'Add Course',
 	open,
 	onClose,
 	//

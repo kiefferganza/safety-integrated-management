@@ -20,9 +20,7 @@ use App\Services\TrainingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class TrainingController extends Controller
@@ -781,9 +779,9 @@ class TrainingController extends Controller
 		->with("type", "success");
 	}
 
-
 	public function courses() {
-		$courses = TrainingCourses::get();
+    $user = auth()->user();
+		$courses = TrainingCourses::whereNull("type")->where('user_id', $user->subscriber_id)->get();
 		return Inertia::render("Dashboard/Management/Training/Register/index", [
 			"courses" => $courses
 		]);
@@ -798,8 +796,10 @@ class TrainingController extends Controller
 		foreach ($request->courses as $course) {
 			$courses[] = [
 				'course_name' => $course['course_name'],
+        'type' => null,
 				'user_id' => $user->user_id,
 				'sub_id' => $user->subscriber_id,
+        'last_used' => null,
 				'created_at' => now()
 			];
 		}

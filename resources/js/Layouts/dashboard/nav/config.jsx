@@ -136,16 +136,27 @@ const navConfig = [
 					'training.management.create',
 					'training.management.edit',
 					'training.management.courses',
-					'training.management.matrix'
+					'training.management.matrix',
+          'training.management.in_house_course',
 				],
 				children: [
 					{ title: 'create', gate: 'training_create', path: PATH_DASHBOARD.training.new(2), routeNames: ['training.management.create'] },
 					{ title: 'register', gate: 'training_create', path: PATH_DASHBOARD.training.register, routeNames: ['training.management.courses'] },
 					{ title: 'client', gate: 'training_show', path: PATH_DASHBOARD.training.client, routeNames: ['training.management.client', 'training.management.client.show'] },
 					{ title: 'induction', gate: 'training_show', path: PATH_DASHBOARD.training.induction, routeNames: ['training.management.induction', 'training.management.induction.show'] },
-					{ title: 'in house', gate: 'training_show', path: PATH_DASHBOARD.training.inHouse, routeNames: ['training.management.in_house', 'training.management.in_house.show'] },
+          // In house
+					{
+            title: 'in house',
+            path: PATH_DASHBOARD.training.inHouse,
+            routeNames: ['training.management.in_house', 'training.management.in_house.show', 'training.management.in_house_course'],
+            children: [
+              { title: 'register', gate: 'training_show', path: PATH_DASHBOARD.training.inHouseCourses, routeNames: ['training.management.in_house_course'] },
+              { title: 'list', gate: 'training_show', path: PATH_DASHBOARD.training.inHouse, routeNames: ['training.management.in_house'] },
+            ]
+          },
+          
 					{ title: 'third party', gate: 'training_show', path: PATH_DASHBOARD.training.thirdParty, routeNames: ['training.management.external', 'training.management.external.show'] },
-					{ title: 'matrix report', path: PATH_DASHBOARD.training.matrix, routeNames: ['training.management.matrix'] },
+					{ title: 'matrix report', path: PATH_DASHBOARD.training.matrix, routeNames: ['training.management.matrix'] }
 				]
 			},
 

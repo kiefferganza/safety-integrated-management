@@ -13,7 +13,6 @@ import { Head } from '@inertiajs/inertia-react';
 // ----------------------------------------------------------------------
 
 const TYPE_OPTIONS = {
-	1: "inHouse",
 	2: "client",
 	3: "thirdParty",
 	4: "induction"

@@ -8,7 +8,6 @@ import { useFormContext } from 'react-hook-form';
 
 const TYPE_OPTIONS = [
 	{ type: 2, label: 'Client' },
-	{ type: 1, label: 'In-house' },
 	{ type: 3, label: 'External' },
 	{ type: 4, label: 'Induction' },
 ];

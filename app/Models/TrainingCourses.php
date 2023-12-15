@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class TrainingCourses extends Model
+class TrainingCourses extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, InteractsWithMedia;
 
 	protected static function boot() {
 		parent::boot();
@@ -20,4 +22,25 @@ class TrainingCourses extends Model
 	}
 
 	protected $guarded = [];
+
+  protected $hidden = [
+		'media'
+	];
+
+
+  protected $appends = [
+    'attached_file'
+  ];
+
+  public function getAttachedFileAttribute() {
+    if($this->type === null) return null;
+    $media = $this->getFirstMedia();
+    if(!$media) return null;
+    return [
+      'id' => $media->id,
+      'name' => $media->file_name,
+      'url' => $media->getFullUrl()
+    ];
+  }
+  
 }

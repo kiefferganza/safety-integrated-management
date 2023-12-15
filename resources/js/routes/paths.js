@@ -111,6 +111,7 @@ export const PATH_DASHBOARD = {
 		root: path(ROOTS_DASHBOARD, '/training'),
 		induction: path(ROOTS_DASHBOARD, '/training/induction'),
 		inHouse: path(ROOTS_DASHBOARD, '/training/in-house'),
+    inHouseCourses: route('training.management.in_house_course'),
 		client: path(ROOTS_DASHBOARD, '/training/client'),
 		thirdParty: path(ROOTS_DASHBOARD, '/training/third-party'),
 		register: route('training.management.courses'),
