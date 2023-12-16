@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Training extends Model
+class Training extends Model implements HasMedia
 {
-  use HasFactory;
+  use HasFactory, InteractsWithMedia;
 
 	protected $table = 'tbl_trainings';
 
@@ -17,6 +19,10 @@ class Training extends Model
 	const UPDATED_AT = 'date_updated';
 
 	protected $guarded = [];
+
+  protected $appends = [
+    'attachment'
+  ];
 
 	protected static function boot() {
 		parent::boot();
@@ -31,6 +37,16 @@ class Training extends Model
 			$training->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
 		});
 	}
+
+  public function getAttachmentAttribute() {
+    $media = $this->getFirstMedia();
+    if(!$media) return null;
+    return [
+      'id' => $media->id,
+      'name' => $media->file_name,
+      'url' => $media->getFullUrl()
+    ];
+  }
 
 	public function trainees() {
 		return $this->belongsToMany(Employee::class, "tbl_training_trainees", "training_id", "employee_id", "training_id")->wherePivot("is_removed", false)->withPivot("trainee_id");

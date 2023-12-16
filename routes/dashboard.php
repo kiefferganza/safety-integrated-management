@@ -171,9 +171,14 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
       // In house
       Route::get('/in-house', [TrainingController::class, 'in_house'])->name('in_house');
+      // Create
+      Route::get('/in-house/create', [InhouseTrainingController::class, 'create'])->name('in_house_create');
+      Route::post('/in-house/create', [InhouseTrainingController::class, 'store'])->name('in_house_store');
+
       Route::get('/register-in-house-course', [InhouseTrainingController::class, 'inHouseCourses'])->name('in_house_course');
       Route::post('/register-in-house-course', [InhouseTrainingController::class, 'storeInHouseCourse'])->name('sotre_in_house_course');
       Route::post('/update-in-house-course/{course}', [InhouseTrainingController::class, 'updateInHouseCourse'])->name('update_in_house_course');
+
 
 			// Show
 			Route::get('/client/{training}', [TrainingController::class, 'show_client'])->name('client.show');
