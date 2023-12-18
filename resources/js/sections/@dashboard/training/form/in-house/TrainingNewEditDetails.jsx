@@ -31,7 +31,11 @@ const TrainingNewEditDetails = ({
     isEdit,
     projectDetails,
 }) => {
-    const { personel, courses = [] } = usePage().props;
+    const {
+        auth: { user },
+        personel,
+        courses = [],
+    } = usePage().props;
     const [openParticipants, setOpenParticipants] = useState(false);
     const {
         control,
@@ -188,7 +192,9 @@ const TrainingNewEditDetails = ({
                             options={courses.map((c) => ({
                                 label: c.course_name,
                                 value: c.id,
-                                disabled: c.last_used !== null,
+                                disabled:
+                                    c.last_used !== null &&
+                                    user.user_type !== 0,
                             }))}
                         />
 

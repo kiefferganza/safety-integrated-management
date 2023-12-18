@@ -35,17 +35,6 @@ class TrainingController extends Controller
 		]);
 	}
 
-
-	public function in_house() {
-
-		return Inertia::render("Dashboard/Management/Training/List/index", [
-			"trainings" => (new TrainingService)->getTrainingByType(1),
-			"module" => "In House",
-			"url" => "in-house",
-			"type" => 1
-		]);
-	}
-
 	public function external() {
 		
 		$trainings =  (new TrainingService())->getTrainingByType(3);

@@ -16,6 +16,18 @@ use Inertia\Inertia;
 class InhouseTrainingController extends Controller
 {
 
+  public function index() {
+    $inhouse = Training::where([["is_deleted", false], ["type", 1]])
+		->orderByDesc("date_created")
+    ->withCount("trainees")
+    ->with("course")
+		->get();
+
+    return Inertia::render("Dashboard/Management/Training/InHouse/List/index", [
+			"trainings" => $inhouse
+		]);
+  }
+
 
   public function create() {
 		$trainingService = new TrainingService();
@@ -70,6 +82,7 @@ class InhouseTrainingController extends Controller
 		$training->document_type = $request->document_type;
 		$training->document_zone = $request->document_zone;
 		$training->document_level = $request->document_level;
+    $training->course_id = $course->id;
 		$training->title = $course->course_name;
 		$training->location = $request->location;
 		$training->contract_no = $request->contract_no;
@@ -86,8 +99,11 @@ class InhouseTrainingController extends Controller
 		$training->save();
 		$training_id = $training->training_id;
 
+    $course->last_used = now()->year;
+    $course->save();
+
     if($request->hasFile("attachment")) {
-      $training->addMediaFromRequest("attachment");
+      $training->addMediaFromRequest("attachment")->toMediaCollection();
     }
 
 		if(!empty($request->trainees)) {
@@ -111,6 +127,32 @@ class InhouseTrainingController extends Controller
 		->with('type', 'success');
   }
 
+  public function edit(Training $training) {
+    $training->load(["course", "trainees" => fn ($query) => $query->with("position")]);
+    $training->trainees->transform(fn($tr) => [
+      "fullname" => $tr->firstname. " " .$tr->lastname,
+      "position" => $tr->toArray()['position']['position'],
+      "emp_id" => $tr->employee_id,
+      "user_id" => $tr->user_id,
+    ]);
+		$courses = TrainingCourses::where("type", "in-house")->get();
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+		
+		return Inertia::render("Dashboard/Management/Training/InHouse/Create/index",[
+      "currentTraining" => $training,
+			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+				->where([
+					["tbl_position.is_deleted", 0],
+					["tbl_employees.is_deleted", 0],
+					["tbl_employees.is_active", 0]
+				])
+				->get(),
+			"courses" => $courses,
+			"projectDetails" => $projectDetails,
+		]);
+  }
+
   public function update(Request $request, Training $training) {
     $request->validate([
 			'originator' => ['string', 'required'],
@@ -123,10 +165,11 @@ class InhouseTrainingController extends Controller
 			'date_expired' => ['date', 'required'],
 			'training_date' => ['date', 'required'],
       'trainees' => ['array', 'min:1'],
-      'title' => ['integer']
+      'title' => ['integer', 'required']
 		]);
 
-    if($request->title) {
+
+    if((int)$request->title !== $training->course_id) {
       $course = TrainingCourses::findOrfail($request->title);
       $training->title = $course->course_name;
     }
@@ -145,48 +188,38 @@ class InhouseTrainingController extends Controller
 		$training->date_expired = $request->date_expired;
 		$training->training_hrs = $request->training_hrs;
 		$training->remarks = $request->remarks ? $request->remarks : null;
-		$training->type = (int)$request->type;
-		$training->training_center = $request->training_center;
+    $training->date_updated = now();
 
-		if($training->sequence_no === null) {
-			$training->sequence_no = $request->sequence_no;
-		}
-
+    if($request->hasFile("attachment")) {
+      $training->clearMediaCollection();
+      $training->addMediaFromRequest("attachment")->toMediaCollection();
+      $training->status = "completed";
+    }else if($training->status === "completed" && !$request->hasFile("attachment")) {
+      $training->clearMediaCollection();
+      $training->status = "published";
+    }
 
 		$training->save();
 
-		if(isset($request->deleted_trainees)) {
-			foreach ($request->deleted_trainees as $del_trainee) {
-				TrainingTrainees::find($del_trainee["trainee_id"])->delete();
-			}
-		}
-
 		if(!empty($request->trainees)) {
+      TrainingTrainees::where("training_id", $training->training_id)->delete();
 			$trainees = [];
 			foreach ($request->trainees as $trainee) {
-				if(!isset($trainee["pivot"])) {
-					// Insert or update
-					$tr_trainee = TrainingTrainees::where([
-						["training_id", $training->training_id],
-						["employee_id", (int)$trainee["emp_id"]]
-					])->first();
-					
-					if(!$tr_trainee) {
-						$trainees[] = [
-							"training_id" => (int)$training->training_id,
-							"employee_id" => (int)$trainee["emp_id"],
-							"user_id" => (int)$trainee["user_id"],
-							"is_removed" => 0,
-							"date_joined" => date("Y-m-d H:i:s")
-						];
-					}
-				}
+				$trainees[] = [
+					"training_id" => $training->training_id,
+					"employee_id" => (int)$trainee["emp_id"],
+					"user_id" => (int)$trainee["user_id"],
+					"is_removed" => 0,
+					"date_joined" => date("Y-m-d H:i:s")
+				];
 			}
-			if(!empty($trainees)) {
-				TrainingTrainees::insert($trainees);
-			}
+			TrainingTrainees::insert($trainees);
 		}
 
+
+		// return redirect()->route("training.management.in_house")
+		// ->with("message", "Course updated successfully!")
+		// ->with("type", "success");
 		return redirect()->back()
 		->with("message", "Course updated successfully!")
 		->with("type", "success");

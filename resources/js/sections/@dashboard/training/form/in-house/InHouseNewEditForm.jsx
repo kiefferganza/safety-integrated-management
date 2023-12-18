@@ -55,9 +55,9 @@ export default function InHouseNewEditForm({
         document_type: currentTraining?.document_type || "",
         document_zone: currentTraining?.document_zone || "",
         document_level: currentTraining?.document_level || "",
-        title: currentTraining?.title || "",
+        title: currentTraining?.course?.id || "",
         location: currentTraining?.location || "",
-        contract_no: currentTraining?.contract_no?.split(",") || [],
+        contract_no: currentTraining?.contract_no || [],
         trainer: currentTraining?.trainer || "",
         training_hrs: currentTraining?.training_hrs || "",
         training_date: currentTraining?.training_date || "",
@@ -65,6 +65,7 @@ export default function InHouseNewEditForm({
         trainees: currentTraining?.trainees || [],
         attachment: currentTraining?.attachment?.name || null,
     };
+    console.log({ currentTraining });
 
     const methods = useForm({
         resolver: yupResolver(newTrainingSchema),
@@ -75,16 +76,11 @@ export default function InHouseNewEditForm({
         reset,
         handleSubmit,
         setError,
-        formState: { isDirty, errors },
+        formState: { isDirty },
     } = methods;
-
-    console.log(errors);
 
     useEffect(() => {
         if (isEdit && currentTraining) {
-            reset(defaultValues);
-        }
-        if (!isEdit) {
             reset(defaultValues);
         }
         if (Object.keys(resErrors).length !== 0) {
@@ -96,25 +92,30 @@ export default function InHouseNewEditForm({
     }, [isEdit, currentTraining, resErrors]);
 
     const handleCreateAndSend = async (data) => {
+        data.trainees = [...new Set(data.trainees)];
         try {
             if (isEdit) {
-                // Inertia.post(
-                //     route("training.management.in_house_store"),
-                //     data,
-                //     {
-                //         preserveScroll: true,
-                //         resetOnSuccess: false,
-                //         onStart() {
-                //             setLoadingSend(true);
-                //         },
-                //         onSuccess() {
-                //             reset(defaultValues);
-                //         },
-                //         onFinish() {
-                //             setLoadingSend(false);
-                //         },
-                //     }
-                // );
+                if (!currentTraining) return;
+                Inertia.post(
+                    route(
+                        "training.management.in_house_update",
+                        currentTraining.training_id
+                    ),
+                    data,
+                    {
+                        preserveScroll: true,
+                        resetOnSuccess: false,
+                        onStart() {
+                            setLoadingSend(true);
+                        },
+                        onSuccess() {
+                            reset(defaultValues);
+                        },
+                        onFinish() {
+                            setLoadingSend(false);
+                        },
+                    }
+                );
             } else {
                 Inertia.post(
                     route("training.management.in_house_store"),

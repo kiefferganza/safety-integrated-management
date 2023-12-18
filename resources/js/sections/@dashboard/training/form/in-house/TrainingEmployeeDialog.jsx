@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 // @mui
 import {
     Stack,
@@ -36,7 +36,7 @@ const TrainingEmployeeDialog = ({
         setSearchAddress(event.target.value);
     };
 
-    const handleSelectAddress = (employee) => {
+    const handleSelectAddress = useCallback((employee) => {
         const fieldIdx = fields.findIndex(
             (field) => field.emp_id === employee.employee_id
         );
@@ -51,7 +51,7 @@ const TrainingEmployeeDialog = ({
             });
         }
         setSearchAddress("");
-    };
+    });
 
     return (
         <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>

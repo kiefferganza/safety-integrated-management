@@ -170,14 +170,18 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/third-party', [TrainingController::class, 'external'])->name('external');
 
       // In house
-      Route::get('/in-house', [TrainingController::class, 'in_house'])->name('in_house');
+      Route::get('/in-house', [InhouseTrainingController::class, 'index'])->name('in_house');
       // Create
       Route::get('/in-house/create', [InhouseTrainingController::class, 'create'])->name('in_house_create');
       Route::post('/in-house/create', [InhouseTrainingController::class, 'store'])->name('in_house_store');
+      // Update
+      Route::get('/in-house/{training}/edit/', [InhouseTrainingController::class, 'edit'])->name('in_house_edit');
+      Route::post('/in-house/{training}/update', [InhouseTrainingController::class, 'update'])->name('in_house_update');
 
       Route::get('/register-in-house-course', [InhouseTrainingController::class, 'inHouseCourses'])->name('in_house_course');
       Route::post('/register-in-house-course', [InhouseTrainingController::class, 'storeInHouseCourse'])->name('sotre_in_house_course');
       Route::post('/update-in-house-course/{course}', [InhouseTrainingController::class, 'updateInHouseCourse'])->name('update_in_house_course');
+      // End in house
 
 
 			// Show
