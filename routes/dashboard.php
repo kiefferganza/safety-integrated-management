@@ -166,11 +166,12 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::post('/delete-course', [TrainingController::class, 'deleteCourse'])->name('delete_courses');
 
 			Route::get('/client', [TrainingController::class, 'index'])->name('client');
-			Route::get('/induction', [TrainingController::class, 'induction'])->name('induction');
+			// Route::get('/induction', [TrainingController::class, 'induction'])->name('induction');
 			Route::get('/third-party', [TrainingController::class, 'external'])->name('external');
 
       // In house
       Route::get('/in-house', [InhouseTrainingController::class, 'index'])->name('in_house');
+      Route::get('/in-house/{training}/view', [InhouseTrainingController::class, 'show'])->name('show_in_house');
       // Create
       Route::get('/in-house/create', [InhouseTrainingController::class, 'create'])->name('in_house_create');
       Route::post('/in-house/create', [InhouseTrainingController::class, 'store'])->name('in_house_store');
@@ -186,7 +187,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 			// Show
 			Route::get('/client/{training}', [TrainingController::class, 'show_client'])->name('client.show');
-			Route::get('/induction/{training}', [TrainingController::class, 'show_induction'])->name('induction.show');
+			// Route::get('/induction/{training}', [TrainingController::class, 'show_induction'])->name('induction.show');
 			Route::get('/in-house/{training}', [TrainingController::class, 'show_in_house'])->name('in_house.show');
 			// Third Party / External
 			Route::get('/third-party/action/{training}', [TrainingController::class, 'external_action'])->name('external.external_action');

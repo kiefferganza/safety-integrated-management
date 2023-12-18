@@ -29,6 +29,23 @@ class InhouseTrainingController extends Controller
   }
 
 
+  public function show(Training $training) {
+
+		return Inertia::render("Dashboard/Management/Training/InHouse/View/index", [
+			"training" => $training->load(["trainees" => fn($query) => $query->with("position")]),
+			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+			->where([
+				["tbl_position.is_deleted", 0],
+				["tbl_employees.is_deleted", 0],
+				["tbl_employees.is_active", 0],
+			])
+			->get(),
+			"module" => "In House",
+			"url" => "in-house"
+		]);
+  }
+
+
   public function create() {
 		$trainingService = new TrainingService();
 		$courses = TrainingCourses::where("type", "in-house")->get();

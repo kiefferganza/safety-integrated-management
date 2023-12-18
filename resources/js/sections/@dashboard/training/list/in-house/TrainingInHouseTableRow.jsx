@@ -140,7 +140,7 @@ export default function TrainingInHouseTableRow({
             >
                 <MenuItem
                     component={Link}
-                    href={`/dashboard/training/${url}/${row.id}`}
+                    href={route("training.management.show_in_house", row.id)}
                 >
                     <Iconify icon="eva:eye-fill" />
                     View

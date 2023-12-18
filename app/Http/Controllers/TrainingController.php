@@ -371,7 +371,7 @@ class TrainingController extends Controller
 
 
 	public function destroy(Request $request) {
-		$trainings = Training::whereIn("training_id", $request->ids)->get(['training_id'])->toArray();
+    $trainings = Training::whereIn("training_id", $request->ids)->get(['training_id'])->toArray();
 
 		$training_ids = [];
 		foreach ($trainings as $training) {
@@ -394,7 +394,11 @@ class TrainingController extends Controller
 			}
 		}
 
-		Training::destroy($trainings);
+    foreach ($training_ids as $id) {
+      $training = Training::find($id);
+      $training->clearMediaCollection();
+      $training->delete();
+    }
 		
 		return redirect()->back()
 		->with("message", "Training deleted successfully!")

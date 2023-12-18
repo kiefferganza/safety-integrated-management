@@ -61,7 +61,7 @@ const TrainingEmployeeDialog = ({
                 justifyContent="space-between"
                 sx={{ pt: 2.5, px: 3 }}
             >
-                <Typography variant="h6"> Select address </Typography>
+                <Typography variant="h6"> Select employee </Typography>
 
                 {trainees.length > 0 ? (
                     <IconButton
