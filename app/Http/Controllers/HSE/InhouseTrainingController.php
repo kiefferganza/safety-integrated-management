@@ -212,7 +212,7 @@ class InhouseTrainingController extends Controller
       $training->clearMediaCollection();
       $training->addMediaFromRequest("attachment")->toMediaCollection();
       $training->status = "completed";
-    }else if($training->status === "completed" && !$request->hasFile("attachment")) {
+    }else if($training->status === "completed" && $request->attachment === null) {
       $training->clearMediaCollection();
       $training->status = "published";
     }
