@@ -18,7 +18,6 @@ export default function EditCreatePage({
     projectDetails,
 }) {
     const { themeStretch } = useSettingsContext();
-    console.log(details);
 
     return (
         <>

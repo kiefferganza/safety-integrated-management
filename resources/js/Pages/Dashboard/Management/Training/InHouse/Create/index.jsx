@@ -10,7 +10,7 @@ const index = ({ projectDetails, currentTraining }) => {
                 <EditCreatePage
                     projectDetails={projectDetails}
                     currentTraining={currentTraining}
-                    isEdit
+                    isEdit={!!currentTraining}
                 />
             </DashboardLayout>
         </Suspense>

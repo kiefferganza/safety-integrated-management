@@ -80,12 +80,13 @@ class InhouseTrainingController extends Controller
       'trainees' => ['array', 'min:1'],
       'title' => ['integer', 'required']
 		]);
+    $user = auth()->user();
     $course = TrainingCourses::findOrfail($request->title);
     
-    if($course->last_used !== null) {
-      return redirect()->back(422)
+    if($course->last_used !== null && $user->user_type !== 0) {
+      return redirect()->back()
       ->with('message', 'Course is not available')
-      ->with('type', 'errorr');
+      ->with('type', 'error');
     }
 
     $user = auth()->user();
@@ -139,7 +140,7 @@ class InhouseTrainingController extends Controller
 
 		event(new NewTrainingEvent($training));
 
-    return redirect()->back()
+    return redirect()->route("training.management.in_house")
 		->with('message', 'Training added successfully')
 		->with('type', 'success');
   }
@@ -234,10 +235,7 @@ class InhouseTrainingController extends Controller
 		}
 
 
-		// return redirect()->route("training.management.in_house")
-		// ->with("message", "Course updated successfully!")
-		// ->with("type", "success");
-		return redirect()->back()
+		return redirect()->route("training.management.in_house")
 		->with("message", "Course updated successfully!")
 		->with("type", "success");
 	}
