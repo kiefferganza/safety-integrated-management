@@ -10,6 +10,7 @@ use App\Models\Training;
 use App\Models\TrainingCourses;
 use App\Models\TrainingTrainees;
 use App\Services\TrainingService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -65,6 +66,7 @@ class InhouseTrainingController extends Controller
 			"projectDetails" => $projectDetails,
 		]);
 	}
+
 
   public function store(Request $request) {
     $request->validate([
@@ -145,6 +147,7 @@ class InhouseTrainingController extends Controller
 		->with('type', 'success');
   }
 
+
   public function edit(Training $training) {
     $training->load(["course", "trainees" => fn ($query) => $query->with("position")]);
     $training->trainees->transform(fn($tr) => [
@@ -170,6 +173,7 @@ class InhouseTrainingController extends Controller
 			"projectDetails" => $projectDetails,
 		]);
   }
+
 
   public function update(Request $request, Training $training) {
     $request->validate([
@@ -294,5 +298,24 @@ class InhouseTrainingController extends Controller
 		->with('type', 'success');
   }
 
+
+  public function matrix(Request $request) {
+    $from = $request->from;
+		$to = $request->to;
+		if(!$from || !$to) {
+			if(($from && !$to) || (!$from && $to)) {
+				abort(404);
+			}
+			$currentYear = Carbon::now()->year;
+			$from = Carbon::create($currentYear, 1, 1);
+			$to = Carbon::create($currentYear, 12, 31);
+		}
+
+
+    return Inertia::render("Dashboard/Management/Training/InHouse/Matrix/index", [
+      'from' => $from,
+			'to' => $to
+    ]);
+  }
   
 }

@@ -226,6 +226,8 @@ const navConfig = [
                     "training.management.in_house_create",
                     "training.management.in_house_edit",
                     "training.management.show_in_house",
+                    "training.management.in_house_matrix",
+                    "training.management.external_matrix",
                 ],
                 children: [
                     {
@@ -237,6 +239,7 @@ const navConfig = [
                             "training.management.in_house.show",
                             "training.management.in_house_edit",
                             "training.management.show_in_house",
+                            "training.management.in_house_matrix",
                         ],
                         children: [
                             {
@@ -263,8 +266,10 @@ const navConfig = [
                             },
                             {
                                 title: "internal matrix",
-                                path: PATH_DASHBOARD.training.matrix,
-                                disabled: true,
+                                path: PATH_DASHBOARD.training.inHouseMatrix,
+                                routeNames: [
+                                    "training.management.in_house_matrix",
+                                ],
                             },
                         ],
                     },
@@ -278,6 +283,7 @@ const navConfig = [
                             "training.management.create",
                             "training.management.edit",
                             "training.management.courses",
+                            "training.management.external_matrix",
                         ],
                         children: [
                             {
@@ -312,8 +318,10 @@ const navConfig = [
                             },
                             {
                                 title: "external matrix",
-                                path: PATH_DASHBOARD.training.matrix,
-                                disabled: true,
+                                path: PATH_DASHBOARD.training.externalMatrix,
+                                routeNames: [
+                                    "training.management.external_matrix",
+                                ],
                             },
                         ],
                     },

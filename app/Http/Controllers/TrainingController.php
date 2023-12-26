@@ -833,6 +833,26 @@ class TrainingController extends Controller
 	}
 
 
+  public function externalMatrix(Request $request) {
+    $from = $request->from;
+		$to = $request->to;
+		if(!$from || !$to) {
+			if(($from && !$to) || (!$from && $to)) {
+				abort(404);
+			}
+			$currentYear = Carbon::now()->year;
+			$from = Carbon::create($currentYear, 1, 1);
+			$to = Carbon::create($currentYear, 12, 31);
+		}
+
+
+    return Inertia::render("Dashboard/Management/Training/External/Matrix/index", [
+      'from' => $from,
+			'to' => $to
+    ]);
+  }
+
+
 	public function matrix(Request $request) {
 		$user = auth()->user();
 
@@ -886,9 +906,7 @@ class TrainingController extends Controller
 
 		$years = collect([]);
 		
-		// $titles = [];
 		$titles = $courses->pluck('course_name')->toArray();
-		// dd($titles);
 		$storage = Storage::disk("public");
 
 		foreach ($employees as $employee) {

@@ -4,6 +4,7 @@ use App\Http\Controllers\ApiControllers\DashboardController;
 use App\Http\Controllers\ApiControllers\FolderApiController;
 use App\Http\Controllers\ApiControllers\ImageApiController;
 use App\Http\Controllers\ApiControllers\ToolboxTalkController;
+use App\Http\Controllers\ApiControllers\TrainingApiController;
 use App\Http\Controllers\ApiControllers\UserApiController;
 use App\Http\Controllers\UsersController;
 use App\Models\ToolboxTalk;
@@ -77,6 +78,11 @@ Route::middleware('auth')->as('api.')->group(function ()
 		Route::get('/all', [ToolboxTalkController::class, 'index'])->name('index');
 		Route::get('/type', [ToolboxTalkController::class, 'byType'])->name('type');
 	});
+
+  Route::prefix('training')->as('training.')->group(function(){
+    Route::get('in-house/matrix', [TrainingApiController::class, 'inhouseMatrix'])->name('inhouse_matrix');
+    Route::get('external/matrix', [TrainingApiController::class, 'externalMatrix'])->name('external_matrix');
+  });
 
 });
 

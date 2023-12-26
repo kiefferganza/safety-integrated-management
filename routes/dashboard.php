@@ -157,9 +157,10 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 * Management - Training
 	 */
 	Route::prefix('training')->as('training.management.')->group(function() {
-		Route::get('/matrix', [TrainingController::class, 'matrix'])->name('matrix');
-		// Lists
+    // Lists
 		Route::middleware("permission:training_show")->group(function() {
+      Route::get('/matrix', [TrainingController::class, 'matrix'])->name('matrix');
+      Route::get('/external/matrix', [TrainingController::class, 'externalMatrix'])->name('external_matrix');
 			Route::get('/registered-courses', [TrainingController::class, 'courses'])->name('courses');
 			Route::post('/new-course', [TrainingController::class, 'addCourses'])->name('new_courses');
 			Route::post('/update-course/{course}', [TrainingController::class, 'updateCourse'])->name('update_course');
@@ -170,6 +171,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/third-party', [TrainingController::class, 'external'])->name('external');
 
       // In house
+      Route::get('/in-house/matrix', [InhouseTrainingController::class, 'matrix'])->name('in_house_matrix');
       Route::get('/in-house', [InhouseTrainingController::class, 'index'])->name('in_house');
       Route::get('/in-house/{training}/view', [InhouseTrainingController::class, 'show'])->name('show_in_house');
       // Create
