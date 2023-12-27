@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -46,6 +47,21 @@ class Incident extends Model implements HasMedia
 			}
 			$form_number .= "-" . $incident->sequence_no;
 			$incident->form_number = $form_number;
+		});
+
+    static::created(function() {
+      $sub = auth()->user()->subscriber_id;
+      Cache::forget("safemanhours_" . $sub);
+		});
+
+    static::updated(function() {
+      $sub = auth()->user()->subscriber_id;
+      Cache::forget("safemanhours_" . $sub);
+		});
+
+		static::deleted(function() {
+      $sub = auth()->user()->subscriber_id;
+      Cache::forget("safemanhours_" . $sub);
 		});
 
 	}

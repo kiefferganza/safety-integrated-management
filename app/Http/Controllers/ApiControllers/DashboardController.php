@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Training;
 use App\Services\DashboardService;
+use App\Services\ToolboxTalkService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -19,11 +20,16 @@ class DashboardController extends Controller
 
 
 	public function toolboxtalks(Request $request) {
-		$dashboardService = new DashboardService;
+		// $dashboardService = new DashboardService;
 		$from = new Carbon($request->from);
 		$to = (new Carbon($request->to))->endOfDay();
 
-		return response()->json($dashboardService->getTbtByDate($from, $to));
+    $tbtService = new ToolboxTalkService;
+
+    $res = $tbtService->totalTbtByYear($from, $to);
+    $res['smh'] = $tbtService->getSafeManhours();
+
+		return response()->json($res);
 	}
 
 	public function tbtStatistics(Request $request) {

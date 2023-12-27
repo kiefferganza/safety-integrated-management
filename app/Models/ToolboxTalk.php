@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class ToolboxTalk extends Model
 {
@@ -33,12 +34,21 @@ class ToolboxTalk extends Model
 			}
 		});
 
+    static::created(function() {
+      $sub = auth()->user()->subscriber_id;
+      Cache::forget("safemanhours_" . $sub);
+		});
+
 		static::updated(function() {
-			cache()->forget("tbtList:" . auth()->user()->subscriber_id);
+      $sub = auth()->user()->subscriber_id;
+			cache()->forget("tbtList:" . $sub);
+      Cache::forget("safemanhours_" . $sub);
 		});
 
 		static::deleted(function() {
-			cache()->forget("tbtList:" . auth()->user()->subscriber_id);
+      $sub = auth()->user()->subscriber_id;
+			cache()->forget("tbtList:" . $sub);
+      Cache::forget("safemanhours_" . $sub);
 		});
 	}
 
@@ -56,6 +66,11 @@ class ToolboxTalk extends Model
 	public function participants() {
 		return $this->belongsToMany(Employee::class, "tbl_toolbox_talks_participants", "tbt_id", "employee_id")->withPivot(['time', 'date_added']);
 	}
+
+
+  public function participants_pivot() {
+    return $this->hasMany(ToolboxTalkParticipant::class, "tbt_id", "tbt_id");
+  }
 
 
 	public function file() {

@@ -27,7 +27,7 @@ Route::middleware('auth')->as('api.')->group(function ()
 	Route::get('toolbox-talks', function() {
 		$tbt = ToolboxTalk::where("is_deleted", 0)
 			->with([
-				"participants" => fn ($q) => $q->select("firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")->distinct(),
+				"participants" => fn ($q) => $q->select("firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
 				"file" => fn ($q) => $q->select("tbt_id","img_src"),
 				"conducted"
 			])

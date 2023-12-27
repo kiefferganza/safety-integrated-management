@@ -27,7 +27,7 @@ class DashboardController extends Controller
 					$toTbtStat->year ? new Carbon((string) $toTbtStat->year . '-1-1') : null
 				];
 				$from = min($fromToArr);
-				$to = max($fromToArr)->hour(11)->minutes(59)->second(59);
+				$to = max($fromToArr)->endOfMonth()->hour(11)->minutes(59)->second(59);
 			}
 			
 			return Inertia::render("Dashboard/General/HSEDashboard/index", [

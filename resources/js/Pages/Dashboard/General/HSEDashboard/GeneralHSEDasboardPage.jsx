@@ -1,13 +1,10 @@
-import { useEffect, useMemo, useRef, useState, lazy, useCallback } from 'react';
-// import { differenceInDays, format, isSameMonth, isSameYear } from 'date-fns';
-import { differenceInDays, format, getMonth, getYear } from 'date-fns';
+import { useState, lazy, useCallback } from 'react';
+import { endOfMonth, format, startOfMonth} from 'date-fns';
 // @mui
-const { Box, Grid, Container, Button, TextField, Typography, Stack, Divider, useTheme } = await import('@mui/material');
-const { MobileDatePicker } = await import('@mui/x-date-pickers');
+const { Box, Grid, Container, Button, Typography, Stack, Divider, useTheme } = await import('@mui/material');
 // _mock_
 import { _bookingsOverview } from '@/_mock/arrays';
 // utils
-import { fTimestamp } from '@/utils/formatTime';
 import { generateYears } from '@/utils/years';
 // components
 import { useSettingsContext } from '@/Components/settings';
@@ -15,12 +12,14 @@ import CustomPopover, { usePopover } from '@/Components/custom-popover';
 import useResponsive from '@/hooks/useResponsive';
 import Iconify from '@/Components/iconify';
 import { Inertia } from '@inertiajs/inertia';
+import { useDateRangePicker } from "@/Components/date-range-picker";
+import DateRangePicker from "@/Components/date-range-picker/DateRangePicker";
 // sections
 // import LoadingScreen from '@/Components/loading-screen/LoadingScreen';
 import Scrollbar from '@/Components/scrollbar/Scrollbar';
 import { useQueries } from '@tanstack/react-query';
 import axiosInstance from '@/utils/axios';
-import { ButtonBase, Card, CardHeader, MenuItem, Skeleton, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
+import { ButtonBase, Card, CardHeader, MenuItem, Skeleton, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip } from '@mui/material';
 const AppWelcome = lazy(() => import('@/sections/@dashboard/general/app/AppWelcome'));
 const WelcomeIllustration = lazy(() => import('@/assets/illustrations/WelcomeIllustration'));
 const HseSlider = lazy(() => import('@/sections/@dashboard/general/hse-dashboard/HseSlider'));
@@ -40,20 +39,9 @@ import { ProgressLoadingScreen } from '@/Components/loading-screen';
 // ----------------------------------------------------------------------
 // const GB = 1000000000 * 24;
 
-const MONTH_NAMES = {
-	1: 'Jan',
-	2: 'Feb',
-	3: 'Mar',
-	4: 'Apr',
-	5: 'May',
-	6: 'Jun',
-	7: 'Jul',
-	8: 'Aug',
-	9: 'Sep',
-	10: 'Oct',
-	11: 'Nov',
-	12: 'Dec',
-}
+const CURRENT_DATE = new Date();
+const CURRENT_YEAR = CURRENT_DATE.getFullYear();
+const CURRENT_MONTH = CURRENT_DATE.getMonth();
 
 const LAST_TEN_YEARS = generateYears();
 
@@ -62,12 +50,53 @@ const fetchTrainings = () => axiosInstance.get(route('api.dashboard.trainings'))
 const fetchInspections = (year) => axiosInstance.get(route('api.dashboard.inspections', { year })).then(res => res.data);
 const fetchIncidents = () => axiosInstance.get(route('api.dashboard.incidents')).then(res => res.data);
 
-export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStatistics, from, to, isLoadingTbt, isLoadingTbtStat }) {
-	const [tbtData, setTbtData] = useState(null);
+export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoadingTbt }) {
 	const [inspectionYear, setInstpectionYear] = useState("All");
-	const [startTbtDate, setStartTbtDate] = useState(from ? new Date(from) : null);
-	const [endTbtDate, setEndTbtDate] = useState(to ? new Date(to) : null);
-	const endTbtDateRef = useRef();
+
+  const {
+		startDate,
+		endDate,
+		open: openPicker,
+		onOpen: onOpenPicker,
+		onClose: onClosePicker,
+		isSelected: isSelectedValuePicker,
+		isError,
+		label,
+		setStartDate,
+		setEndDate
+	} = useDateRangePicker(new Date(from), new Date(to));
+
+  const handleStartDateChange = (date) => {
+		setStartDate(startOfMonth(date));
+	}
+
+	const handleEndDateChange = (date) => {
+		setEndDate(endOfMonth(date));
+	}
+
+  const handleOnFilterDate = () => {
+    const dates = {
+      from: format(startDate, 'yyyy-MM-dd'),
+      to: format(endDate, 'yyyy-MM-dd')
+    }
+    Inertia.get(route("dashboard"), dates, {
+      preserveScroll: true,
+      preserveState: true,
+      only: [
+        "from",
+        "to",
+      ],
+      onStart() {
+        onClosePicker();
+      }
+    });
+	}
+
+  const handleClosePicker = () => {
+		setStartDate(new Date(from));
+		setEndDate(new Date(to));
+		onClosePicker();
+	}
 
 	const inspectionYearPopover = usePopover();
 
@@ -90,190 +119,13 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 		]
 	});
 
-
-	useEffect(() => {
-		if (totalTbtByYear && tbtStatistics && incidents && (!isLoadingTbt || !isLoadingTbtStat)) {
-			// take day_loss to tbt exact date
-			if (incidents.incidents.length > 0) {
-				incidents.incidents.forEach(incident => {
-					const incidentDate = new Date(incident.incident_date);
-					const year = getYear(incidentDate);
-					const month = getMonth(incidentDate) + 1;
-					if (year in totalTbtByYear) {
-						totalTbtByYear[year][month]['safeManhours'] -= incident.day_loss;
-					}
-				});
-			}
-
-			const tmpTotalTbtByYear = { ...totalTbtByYear };
-			let tbtAndStatistics = tbtStatistics.reduce((acc, curr) => {
-				const statInTbtTotal = curr.year in tmpTotalTbtByYear;
-				let months = {};
-				if (statInTbtTotal) {
-					curr.months.forEach(month => {
-						months[month.month_code] = {
-							...tmpTotalTbtByYear[curr.year][month.month_code],
-							totalManpower: tmpTotalTbtByYear[curr.year][month.month_code].totalManpower + Math.round(month.manpower),
-							totalManhours: tmpTotalTbtByYear[curr.year][month.month_code].totalManhours + Math.round(month.manhours),
-							safeManhours: tmpTotalTbtByYear[curr.year][month.month_code].safeManhours + Math.round(month.manhours),
-						}
-					});
-					delete tmpTotalTbtByYear[curr.year];
-				} else {
-					curr.months.forEach(month => {
-						months[month.month_code] = {
-							totalManpower: month.manpower,
-							totalManhours: month.manhours,
-							location: new Set,
-							totalManpowerAveDay: 0,
-							safeManhours: month.manhours,
-							daysWork: 0,
-							daysWoWork: 0
-						}
-					});
-				}
-				return {
-					...acc,
-					[curr.year]: months
-				};
-			}, totalTbtByYear);
-
-			const tbt = Object.entries(tbtAndStatistics).reduce((acc, curr) => {
-				const monthsData = Object.entries(curr[1]);
-				monthsData.forEach(d => d.push(curr[0]));
-				acc.push(...monthsData);
-				return acc;
-			}, []);
-
-			setTbtData(tbt);
-		}
-	}, [totalTbtByYear, tbtStatistics, incidents, isLoadingTbt, isLoadingTbtStat]);
-
-
 	const handleInspectionYearChange = useCallback((newValue) => {
 		inspectionYearPopover.onClose();
 		setInstpectionYear(newValue);
 	}, [inspectionYearPopover]);
 
-	const handleStartTbtDateChange = (newDate) => {
-		setStartTbtDate(newDate);
-	}
-
-	const handleTbtEndDateChange = (newDate) => {
-		setEndTbtDate(newDate);
-	}
-
-	const handleAcceptDate = () => {
-		if (fTimestamp(startTbtDate) > fTimestamp(endTbtDate)) {
-			endTbtDateRef.current.click();
-		} else if (startTbtDate && endTbtDate) {
-			const end = new Date(endTbtDate);
-			const dates = {
-				from: format(startTbtDate, 'yyyy-MM-dd'),
-				to: format(new Date(end.setMonth(end.getMonth() + 1, 0)), 'yyyy-MM-dd')
-			}
-			Inertia.get(route("dashboard"), dates, {
-				preserveScroll: true,
-				preserveState: true,
-				only: [
-					"from",
-					"to",
-				]
-			});
-		}
-	}
-
-	const { tbtAnalytic, tbtDataItd } = useMemo(() => {
-		if (!tbtData || !totalTbtByYear) return { tbtAnalytic: null, tbtDataItd: null };
-		return tbtData.reduce((acc, curr) => {
-			const currMonth = curr[0];
-			const total = tbtData.find(t => (t[0] === currMonth && t[2] === curr[2]));
-			if (total) {
-				acc.tbtAnalytic.totalManpower += Math.round(total[1].totalManpower);
-				acc.tbtAnalytic.totalManhours += Math.round(total[1].totalManhours);
-				acc.tbtAnalytic.safeManhours += Math.round(total[1].safeManhours);
-				acc.tbtAnalytic.daysWork += total[1].daysWork;
-				acc.tbtAnalytic.daysWoWork += total[1].daysWoWork;
-				acc.tbtAnalytic.location = new Set([
-					...acc.tbtAnalytic.location,
-					...total[1].location,
-				]);
-			}
-
-			const currTotal = {
-				totalManpower: acc.tbtDataItd.totalManpower,
-				totalManhours: acc.tbtDataItd.totalManhours,
-				daysWork: acc.tbtDataItd.daysWork,
-				daysWoWork: acc.tbtDataItd.daysWoWork,
-				location: new Set([...acc.tbtDataItd.location, ...curr[1].location]),
-			};
-			if (curr[2] in totalTbtByYear) {
-				acc.tbtDataItd = calculateItd({
-					monthsObj: totalTbtByYear[curr[2]],
-					currMonth,
-					currTotal,
-				});
-			} else {
-				const currYear = tbtData.filter(a => a[2] === curr[2]);
-				let monthsObj = {};
-				currYear.forEach(d => {
-					monthsObj[d[0]] = d[1];
-				});
-				acc.tbtDataItd = calculateItd({
-					monthsObj,
-					currMonth,
-					currTotal,
-				});
-			}
-
-			return acc;
-		}, {
-			tbtAnalytic: {
-				totalManpower: 0,
-				totalManhours: 0,
-				safeManhours: 0,
-				daysWork: 0,
-				daysWoWork: 0,
-				location: new Set(),
-			},
-			tbtDataItd: {
-				totalManpower: 0,
-				totalManhours: 0,
-				daysWork: 0,
-				daysWoWork: 0,
-				location: new Set(),
-			},
-		});
-	}, [tbtData]);
-
-	const getTbtMonthChartData = () => {
-		if (tbtData) {
-			if (tbtData.length > 12) {
-				const tbtHasData = tbtData.filter(tbt => (tbt[1].totalManhours !== 0 && tbt[1].totalManpower !== 0));
-				const tbtRolling = tbtHasData.slice(tbtHasData.length - 12);
-				const tbtWorks = tbtRolling.reduce((acc, curr) => ({
-					daysWork: acc.daysWork + (curr[1]?.daysWork || 0),
-					daysWoWork: acc.daysWoWork + (curr[1]?.daysWoWork || 0)
-				}), { daysWork: 0, daysWoWork: 0 })
-				return {
-					tbt: tbtRolling,
-					...tbtWorks,
-				}
-			} else {
-				const tbtWorks = tbtData.reduce((acc, curr) => ({
-					daysWork: acc.daysWork + (curr[1]?.daysWork || 0),
-					daysWoWork: acc.daysWoWork + (curr[1]?.daysWoWork || 0)
-				}), { daysWork: 0, daysWoWork: 0 });
-				return {
-					tbt: tbtData.filter(tbt => (tbt[1].totalManhours !== 0 && tbt[1].totalManpower !== 0)),
-					...tbtWorks
-				}
-			}
-		}
-		return [];
-	}
-
-	const tbtMonthChartData = getTbtMonthChartData();
+  const currentDateTbt = tbt?.tbtByYear?.[CURRENT_YEAR][CURRENT_MONTH];
+  console.log(tbt);
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -311,88 +163,37 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
           <Grid item xs={12}>
             <Stack flexDirection="row" gap={3} flexWrap="wrap">
               <AnalyticsWidgetSummary
-                isLoading={isLoadingTbtStat || tbtData === null}
+                isLoading={isLoadingTbt}
                 title="Average Manpower/Day"
-                total={Math.round((tbtAnalytic?.totalManpower || 1)) / (differenceInDays(endTbtDate, startTbtDate) + 1)}
+                total={tbt?.analytics.avg_manpower_day || 0}
                 color="info"
                 icon={'ic:twotone-people-alt'}
               />
 
               <AnalyticsWidgetSummary
-                isLoading={isLoadingTbtStat || tbtData === null}
+                isLoading={isLoadingTbt}
                 title="Total Manpower"
-                total={Math.round(tbtAnalytic?.totalManpower || 0)}
+                total={tbt?.analytics.totalManpower || 0}
                 icon={'fluent:people-team-16-filled'}
               />
 
               <AnalyticsWidgetSummary
-                isLoading={isLoadingTbtStat || tbtData === null}
+                isLoading={isLoadingTbt}
                 title="Total Manhours"
-                total={Math.round(tbtAnalytic?.totalManhours || 0)}
+                total={tbt?.analytics.totalManHours || 0}
                 icon={'tabler:clock-hour-4'}
                 color="warning"
               />
 
             <AnalyticsWidgetSummary
-							isLoading={isLoadingTbtStat || tbtData === null}
+							isLoading={isLoadingTbt}
 							title="Total Safe Manhours"
-							total={Math.round(tbtAnalytic?.safeManhours || 0)}
+							total={tbt?.smh || 0}
 							color="error"
 							icon={'mdi:shop-hours-outline'}
 						/>
             </Stack>
           </Grid>
-
-					{/* <Grid item xs={12} md={6} lg={3}>
-						<AnalyticsWidgetSummary
-							isLoading={isLoadingTbtStat || tbtData === null}
-							title="Average Manpower/Day"
-							// title="Ave. MANPOWER/DAY"
-							// total={monthsDiff === 1 ?
-							// 	Math.round((tbtAnalytic?.totalManpower || 1) / new Date(+tbtData[0][2], +tbtData[0][0], 0).getDate())
-							// 	: Math.round((tbtAnalytic?.totalManpower || 1) / (monthsDiff || 1))
-							// }
-							total={Math.round((tbtAnalytic?.totalManpower || 1)) / (differenceInDays(endTbtDate, startTbtDate) + 1)}
-							color="info"
-							// icon={'material-symbols:supervisor-account-outline'}
-							icon={'ic:twotone-people-alt'}
-						/>
-					</Grid>
-
-					<Grid item xs={12} md={6} lg={3}>
-						<AnalyticsWidgetSummary
-							isLoading={isLoadingTbtStat || tbtData === null}
-							title="Total Manpower"
-							// title="MANPOWER"
-							total={Math.round(tbtAnalytic?.totalManpower || 0)}
-							// icon={'simple-line-icons:user'}
-							icon={'fluent:people-team-16-filled'}
-						/>
-					</Grid>
-
-					<Grid item xs={12} md={6} lg={3}>
-						<AnalyticsWidgetSummary
-							isLoading={isLoadingTbtStat || tbtData === null}
-							title="Total Manhours"
-							// title="MANHOURS"
-							total={Math.round(tbtAnalytic?.totalManhours || 0)}
-							icon={'tabler:clock-hour-4'}
-							// icon={'mdi:clock-time-four-outline'}
-							color="warning"
-						/>
-					</Grid>
-
-					<Grid item xs={12} md={6} lg={3}>
-						<AnalyticsWidgetSummary
-							isLoading={isLoadingTbtStat || tbtData === null}
-							title="Total Safe Manhours"
-							// title="SAFE MANHOURS"
-							total={Math.round(tbtAnalytic?.safeManhours || 0)}
-							color="error"
-							// icon={'mdi:clock-time-four-outline'}
-							icon={'mdi:shop-hours-outline'}
-						/>
-					</Grid> */}
 				</Grid>
 
 				<Divider variant="middle" sx={{ my: 1 }} />
@@ -401,60 +202,21 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 					<Box display="flex" justifyContent="end">
 						<Box>
 							<Typography variant="subtitle2" fontWeight={700} mb={1} textAlign="right">Filter TBT By Date</Typography>
-							<Box display="flex" gap={2}>
-								<MobileDatePicker
-									label="Start Date"
-									value={startTbtDate}
-									onChange={handleStartTbtDateChange}
-									onAccept={handleAcceptDate}
-									inputFormat="MMM yyyy"
-									openTo="year"
-									showToolbar
-									views={['year', 'month']}
-									renderInput={(params) => (
-										<TextField
-											{...params}
-											size="small"
-											fullWidth
-											sx={{
-												maxWidth: { md: 160 },
-											}}
-											InputProps={{
-												endAdornment: (
-													<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
-												)
-											}}
-										/>
-									)}
-								/>
-								<MobileDatePicker
-									disabled={!startTbtDate}
-									label="End Date"
-									value={endTbtDate}
-									onChange={handleTbtEndDateChange}
-									onAccept={handleAcceptDate}
-									minDate={startTbtDate}
-									inputFormat="MMM yyyy"
-									openTo="year"
-									showToolbar
-									views={['year', 'month']}
-									ref={endTbtDateRef}
-									renderInput={(params) => (
-										<TextField
-											{...params}
-											size="small"
-											fullWidth
-											sx={{
-												maxWidth: { md: 160 },
-											}}
-											InputProps={{
-												endAdornment: (
-													<Iconify icon="eva:calendar-fill" sx={{ color: 'primary.main' }} />
-												)
-											}}
-										/>
-									)}
-								/>
+							<Box display="flex" mb={1}>
+                {isSelectedValuePicker ? (
+                  <Button
+                    onClick={onOpenPicker}
+                    variant="outlined"
+                  >
+                    {label}
+                  </Button>
+                ) : (
+                  <Tooltip title="Filter Toolbox Talk">
+                    <IconButton size="small" onClick={onOpenPicker}>
+                      <Iconify icon="eva:calendar-fill" />
+                    </IconButton>
+                  </Tooltip>
+                )}
 							</Box>
 						</Box>
 					</Box>
@@ -463,23 +225,23 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 				<Grid container spacing={2}>
 					<Grid item xs={12} md={7} lg={5} order={{ md: 1, lg: 1 }}>
 						<AnalyticsTable
-							isLoading={(isLoadingTbt || tbtAnalytic === null || tbtData === null) || isLoadingTraining}
+							isLoading={isLoadingTbt || isLoadingTraining}
 							headTitles={[{ title: "HSE Data" }, { title: "Month", align: "right" }, { title: "ITD", align: "right" }]}
 							data={[
 								{
 									title: "Total Days Work",
-									month: tbtAnalytic?.daysWork,
-									itd: tbtDataItd?.daysWork,
+									month: currentDateTbt?.totalManpower ? currentDateTbt.days.length : 0,
+									itd: tbt?.analytics.daysWork || 0,
 								},
 								{
 									title: "Total Days w/o Work",
-									month: tbtAnalytic?.daysWoWork,
-									itd: tbtDataItd?.daysWoWork,
+									month: currentDateTbt?.totalManpower ? currentDateTbt.totalDays - currentDateTbt.days.length : 0,
+									itd: tbt?.analytics.daysWoWork || 0,
 								},
 								{
 									title: "Total Work Location",
-									month: tbtAnalytic?.location?.size,
-									itd: tbtDataItd?.location?.size,
+									month: currentDateTbt?.totalManpower ? currentDateTbt.location.length : 0,
+									itd: tbt?.analytics.location || 0,
 								},
 								{
 									title: "Number of Training Hours Completed",
@@ -511,50 +273,26 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 					</Grid>
 
 					<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
-						{(tbtData && tbtMonthChartData) ? (
-							<Card sx={{ height: '100%' }}>
-								<Scrollbar>
-									<Box sx={{ width: 980 }}>
-										<AnalyticsTBTLine
-											height={isTablet ? 364 : 240}
-											title="Hours Worked / Month"
-											subheader="(12 month rolling)"
-											chart={{
-												labels: tbtMonthChartData.tbt.map(d => `${MONTH_NAMES[d[0]]} ${d[2]}`),
-												series: tbtMonthChartData.tbt.reduce((acc, curr) => {
-													acc[0].data.push(curr[1].totalManpower);
-													acc[1].data.push(curr[1].totalManhours);
-													acc[2].data.push(curr[1].totalManhours === 0 ? 0 : curr[1].safeManhours);
-													return acc;
-												}, [
-													{
-														name: 'Manpower',
-														type: 'column',
-														fill: 'solid',
-														data: [],
-													},
-													{
-														name: 'Man Hours',
-														type: 'column',
-														fill: 'solid',
-														data: [],
-													},
-													{
-														name: 'Safe Man Hours',
-														type: 'column',
-														fill: 'solid',
-														data: [],
-													}
-												]),
-												colors: [
-													theme.palette.primary.main,
-													theme.palette.error.main,
-												],
-											}}
-										/>
-									</Box>
-								</Scrollbar>
-							</Card>
+						{(!isLoadingTbt && tbt) ? (
+              <Card sx={{ height: '100%' }}>
+                  <Scrollbar>
+                      <Box sx={{ width: '100%', minWidth: 800 }}>
+                        <AnalyticsTBTLine
+                          height={isTablet ? 364 : 240}
+                          title="Manpower / Month"
+                          subheader="(12 month rolling)"
+                          chart={{
+                            categories: tbt?.monthRolling.categories || [],
+                            series: tbt?.monthRolling.manpower ? [{
+                              data: Object.values(tbt.monthRolling.manpower),
+                              name: 'Manpower'
+                            }] : [],
+                            colors: [theme.palette.primary.main],
+                          }}
+                        />
+                      </Box>
+                  </Scrollbar>
+                </Card>
 						) : (
 							<Card sx={{ p: 2 }}>
 								<Skeleton animation='pulse' sx={{ mt: 1, mb: 1 }} height={28} width={200} />
@@ -563,14 +301,15 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 							</Card>
 						)}
 					</Grid>
+          
 					<Grid item xs={12} md={5} lg={2} order={{ md: 2, lg: 3 }}>
-						{(tbtData && tbtMonthChartData) ? (
+						{(!isLoadingTbt) ? (
 							<AnalyticsTBTWorkDays
 								title="Work Days"
 								chart={{
 									series: [
-										{ label: 'Days Work', value: tbtMonthChartData?.daysWork || 0 },
-										{ label: 'Days Without Work', value: tbtMonthChartData?.daysWoWork || 0 },
+										{ label: 'Days Work', value: tbt?.analytics.daysWork },
+										{ label: 'Days Without Work', value: tbt?.analytics.daysWoWork },
 									],
 									colors: [
 										theme.palette.primary.main,
@@ -590,8 +329,68 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 					</Grid>
 				</Grid>
 
-				<Grid container spacing={2} sx={{ my: 2 }}>
-					<AnalyticsTrainingLine />
+				<Grid container spacing={2} mt={1}>
+					<Grid item xs={12} md={12} lg={6} order={{ md: 3, lg: 2 }}>
+						{(!isLoadingTbt) ? (
+							<Card sx={{ height: '100%' }}>
+									<Box>
+										<AnalyticsTBTLine
+											height={isTablet ? 364 : 240}
+											title="Hours Worked / Month"
+											subheader="(12 month rolling)"
+											chart={{
+                        categories: tbt?.monthRolling.categories || [],
+                        series: tbt?.monthRolling.manhours ? [{
+                          data: Object.values(tbt.monthRolling.manhours),
+                          name: 'Manhour'
+                        }] : [],
+												colors: [theme.palette.info.main],
+											}}
+										/>
+									</Box>
+							</Card>
+						) : (
+							<Card sx={{ paddingX: 2 }}>
+								<Skeleton animation='pulse' sx={{ mt: 1.5, mb: 0.5 }} height={32} width={200} />
+								<Skeleton animation='pulse' height={24} width={120} />
+								<Skeleton animation='pulse' height={320} width="100%" />
+							</Card>
+						)}
+					</Grid>
+
+					<Grid item xs={12} md={12} lg={6} order={{ md: 2, lg: 3 }}>
+						{(!isLoadingTbt) ? (
+							<Card sx={{ height: '100%' }}>
+                <Box>
+                  <AnalyticsTBTLine
+                    height={isTablet ? 364 : 240}
+                    title="Safe Manhour / Month"
+                    subheader="(12 month rolling)"
+                    chart={{
+                      categories: tbt?.monthRolling.categories || [],
+                      series: tbt?.monthRolling.safemanhours ? [{
+                        data: Object.values(tbt.monthRolling.safemanhours),
+                        name: 'Safe Manhour'
+                      }] : [],
+                      colors: [theme.palette.error.main],
+                    }}
+                  />
+                </Box>
+            </Card>
+						) : (
+							<Card sx={{ paddingX: 2 }}>
+								<Skeleton animation='pulse' sx={{ mt: 1.5, mb: 0.5 }} height={32} width={200} />
+								<Skeleton animation='pulse' height={24} width={120} />
+								<Skeleton animation='pulse' height={320} width="100%" />
+							</Card>
+						)}
+					</Grid>
+				</Grid>
+
+        <Divider variant="middle" sx={{ my: 3 }} />
+
+				<Grid container spacing={2}>
+          <AnalyticsTrainingLine />
 				</Grid>
 
 
@@ -866,6 +665,27 @@ export default function GeneralHSEDasboardPage ({ user, totalTbtByYear, tbtStati
 					</MenuItem>
 				))}
 			</CustomPopover>
+      <DateRangePicker
+				variant="calendar"
+				title="Choose Toolbox Talk date"
+				startDate={startDate}
+				endDate={endDate}
+				onChangeStartDate={handleStartDateChange}
+				onChangeEndDate={handleEndDateChange}
+				open={openPicker}
+				onClose={handleClosePicker}
+				isSelected={isSelectedValuePicker}
+				isError={isError}
+				onApply={handleOnFilterDate}
+				StartDateProps={{
+					views: ['year', 'month'],
+					openTo: "year"
+				}}
+				EndDateProps={{
+					views: ['year', 'month'],
+					openTo: "year"
+				}}
+			/>
 		</>
 	);
 }

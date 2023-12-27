@@ -32,7 +32,7 @@ class ToolboxTalkController extends Controller
 	public function view(ToolboxTalk $tbt) {
 		return Inertia::render("Dashboard/Management/ToolboxTalk/View/index", [
 			"tbt" => $tbt->load([
-				"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->distinct()->with("position"),
+				"participants" => fn ($q) => $q->select("firstname", "lastname", "position")->with("position"),
 				"conducted"	=> fn ($q) => $q->select("employee_id", "firstname", "lastname"),
 				"file" => fn ($q) => $q->select("tbt_id","img_src")
 			])
@@ -82,7 +82,7 @@ class ToolboxTalkController extends Controller
 
 		return Inertia::render("Dashboard/Management/ToolboxTalk/Edit/index", [
 			"sequences" => $tbtService->getSequenceNo(),
-			"tbt" => $tbt->load(["participants" => fn($q) => $q->distinct(), "file"]),
+			"tbt" => $tbt->load(["participants", "file"]),
 			"participants" => (new EmployeeService())->personels()->position()->get(),
 			"projectDetails" => $projectDetails
 		]);

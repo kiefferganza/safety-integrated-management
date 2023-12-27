@@ -20,7 +20,7 @@ class DashboardService {
 		->where("is_deleted", 0)
 		->whereBetween("date_conducted", [$from, $to])
 		->with([
-			"participants" => fn ($q) => $q->select("firstname", "lastname", "position", "raw_position")->distinct()
+			"participants" => fn ($q) => $q->select("firstname", "lastname", "position", "raw_position")
 		])
 		->orderBy('date_conducted')
 		->get();
@@ -295,8 +295,10 @@ class DashboardService {
 						"Major" => 0,
 						"Fatality" => 0,
 					]
-				]
+        ],
+        "incidents" => []
 			]);
+    
 
 		$incidentReport = [
 			"tris" => ["month" => 0, "itd" => 0],
@@ -313,8 +315,6 @@ class DashboardService {
 			"nonrecordable" => $incidents["nonrecordable"],
 			"incidents" => $incidents['incidents']
 		];
-
-		// dd($incidentReport);
 		
 		// LTIFR = (Number of lost time injuries / Total hours worked) x 1,000,000
 		if($incidents["ltifr"]["lti"] > 0 && $incidents["ltifr"]["totalHours"] > 0) {

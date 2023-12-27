@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Employee;
+use App\Models\Incident;
+use App\Models\TbtStatisticMonth;
 use Illuminate\Http\Request;
 use App\Models\ToolboxTalk;
 use App\Models\ToolboxTalkFile;
@@ -10,6 +12,8 @@ use App\Models\ToolboxTalkParticipant;
 use App\Models\User;
 use App\Notifications\ModuleBasicNotification;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
@@ -59,7 +63,7 @@ class ToolboxTalkService {
 	public static function getList() {
 		return ToolboxTalk::where("is_deleted", 0)
 		->with([
-			"participants" => fn ($q) => $q->select("firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")->distinct(),
+			"participants" => fn ($q) => $q->select("firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
 			"file" => fn ($q) => $q->select("tbt_id","img_src"),
 			"conducted"
 		])
@@ -77,7 +81,7 @@ class ToolboxTalkService {
 			["is_deleted", 0]
 		])
 		->with([
-			"participants" => fn ($q) => $q->select("firstname", "lastname")->distinct(),
+			"participants" => fn ($q) => $q->select("firstname", "lastname"),
 			"file" => fn ($q) => $q->select("tbt_id","img_src"),
 			"conducted"
 		])
@@ -311,6 +315,170 @@ class ToolboxTalkService {
 			ToolboxTalkFile::whereIn("tbt_id", $ids)->update(["is_deleted" => 1]);
 		}
 	}
+
+
+  public function getSafeManhours() {
+    $user = auth()->user();
+    $cachedSafeManhours = Cache::get("safemanhours_" . $user->subscriber_id);
+    
+    if($cachedSafeManhours) {
+      return $cachedSafeManhours;
+    }
+    $tbt = ToolboxTalk::select("tbt_id", "is_deleted")
+		->where("is_deleted", 0)
+    ->withCount("participants")
+    ->get()
+    ->reduce(function($current, $tbt) {
+      $current += $tbt->participants_count * 9;
+      return $current;
+    }, 0);
+    $stats = TbtStatisticMonth::select("tbt_statistic_months.id", "tbt_statistic_id", "manhours", "manpower", "month_code", "tbt_statistics.year")
+    ->leftJoin("tbt_statistics", "tbt_statistics.id", "tbt_statistic_months.tbt_statistic_id")
+    ->get()
+    ->reduce(function($current, $stat) {
+      $current += round($stat->manhours);
+      return $current;
+    },0);
+
+    $incidents = Incident::sum('day_loss');
+
+    $smh = ($tbt + $stats) - $incidents;
+    Cache::put("safemanhours_" . $user->subscriber_id, $smh);
+    return $smh;
+  }
+
+  public function totalTbtByYear(Carbon $from, Carbon $to) {
+    $defaultTotal = [
+      "totalManHours" => 0,
+      "totalManpower" => 0,
+      "location" => [],
+      "days" => [],
+      "totalDays" => 0
+    ];
+    $years = [];
+    $months = [
+      1 => $defaultTotal,
+      2 => $defaultTotal,
+      3 => $defaultTotal,
+      4 => $defaultTotal,
+      5 => $defaultTotal,
+      6 => $defaultTotal,
+      7 => $defaultTotal,
+      8 => $defaultTotal,
+      9 => $defaultTotal,
+      10 => $defaultTotal,
+      11 => $defaultTotal,
+      12 => $defaultTotal,
+    ];
+
+    $yearRange = range($from->year, $to->year);
+    $analytics = [
+      "daysWoWork" => 0,
+      "daysWork" => 0,
+      "totalManHours" => 0,
+      "totalManpower" => 0,
+      "location" => 0,
+      "avg_manpower_day" => 0,
+    ];
+    
+    foreach ($yearRange as $year) {
+      foreach ($months as $month => $val) {
+        $months[$month]['totalDays'] = Carbon::create($year, $month)->daysInMonth;
+      }
+      $years[$year] = $months;
+    }
+
+    $tbt = ToolboxTalk::select("tbt_id", "location", "date_conducted", "location", DB::raw('YEAR(date_conducted) as year'), DB::raw('MONTH(date_conducted) as month'))
+		->where("is_deleted", 0)
+		->whereBetween("date_conducted", [$from, $to])
+    ->withCount("participants")
+    ->get();
+
+    $tbtByYear = $tbt->reduce(function($current, $tbt) {
+      $dateConducted = Carbon::parse($tbt->date_conducted);
+      if(!in_array($dateConducted->day, $current[$tbt->year][$tbt->month]['days'])) {
+        $current[$tbt->year][$tbt->month]['days'][] = $dateConducted->day;
+      }
+
+      if(!in_array($tbt->location, $current[$tbt->year][$tbt->month]['location'])) {
+        $current[$tbt->year][$tbt->month]['location'][] = $tbt->location;
+      }
+      $current[$tbt->year][$tbt->month]['totalManHours'] += $tbt->participants_count * 9;
+      $current[$tbt->year][$tbt->month]['totalManpower'] += $tbt->participants_count;
+      return $current;
+    },$years);
+
+    $yearsAddedToTbt = $tbt->pluck("year")->unique();
+    foreach ($yearsAddedToTbt as $year) {
+      foreach ($tbtByYear[$year] as $data) {
+        $days = count($data["days"]);
+        if($data['totalManpower'] > 0) {
+          $analytics["daysWork"] += $days;
+          $analytics["daysWoWork"] += $data['totalDays'] - $days;
+          $analytics["totalManHours"] += $data["totalManHours"];
+          $analytics["totalManpower"] += $data["totalManpower"];
+        }
+      }
+    }
+    $analytics['location'] = $tbt->pluck("location")->unique()->count();
+    
+    $statistics = TbtStatisticMonth::select("tbt_statistic_months.id", "tbt_statistic_id", "manhours", "manpower", "month_code", "tbt_statistics.year")
+    ->whereBetween("tbt_statistics.year", [$from->year, $to->year])
+    ->leftJoin("tbt_statistics", "tbt_statistics.id", "tbt_statistic_months.tbt_statistic_id")
+    ->get();
+
+    foreach ($statistics as $stat) {
+      $tbtByYear[$stat->year][$stat->month_code]["totalManHours"] += $stat->manhours;
+      $tbtByYear[$stat->year][$stat->month_code]["totalManpower"] += $stat->manpower;
+      $analytics["totalManHours"] += round($stat->manhours);
+      $analytics["totalManpower"] += round($stat->manpower);
+    }
+
+    if($analytics["totalManpower"] > 0) {
+      $diffDays = $from->diffInDays($to);
+      $analytics["avg_manpower_day"] = ceil($analytics["totalManpower"] / $diffDays);
+    }
+
+    $monthRolling = [
+      'categories' => [],
+      'manpower' => [],
+      'manhours' => [],
+      'safemanhours' => [],
+    ];
+    $copyStart = $to->copy()->subMonths(11)->day(1)->hour(0)->minutes(0)->second(0);
+    // dd($copyStart, $to);
+    $incidents = Incident::select(DB::raw('YEAR(incident_date) as year'), DB::raw('MONTH(incident_date) as month'), 'day_loss')
+    ->where('incident_date', '>=', $copyStart->toDateTimeString())
+    ->get();
+    for ($i = 0; $i < 12; $i++) {
+      $c = $copyStart->copy()->addMonth($i);
+      if($i === 12) {
+        $c->day($c->daysInMonth);
+      }
+      $y = $c->year;
+      $m = $c->month;
+      if(isset($tbtByYear[$y][$m])) {
+        $t = $tbtByYear[$y][$m];
+        $monthRolling['categories'][] = $c->format('M'). ' ' .$y;
+
+        $monthRolling['manpower'][$y.'-'.$m] = $t['totalManpower'];
+        $monthRolling['manhours'][$y.'-'.$m] = $t['totalManHours'];
+        $monthRolling['safemanhours'][$y.'-'.$m] = $t['totalManHours'];
+      }
+      $s = $statistics->where("year", $y)->where("month_code", $m)->first();
+      if($s) {
+        $monthRolling['manpower'][$y.'-'.$m] = $monthRolling['manpower'][$y.'-'.$m] ? $monthRolling['manpower'][$y.'-'.$m] + $s->manpower : $s->manpower;
+        $monthRolling['manhours'][$y.'-'.$m] = $monthRolling['manhours'][$y.'-'.$m] ? $monthRolling['manhours'][$y.'-'.$m] + $s->manhours : $s->manhours;
+        $monthRolling['safemanhours'][$y.'-'.$m] = $monthRolling['manhours'][$y.'-'.$m] ? $monthRolling['manhours'][$y.'-'.$m] + $s->manhours : $s->manhours;
+      }
+      $incident = $incidents->where("year", $y)->where("month", $m)->first();
+      if($incident &&  $monthRolling['safemanhours'][$incident->year.'-'.$incident->month] > 0) {
+        $monthRolling['safemanhours'][$incident->year.'-'.$incident->month] -= $incident->day_loss;
+      }
+    }
+    
+    return compact("tbtByYear", "analytics", "monthRolling");
+  }
 
 
 }
