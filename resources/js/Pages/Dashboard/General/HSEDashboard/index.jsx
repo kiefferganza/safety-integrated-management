@@ -32,11 +32,6 @@ const index = ({
     });
 
     useEffect(() => {
-        // if (toolboxtalks && tbtStatistics) {
-        //     const convertedTbt = convertTbtByYear({ tbt: toolboxtalks });
-        //     console.log({ convertedTbt, toolboxtalks });
-        //     setTotalTbtByYear(convertedTbt.totalTbtByYear);
-        // }
         if (isErrorTbt) {
             enqueueSnackbar("Something went wrong!", { variant: "error" });
         }
@@ -45,7 +40,7 @@ const index = ({
     return (
         <>
             <Head>
-                <title> General: Analytics</title>
+                <title> General: HSE Analytics</title>
             </Head>
             <Suspense fallback={<LoadingScreen />}>
                 <DashboardLayout>

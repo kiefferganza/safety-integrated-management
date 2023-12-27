@@ -31,12 +31,35 @@ function AnalyticsTrainingLine() {
         queryFn: () => getTrainingsChartByYear(year),
     });
     const chartOptions = useChart({
-      stroke: {
-        show: true,
-        width: 2,
-        colors: ['transparent'],
+      // stroke: {
+      //   show: true,
+      //   width: 2,
+      //   colors: ['transparent'],
+      // },
+      plotOptions: {
+        bar: {
+          dataLabels: {
+            position: 'top',
+          }
+        },
+      },
+      dataLabels: {
+        enabled: true,
+        dropShadow: {
+          enabled: true,
+          blur: 1,
+          opacity: 0.25,
+        },
+        formatter: function (val) {
+          return val.toLocaleString("en-US");
+        },
+        // offsetX: 0,
+        style: {
+          fontSize: '9px'
+        }
       },
       xaxis: {
+        show: true,
           categories: [
               "Jan",
               "Feb",
@@ -51,6 +74,11 @@ function AnalyticsTrainingLine() {
               "Nov",
               "Dec",
           ],
+          labels: {
+            style: {
+              fontSize: '10px',
+            },
+          }
       },
     });
 
@@ -66,7 +94,7 @@ function AnalyticsTrainingLine() {
         <>
             <Grid item xs={12} md={12} lg={6} xl={6}>
                 <Card>
-                    <CardHeader title="Completed Trainings" />
+                    <CardHeader title="Completed Trainings / Month" subheader="(12 month rolling)" />
                     {isLoading && !trainingData ? (
                         <ProgressLoadingScreen
                             color={theme.palette.primary.main}
@@ -80,23 +108,6 @@ function AnalyticsTrainingLine() {
                             options={{
                                 ...chartOptions,
                                 colors: [theme.palette.info.main],
-                                fill: {
-                                  type: "gradient",
-                                  gradient: {
-                                      colorStops: [
-                                        {
-                                            offset: 0,
-                                            color: theme.palette.info.main,
-                                            opacity: 1,
-                                        },
-                                        {
-                                            offset: 100,
-                                            color: theme.palette.info.dark,
-                                            opacity: 1,
-                                        },
-                                      ]
-                                  },
-                              },
                             }}
                             width="100%"
                             height={364}
@@ -108,7 +119,8 @@ function AnalyticsTrainingLine() {
             <Grid item xs={12} md={12} lg={6} xl={6}>
                 <Card sx={{ width: 1 }}>
                     <CardHeader
-                        title="Not Completed Trainings"
+                        title="On Going Trainings / Month"
+                        subheader="(12 month rolling)"
                         action={
                             <ButtonBase
                                 onClick={popover.onOpen}
@@ -149,24 +161,7 @@ function AnalyticsTrainingLine() {
                             ]}
                             options={{
                                 ...chartOptions,
-                                colors: [theme.palette.warning.light],
-                                fill: {
-                                    type: "gradient",
-                                    gradient: {
-                                        colorStops: [
-                                          {
-                                              offset: 0,
-                                              color: theme.palette.warning.main,
-                                              opacity: 1,
-                                          },
-                                          {
-                                              offset: 100,
-                                              color: theme.palette.warning.dark,
-                                              opacity: 1,
-                                          },
-                                        ]
-                                    },
-                                },
+                                colors: [theme.palette.warning.light]
                             }}
                             width="100%"
                             height={364}

@@ -1,5 +1,5 @@
 import { useState, lazy, useCallback } from 'react';
-import { endOfMonth, format, startOfMonth} from 'date-fns';
+import { differenceInMonths, endOfMonth, format, startOfMonth} from 'date-fns';
 // @mui
 const { Box, Grid, Container, Button, Typography, Stack, Divider, useTheme } = await import('@mui/material');
 // _mock_
@@ -39,9 +39,9 @@ import { ProgressLoadingScreen } from '@/Components/loading-screen';
 // ----------------------------------------------------------------------
 // const GB = 1000000000 * 24;
 
-const CURRENT_DATE = new Date();
-const CURRENT_YEAR = CURRENT_DATE.getFullYear();
-const CURRENT_MONTH = CURRENT_DATE.getMonth();
+// const CURRENT_DATE = new Date();
+// const CURRENT_YEAR = CURRENT_DATE.getFullYear();
+// const CURRENT_MONTH = CURRENT_DATE.getMonth() + 1;
 
 const LAST_TEN_YEARS = generateYears();
 
@@ -67,17 +67,17 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
 	} = useDateRangePicker(new Date(from), new Date(to));
 
   const handleStartDateChange = (date) => {
-		setStartDate(startOfMonth(date));
+		setStartDate(date);
 	}
 
 	const handleEndDateChange = (date) => {
-		setEndDate(endOfMonth(date));
+		setEndDate(date);
 	}
 
   const handleOnFilterDate = () => {
     const dates = {
-      from: format(startDate, 'yyyy-MM-dd'),
-      to: format(endDate, 'yyyy-MM-dd')
+      from: format(startOfMonth(startDate), 'yyyy-MM-dd'),
+      to: format(endOfMonth(endDate), 'yyyy-MM-dd')
     }
     Inertia.get(route("dashboard"), dates, {
       preserveScroll: true,
@@ -124,8 +124,8 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
 		setInstpectionYear(newValue);
 	}, [inspectionYearPopover]);
 
-  const currentDateTbt = tbt?.tbtByYear?.[CURRENT_YEAR]?.[CURRENT_MONTH];
-  console.log(tbt);
+  const diffMonths = Math.abs(differenceInMonths(endDate, startDate)) + 1;
+  console.log(tbt, {from, to});
 	return (
 		<>
 			<Container maxWidth={themeStretch ? false : 'xl'}>
@@ -230,17 +230,17 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
 							data={[
 								{
 									title: "Total Days Work",
-									month: currentDateTbt?.totalManpower ? currentDateTbt.days.length : 0,
+									month: tbt?.analytics?.daysWork ? Math.round(tbt.analytics.daysWork / diffMonths) : 0,
 									itd: tbt?.analytics.daysWork || 0,
 								},
 								{
 									title: "Total Days w/o Work",
-									month: currentDateTbt?.totalManpower ? currentDateTbt.totalDays - currentDateTbt.days.length : 0,
+									month: tbt?.analytics?.daysWoWork ? Math.round(tbt.analytics.daysWoWork / diffMonths) : 0,
 									itd: tbt?.analytics.daysWoWork || 0,
 								},
 								{
 									title: "Total Work Location",
-									month: currentDateTbt?.totalManpower ? currentDateTbt.location.length : 0,
+									month: tbt?.analytics?.location ? Math.round(tbt.analytics.location / diffMonths) : 0,
 									itd: tbt?.analytics.location || 0,
 								},
 								{
@@ -248,11 +248,11 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
 									month: trainings?.totalHrsMonthCompleted || 0,
 									itd: trainings?.totalHrsCompleted || 0,
 								},
-								{
-									title: "Number of HSE Induction Completed",
-									month: trainings?.totalInductionMonthCompleted || 0,
-									itd: trainings?.totalInductionCompleted || 0,
-								},
+								// {
+								// 	title: "Number of HSE Induction Completed",
+								// 	month: trainings?.totalInductionMonthCompleted || 0,
+								// 	itd: trainings?.totalInductionCompleted || 0,
+								// },
 								{
 									title: "Number of HSE Enforcement Notices Issued",
 									month: 0,
@@ -445,7 +445,7 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
 
 					{/* Summary Open vs Close Observation */}
 					<Grid item xs={12} md={12} lg={5} order={{ md: 3, lg: 2 }}>
-						<Card sx={{ height: '100%', maxHeight: 600 }}>
+						<Card sx={{ height: '100%', maxHeight: 460 }}>
 							{isLoadingInspection || !inspections ? (
 								<>
 									<CardHeader title="Summary Open vs Close Observation" />
@@ -690,22 +690,22 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
 	);
 }
 
-function calculateItd ({ monthsObj, currMonth, currTotal }) {
-	const prevMonth = +currMonth - 1;
-	if (prevMonth in monthsObj) {
-		const month = monthsObj[prevMonth];
-		const total = {
-			totalManpower: currTotal.totalManpower + Math.round(month.totalManpower),
-			totalManhours: currTotal.totalManhours + Math.round(month.totalManhours),
-			daysWork: currTotal.daysWork + month.daysWork,
-			daysWoWork: currTotal.daysWoWork + month.daysWoWork,
-			location: new Set([...currTotal.location, ...month.location])
-		};
-		return calculateItd({ monthsObj, currMonth: prevMonth, currTotal: total });
-	} else {
-		return currTotal;
-	}
-}
+// function calculateItd ({ monthsObj, currMonth, currTotal }) {
+// 	const prevMonth = +currMonth - 1;
+// 	if (prevMonth in monthsObj) {
+// 		const month = monthsObj[prevMonth];
+// 		const total = {
+// 			totalManpower: currTotal.totalManpower + Math.round(month.totalManpower),
+// 			totalManhours: currTotal.totalManhours + Math.round(month.totalManhours),
+// 			daysWork: currTotal.daysWork + month.daysWork,
+// 			daysWoWork: currTotal.daysWoWork + month.daysWoWork,
+// 			location: new Set([...currTotal.location, ...month.location])
+// 		};
+// 		return calculateItd({ monthsObj, currMonth: prevMonth, currTotal: total });
+// 	} else {
+// 		return currTotal;
+// 	}
+// }
 
 // function monthDiff (dateFrom, dateTo) {
 // 	if (dateFrom && dateTo) {

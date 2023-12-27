@@ -14,7 +14,7 @@ class DashboardController extends Controller
     {		
 			if($request->from && $request->to) {
 				$from = new Carbon($request->from);
-				$to = (new Carbon($request->to))->endOfDay();
+				$to = (new Carbon($request->to))->hour(11)->minutes(59)->second(59);
 			}else {
 				$fromTbt = ToolboxTalk::select("date_created")->orderByDesc("date_created")->first();
 				$fromTbtStat = TbtStatistic::select("year")->orderByDesc("year")->first();
