@@ -124,7 +124,7 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
 		setInstpectionYear(newValue);
 	}, [inspectionYearPopover]);
 
-  const currentDateTbt = tbt?.tbtByYear?.[CURRENT_YEAR][CURRENT_MONTH];
+  const currentDateTbt = tbt?.tbtByYear?.[CURRENT_YEAR]?.[CURRENT_MONTH];
   console.log(tbt);
 	return (
 		<>
