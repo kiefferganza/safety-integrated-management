@@ -266,6 +266,7 @@ const InspectionListPage = ({ user, inspections }) => {
 	const canCreate = hasPermission("inspection_create");
 	const canEdit = hasPermission("inspection_edit");
 	const canDelete = hasPermission("inspection_delete");
+  console.log({dataFiltered, dataFilteredStatusAndType})
 	return (
 		<>
 			<Head>
@@ -440,11 +441,11 @@ const InspectionListPage = ({ user, inspections }) => {
 						<TableSelectedAction
 							dense={dense}
 							numSelected={selected.length}
-							rowCount={dataFiltered.length}
+							rowCount={(filterType !== 'all' || filterStatus !== '' ? dataFilteredStatusAndType : dataFiltered).length}
 							onSelectAllRows={(checked) =>
 								onSelectAllRows(
 									checked,
-									dataFiltered.map((row) => row.id)
+									(filterType !== 'all' || filterStatus !== '' ? dataFilteredStatusAndType : dataFiltered).map((row) => row.id)
 								)
 							}
 							action={
@@ -477,7 +478,7 @@ const InspectionListPage = ({ user, inspections }) => {
 									onSelectAllRows={(checked) =>
 										onSelectAllRows(
 											checked,
-											dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.id)
+											(filterType !== 'all' || filterStatus !== '' ? dataFilteredStatusAndType : dataFiltered).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.id)
 										)
 									}
 									sx={{
