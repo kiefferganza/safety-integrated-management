@@ -172,7 +172,7 @@ class InspectionController extends Controller
 			// $inspections->each(function ($item) {
 			// 	$item->report_list()->each->delete();
 			// });
-			Inspection::whereIn("inspection_id", $request->ids)->update(['is_deleted', 1]);
+			Inspection::whereIn("inspection_id", $request->ids)->update(['is_deleted' => 1]);
 		}
 
 		return redirect()->back()
