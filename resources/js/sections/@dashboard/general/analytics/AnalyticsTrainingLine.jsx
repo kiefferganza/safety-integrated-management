@@ -107,6 +107,26 @@ function AnalyticsTrainingLine() {
                             series={[{ ...trainingData?.completedTrainings }]}
                             options={{
                                 ...chartOptions,
+                                dataLabels: {
+                                  ...chartOptions.dataLabels,
+                                  background: {
+                                    enabled: true,
+                                    foreColor: theme.palette.info.main,
+                                    padding: 4,
+                                    borderRadius: 2,
+                                    borderWidth: 1,
+                                    borderColor: '#fff',
+                                    opacity: 0.8,
+                                    dropShadow: {
+                                      enabled: false,
+                                      top: 1,
+                                      left: 1,
+                                      blur: 1,
+                                      color: '#000',
+                                      opacity: 0.45
+                                    }
+                                  },
+                                },
                                 colors: [theme.palette.info.main],
                             }}
                             width="100%"
@@ -161,6 +181,26 @@ function AnalyticsTrainingLine() {
                             ]}
                             options={{
                                 ...chartOptions,
+                                dataLabels: {
+                                  ...chartOptions.dataLabels,
+                                  background: {
+                                    enabled: true,
+                                    foreColor: [theme.palette.warning.light],
+                                    padding: 4,
+                                    borderRadius: 2,
+                                    borderWidth: 1,
+                                    borderColor: '#fff',
+                                    opacity: 0.8,
+                                    dropShadow: {
+                                      enabled: false,
+                                      top: 1,
+                                      left: 1,
+                                      blur: 1,
+                                      color: '#000',
+                                      opacity: 0.45
+                                    }
+                                  },
+                                },
                                 colors: [theme.palette.warning.light]
                             }}
                             width="100%"

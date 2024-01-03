@@ -560,6 +560,10 @@ const InspectionNewForm = ({ projectDetails }) => {
 		if (result.isConfirmed) {
 			const sectionEData = data.sectionE.filter(sec => sec?.title);
 			data.sectionE = sectionEData;
+
+      const sections = [...data.sectionE, ...data.sectionA, ...data.sectionB, ...data.sectionC, ...data.sectionC_B, ...data.sectionD]
+      data.autoClose = !sections.some(sec => sec?.score === "2" || sec?.score === "3");
+      
 			Inertia.post(route('inspection.management.store'), data, {
 				preserveState: true,
 				onStart () {

@@ -24,9 +24,9 @@ class InspectionService {
 			"inspected_time" => ["string", "required"],
 			"date_due" => ["string", "required"],
 			"reviewer_id" => ["string", "required"],
-			"verifier_id" => ["string", "required"]
+			"verifier_id" => ["string", "required"],
+      "autoClose" => ["boolean", "required"]
 		]);
-		
 		// TODO: GENERATE FORM NUMBER ON CREATING AND UPDATE ALL FORM NUMBER
 		$inspection = new Inspection;
 		$inspection->project_code = $request->project_code;
@@ -43,7 +43,7 @@ class InspectionService {
 		$inspection->date_issued = $request->date_issued;
 		$inspection->date_due = $request->date_due;
 		$inspection->employee_id = auth()->user()->emp_id;
-		$inspection->status = $request->status;
+		$inspection->status = $request?->autoClose ? 3 : $request->status;
 		$inspection->revision_no = 0;
 		$inspection->is_deleted = 0;
 		

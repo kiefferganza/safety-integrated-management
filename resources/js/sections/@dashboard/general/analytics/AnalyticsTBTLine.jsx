@@ -21,23 +21,38 @@ const AnalyticsTBTLine = ({ title, subheader = "", chart, action, height = 364 }
 				// borderRadiusApplication: 'end',
 				dataLabels: {
 					position: 'top',
+          color: (val, ctx) => {
+            console.log({val, ctx})
+            return "#000"
+          },
 				}
 			},
 		},
 		dataLabels: {
 			enabled: true,
-			dropShadow: {
-				enabled: true,
-				blur: 1,
-				opacity: 0.25,
-			},
 			formatter: function (val) {
 				return val.toLocaleString("en-US");
 			},
-			// offsetX: 0,
 			style: {
-				fontSize: '9px'
-			}
+				fontSize: '9px',
+			},
+      background: {
+        enabled: true,
+        foreColor: colors[0],
+        padding: 4,
+        borderRadius: 2,
+        borderWidth: 1,
+        borderColor: '#fff',
+        opacity: 0.8,
+        dropShadow: {
+          enabled: false,
+          top: 1,
+          left: 1,
+          blur: 1,
+          color: '#000',
+          opacity: 0.45
+        }
+      },
 		},
 		xaxis: {
       show: true,
