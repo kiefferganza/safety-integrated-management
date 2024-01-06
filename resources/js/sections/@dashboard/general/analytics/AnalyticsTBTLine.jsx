@@ -38,7 +38,7 @@ const AnalyticsTBTLine = ({ title, subheader = "", chart, action, height = 364 }
 			},
       background: {
         enabled: true,
-        foreColor: colors[0],
+        foreColor: colors[1],
         padding: 4,
         borderRadius: 2,
         borderWidth: 1,

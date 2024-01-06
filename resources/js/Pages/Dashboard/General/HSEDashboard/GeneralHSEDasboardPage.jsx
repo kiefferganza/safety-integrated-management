@@ -287,7 +287,7 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
                               data: Object.values(tbt.monthRolling.manpower),
                               name: 'Manpower'
                             }] : [],
-                            colors: [theme.palette.primary.main],
+                            colors: [theme.palette.primary.main, theme.palette.primary.dark],
                           }}
                         />
                       </Box>
@@ -344,7 +344,7 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
                           data: Object.values(tbt.monthRolling.manhours),
                           name: 'Manhour'
                         }] : [],
-												colors: [theme.palette.info.main],
+												colors: [theme.palette.info.main, theme.palette.info.dark],
 											}}
 										/>
 									</Box>
@@ -372,7 +372,7 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
                         data: Object.values(tbt.monthRolling.safemanhours),
                         name: 'Safe Manhour'
                       }] : [],
-                      colors: [theme.palette.error.main],
+                      colors: [theme.palette.error.main, theme.palette.error.dark],
                     }}
                   />
                 </Box>

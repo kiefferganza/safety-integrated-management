@@ -111,7 +111,7 @@ function AnalyticsTrainingLine() {
                                   ...chartOptions.dataLabels,
                                   background: {
                                     enabled: true,
-                                    foreColor: theme.palette.info.main,
+                                    foreColor: theme.palette.info.dark,
                                     padding: 4,
                                     borderRadius: 2,
                                     borderWidth: 1,
@@ -185,7 +185,7 @@ function AnalyticsTrainingLine() {
                                   ...chartOptions.dataLabels,
                                   background: {
                                     enabled: true,
-                                    foreColor: [theme.palette.warning.light],
+                                    foreColor: [theme.palette.warning.dark],
                                     padding: 4,
                                     borderRadius: 2,
                                     borderWidth: 1,
