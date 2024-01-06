@@ -54,10 +54,9 @@ const TABLE_HEAD = [
     { id: "cms", label: "CMS Number", align: "left" },
     { id: "title", label: "Title", align: "left" },
     { id: "traninees_count", label: "Participants", align: "center" },
-    { id: "training_date", label: "Training", align: "left" },
-    { id: "date_expired", label: "Expiration", align: "left" },
-    { id: "has_attachment", label: "Attachment", align: "left" },
+    { id: "training_date", label: "Training Date", align: "left" },
     { id: "year_taken", label: "Year Taken", align: "left" },
+    { id: "has_attachment", label: "Attachment", align: "left" },
     { id: "" },
 ];
 

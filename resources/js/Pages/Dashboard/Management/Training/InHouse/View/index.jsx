@@ -10,12 +10,9 @@ const TrainingDetails = lazy(() =>
 );
 import { Head } from "@inertiajs/inertia-react";
 import { PATH_DASHBOARD } from "@/routes/paths";
-
-import { getTrainingStatus } from "@/utils/formatDates";
-import { capitalCase } from "change-case";
 import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 
-const index = ({ training, module }) => {
+const index = ({ training, rolloutDate }) => {
     const { themeStretch } = useSettingsContext();
     const [trainingData, setTrainingData] = useState({});
 
@@ -49,11 +46,7 @@ const index = ({ training, module }) => {
                               : ""
                       }${training?.sequence_no}`
                     : null,
-                trainees: joinTrainees(),
-                status: getTrainingStatus(
-                    training.training_date,
-                    training.date_expired
-                ),
+                trainees: joinTrainees()
             });
         }
     }, []);
@@ -61,7 +54,7 @@ const index = ({ training, module }) => {
     return (
         <>
             <Head>
-                <title>{capitalCase(module)}</title>
+                <title>In House</title>
             </Head>
             <Suspense fallback={<LoadingScreen />}>
                 <DashboardLayout>
@@ -85,7 +78,7 @@ const index = ({ training, module }) => {
                             ]}
                         />
 
-                        <TrainingDetails training={trainingData} />
+                        <TrainingDetails training={trainingData} rolloutDate={rolloutDate} />
                     </Container>
                 </DashboardLayout>
             </Suspense>

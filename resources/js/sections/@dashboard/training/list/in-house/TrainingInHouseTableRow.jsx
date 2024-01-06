@@ -9,15 +9,15 @@ import {
     TableCell,
     IconButton,
     Divider,
+    Link as MuiLink
 } from "@mui/material";
-// utils
-import { fDate } from "@/utils/formatTime";
 // components
 import Label from "@/Components/label";
 import Iconify from "@/Components/iconify";
 import MenuPopover from "@/Components/menu-popover";
 import ConfirmDialog from "@/Components/confirm-dialog";
 import { Link, usePage } from "@inertiajs/inertia-react";
+import { fDate } from "@/utils/formatTime";
 
 // ----------------------------------------------------------------------
 
@@ -34,7 +34,6 @@ export default function TrainingInHouseTableRow({
     selected,
     onSelectRow,
     onDeleteRow,
-    url,
     canEdit,
     canDelete,
 }) {
@@ -46,9 +45,8 @@ export default function TrainingInHouseTableRow({
         course,
         title,
         trainees_count,
-        training_date,
-        date_expired,
         completed,
+        training_date
     } = row;
 
     const [openConfirm, setOpenConfirm] = useState(false);
@@ -76,6 +74,7 @@ export default function TrainingInHouseTableRow({
     const canDeleteFinal = canDelete
         ? user.emp_id === 1 || row.employee_id === user.emp_id
         : false;
+
     return (
         <>
             <TableRow hover selected={selected}>
@@ -89,21 +88,34 @@ export default function TrainingInHouseTableRow({
                     {cms}
                 </TableCell>
 
-                <TableCell sx={{ whiteSpace: "nowrap" }}>
-                    {course ? course.course_name : title}
-                </TableCell>
+                {course ? (
+                  <TableCell sx={{ whiteSpace: "nowrap" }}>
+                    <MuiLink href={course?.attached_file?.url} target="_blank">
+                      {course.course_name}
+                    </MuiLink>
+                  </TableCell>
+                ) : (
+                  <TableCell sx={{ whiteSpace: "nowrap" }}>
+                    {title}
+                  </TableCell>
+                )}
 
                 <TableCell sx={{ whiteSpace: "nowrap" }} align="center">
                     {trainees_count}
                 </TableCell>
 
                 <TableCell sx={{ whiteSpace: "nowrap" }}>
-                    {fDate(training_date)}
+                  {training_date  ? fDate(training_date) : ""}
                 </TableCell>
 
                 <TableCell sx={{ whiteSpace: "nowrap" }}>
-                    {fDate(date_expired)}
+                    {course?.last_used && (
+                        <Label variant="soft" color={"info"}>
+                            {course.last_used}
+                        </Label>
+                    )}
                 </TableCell>
+
 
                 <TableCell sx={{ whiteSpace: "nowrap" }}>
                     <Label
@@ -112,14 +124,6 @@ export default function TrainingInHouseTableRow({
                     >
                         {completed ? "Yes" : "No"}
                     </Label>
-                </TableCell>
-
-                <TableCell sx={{ whiteSpace: "nowrap" }}>
-                    {course?.last_used && (
-                        <Label variant="soft" color={"success"}>
-                            {course.last_used}
-                        </Label>
-                    )}
                 </TableCell>
 
                 <TableCell>

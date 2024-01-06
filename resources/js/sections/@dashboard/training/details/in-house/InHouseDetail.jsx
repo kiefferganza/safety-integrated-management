@@ -24,7 +24,6 @@ import Image from "@/Components/image";
 import Scrollbar from "@/Components/scrollbar";
 //
 import TrainingToolbar from "./TrainingToolbar";
-import { getTrainingStatus } from "@/utils/formatDates";
 import { fileFormat, fileThumb } from "@/Components/file-thumbnail";
 
 // ----------------------------------------------------------------------
@@ -33,16 +32,14 @@ InHouseDetail.propTypes = {
     training: PropTypes.object,
 };
 
-export default function InHouseDetail({ training }) {
+export default function InHouseDetail({ training, rolloutDate }) {
     if (!training) {
         return null;
     }
 
-    training.status = getTrainingStatus(training.date_expired || new Date());
-
     return (
         <>
-            <TrainingToolbar training={training} module="In House" />
+            <TrainingToolbar training={training} module="In House" rolloutDate={rolloutDate} />
 
             <Card sx={{ pt: { xs: 3, md: 5 }, px: { xs: 3, md: 8 } }}>
                 <Box sx={{ mb: 2 }}>
@@ -93,11 +90,10 @@ export default function InHouseDetail({ training }) {
                                 fontWeight={700}
                                 textAlign="center"
                             >
-                                Revision:
+                                
                             </Typography>
                         </Box>
                         <Box>
-                            <Typography variant="body1">{0}</Typography>
                         </Box>
                     </Stack>
 
@@ -108,7 +104,7 @@ export default function InHouseDetail({ training }) {
                             </Typography>
                         </Box>
                         <Box>
-                            <Typography></Typography>
+                            <Typography>{rolloutDate ? (new Date(rolloutDate)).toLocaleDateString() : ''}</Typography>
                         </Box>
                     </Stack>
                 </Stack>
@@ -192,26 +188,6 @@ export default function InHouseDetail({ training }) {
                                 </Typography>
                             </Box>
                         </Box>
-                        {training?.training_center && (
-                            <Box sx={{ mb: 1 }}>
-                                <Box>
-                                    <Typography
-                                        sx={{ mb: 1, fontWeight: 700 }}
-                                        variant="body2"
-                                    >
-                                        Training Center
-                                    </Typography>
-                                </Box>
-                                <Box>
-                                    <Typography
-                                        variant="body1"
-                                        sx={{ color: "text.secondary" }}
-                                    >
-                                        {training?.training_center || "N/A"}
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        )}
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <Box sx={{ mb: 1 }}>
@@ -230,27 +206,6 @@ export default function InHouseDetail({ training }) {
                                 >
                                     {training?.training_date
                                         ? fDate(training.training_date)
-                                        : ""}
-                                </Typography>
-                            </Box>
-                        </Box>
-
-                        <Box sx={{ mb: 1 }}>
-                            <Box>
-                                <Typography
-                                    sx={{ mb: 1, fontWeight: 700 }}
-                                    variant="body2"
-                                >
-                                    Date Expired
-                                </Typography>
-                            </Box>
-                            <Box>
-                                <Typography
-                                    variant="body1"
-                                    sx={{ color: "text.secondary" }}
-                                >
-                                    {training?.date_expired
-                                        ? fDate(training.date_expired)
                                         : ""}
                                 </Typography>
                             </Box>
@@ -287,9 +242,9 @@ export default function InHouseDetail({ training }) {
                             <Box>
                                 <Typography
                                     variant="body1"
-                                    color={training?.status?.rawColor}
+                                    color={training?.status === 'completed' ? '#86E8AB' : '#FFAC82'}
                                 >
-                                    {training?.status?.text}
+                                    {training?.status === 'completed' ? 'Completed' : 'Incomplete'}
                                 </Typography>
                             </Box>
                         </Box>

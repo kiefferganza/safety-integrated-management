@@ -26,6 +26,8 @@ import { MultiFilePreview, Upload } from "@/Components/upload";
 
 // ----------------------------------------------------------------------
 
+const CURRENT_YEAR = (new Date()).getFullYear();
+
 const TrainingNewEditDetails = ({
     currentTraining,
     isEdit,
@@ -133,7 +135,7 @@ const TrainingNewEditDetails = ({
             shouldDirty: true,
         });
     };
-
+    
     return (
         <Box sx={{ p: 3 }}>
             <Stack
@@ -193,7 +195,7 @@ const TrainingNewEditDetails = ({
                                 label: c.course_name,
                                 value: c.id,
                                 disabled:
-                                    c.last_used !== null &&
+                                    (c.last_used !== null && c.last_used == CURRENT_YEAR) &&
                                     user.user_type !== 0,
                             }))}
                         />

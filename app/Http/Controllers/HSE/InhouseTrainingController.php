@@ -12,6 +12,7 @@ use App\Models\TrainingTrainees;
 use App\Services\TrainingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class InhouseTrainingController extends Controller
@@ -31,6 +32,18 @@ class InhouseTrainingController extends Controller
 
 
   public function show(Training $training) {
+    $user = auth()->user();
+    $rollout_date = Cache::get("training_rollout_date:" . $user->subscriber_id);
+
+    if(!$rollout_date) {
+      $rollout_date = Training::select('date_created')->orderBy('date_created')->first();
+      if($rollout_date) {
+        Cache::put("training_rollout_date:" . $user->subscriber_id, $rollout_date);
+      }
+    }
+
+    $training = $training->load(["trainees" => fn($query) => $query->with("position")]);
+    $training->attachment = $training->attachment;
 
 		return Inertia::render("Dashboard/Management/Training/InHouse/View/index", [
 			"training" => $training->load(["trainees" => fn($query) => $query->with("position")]),
@@ -41,8 +54,8 @@ class InhouseTrainingController extends Controller
 				["tbl_employees.is_active", 0],
 			])
 			->get(),
-			"module" => "In House",
-			"url" => "in-house"
+			"url" => "in-house",
+      "rolloutDate" => $rollout_date->date_created
 		]);
   }
 

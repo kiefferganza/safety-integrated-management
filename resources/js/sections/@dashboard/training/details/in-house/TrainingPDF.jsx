@@ -19,7 +19,7 @@ TrainingPDF.propTypes = {
 
 const PER_PAGE = 10;
 
-export default function TrainingPDF({ page = "1/1", training, module }) {
+export default function TrainingPDF({ page = "1/1", training, module, rolloutDate }) {
     const pages = useMemo(() => {
         if (training?.trainees?.length > PER_PAGE) {
             const chunkSize = PER_PAGE;
@@ -107,7 +107,7 @@ export default function TrainingPDF({ page = "1/1", training, module }) {
                                 <Text style={styles.subtitle2}>
                                     Rollout Date:
                                 </Text>
-                                <Text></Text>
+                                <Text>{rolloutDate ? (new Date(rolloutDate)).toLocaleDateString() : ''}</Text>
                             </View>
                         </View>
                     </View>
@@ -179,24 +179,6 @@ export default function TrainingPDF({ page = "1/1", training, module }) {
                                     </Text>
                                 </View>
                             </View>
-
-                            {training.training_center && (
-                                <View style={{ flexDirection: "column" }}>
-                                    <Text style={styles.subtitle2}>
-                                        Training Center
-                                    </Text>
-                                    <View style={{ width: "100%" }}>
-                                        <Text
-                                            style={[
-                                                styles.underlineText,
-                                                styles.body1,
-                                            ]}
-                                        >
-                                            {training.training_center}
-                                        </Text>
-                                    </View>
-                                </View>
-                            )}
                         </View>
 
                         <View style={[styles.col6, { paddingLeft: 8 }]}>
@@ -218,28 +200,6 @@ export default function TrainingPDF({ page = "1/1", training, module }) {
                                                   )
                                               )
                                             : ""}
-                                    </Text>
-                                </View>
-                            </View>
-
-                            <View style={{ flexDirection: "column" }}>
-                                <Text style={styles.subtitle2}>
-                                    Date Expired
-                                </Text>
-                                <View style={{ width: "100%" }}>
-                                    <Text
-                                        style={[
-                                            styles.underlineText,
-                                            styles.body1,
-                                        ]}
-                                    >
-                                        {training?.date_expired
-                                            ? fDate(
-                                                  new Date(
-                                                      training.date_expired
-                                                  )
-                                              )
-                                            : null}
                                     </Text>
                                 </View>
                             </View>
@@ -268,13 +228,12 @@ export default function TrainingPDF({ page = "1/1", training, module }) {
                                             styles.underlineText,
                                             styles.body1,
                                             {
-                                                color: training?.status
-                                                    ?.rawColor,
+                                                color: training?.status === 'completed' ? '#86E8AB' : '#FFAC82',
                                                 fontWeight: 700,
                                             },
                                         ]}
                                     >
-                                        {training?.status?.text}
+                                        {training?.status === 'completed' ? 'Completed' : 'Incomplete'}
                                     </Text>
                                 </View>
                             </View>
