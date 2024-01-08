@@ -9,7 +9,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 // components
-import { RHFMuiSelect, RHFSelect, RHFTextField } from '@/Components/hook-form';
+import { RHFMuiMultiSelect, RHFMuiSelect, RHFSelect, RHFTextField } from '@/Components/hook-form';
 import { Upload } from "@/Components/upload";
 import useResponsive from '@/hooks/useResponsive';
 import Scrollbar from '@/Components/scrollbar';
@@ -135,11 +135,11 @@ const ToolboxTalkDetails = ({ isEdit, participants, sequences, projectDetails = 
 
 							<RHFTextField name="title" label="Title" fullWidth />
 
-							<RHFMuiSelect
+							<RHFMuiMultiSelect
 								label="Contract No."
 								name="contract_no"
 								fullWidth
-								options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
+								options={projectDetails['Contract No.'] ? [...projectDetails['Contract No.'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 							/>
 
 

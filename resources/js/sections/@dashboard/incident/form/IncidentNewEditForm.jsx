@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/inertia-react';
-import { identity, pickBy } from "lodash";
 // form
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';

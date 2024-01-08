@@ -11,7 +11,7 @@ const { Autocomplete, Box, Button, Dialog, DialogContent, DialogTitle, Divider, 
 const { MobileDatePicker } = await import('@mui/x-date-pickers/MobileDatePicker');
 // Components
 import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
-import { RHFMuiSelect, RHFTextField } from "@/Components/hook-form";
+import { RHFMuiMultiSelect, RHFMuiSelect, RHFTextField } from "@/Components/hook-form";
 import FormProvider from "@/Components/hook-form/FormProvider";
 import Scrollbar from "@/Components/scrollbar/Scrollbar";
 import Image from "@/Components/image/Image";
@@ -240,11 +240,11 @@ export const NewStoreReport = ({ open, onClose, stores, employees, sequence_no, 
 						<Stack alignItems="flex-end" spacing={2}>
 							<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
 
-								<RHFMuiSelect
+								<RHFMuiMultiSelect
 									label="Contract No."
 									name="contract_no"
 									fullWidth
-									options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
+									options={projectDetails['Contract No.'] ? [...projectDetails['Contract No.'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 								/>
 
 								<RHFMuiSelect

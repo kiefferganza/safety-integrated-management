@@ -5,7 +5,7 @@ import { useFormContext } from 'react-hook-form';
 // @mui
 import { Box, Stack, Button, Divider, Typography, TextField, Autocomplete, FormHelperText, MenuItem } from '@mui/material';
 // components
-import { RHFAutocomplete, RHFMuiSelect, RHFTextField } from '@/Components/hook-form';
+import { RHFAutocomplete, RHFMuiMultiSelect, RHFMuiSelect, RHFTextField } from '@/Components/hook-form';
 import DateRangePicker, { useDateRangePicker } from '@/Components/date-range-picker';
 import Iconify from '@/Components/iconify';
 import TrainingEmployeeDialog from './TrainingEmployeeDialog';
@@ -138,11 +138,11 @@ const TrainingNewEditDetails = ({ currentTraining, isEdit, projectDetails }) => 
 
 						<RHFMuiSelect name="title" label="Course Title" fullWidth options={courses.map(c => ({ label: c.course_name, value: c.course_name }))} />
 
-						<RHFMuiSelect
+						<RHFMuiMultiSelect
 							label="Contract No."
 							name="contract_no"
 							fullWidth
-							options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
+							options={projectDetails['Contract No.'] ? [...projectDetails['Contract No.'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 						/>
 
 						<RHFMuiSelect

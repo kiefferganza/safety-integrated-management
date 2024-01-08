@@ -1,4 +1,4 @@
-import { RHFMuiSelect, RHFTextField } from '@/Components/hook-form'
+import { RHFMuiMultiSelect, RHFMuiSelect, RHFTextField } from '@/Components/hook-form'
 import { Autocomplete, Box, Chip, Divider, Stack, TextField, Typography } from '@mui/material'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -105,11 +105,11 @@ const InspectionForm = ({ personel, projectDetails }) => {
 
 				<Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ width: 1 }}>
 
-					<RHFMuiSelect
+					<RHFMuiMultiSelect
 						label="Contract No."
 						name="contract_no"
 						fullWidth
-						options={projectDetails['Contract No.'] ? [{ label: '', value: '' }, ...projectDetails['Contract No.'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
+						options={projectDetails['Contract No.'] ? [...projectDetails['Contract No.'].map((d) => ({ label: d.value + (d.name ? ` (${d.name})` : ""), value: d.value }))] : []}
 					/>
 
 					<RHFTextField disabled name="inspected_by" label="Inspected By" />

@@ -33,7 +33,7 @@ const { MobileDatePicker } = await import(
 import DateRangePicker, {
     useDateRangePicker,
 } from "@/Components/date-range-picker";
-import { RHFMuiSelect, RHFTextField } from "@/Components/hook-form";
+import { RHFMuiMultiSelect, RHFMuiSelect, RHFTextField } from "@/Components/hook-form";
 import FormProvider from "@/Components/hook-form/FormProvider";
 import Scrollbar from "@/Components/scrollbar/Scrollbar";
 import Image from "@/Components/image/Image";
@@ -462,14 +462,13 @@ export const NewPpeReport = ({
                                     spacing={2}
                                     sx={{ width: 1 }}
                                 >
-                                    <RHFMuiSelect
+                                    <RHFMuiMultiSelect
                                         label="Contract No."
                                         name="contract_no"
                                         fullWidth
                                         options={
                                             projectDetails["Contract No."]
                                                 ? [
-                                                      { label: "", value: "" },
                                                       ...projectDetails[
                                                           "Contract No."
                                                       ].map((d) => ({
