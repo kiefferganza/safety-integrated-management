@@ -15,7 +15,7 @@ TrainingToolbar.propTypes = {
 	module: PropTypes.string
 };
 
-export default function TrainingToolbar ({ training, module }) {
+export default function TrainingToolbar ({ training, module, rolloutDate }) {
 	const [open, setOpen] = useState(false);
 
 	const handleOpen = () => {
@@ -53,7 +53,7 @@ export default function TrainingToolbar ({ training, module }) {
 					</Tooltip>
 
 					<PDFDownloadLink
-						document={<TrainingPDF training={training} module={module} />}
+						document={<TrainingPDF rolloutDate={rolloutDate} training={training} module={module} />}
 						fileName={training?.cms || module || 'training'}
 						style={{ textDecoration: 'none' }}
 					>
@@ -104,7 +104,7 @@ export default function TrainingToolbar ({ training, module }) {
 
 					<Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
 						<PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-							<TrainingPDF training={training} module={module} />
+							<TrainingPDF rolloutDate={rolloutDate} training={training} module={module} />
 						</PDFViewer>
 					</Box>
 				</Box>

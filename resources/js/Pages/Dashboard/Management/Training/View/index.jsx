@@ -13,7 +13,7 @@ import { getTrainingStatus } from "@/utils/formatDates";
 import { capitalCase } from "change-case";
 import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 
-const index = ({ training, module, url }) => {
+const index = ({ training, module, url, rolloutDate }) => {
 	const { themeStretch } = useSettingsContext();
 	const [trainingData, setTrainingData] = useState({});
 
@@ -65,7 +65,7 @@ const index = ({ training, module, url }) => {
 							]}
 						/>
 
-						<TrainingDetails training={trainingData} module={module} />
+						<TrainingDetails training={trainingData} module={module} rolloutDate={rolloutDate} />
 					</Container>
 				</DashboardLayout>
 			</Suspense>

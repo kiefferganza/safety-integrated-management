@@ -37,7 +37,7 @@ TrainingDetails.propTypes = {
 	module: PropTypes.string,
 };
 
-export default function TrainingDetails ({ training, trainings = [], module, url }) {
+export default function TrainingDetails ({ training, trainings = [], module, url, rolloutDate }) {
 	if (!training || !trainings) {
 		return null;
 	}
@@ -48,7 +48,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 
 	return (
 		<>
-			<TrainingToolbar training={training} module={module} url={url} />
+			<TrainingToolbar training={training} module={module} url={url} rolloutDate={rolloutDate} />
 
 			<Card sx={{ pt: { xs: 3, md: 5 }, px: { xs: 3, md: 8 } }}>
 				<Box sx={{ mb: 2 }}>
@@ -88,7 +88,7 @@ export default function TrainingDetails ({ training, trainings = [], module, url
 							<Typography variant="body2" fontWeight={700}>Rollout Date:</Typography>
 						</Box>
 						<Box>
-							<Typography></Typography>
+							<Typography>{rolloutDate ? fDate(rolloutDate) : ''}</Typography>
 						</Box>
 					</Stack>
 				</Stack>

@@ -20,7 +20,7 @@ TrainingPDF.propTypes = {
 
 const PER_PAGE = 10;
 
-export default function TrainingPDF ({ page = "1/1", training, module }) {
+export default function TrainingPDF ({ page = "1/1", training, module, rolloutDate }) {
 
 	const getTotalAmmount = training?.external_details && training?.type === 3 ? training?.trainees?.length * (parseInt(training?.external_details?.course_price)) : 0;
 
@@ -61,7 +61,7 @@ export default function TrainingPDF ({ page = "1/1", training, module }) {
 							</View>
 							<View style={[styles.col3, { alignItems: 'center', flexDirection: 'column' }]}>
 								<Text style={styles.subtitle2}>Rollout Date:</Text>
-								<Text></Text>
+								<Text>{rolloutDate ? fDate(rolloutDate) : ""}</Text>
 							</View>
 						</View>
 					</View>

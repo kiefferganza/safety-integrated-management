@@ -20,6 +20,7 @@ use App\Services\TrainingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -442,6 +443,16 @@ class TrainingController extends Controller
 
 		$training->training_files = $trainingService->transformFiles($training->training_files);
 
+    $user = auth()->user();
+    $rollout_date = Cache::get("training_inhouse_rollout_date:" . $user->subscriber_id);
+
+    if(!$rollout_date) {
+      $rollout_date = Training::select('date_created')->where('type', '!=', 1)->orderBy('date_created')->first();
+      if($rollout_date) {
+        Cache::put("training_rollout_date:" . $user->subscriber_id, $rollout_date);
+      }
+    }
+
 		return Inertia::render("Dashboard/Management/Training/View/index", [
 			"training" => $training,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
@@ -452,7 +463,8 @@ class TrainingController extends Controller
 			])
 			->get(),
 			"module" => "Client",
-			"url" => "client"
+			"url" => "client",
+      "rolloutDate" => $rollout_date->date_created
 		]);
 	}
 
@@ -475,6 +487,16 @@ class TrainingController extends Controller
 
 		$training->training_files = $trainingService->transformFiles($training->training_files);
 
+    $user = auth()->user();
+    $rollout_date = Cache::get("training_inhouse_rollout_date:" . $user->subscriber_id);
+
+    if(!$rollout_date) {
+      $rollout_date = Training::select('date_created')->where('type', '!=', 1)->orderBy('date_created')->first();
+      if($rollout_date) {
+        Cache::put("training_rollout_date:" . $user->subscriber_id, $rollout_date);
+      }
+    }
+
 		return Inertia::render("Dashboard/Management/Training/View/index", [
 			"training" => $training,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
@@ -485,7 +507,8 @@ class TrainingController extends Controller
 			])
 			->get(),
 			"module" => "Third Party",
-			"url" => "thirdParty"
+			"url" => "thirdParty",
+      "rolloutDate" => $rollout_date->date_created
 		]);
 	}
 
@@ -499,6 +522,16 @@ class TrainingController extends Controller
 
 		$training->training_files = $trainingService->transformFiles($training->training_files);
 
+    $user = auth()->user();
+    $rollout_date = Cache::get("training_inhouse_rollout_date:" . $user->subscriber_id);
+
+    if(!$rollout_date) {
+      $rollout_date = Training::select('date_created')->where('type', '!=', 1)->orderBy('date_created')->first();
+      if($rollout_date) {
+        Cache::put("training_rollout_date:" . $user->subscriber_id, $rollout_date);
+      }
+    }
+
 		return Inertia::render("Dashboard/Management/Training/View/index", [
 			"training" => $training,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
@@ -509,7 +542,8 @@ class TrainingController extends Controller
 			])
 			->get(),
 			"module" => "Induction",
-			"url" => "induction"
+			"url" => "induction",
+      "rolloutDate" => $rollout_date->date_created
 		]);
 	}
 

@@ -33,12 +33,12 @@ class InhouseTrainingController extends Controller
 
   public function show(Training $training) {
     $user = auth()->user();
-    $rollout_date = Cache::get("training_rollout_date:" . $user->subscriber_id);
+    $rollout_date = Cache::get("training_inhouse_rollout_date:" . $user->subscriber_id);
 
     if(!$rollout_date) {
-      $rollout_date = Training::select('date_created')->orderBy('date_created')->first();
+      $rollout_date = Training::select('date_created')->where('type', 1)->orderBy('date_created')->first();
       if($rollout_date) {
-        Cache::put("training_rollout_date:" . $user->subscriber_id, $rollout_date);
+        Cache::put("training_inhouse_rollout_date:" . $user->subscriber_id, $rollout_date);
       }
     }
 
