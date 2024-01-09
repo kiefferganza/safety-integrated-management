@@ -22,7 +22,7 @@ class DashboardController extends Controller
 	public function toolboxtalks(Request $request) {
 		// $dashboardService = new DashboardService;
 		$from = new Carbon($request->from);
-		$to = (new Carbon($request->to))->endOfDay();
+		$to = (new Carbon($request->to));
 
     $tbtService = new ToolboxTalkService;
 
@@ -35,7 +35,7 @@ class DashboardController extends Controller
 	public function tbtStatistics(Request $request) {
 		$dashboardService = new DashboardService;
 		$from = new Carbon($request->from);
-		$to = (new Carbon($request->to))->endOfDay();
+		$to = (new Carbon($request->to));
 
 		return response()->json($dashboardService->getTbtStatisticByDate($from, $to));
 	}

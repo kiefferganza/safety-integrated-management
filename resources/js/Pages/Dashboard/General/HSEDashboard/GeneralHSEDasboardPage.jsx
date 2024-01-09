@@ -76,8 +76,8 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
 
   const handleOnFilterDate = () => {
     const dates = {
-      from: format(startOfMonth(startDate), 'yyyy-MM-dd'),
-      to: format(endOfMonth(endDate), 'yyyy-MM-dd')
+      from: format(startDate, 'yyyy-MM-dd'),
+      to: format(endDate, 'yyyy-MM-dd')
     }
     Inertia.get(route("dashboard"), dates, {
       preserveScroll: true,
@@ -666,7 +666,7 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
 				))}
 			</CustomPopover>
       <DateRangePicker
-				variant="calendar"
+				// variant="calendar"
 				title="Choose Toolbox Talk date"
 				startDate={startDate}
 				endDate={endDate}
@@ -678,12 +678,12 @@ export default function GeneralHSEDasboardPage ({ user, tbt, from, to, isLoading
 				isError={isError}
 				onApply={handleOnFilterDate}
 				StartDateProps={{
-					views: ['year', 'month'],
-					openTo: "year"
+					views: ['year', 'month', 'day'],
+					// openTo: "day"
 				}}
 				EndDateProps={{
-					views: ['year', 'month'],
-					openTo: "year"
+					views: ['year', 'month', 'day'],
+					// openTo: "day"
 				}}
 			/>
 		</>
