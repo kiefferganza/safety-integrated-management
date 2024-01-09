@@ -190,7 +190,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			// Show
 			Route::get('/client/{training}', [TrainingController::class, 'show_client'])->name('client.show');
 			// Route::get('/induction/{training}', [TrainingController::class, 'show_induction'])->name('induction.show');
-			// Route::get('/in-house/{training}', [TrainingController::class, 'show_in_house'])->name('in_house.show');
+			Route::get('/in-house/{training}', [TrainingController::class, 'show_in_house'])->name('in_house.show');
 			// Third Party / External
 			Route::get('/third-party/action/{training}', [TrainingController::class, 'external_action'])->name('external.external_action');
 			Route::get('/third-party/review/{training}', [TrainingController::class, 'external_review'])->name('external.external_review');
