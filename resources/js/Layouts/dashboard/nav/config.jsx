@@ -227,7 +227,12 @@ const navConfig = [
                     "training.management.in_house_edit",
                     "training.management.show_in_house",
                     "training.management.in_house_matrix",
-                    "training.management.external_matrix",
+                    "training.management.external_matrix", 
+                    "training.management.client.show",
+                    "training.management.external.external_action",
+                    "training.management.external.external_approve",
+                    "training.management.external.external_review",
+                    "training.management.external.edit",
                 ],
                 children: [
                     {
@@ -284,6 +289,9 @@ const navConfig = [
                             "training.management.edit",
                             "training.management.courses",
                             "training.management.external_matrix",
+                            "training.management.external.external_action",
+                            "training.management.external.external_approve",
+                            "training.management.external.external_review",
                         ],
                         children: [
                             {

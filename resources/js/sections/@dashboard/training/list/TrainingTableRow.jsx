@@ -44,8 +44,7 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 	const handleClosePopover = () => {
 		setOpenPopover(null);
 	};
-	const canEditFinal = canEdit ? (user.emp_id === 1 || row.employee_id === user.emp_id) : false;
-	const canDeleteFinal = canDelete ? (user.emp_id === 1 || row.employee_id === user.emp_id) : false;
+
 	return (
 		<>
 			<TableRow hover selected={selected}>
@@ -96,7 +95,7 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 					<Iconify icon="eva:eye-fill" />
 					View
 				</MenuItem>
-				{canEditFinal && (
+				{canEdit && (
 					<MenuItem
 						component={Link}
 						href={`/dashboard/training/${row.id}/edit`}
@@ -107,7 +106,7 @@ export default function TrainingTableRow ({ row, selected, onSelectRow, onDelete
 
 				)}
 
-				{canDeleteFinal && (
+				{canDelete && (
 					<>
 						<Divider sx={{ borderStyle: 'dashed' }} />
 						<MenuItem
