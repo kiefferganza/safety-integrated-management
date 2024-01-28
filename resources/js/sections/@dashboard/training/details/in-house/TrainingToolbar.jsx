@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 // @mui
 import {
@@ -16,6 +16,9 @@ import Iconify from "@/Components/iconify";
 //
 import TrainingPDF from "./TrainingPDF";
 import { Link } from "@inertiajs/inertia-react";
+import Chart, { useChart } from '@/Components/chart';
+import ApexCharts from "apexcharts";
+import Image from "@/Components/image/Image";
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +29,7 @@ TrainingToolbar.propTypes = {
 
 export default function TrainingToolbar({ training, module = "In House", rolloutDate }) {
     const [open, setOpen] = useState(false);
+    const [chartImg, setChartImg] = useState(null);
 
     const handleOpen = () => {
         setOpen(true);
@@ -34,8 +38,78 @@ export default function TrainingToolbar({ training, module = "In House", rollout
     const handleClose = () => {
         setOpen(false);
     };
+
+	const chartOptions = useChart({
+		plotOptions: {
+			bar: {
+				columnWidth: '80%',
+				dataLabels: {
+					position: 'top'
+				},
+			},
+		},
+		dataLabels: {
+			enabled: true,
+			// dropShadow: {
+			// 	enabled: true,
+			// 	blur: 1,
+			// 	opacity: 0.25,
+			// },
+			offsetY: 0,
+			offsetX: 0,
+			style: {
+				fontSize: '9px', // Customize the font size of data labels
+			},
+			value: true, // Display data labels for 0 values
+		},
+		xaxis: {
+			categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
+			labels: {
+				trim: true, // Enable label trimming
+				maxWidth: 16, // Set the maximum width for labels
+				maxHeight: 95,
+				show: true,
+				rotate: -75,
+				style: {
+					fontSize: '10px',
+				},
+				formatter: function (val) {
+					return val;
+				},
+			},
+		},
+		legend: {
+			showForZeroSeries: true
+		},
+		chart: {
+      id: "basic-chart",
+      events: {
+        updated: async function(ctx) {
+          const uri = await ctx?.dataURI();
+          setChartImg(uri.imgURI);
+        }
+      }
+		},
+	});
+
+  // useEffect(() => {
+  //   ApexCharts.exec("basic-chart", "dataURI").then(({ imgURI }) => {
+  //     // console.log(imgURI)
+  //     setChartImg(imgURI);
+  //   });
+  // }, [])
+
     return (
         <>
+          <Image src={chartImg} />
+          <Chart
+            type="bar"
+            series={[{
+              name: 'series-1',
+              data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
+            }]}
+            options={chartOptions}
+          />
             <Stack
                 spacing={2}
                 direction={{ xs: "column", sm: "row" }}
@@ -62,7 +136,7 @@ export default function TrainingToolbar({ training, module = "In House", rollout
                         </IconButton>
                     </Tooltip>
 
-                    <PDFDownloadLink
+                    {/* <PDFDownloadLink
                         document={
                             <TrainingPDF training={training} module={module} rolloutDate={rolloutDate} />
                         }
@@ -83,7 +157,7 @@ export default function TrainingToolbar({ training, module = "In House", rollout
                                 </IconButton>
                             </Tooltip>
                         )}
-                    </PDFDownloadLink>
+                    </PDFDownloadLink> */}
 
                     <Tooltip title="Print">
                         <IconButton onClick={handleOpen}>
@@ -130,13 +204,15 @@ export default function TrainingToolbar({ training, module = "In House", rollout
                     <Box
                         sx={{ flexGrow: 1, height: "100%", overflow: "hidden" }}
                     >
-                        <PDFViewer
-                            width="100%"
-                            height="100%"
-                            style={{ border: "none" }}
-                        >
-                            <TrainingPDF training={training} module={module} rolloutDate={rolloutDate} />
-                        </PDFViewer>
+                        {chartImg && (
+                          <PDFViewer
+                              width="100%"
+                              height="100%"
+                              style={{ border: "none" }}
+                          >
+                              <TrainingPDF chartImage={chartImg} training={training} module={module} rolloutDate={rolloutDate} />
+                          </PDFViewer>
+                        )}
                     </Box>
                 </Box>
             </Dialog>

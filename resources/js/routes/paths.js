@@ -46,9 +46,10 @@ export const PATH_DASHBOARD = {
     },
 
     general: {
+        hse_dashboard: path(ROOTS_DASHBOARD, "/hse-dashboard"),
+        hse_statistics: path(ROOTS_DASHBOARD, 'hse-statistics'),
         employee: path(ROOTS_DASHBOARD, "/employees"),
         inventory: path(ROOTS_DASHBOARD, "/inventory"),
-        hse_dashboard: path(ROOTS_DASHBOARD, "/hse-dashboard"),
         // banking: path(ROOTS_DASHBOARD, '/banking'),
         // booking: path(ROOTS_DASHBOARD, '/booking'),
         file: path(ROOTS_DASHBOARD, "/file"),

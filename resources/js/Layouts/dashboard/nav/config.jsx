@@ -42,6 +42,7 @@ const ICONS = {
     incident: icon("ion_accessibility"),
     inspection: icon("heroicons_document_magnifying_glass"),
     store: icon("ic_store"),
+    chart: icon("mdi_chart_box"),
 };
 
 const navConfig = [
@@ -51,7 +52,7 @@ const navConfig = [
         subheader: "general",
         items: [
             {
-                title: "HSE-dashboard",
+                title: "HSE dashboard",
                 path: PATH_DASHBOARD.general.hse_dashboard,
                 icon: ICONS.analytics,
                 routeNames: ["dashboard"],
@@ -227,7 +228,7 @@ const navConfig = [
                     "training.management.in_house_edit",
                     "training.management.show_in_house",
                     "training.management.in_house_matrix",
-                    "training.management.external_matrix", 
+                    "training.management.external_matrix",
                     "training.management.client.show",
                     "training.management.external.external_action",
                     "training.management.external.external_approve",

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 /* eslint-disable jsx-a11y/alt-text */
 import PropTypes from "prop-types";
 import { Page, View, Text, Image, Document } from "@react-pdf/renderer";
@@ -12,30 +12,31 @@ import { ellipsis } from "@/utils/exercpt";
 // ----------------------------------------------------------------------
 
 TrainingPDF.propTypes = {
-    training: PropTypes.object,
-    module: PropTypes.string,
-    page: PropTypes.string,
+  training: PropTypes.object,
+  module: PropTypes.string,
+  page: PropTypes.string,
 };
 
 const PER_PAGE = 10;
 
-export default function TrainingPDF({ page = "1/1", training, module, rolloutDate }) {
-    const pages = useMemo(() => {
-        if (training?.trainees?.length > PER_PAGE) {
-            const chunkSize = PER_PAGE;
-            let arr = [];
-            for (let i = 0; i < training.trainees.length; i += chunkSize) {
-                const chunk = training.trainees.slice(i, i + chunkSize);
-                arr.push(chunk);
-            }
-            return arr;
-        } else {
-            //
-            return [training?.trainees];
-        }
-    }, [training]);
-
-    return (
+export default function TrainingPDF({ page = "1/1", chartImage, training, module, rolloutDate }) {
+  const pages = useMemo(() => {
+      if (training?.trainees?.length > PER_PAGE) {
+          const chunkSize = PER_PAGE;
+          let arr = [];
+          for (let i = 0; i < training.trainees.length; i += chunkSize) {
+              const chunk = training.trainees.slice(i, i + chunkSize);
+              arr.push(chunk);
+          }
+          return arr;
+      } else {
+          //
+          return [training?.trainees];
+      }
+  }, [training]);
+  
+  return (
+      <>
         <Document
             title={
                 training.cms ? training.cms.toUpperCase() : module + " Training"
@@ -43,6 +44,7 @@ export default function TrainingPDF({ page = "1/1", training, module, rolloutDat
         >
             {pages.map((trainees, pageIndex) => (
                 <Page size="A4" style={styles.page} key={pageIndex}>
+                    <Image source={chartImage} />
                     <View style={styles.mb16}>
                         <View style={styles.gridContainer}>
                             <Image
@@ -57,7 +59,7 @@ export default function TrainingPDF({ page = "1/1", training, module, rolloutDat
                                 flexDirection: "row",
                             }}
                         >
-                            <Text style={styles.h3}>
+                            <Text style={styles.h3} break>
                                 {" "}
                                 {`${module} Training`}
                             </Text>
@@ -93,7 +95,7 @@ export default function TrainingPDF({ page = "1/1", training, module, rolloutDat
                                 ]}
                             >
                                 {/* <Text style={styles.subtitle2}>Revision:</Text>
-								<Text style={[styles.body1, { fontWeight: 700 }]}>{training.revision_no || 0}</Text> */}
+                <Text style={[styles.body1, { fontWeight: 700 }]}>{training.revision_no || 0}</Text> */}
                             </View>
                             <View
                                 style={[
@@ -413,5 +415,6 @@ export default function TrainingPDF({ page = "1/1", training, module, rolloutDat
                 </Page>
             ))}
         </Document>
-    );
+      </>
+  );
 }
