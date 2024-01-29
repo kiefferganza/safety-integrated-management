@@ -37,7 +37,6 @@ class InspectionController extends Controller
 							if($before) {
 								$path = "inspection-report-list/" . md5($before->id . config('app.key')). "/" .$before->file_name;
 								$item->photo_before = URL::route("image", ["path" => $path, "h" => 180]);
-								dd($item->photo_before);
 							}
 							if($after) {
 								$path = "inspection-report-list/" . md5($after->id . config('app.key')). "/" .$after->file_name;
