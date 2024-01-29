@@ -9,6 +9,7 @@ use App\Models\InspectionReportList;
 use App\Services\InspectionService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 class InspectionController extends Controller
@@ -26,6 +27,22 @@ class InspectionController extends Controller
 		->get()
 		->reverse()
 		->flatten();
+
+		$inspections->each(function($inspection) {
+			$inspection->report_list->transform(function ($item) {
+					if($item->ref_score === 2 || $item->ref_score === 3) {
+							$before = $item->getFirstMedia("before");
+							$after = $item->getFirstMedia("after");
+							if($before) {
+								$item->photo_before = $before->getUrl("small");
+							}
+							if($after) {
+								$item->photo_after = $after->getUrl("small");
+							}
+					}
+					return $item;
+			});
+		});
 
 		return Inertia::render("Dashboard/Management/Inspection/List/index", [
 			"inspections" => $inspections
@@ -257,5 +274,34 @@ class InspectionController extends Controller
 		->with('type', 'success')
 		->with('message', 'Inspection updated successfully');
 	}
+
+
+	public function inspection_list_pdf_post(Request $request)
+	{
+		if(!$request->inspections && empty($request->inspections)) {
+			abort(404);
+			Cache::forget("inspection_pdf");
+		}
+
+		Cache::put("inspection_pdf", $request->inspections);
+
+		return redirect()->route("inspection.management.pdfListGet");
+	}
+
+	public function inspection_list_pdf_get()
+	{
+		
+		$inspections = Cache::get("inspection_pdf");
+		if(!$inspections) {
+			abort(404);
+		}
+
+
+		return Inertia::render("Dashboard/Management/Inspection/List/PDF/index", [
+			"inspections" => $inspections
+		]);
+	}
+
+
 
 }
