@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 class InspectionController extends Controller
 {
@@ -30,14 +31,17 @@ class InspectionController extends Controller
 
 		$inspections->each(function($inspection) {
 			$inspection->report_list->transform(function ($item) {
-					if($item->ref_score === 2 || $item->ref_score === 3) {
+					if($item->ref_score === 2 || $item->ref_score === 3) { 
 							$before = $item->getFirstMedia("before");
 							$after = $item->getFirstMedia("after");
 							if($before) {
-								$item->photo_before = $before->getUrl("small");
+								$path = "inspection-report-list/" . md5($before->id . config('app.key')). "/" .$before->file_name;
+								$item->photo_before = URL::route("image", ["path" => $path, "h" => 180]);
+								dd($item->photo_before);
 							}
 							if($after) {
-								$item->photo_after = $after->getUrl("small");
+								$path = "inspection-report-list/" . md5($after->id . config('app.key')). "/" .$after->file_name;
+								$item->photo_after = URL::route("image", ["path" => $path, "h" => 180]);
 							}
 					}
 					return $item;

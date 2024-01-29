@@ -196,13 +196,17 @@ const PDF = (props) => (
                 <View
                     style={[
                         styles.mb16,
-                        { alignItems: "center", justifyContent: "center" },
+                        {
+                            alignItems: "center",
+                            justifyContent: "center",
+                            minHeight: 48,
+                        },
                     ]}
                     fixed
                 >
                     <Image
-                        source={`/logo/Fiafi-logo.png`}
-                        // source={`${window.origin}/logo/Fiafi-logo.png`}
+                        src={route("image", { path: "media/Fiafi-logo.png" })}
+                        // src={`${window.origin}/logo/Fiafi-logo.png`}
                         style={{ height: 48 }}
                     />
                 </View>
@@ -491,205 +495,217 @@ const PDF = (props) => (
                             </View>
                         </View>
 
-                        {inspection?.report_list &&
-                            inspection.report_list.map((report) => (
-                                <View key={report.list_id}>
-                                    <View
-                                        style={[
-                                            styles.tableRow,
-                                            styles.w1,
-                                            styles.bl,
-                                            styles.bgOffPrimary,
-                                            { padding: 0 },
-                                        ]}
-                                    >
+                        <View wrap={false}>
+                            {inspection?.report_list &&
+                                inspection.report_list.map((report) => (
+                                    <View key={report.list_id}>
                                         <View
                                             style={[
-                                                styles.pl4,
-                                                styles.br,
-                                                {
-                                                    flexGrow: 0,
-                                                    paddingTop: 4,
-                                                    flexBasis: 110,
-                                                },
+                                                styles.tableRow,
+                                                styles.w1,
+                                                styles.bl,
+                                                styles.bgOffPrimary,
+                                                { padding: 0 },
                                             ]}
                                         >
-                                            <Text style={styles.bold}>
-                                                Ref #: {report.ref_num}
-                                            </Text>
+                                            <View
+                                                style={[
+                                                    styles.pl4,
+                                                    styles.br,
+                                                    {
+                                                        flexGrow: 0,
+                                                        paddingTop: 4,
+                                                        flexBasis: 110,
+                                                    },
+                                                ]}
+                                            >
+                                                <Text style={styles.bold}>
+                                                    Ref #: {report.ref_num}
+                                                </Text>
+                                            </View>
+                                            <View
+                                                style={[
+                                                    styles.pl4,
+                                                    styles.br,
+                                                    {
+                                                        flexGrow: 0,
+                                                        paddingTop: 4,
+                                                        flexBasis: 318,
+                                                    },
+                                                ]}
+                                            >
+                                                <Text style={styles.bold}>
+                                                    Title:{" "}
+                                                    {report.section_title}
+                                                </Text>
+                                            </View>
+                                            <View
+                                                style={[
+                                                    styles.pl4,
+                                                    styles.br,
+                                                    {
+                                                        flexGrow: 1,
+                                                        paddingTop: 4,
+                                                    },
+                                                ]}
+                                            >
+                                                <Text style={styles.bold}>
+                                                    Location:{" "}
+                                                    {inspection?.location}
+                                                </Text>
+                                            </View>
                                         </View>
-                                        <View
-                                            style={[
-                                                styles.pl4,
-                                                styles.br,
-                                                {
-                                                    flexGrow: 0,
-                                                    paddingTop: 4,
-                                                    flexBasis: 318,
-                                                },
-                                            ]}
-                                        >
-                                            <Text style={styles.bold}>
-                                                Title: {report.section_title}
-                                            </Text>
-                                        </View>
-                                        <View
-                                            style={[
-                                                styles.pl4,
-                                                styles.br,
-                                                { flexGrow: 1, paddingTop: 4 },
-                                            ]}
-                                        >
-                                            <Text style={styles.bold}>
-                                                Location: {inspection?.location}
-                                            </Text>
-                                        </View>
-                                    </View>
 
-                                    <View>
-                                        <View
-                                            style={[
-                                                styles.tableRow,
-                                                styles.w1,
-                                                styles.bl,
-                                                styles.bgGray,
-                                                { padding: 0 },
-                                            ]}
-                                        >
+                                        <View>
                                             <View
                                                 style={[
-                                                    styles.pl4,
-                                                    styles.br,
-                                                    {
-                                                        flexGrow: 1,
-                                                        paddingTop: 4,
-                                                        flexBasis: "50%",
-                                                    },
+                                                    styles.tableRow,
+                                                    styles.w1,
+                                                    styles.bl,
+                                                    styles.bgGray,
+                                                    { padding: 0 },
                                                 ]}
                                             >
-                                                <Text style={styles.bold}>
-                                                    Findings
-                                                </Text>
-                                            </View>
-                                            <View
-                                                style={[
-                                                    styles.pl4,
-                                                    styles.br,
-                                                    {
-                                                        flexGrow: 1,
-                                                        paddingTop: 4,
-                                                        flexBasis: "50%",
-                                                    },
-                                                ]}
-                                            >
-                                                <Text style={styles.bold}>
-                                                    Action
-                                                </Text>
-                                            </View>
-                                        </View>
-                                        <View
-                                            style={[
-                                                styles.tableRow,
-                                                styles.w1,
-                                                styles.bl,
-                                                { padding: 0 },
-                                            ]}
-                                        >
-                                            <View
-                                                style={[
-                                                    styles.br,
-                                                    {
-                                                        flexGrow: 1,
-                                                        flexBasis: "50%",
-                                                    },
-                                                ]}
-                                            >
-                                                {report?.photo_before && (
-                                                    <View
-                                                        style={[
-                                                            styles.bm,
-                                                            { maxHeight: 180 },
-                                                        ]}
-                                                    >
-                                                        <Image
-                                                            style={{
-                                                                width: "100%",
-                                                                height: "100%",
-                                                                padding: 2,
-                                                            }}
-                                                            source={
-                                                                report.photo_before
-                                                            }
-                                                        />
-                                                    </View>
-                                                )}
                                                 <View
                                                     style={[
                                                         styles.pl4,
-                                                        styles.pr4,
-                                                        styles.pt4,
+                                                        styles.br,
+                                                        {
+                                                            flexGrow: 1,
+                                                            paddingTop: 4,
+                                                            flexBasis: "50%",
+                                                        },
                                                     ]}
                                                 >
-                                                    <Text
-                                                        style={{
-                                                            fontFamily:
-                                                                "Helvetica-Oblique",
-                                                        }}
-                                                    >
-                                                        {report?.findings || ""}
+                                                    <Text style={styles.bold}>
+                                                        Findings
+                                                    </Text>
+                                                </View>
+                                                <View
+                                                    style={[
+                                                        styles.pl4,
+                                                        styles.br,
+                                                        {
+                                                            flexGrow: 1,
+                                                            paddingTop: 4,
+                                                            flexBasis: "50%",
+                                                        },
+                                                    ]}
+                                                >
+                                                    <Text style={styles.bold}>
+                                                        Action
                                                     </Text>
                                                 </View>
                                             </View>
                                             <View
                                                 style={[
-                                                    styles.br,
-                                                    {
-                                                        flexGrow: 1,
-                                                        flexBasis: "50%",
-                                                    },
+                                                    styles.tableRow,
+                                                    styles.w1,
+                                                    styles.bl,
+                                                    { padding: 0 },
                                                 ]}
                                             >
-                                                {report?.photo_after && (
-                                                    <View
-                                                        style={[
-                                                            styles.bm,
-                                                            { maxHeight: 180 },
-                                                        ]}
-                                                    >
-                                                        <Image
-                                                            style={{
-                                                                width: "100%",
-                                                                height: "100%",
-                                                                padding: 2,
-                                                            }}
-                                                            source={
-                                                                report.photo_after
-                                                            }
-                                                        />
-                                                    </View>
-                                                )}
                                                 <View
                                                     style={[
-                                                        styles.pl4,
-                                                        styles.pr4,
-                                                        styles.pt4,
+                                                        styles.br,
+                                                        {
+                                                            flexGrow: 1,
+                                                            flexBasis: "50%",
+                                                        },
                                                     ]}
                                                 >
-                                                    <Text
-                                                        style={{
-                                                            fontFamily:
-                                                                "Helvetica-Oblique",
-                                                        }}
+                                                    {report?.photo_before && (
+                                                        <View
+                                                            style={[
+                                                                styles.bm,
+                                                                {
+                                                                    maxHeight: 180,
+                                                                },
+                                                            ]}
+                                                        >
+                                                            <Image
+                                                                style={{
+                                                                    width: "100%",
+                                                                    height: "100%",
+                                                                    padding: 2,
+                                                                }}
+                                                                src={
+                                                                    report.photo_before
+                                                                }
+                                                            />
+                                                        </View>
+                                                    )}
+                                                    <View
+                                                        style={[
+                                                            styles.pl4,
+                                                            styles.pr4,
+                                                            styles.pt4,
+                                                        ]}
                                                     >
-                                                        {report?.action_taken ||
-                                                            "TBA"}
-                                                    </Text>
+                                                        <Text
+                                                            style={{
+                                                                fontFamily:
+                                                                    "Helvetica-Oblique",
+                                                            }}
+                                                        >
+                                                            {report?.findings ||
+                                                                ""}
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                                <View
+                                                    style={[
+                                                        styles.br,
+                                                        {
+                                                            flexGrow: 1,
+                                                            flexBasis: "50%",
+                                                        },
+                                                    ]}
+                                                >
+                                                    {report?.photo_after && (
+                                                        <View
+                                                            style={[
+                                                                styles.bm,
+                                                                {
+                                                                    maxHeight: 180,
+                                                                },
+                                                            ]}
+                                                        >
+                                                            <Image
+                                                                style={{
+                                                                    width: "100%",
+                                                                    height: "100%",
+                                                                    padding: 2,
+                                                                }}
+                                                                src={
+                                                                    report.photo_after
+                                                                }
+                                                            />
+                                                        </View>
+                                                    )}
+                                                    <View
+                                                        style={[
+                                                            styles.pl4,
+                                                            styles.pr4,
+                                                            styles.pt4,
+                                                        ]}
+                                                    >
+                                                        <Text
+                                                            style={{
+                                                                fontFamily:
+                                                                    "Helvetica-Oblique",
+                                                            }}
+                                                        >
+                                                            {report?.action_taken ||
+                                                                "TBA"}
+                                                        </Text>
+                                                    </View>
                                                 </View>
                                             </View>
                                         </View>
                                     </View>
-                                </View>
-                            ))}
+                                ))}
+                        </View>
                     </View>
                 ))}
 
