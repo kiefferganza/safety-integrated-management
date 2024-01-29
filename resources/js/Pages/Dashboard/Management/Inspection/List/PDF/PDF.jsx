@@ -205,7 +205,9 @@ const PDF = (props) => (
                     fixed
                 >
                     <Image
-                        src={route("image", { path: "media/Fiafi-logo.png" })}
+                        src={route("image", {
+                            path: "media/logo/Fiafi-logo.png",
+                        })}
                         // src={`${window.origin}/logo/Fiafi-logo.png`}
                         style={{ height: 48 }}
                     />
