@@ -1,4 +1,11 @@
-import { Page, View, Text, Image, Document } from "@react-pdf/renderer";
+import {
+    Page,
+    View,
+    Text,
+    Image,
+    Document,
+    PDFViewer,
+} from "@react-pdf/renderer";
 import { StyleSheet } from "@react-pdf/renderer";
 import { capitalCase } from "change-case";
 import { format } from "date-fns";
@@ -177,551 +184,564 @@ const styles = StyleSheet.create({
 
 const FORMATTED_DATE = format(new Date(), "MM/dd/yy");
 const YEAR = new Date().getFullYear();
-export const PDF = (props) => (
-    <Document
-        title={props.title}
-        author={props.author}
-        subject={props.description}
-    >
-        <Page size="A4" style={styles.page}>
-            <View
-                style={[
-                    styles.mb16,
-                    { alignItems: "center", justifyContent: "center" },
-                ]}
-                fixed
-            >
-                <Image
-                    source={`${window.origin}/logo/Fiafi-logo.png`}
-                    style={{ height: 48 }}
-                />
-            </View>
-            <View
-                style={[
-                    styles.bt,
-                    styles.bm,
-                    styles.mb16,
-                    styles.bgPrimary,
-                    styles.pt8,
-                    styles.pl8,
-                    styles.mb16,
-                    {
-                        justifyContent: "center",
-                        borderTopWidth: 1.5,
-                        borderBottomWidth: 1.5,
-                    },
-                ]}
-            >
-                <Text style={[styles.h2]}>HSE Inspection Tracker</Text>
-            </View>
+const PDF = (props) => (
+    <PDFViewer style={{ minHeight: "100vh", width: "100%" }}>
+        <Document
+            onRender={props.rendered}
+            title={props.title}
+            author={props.author}
+            subject={props.description}
+        >
+            <Page size="A4" style={styles.page}>
+                <View
+                    style={[
+                        styles.mb16,
+                        { alignItems: "center", justifyContent: "center" },
+                    ]}
+                    fixed
+                >
+                    <Image
+                        source={`/logo/Fiafi-logo.png`}
+                        // source={`${window.origin}/logo/Fiafi-logo.png`}
+                        style={{ height: 48 }}
+                    />
+                </View>
+                <View
+                    style={[
+                        styles.bt,
+                        styles.bm,
+                        styles.mb16,
+                        styles.bgPrimary,
+                        styles.pt8,
+                        styles.pl8,
+                        styles.mb16,
+                        {
+                            justifyContent: "center",
+                            borderTopWidth: 1.5,
+                            borderBottomWidth: 1.5,
+                        },
+                    ]}
+                >
+                    <Text style={[styles.h2]}>HSE Inspection Tracker</Text>
+                </View>
 
-            {props.inspections.map((inspection) => (
-                <View key={inspection.id} style={[styles.mb16]} wrap={false}>
+                {props.inspections.map((inspection) => (
                     <View
-                        style={[
-                            styles.tableRow,
-                            styles.w1,
-                            styles.bl,
-                            styles.bt,
-                            styles.bgOffPrimary,
-                            { padding: 0 },
-                        ]}
+                        key={inspection.id}
+                        style={[styles.mb16]}
+                        wrap={false}
                     >
                         <View
                             style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 110,
-                                },
+                                styles.tableRow,
+                                styles.w1,
+                                styles.bl,
+                                styles.bt,
+                                styles.bgOffPrimary,
+                                { padding: 0 },
                             ]}
                         >
-                            <Text style={styles.bold}>CMS Number</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 106,
-                                },
-                            ]}
-                        >
-                            <Text style={styles.bold}>Submitted</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 106,
-                                },
-                            ]}
-                        >
-                            <Text style={styles.bold}>Action</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 106,
-                                },
-                            ]}
-                        >
-                            <Text style={styles.bold}>Verify</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 50,
-                                },
-                            ]}
-                        >
-                            <Text style={styles.bold}>Date Issued</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 18,
-                                },
-                            ]}
-                        >
-                            <Text style={styles.bold}>O</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 18,
-                                },
-                            ]}
-                        >
-                            <Text style={styles.bold}>N</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 18,
-                                },
-                            ]}
-                        >
-                            <Text style={styles.bold}>P</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                { flexGrow: 1, paddingTop: 4 },
-                            ]}
-                        >
-                            <Text style={styles.bold}>S</Text>
-                        </View>
-                    </View>
-
-                    <View
-                        style={[
-                            styles.tableRow,
-                            styles.w1,
-                            styles.bl,
-                            { padding: 0 },
-                        ]}
-                    >
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 110,
-                                },
-                            ]}
-                        >
-                            <Text>{inspection?.form_number}</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 106,
-                                },
-                            ]}
-                        >
-                            <Text>{inspection?.inspected_by}</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 106,
-                                },
-                            ]}
-                        >
-                            <Text>{inspection?.reviewer}</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 106,
-                                },
-                            ]}
-                        >
-                            <Text>{inspection?.verifier}</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 50,
-                                },
-                            ]}
-                        >
-                            <Text>{inspection?.date_issued}</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 18,
-                                },
-                            ]}
-                        >
-                            <Text>{inspection?.totalObservation}</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 18,
-                                },
-                            ]}
-                        >
-                            <Text>{inspection?.negativeObservation}</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                {
-                                    flexGrow: 0,
-                                    paddingTop: 4,
-                                    flexBasis: 18,
-                                },
-                            ]}
-                        >
-                            <Text>{inspection?.positiveObservation}</Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.pl4,
-                                styles.br,
-                                inspection.status
-                                    ? styles[
-                                          `bg${capitalCase(
-                                              inspection.status.classType
-                                          )}`
-                                      ]
-                                    : {},
-                                {
-                                    flexGrow: 1,
-                                    paddingTop: 4,
-                                },
-                            ]}
-                        >
-                            <Text style={[styles.bold, { color: "#fff" }]}>
-                                {inspection?.status?.text}
-                            </Text>
-                        </View>
-                    </View>
-
-                    {inspection?.report_list &&
-                        inspection.report_list.map((report) => (
-                            <View key={report.list_id}>
-                                <View
-                                    style={[
-                                        styles.tableRow,
-                                        styles.w1,
-                                        styles.bl,
-                                        styles.bgOffPrimary,
-                                        { padding: 0 },
-                                    ]}
-                                >
-                                    <View
-                                        style={[
-                                            styles.pl4,
-                                            styles.br,
-                                            {
-                                                flexGrow: 0,
-                                                paddingTop: 4,
-                                                flexBasis: 110,
-                                            },
-                                        ]}
-                                    >
-                                        <Text style={styles.bold}>
-                                            Ref #: {report.ref_num}
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={[
-                                            styles.pl4,
-                                            styles.br,
-                                            {
-                                                flexGrow: 0,
-                                                paddingTop: 4,
-                                                flexBasis: 318,
-                                            },
-                                        ]}
-                                    >
-                                        <Text style={styles.bold}>
-                                            Title: {report.section_title}
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={[
-                                            styles.pl4,
-                                            styles.br,
-                                            { flexGrow: 1, paddingTop: 4 },
-                                        ]}
-                                    >
-                                        <Text style={styles.bold}>
-                                            Location: {inspection?.location}
-                                        </Text>
-                                    </View>
-                                </View>
-
-                                <View>
-                                    <View
-                                        style={[
-                                            styles.tableRow,
-                                            styles.w1,
-                                            styles.bl,
-                                            styles.bgGray,
-                                            { padding: 0 },
-                                        ]}
-                                    >
-                                        <View
-                                            style={[
-                                                styles.pl4,
-                                                styles.br,
-                                                {
-                                                    flexGrow: 1,
-                                                    paddingTop: 4,
-                                                    flexBasis: "50%",
-                                                },
-                                            ]}
-                                        >
-                                            <Text style={styles.bold}>
-                                                Findings
-                                            </Text>
-                                        </View>
-                                        <View
-                                            style={[
-                                                styles.pl4,
-                                                styles.br,
-                                                {
-                                                    flexGrow: 1,
-                                                    paddingTop: 4,
-                                                    flexBasis: "50%",
-                                                },
-                                            ]}
-                                        >
-                                            <Text style={styles.bold}>
-                                                Action
-                                            </Text>
-                                        </View>
-                                    </View>
-                                    <View
-                                        style={[
-                                            styles.tableRow,
-                                            styles.w1,
-                                            styles.bl,
-                                            { padding: 0 },
-                                        ]}
-                                    >
-                                        <View
-                                            style={[
-                                                styles.br,
-                                                {
-                                                    flexGrow: 1,
-                                                    flexBasis: "50%",
-                                                },
-                                            ]}
-                                        >
-                                            {report?.photo_before && (
-                                                <View
-                                                    style={[
-                                                        styles.bm,
-                                                        { maxHeight: 180 },
-                                                    ]}
-                                                >
-                                                    <Image
-                                                        style={{
-                                                            width: "100%",
-                                                            height: "100%",
-                                                            padding: 2,
-                                                        }}
-                                                        src={
-                                                            report.photo_before
-                                                        }
-                                                    />
-                                                </View>
-                                            )}
-                                            <View
-                                                style={[
-                                                    styles.pl4,
-                                                    styles.pr4,
-                                                    styles.pt4,
-                                                ]}
-                                            >
-                                                <Text
-                                                    style={{
-                                                        fontFamily:
-                                                            "Helvetica-Oblique",
-                                                    }}
-                                                >
-                                                    {report?.findings || ""}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                        <View
-                                            style={[
-                                                styles.br,
-                                                {
-                                                    flexGrow: 1,
-                                                    flexBasis: "50%",
-                                                },
-                                            ]}
-                                        >
-                                            {report?.photo_after && (
-                                                <View
-                                                    style={[
-                                                        styles.bm,
-                                                        { maxHeight: 180 },
-                                                    ]}
-                                                >
-                                                    <Image
-                                                        style={{
-                                                            width: "100%",
-                                                            height: "100%",
-                                                            padding: 2,
-                                                        }}
-                                                        src={report.photo_after}
-                                                    />
-                                                </View>
-                                            )}
-                                            <View
-                                                style={[
-                                                    styles.pl4,
-                                                    styles.pr4,
-                                                    styles.pt4,
-                                                ]}
-                                            >
-                                                <Text
-                                                    style={{
-                                                        fontFamily:
-                                                            "Helvetica-Oblique",
-                                                    }}
-                                                >
-                                                    {report?.action_taken ||
-                                                        "TBA"}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 110,
+                                    },
+                                ]}
+                            >
+                                <Text style={styles.bold}>CMS Number</Text>
                             </View>
-                        ))}
-                </View>
-            ))}
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 106,
+                                    },
+                                ]}
+                            >
+                                <Text style={styles.bold}>Submitted</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 106,
+                                    },
+                                ]}
+                            >
+                                <Text style={styles.bold}>Action</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 106,
+                                    },
+                                ]}
+                            >
+                                <Text style={styles.bold}>Verify</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 50,
+                                    },
+                                ]}
+                            >
+                                <Text style={styles.bold}>Date Issued</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 18,
+                                    },
+                                ]}
+                            >
+                                <Text style={styles.bold}>O</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 18,
+                                    },
+                                ]}
+                            >
+                                <Text style={styles.bold}>N</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 18,
+                                    },
+                                ]}
+                            >
+                                <Text style={styles.bold}>P</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    { flexGrow: 1, paddingTop: 4 },
+                                ]}
+                            >
+                                <Text style={styles.bold}>S</Text>
+                            </View>
+                        </View>
 
-            <View style={[styles.gridContainer, styles.footer]} fixed>
-                <View style={styles.col4}>
-                    <Text
-                        style={[
-                            styles.bold,
-                            {
-                                fontSize: 7,
-                                textAlign: "left",
-                                color: "#141414",
-                            },
-                        ]}
-                    >
-                        Uncontrolled Copy if Printed
-                    </Text>
+                        <View
+                            style={[
+                                styles.tableRow,
+                                styles.w1,
+                                styles.bl,
+                                { padding: 0 },
+                            ]}
+                        >
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 110,
+                                    },
+                                ]}
+                            >
+                                <Text>{inspection?.form_number}</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 106,
+                                    },
+                                ]}
+                            >
+                                <Text>{inspection?.inspected_by}</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 106,
+                                    },
+                                ]}
+                            >
+                                <Text>{inspection?.reviewer}</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 106,
+                                    },
+                                ]}
+                            >
+                                <Text>{inspection?.verifier}</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 50,
+                                    },
+                                ]}
+                            >
+                                <Text>{inspection?.date_issued}</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 18,
+                                    },
+                                ]}
+                            >
+                                <Text>{inspection?.totalObservation}</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 18,
+                                    },
+                                ]}
+                            >
+                                <Text>{inspection?.negativeObservation}</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 18,
+                                    },
+                                ]}
+                            >
+                                <Text>{inspection?.positiveObservation}</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    inspection.status
+                                        ? styles[
+                                              `bg${capitalCase(
+                                                  inspection.status.classType
+                                              )}`
+                                          ]
+                                        : {},
+                                    {
+                                        flexGrow: 1,
+                                        paddingTop: 4,
+                                    },
+                                ]}
+                            >
+                                <Text style={[styles.bold, { color: "#fff" }]}>
+                                    {inspection?.status?.text}
+                                </Text>
+                            </View>
+                        </View>
+
+                        {inspection?.report_list &&
+                            inspection.report_list.map((report) => (
+                                <View key={report.list_id}>
+                                    <View
+                                        style={[
+                                            styles.tableRow,
+                                            styles.w1,
+                                            styles.bl,
+                                            styles.bgOffPrimary,
+                                            { padding: 0 },
+                                        ]}
+                                    >
+                                        <View
+                                            style={[
+                                                styles.pl4,
+                                                styles.br,
+                                                {
+                                                    flexGrow: 0,
+                                                    paddingTop: 4,
+                                                    flexBasis: 110,
+                                                },
+                                            ]}
+                                        >
+                                            <Text style={styles.bold}>
+                                                Ref #: {report.ref_num}
+                                            </Text>
+                                        </View>
+                                        <View
+                                            style={[
+                                                styles.pl4,
+                                                styles.br,
+                                                {
+                                                    flexGrow: 0,
+                                                    paddingTop: 4,
+                                                    flexBasis: 318,
+                                                },
+                                            ]}
+                                        >
+                                            <Text style={styles.bold}>
+                                                Title: {report.section_title}
+                                            </Text>
+                                        </View>
+                                        <View
+                                            style={[
+                                                styles.pl4,
+                                                styles.br,
+                                                { flexGrow: 1, paddingTop: 4 },
+                                            ]}
+                                        >
+                                            <Text style={styles.bold}>
+                                                Location: {inspection?.location}
+                                            </Text>
+                                        </View>
+                                    </View>
+
+                                    <View>
+                                        <View
+                                            style={[
+                                                styles.tableRow,
+                                                styles.w1,
+                                                styles.bl,
+                                                styles.bgGray,
+                                                { padding: 0 },
+                                            ]}
+                                        >
+                                            <View
+                                                style={[
+                                                    styles.pl4,
+                                                    styles.br,
+                                                    {
+                                                        flexGrow: 1,
+                                                        paddingTop: 4,
+                                                        flexBasis: "50%",
+                                                    },
+                                                ]}
+                                            >
+                                                <Text style={styles.bold}>
+                                                    Findings
+                                                </Text>
+                                            </View>
+                                            <View
+                                                style={[
+                                                    styles.pl4,
+                                                    styles.br,
+                                                    {
+                                                        flexGrow: 1,
+                                                        paddingTop: 4,
+                                                        flexBasis: "50%",
+                                                    },
+                                                ]}
+                                            >
+                                                <Text style={styles.bold}>
+                                                    Action
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <View
+                                            style={[
+                                                styles.tableRow,
+                                                styles.w1,
+                                                styles.bl,
+                                                { padding: 0 },
+                                            ]}
+                                        >
+                                            <View
+                                                style={[
+                                                    styles.br,
+                                                    {
+                                                        flexGrow: 1,
+                                                        flexBasis: "50%",
+                                                    },
+                                                ]}
+                                            >
+                                                {report?.photo_before && (
+                                                    <View
+                                                        style={[
+                                                            styles.bm,
+                                                            { maxHeight: 180 },
+                                                        ]}
+                                                    >
+                                                        <Image
+                                                            style={{
+                                                                width: "100%",
+                                                                height: "100%",
+                                                                padding: 2,
+                                                            }}
+                                                            source={
+                                                                report.photo_before
+                                                            }
+                                                        />
+                                                    </View>
+                                                )}
+                                                <View
+                                                    style={[
+                                                        styles.pl4,
+                                                        styles.pr4,
+                                                        styles.pt4,
+                                                    ]}
+                                                >
+                                                    <Text
+                                                        style={{
+                                                            fontFamily:
+                                                                "Helvetica-Oblique",
+                                                        }}
+                                                    >
+                                                        {report?.findings || ""}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                            <View
+                                                style={[
+                                                    styles.br,
+                                                    {
+                                                        flexGrow: 1,
+                                                        flexBasis: "50%",
+                                                    },
+                                                ]}
+                                            >
+                                                {report?.photo_after && (
+                                                    <View
+                                                        style={[
+                                                            styles.bm,
+                                                            { maxHeight: 180 },
+                                                        ]}
+                                                    >
+                                                        <Image
+                                                            style={{
+                                                                width: "100%",
+                                                                height: "100%",
+                                                                padding: 2,
+                                                            }}
+                                                            source={
+                                                                report.photo_after
+                                                            }
+                                                        />
+                                                    </View>
+                                                )}
+                                                <View
+                                                    style={[
+                                                        styles.pl4,
+                                                        styles.pr4,
+                                                        styles.pt4,
+                                                    ]}
+                                                >
+                                                    <Text
+                                                        style={{
+                                                            fontFamily:
+                                                                "Helvetica-Oblique",
+                                                        }}
+                                                    >
+                                                        {report?.action_taken ||
+                                                            "TBA"}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                            ))}
+                    </View>
+                ))}
+
+                <View style={[styles.gridContainer, styles.footer]} fixed>
+                    <View style={styles.col4}>
+                        <Text
+                            style={[
+                                styles.bold,
+                                {
+                                    fontSize: 7,
+                                    textAlign: "left",
+                                    color: "#141414",
+                                },
+                            ]}
+                        >
+                            Uncontrolled Copy if Printed
+                        </Text>
+                    </View>
+                    <View style={styles.col6}>
+                        <Text
+                            style={[
+                                styles.bold,
+                                {
+                                    fontSize: 7,
+                                    textAlign: "center",
+                                    color: "#141414",
+                                },
+                            ]}
+                        >
+                            &copy; FIAFI Group Company, {YEAR}. All Rights
+                            Reserved.
+                        </Text>
+                    </View>
+                    <View style={styles.col4}>
+                        <Text
+                            style={[
+                                styles.bold,
+                                {
+                                    fontSize: 7,
+                                    textAlign: "right",
+                                    color: "#141414",
+                                },
+                            ]}
+                            render={({ pageNumber, totalPages }) =>
+                                `${FORMATTED_DATE} Page ${pageNumber} / ${totalPages}`
+                            }
+                        ></Text>
+                    </View>
                 </View>
-                <View style={styles.col6}>
-                    <Text
-                        style={[
-                            styles.bold,
-                            {
-                                fontSize: 7,
-                                textAlign: "center",
-                                color: "#141414",
-                            },
-                        ]}
-                    >
-                        &copy; FIAFI Group Company, {YEAR}. All Rights Reserved.
-                    </Text>
-                </View>
-                <View style={styles.col4}>
-                    <Text
-                        style={[
-                            styles.bold,
-                            {
-                                fontSize: 7,
-                                textAlign: "right",
-                                color: "#141414",
-                            },
-                        ]}
-                        render={({ pageNumber, totalPages }) =>
-                            `${FORMATTED_DATE} Page ${pageNumber} / ${totalPages}`
-                        }
-                    ></Text>
-                </View>
-            </View>
-        </Page>
-    </Document>
+            </Page>
+        </Document>
+    </PDFViewer>
 );
+
+export default PDF;
