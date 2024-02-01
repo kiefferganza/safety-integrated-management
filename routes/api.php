@@ -3,7 +3,7 @@
 use App\Http\Controllers\ApiControllers\DashboardController;
 use App\Http\Controllers\ApiControllers\FolderApiController;
 use App\Http\Controllers\ApiControllers\ImageApiController;
-use App\Http\Controllers\ApiControllers\InspectionAPIController;
+use App\Http\Controllers\ApiControllers\InspectionApiController;
 use App\Http\Controllers\ApiControllers\ToolboxTalkController;
 use App\Http\Controllers\ApiControllers\TrainingApiController;
 use App\Http\Controllers\ApiControllers\UserApiController;
