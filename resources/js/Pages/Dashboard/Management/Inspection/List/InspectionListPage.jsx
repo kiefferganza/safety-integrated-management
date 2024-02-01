@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Head, Link } from "@inertiajs/inertia-react";
 import { useSwal } from "@/hooks/useSwal";
 import { Inertia } from "@inertiajs/inertia";
+import html2canvas from "html2canvas";
 // @mui
 import { useTheme } from "@mui/material/styles";
 import {
@@ -69,6 +70,7 @@ const TABLE_HEAD = [
 ];
 
 const InspectionListPage = ({ user, inspections, isLoading }) => {
+    const componentRefs = useRef([null, null, null, null, null]);
     const [hasPermission] = usePermission();
     const theme = useTheme();
     const { themeStretch } = useSettingsContext();
@@ -111,10 +113,10 @@ const InspectionListPage = ({ user, inspections, isLoading }) => {
     const [filterEndDate, setFilterEndDate] = useState(null);
 
     useEffect(() => {
-        if (inspections?.length > 0) {
+        if (inspections?.length > 0 && !isLoading) {
             setTableData(inspections);
         }
-    }, [inspections]);
+    }, [inspections, isLoading]);
 
     const dataFiltered = applyFilter({
         inputData: tableData,
@@ -133,6 +135,11 @@ const InspectionListPage = ({ user, inspections, isLoading }) => {
         filterType,
     });
 
+    const currentData =
+        filterType !== "all" || filterStatus !== ""
+            ? dataFilteredStatusAndType
+            : dataFiltered;
+
     const denseHeight = dense ? 56 : 76;
 
     const isFiltered =
@@ -150,10 +157,10 @@ const InspectionListPage = ({ user, inspections, isLoading }) => {
     !dataFiltered.length && !!filterEndDate;
 
     const getLengthByType = (type) =>
-        dataFiltered.filter((item) => item.type === type).length;
+        currentData.filter((item) => item.type === type).length;
 
     const getPercentByType = (type) =>
-        (getLengthByType(type) / dataFiltered.length) * 100;
+        (getLengthByType(type) / currentData.length) * 100;
 
     const TABS = [
         {
@@ -316,20 +323,56 @@ const InspectionListPage = ({ user, inspections, isLoading }) => {
 
     const open = Boolean(anchorLegendEl);
 
+    const captureElement = async (element) => {
+        const canvas = await html2canvas(element, {
+            ignoreElements: (el) => el.classList.contains("iconify"),
+        });
+        return canvas.toDataURL();
+    };
+
+    const generateImages = useCallback(async () => {
+        const result = await Promise.all(
+            componentRefs.current.map((element) => captureElement(element))
+        );
+        return result;
+    }, []);
+
     const canCreate = hasPermission("inspection_create");
     const canEdit = hasPermission("inspection_edit");
     const canDelete = hasPermission("inspection_delete");
 
-    const currentData =
-        filterType !== "all" || filterStatus !== ""
-            ? dataFilteredStatusAndType
-            : dataFiltered;
+    const info = {
+        total: {
+            value: currentData.length,
+            percent: 100,
+            color: theme.palette.info.main,
+        },
+        submitted: {
+            value: getLengthByType("submitted"),
+            percent: getPercentByType("submitted"),
+            color: theme.palette.grey[500],
+        },
+        review: {
+            value: getLengthByType("review"),
+            percent: getPercentByType("review"),
+            color: theme.palette.error.main,
+        },
+        verify: {
+            value: getLengthByType("verify"),
+            percent: getPercentByType("verify"),
+            color: theme.palette.warning.main,
+        },
+        closeout: {
+            value: getLengthByType("closeout"),
+            percent: getPercentByType("closeout"),
+            color: theme.palette.info.main,
+        },
+    };
     return (
         <>
             <Head>
                 <title>Inpection: List</title>
             </Head>
-
             <Container maxWidth={themeStretch ? false : "lg"}>
                 <CustomBreadcrumbs
                     heading="Inpection List"
@@ -351,25 +394,29 @@ const InspectionListPage = ({ user, inspections, isLoading }) => {
                                 <Button
                                     target="_blank"
                                     variant="contained"
-                                    onClick={() => {
+                                    onClick={async () => {
+                                        const results = await generateImages();
+                                        info.total.img = results[0];
+                                        info.submitted.img = results[1];
+                                        info.review.img = results[2];
+                                        info.verify.img = results[3];
+                                        info.closeout.img = results[4];
+                                        const data = currentData.map((ins) => {
+                                            ins.report_list =
+                                                ins.report_list.filter(
+                                                    (l) =>
+                                                        l.ref_score === 2 ||
+                                                        l.ref_score === 3
+                                                );
+                                            return ins;
+                                        });
                                         Inertia.post(
                                             route(
                                                 "inspection.management.pdfListPost"
                                             ),
                                             {
-                                                inspections: currentData.map(
-                                                    (ins) => {
-                                                        ins.report_list =
-                                                            ins.report_list.filter(
-                                                                (l) =>
-                                                                    l.ref_score ===
-                                                                        2 ||
-                                                                    l.ref_score ===
-                                                                        3
-                                                            );
-                                                        return ins;
-                                                    }
-                                                ),
+                                                inspections: data,
+                                                info,
                                             }
                                         );
                                     }}
@@ -432,42 +479,48 @@ const InspectionListPage = ({ user, inspections, isLoading }) => {
                         >
                             <InspectionAnalytic
                                 title="Total"
-                                total={dataFiltered.length}
+                                total={info.total.value}
                                 percent={100}
                                 icon="heroicons:document-chart-bar"
-                                color={theme.palette.info.main}
+                                color={info.total.color}
+                                ref={componentRefs}
+                                idx={0}
                             />
-
                             <InspectionAnalytic
                                 title="Submitted"
-                                total={getLengthByType("submitted")}
-                                percent={getPercentByType("submitted")}
+                                total={info.submitted.value}
+                                percent={info.submitted.percent}
                                 icon="heroicons:document-magnifying-glass"
-                                color={theme.palette.grey[500]}
+                                color={info.submitted.color}
+                                ref={componentRefs}
+                                idx={1}
                             />
-
                             <InspectionAnalytic
                                 title="Review"
-                                total={getLengthByType("review")}
-                                percent={getPercentByType("review")}
+                                total={info.review.value}
+                                percent={info.review.percent}
                                 icon="heroicons:document-minus"
-                                color={theme.palette.error.main}
+                                color={info.review.color}
+                                ref={componentRefs}
+                                idx={2}
                             />
-
                             <InspectionAnalytic
                                 title="Verify & Approve"
-                                total={getLengthByType("verify")}
-                                percent={getPercentByType("verify")}
+                                total={info.verify.value}
+                                percent={info.verify.percent}
                                 icon="heroicons:document-check"
-                                color={theme.palette.warning.main}
+                                color={info.verify.color}
+                                ref={componentRefs}
+                                idx={3}
                             />
-
                             <InspectionAnalytic
                                 title="Closeout"
-                                total={getLengthByType("closeout")}
-                                percent={getPercentByType("closeout")}
+                                total={info.closeout.value}
+                                percent={info.closeout.percent}
                                 icon="heroicons:document-arrow-up"
-                                color={theme.palette.info.main}
+                                color={info.closeout.color}
+                                ref={componentRefs}
+                                idx={4}
                             />
                         </Stack>
                     </Scrollbar>
@@ -579,7 +632,7 @@ const InspectionListPage = ({ user, inspections, isLoading }) => {
                                     <Tooltip title="Print">
                                         <IconButton
                                             color="primary"
-                                            onClick={() => {
+                                            onClick={async () => {
                                                 const lookupTable = {};
                                                 tableData.forEach(
                                                     (obj) =>
@@ -603,11 +656,18 @@ const InspectionListPage = ({ user, inspections, isLoading }) => {
                                                         return found;
                                                     }
                                                 );
+                                                const results =
+                                                    await generateImages();
+                                                info.total.img = results[0];
+                                                info.submitted.img = results[1];
+                                                info.review.img = results[2];
+                                                info.verify.img = results[3];
+                                                info.closeout.img = results[4];
                                                 Inertia.post(
                                                     route(
                                                         "inspection.management.pdfListPost"
                                                     ),
-                                                    { inspections: data }
+                                                    { inspections: data, info }
                                                 );
                                             }}
                                         >
@@ -844,6 +904,18 @@ const InspectionListPage = ({ user, inspections, isLoading }) => {
             </Popover>
         </>
     );
+};
+
+// Convert data URI to Blob
+const dataURItoBlob = (dataURI) => {
+    const byteString = atob(dataURI.split(",")[1]);
+    const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
 };
 
 function applyFilter({

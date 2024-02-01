@@ -277,26 +277,5 @@ class InspectionService
 		];
 	}
 
-	// const getDueDateStatus = (dueDate) => {
-	 // const diff = differenceInDays(new Date(dueDate), new Date());
-
-	 // if (diff === 0) {
-	 //     return {
-	 //         text: "A.T.",
-	 //         tooltip: "Active Today",
-	 //         classType: "warning",
-	 //     };
-	 // }
-
-	 // return {
-	 //     text: diff > 0 ? `${diff} A.D.` : `${Math.abs(diff)} O.D.`,
-	 //     tooltip: diff > 0 ? `Active ${diff} days` : `Overdue ${Math.abs(diff)}`,
-	 //     classType: diff > 0 ? "success" : "error",
-	 //     type: diff > 0 ? "A.D." : "O.D.",
-	 // };
-	// };
-
-
-
 
 }

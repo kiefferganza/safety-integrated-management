@@ -1,3 +1,3 @@
-export { default } from './LoadingScreen';
+export { default } from "./LoadingScreen";
 
-export { default as ProgressLoadingScreen } from './ProgressLoadingScreen';
+export { default as ProgressLoadingScreen } from "./ProgressLoadingScreen";

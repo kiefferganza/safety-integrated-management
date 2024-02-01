@@ -6,201 +6,27 @@ import {
     Document,
     PDFViewer,
 } from "@react-pdf/renderer";
-import { StyleSheet } from "@react-pdf/renderer";
 import { capitalCase } from "change-case";
 import { format } from "date-fns";
+import { styles, colors } from "./PDFStyles";
+import FileSVG from "@/Components/pdf-svg/FileSVG";
 // ----------------------------------------------------------------------
-
-const spacing = {
-    m8: { marginLeft: 8, marginRight: 8, marginTop: 8, marginBottom: 8 },
-    m16: { marginLeft: 16, marginRight: 16, marginTop: 16, marginBottom: 16 },
-    m24: { marginLeft: 24, marginRight: 24, marginTop: 24, marginBottom: 24 },
-    m32: { marginLeft: 32, marginRight: 24, marginTop: 24, marginBottom: 24 },
-
-    p8: { paddingLeft: 8, paddingRight: 8, paddingTop: 8, paddingBottom: 8 },
-    p16: {
-        paddingLeft: 16,
-        paddingRight: 16,
-        paddingTop: 16,
-        paddingBottom: 16,
-    },
-    p24: {
-        paddingLeft: 24,
-        paddingRight: 24,
-        paddingTop: 24,
-        paddingBottom: 24,
-    },
-    p32: {
-        paddingLeft: 32,
-        paddingRight: 32,
-        paddingTop: 32,
-        paddingBottom: 32,
-    },
-
-    mt8: { marginTop: 8 },
-    mt16: { marginTop: 16 },
-    mt24: { marginTop: 24 },
-    mt32: { marginTop: 32 },
-    mb8: { marginBottom: 8 },
-    mb16: { marginBottom: 16 },
-    mb24: { marginBottom: 24 },
-    mb32: { marginBottom: 32 },
-    ml8: { marginLeft: 8 },
-    ml16: { marginLeft: 16 },
-    ml24: { marginLeft: 24 },
-    ml32: { marginLeft: 32 },
-    mr8: { marginRight: 8 },
-    mr16: { marginRight: 16 },
-    mr24: { marginRight: 24 },
-    mr32: { marginRight: 32 },
-
-    pt4: { paddingTop: 4 },
-    pt8: { paddingTop: 8 },
-    pt16: { paddingTop: 16 },
-    pt24: { paddingTop: 24 },
-    pt32: { paddingTop: 32 },
-    pb8: { paddingBottom: 8 },
-    pb16: { paddingBottom: 16 },
-    pb24: { paddingBottom: 24 },
-    pb32: { paddingBottom: 32 },
-    pl4: { paddingLeft: 4 },
-    pl8: { paddingLeft: 8 },
-    pl16: { paddingLeft: 16 },
-    pl24: { paddingLeft: 24 },
-    pl32: { paddingLeft: 32 },
-    pr4: { paddingRight: 4 },
-    pr8: { paddingRight: 8 },
-    pr16: { paddingRight: 16 },
-    pr24: { paddingRight: 24 },
-    pr32: { paddingRight: 32 },
-};
-
-const colors = {
-    gray: "#d9d9d9",
-    success: "#385623",
-    warning: "#ffc000",
-    error: "#c00000",
-    mute: "#edeff1",
-    primary: "#788ec7",
-    offPrimary: "#d9e2f3",
-    secondary: "#00B8D9",
-};
-
-const colorStyles = {
-    success: { color: colors.success },
-    warning: { color: colors.warning },
-    error: { color: colors.error },
-    textWhite: { color: "#fff" },
-    textGray: { color: colors.gray },
-    textMute: { color: colors.mute },
-    textSecondary: { color: colors.secondary },
-
-    bgSuccess: { backgroundColor: colors.success, color: "#ffffff" },
-    bgGray: { backgroundColor: colors.gray, color: "#0a0a0a" },
-    bgWarning: { backgroundColor: colors.warning, color: "#ffffff" },
-    bgError: { backgroundColor: colors.error, color: "#ffffff" },
-    bgMute: { backgroundColor: colors.mute, color: "#0a0a0a" },
-    bgPrimary: { backgroundColor: colors.primary, color: "#0a0a0a" },
-    bgOffPrimary: { backgroundColor: colors.offPrimary, color: "#0a0a0a" },
-};
-
-const styles = StyleSheet.create({
-    ...spacing,
-    ...colorStyles,
-    page: {
-        padding: "8px 16px 40px 16px",
-        fontSize: 9,
-        lineHeight: 1.6,
-        fontFamily: "Helvetica",
-        backgroundColor: "#fff",
-        textTransform: "capitalize",
-        color: "#0a0a0a",
-    },
-    bt: { borderTop: "1px solid #0a0a0a" },
-    bm: { borderBottom: "1px solid #0a0a0a" },
-    bl: { borderLeft: "1px solid #0a0a0a" },
-    br: { borderRight: "1px solid #0a0a0a" },
-    w1: { width: "100%" },
-    col4: { width: "25%" },
-    col3: { width: "33.333%" },
-    col8: { width: "75%" },
-    col6: { width: "50%" },
-    overline: {
-        fontSize: 8,
-        marginBottom: 8,
-        fontWeight: "bold",
-        textTransform: "uppercase",
-    },
-    h2: { fontSize: 17, fontWeight: "bold", fontFamily: "Helvetica-Bold" },
-    h3: { fontSize: 16, fontWeight: "bold", fontFamily: "Helvetica-Bold" },
-    h4: { fontSize: 13, fontWeight: "bold", fontFamily: "Helvetica-Bold" },
-    h5: { fontSize: 11, fontWeight: "bold", fontFamily: "Helvetica-Bold" },
-    bold: {
-        fontWeight: "bold",
-        color: "#0a0a0a",
-        fontFamily: "Helvetica-Bold",
-    },
-    body1: { fontSize: 10 },
-    subtitle2: {
-        fontSize: 9,
-        fontWeight: "bold",
-        fontFamily: "Helvetica-Bold",
-    },
-    subtitle3: { fontSize: 9 },
-    subtitle4: { fontSize: 7 },
-    alignRight: { textAlign: "right" },
-    textCenter: { textAlign: "center" },
-    underlineText: {
-        width: "100%",
-        fontWeight: "bold",
-        color: "#0a0a0a",
-        borderBottom: "1px solid #0a0a0a",
-    },
-    footer: {
-        left: 0,
-        right: 0,
-        bottom: 0,
-        paddingVertical: 8,
-        paddingHorizontal: 40,
-        margin: "auto",
-        position: "absolute",
-    },
-    gridContainer: { flexDirection: "row", justifyContent: "space-between" },
-    table: { display: "flex", width: "100%" },
-    tableHeader: {},
-    tableBody: {},
-    tableRow: {
-        padding: "4px 0 2px 0",
-        flexDirection: "row",
-        borderBottomWidth: 1,
-        borderStyle: "solid",
-        fontSize: 7,
-    },
-    noBorder: { paddingTop: 8, paddingBottom: 0, borderBottomWidth: 0 },
-    tableCell_1: { width: "15%" },
-    tableCell_2: { width: "50%" },
-    tableCell_3: { width: "15%" },
-});
 
 const FORMATTED_DATE = format(new Date(), "MM/dd/yy");
 const YEAR = new Date().getFullYear();
 const PDF = (props) => (
-    <PDFViewer style={{ minHeight: "100vh", width: "100%" }}>
+    <PDFViewer style={{ height: "100%", width: "100%" }}>
         <Document
             onRender={props.rendered}
             title={props.title}
             author={props.author}
             subject={props.description}
         >
-            <Page size="A4" style={styles.page}>
+            <Page size="A3" style={styles.page}>
                 <View
                     style={[
                         styles.mb16,
-                        {
-                            alignItems: "center",
-                            justifyContent: "center",
-                            minHeight: 48,
-                        },
+                        { minHeight: 40, alignItems: "flex-start" },
                     ]}
                     fixed
                 >
@@ -208,27 +34,488 @@ const PDF = (props) => (
                         src={route("image", {
                             path: "media/logo/Fiafi-logo.png",
                         })}
-                        // src={`${window.origin}/logo/Fiafi-logo.png`}
-                        style={{ height: 48 }}
+                        style={{ height: 40 }}
                     />
                 </View>
+                <View style={{ textAlign: "center", marginTop: "-30px" }}>
+                    <Text style={[styles.h2]}>HSE Inspection Tracker</Text>
+                </View>
+
+                <View style={[styles.pl24, styles.pr24]}>
+                    <View
+                        style={[
+                            styles.gridContainer,
+                            styles.mb8,
+                            styles.mt8,
+                            styles.pt8,
+                            styles.pb8,
+                            {
+                                border: "1px solid #f5f5f5",
+                                borderRadius: 4,
+                            },
+                        ]}
+                    >
+                        <View
+                            style={[
+                                styles.gridContainer,
+                                styles.pl4,
+                                {
+                                    alignItems: "center",
+                                    borderRight: "1px solid #f5f5f5",
+                                    width: "100%",
+                                    justifyContent: "flex-start",
+                                },
+                            ]}
+                        >
+                            <View
+                                style={[
+                                    {
+                                        position: "relative",
+                                        height: 30,
+                                    },
+                                ]}
+                            >
+                                <Image
+                                    src={props.info.total.img}
+                                    style={{ height: 30, width: 30 }}
+                                />
+                                <View
+                                    style={{
+                                        width: 16,
+                                        height: 16,
+                                        position: "absolute",
+                                        left: 7.5,
+                                        top: 7.5,
+                                    }}
+                                >
+                                    <FileSVG color={props.info.total.color} />
+                                </View>
+                            </View>
+                            <View style={[styles.pl4]}>
+                                <Text style={styles.h6}>Total</Text>
+                                <View style={{ flexDirection: "row" }}>
+                                    <Text
+                                        style={[
+                                            styles.bold,
+                                            styles.pr4,
+                                            { fontSize: 8 },
+                                        ]}
+                                    >
+                                        {props.info.total.value}
+                                    </Text>
+                                    <Text
+                                        style={{
+                                            fontSize: 8,
+                                            color: "#637381",
+                                        }}
+                                    >
+                                        inspections
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View
+                            style={[
+                                styles.gridContainer,
+                                styles.pl4,
+                                {
+                                    alignItems: "center",
+                                    borderRight: "1px solid #f5f5f5",
+                                    width: "100%",
+                                    justifyContent: "flex-start",
+                                },
+                            ]}
+                        >
+                            <View
+                                style={[{ position: "relative", height: 30 }]}
+                            >
+                                <Image
+                                    src={props.info.submitted.img}
+                                    style={{ height: 30, width: 30 }}
+                                />
+                                <View
+                                    style={{
+                                        width: 16,
+                                        height: 16,
+                                        position: "absolute",
+                                        left: 7.5,
+                                        top: 7,
+                                    }}
+                                >
+                                    <FileSVG
+                                        color={props.info.submitted.color}
+                                    />
+                                </View>
+                            </View>
+                            <View style={[styles.pl4]}>
+                                <Text style={styles.h6}>Submitted</Text>
+                                <View style={{ flexDirection: "row" }}>
+                                    <Text
+                                        style={[
+                                            styles.bold,
+                                            styles.pr4,
+                                            { fontSize: 8 },
+                                        ]}
+                                    >
+                                        {props.info.submitted.value}
+                                    </Text>
+                                    <Text
+                                        style={{
+                                            fontSize: 8,
+                                            color: "#637381",
+                                        }}
+                                    >
+                                        inspections
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View
+                            style={[
+                                styles.gridContainer,
+                                styles.pl4,
+                                {
+                                    alignItems: "center",
+                                    borderRight: "1px solid #f5f5f5",
+                                    width: "100%",
+                                    justifyContent: "flex-start",
+                                },
+                            ]}
+                        >
+                            <View
+                                style={[{ position: "relative", height: 30 }]}
+                            >
+                                <Image
+                                    src={props.info.review.img}
+                                    style={{ height: 30, width: 30 }}
+                                />
+                                <View
+                                    style={{
+                                        width: 16,
+                                        height: 16,
+                                        position: "absolute",
+                                        left: 7.5,
+                                        top: 7,
+                                    }}
+                                >
+                                    <FileSVG color={props.info.review.color} />
+                                </View>
+                            </View>
+                            <View style={[styles.pl4]}>
+                                <Text style={styles.h6}>Review</Text>
+                                <View style={{ flexDirection: "row" }}>
+                                    <Text
+                                        style={[
+                                            styles.bold,
+                                            styles.pr4,
+                                            { fontSize: 8 },
+                                        ]}
+                                    >
+                                        {props.info.review.value}
+                                    </Text>
+                                    <Text
+                                        style={{
+                                            fontSize: 8,
+                                            color: "#637381",
+                                        }}
+                                    >
+                                        inspections
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View
+                            style={[
+                                styles.gridContainer,
+                                styles.pl4,
+                                {
+                                    alignItems: "center",
+                                    borderRight: "1px solid #f5f5f5",
+                                    width: "100%",
+                                    justifyContent: "flex-start",
+                                },
+                            ]}
+                        >
+                            <View
+                                style={[{ position: "relative", height: 30 }]}
+                            >
+                                <Image
+                                    src={props.info.verify.img}
+                                    style={{ height: 30, width: 30 }}
+                                />
+                                <View
+                                    style={{
+                                        width: 16,
+                                        height: 16,
+                                        position: "absolute",
+                                        left: 7.5,
+                                        top: 7,
+                                    }}
+                                >
+                                    <FileSVG color={props.info.verify.color} />
+                                </View>
+                            </View>
+                            <View style={[styles.pl4]}>
+                                <Text style={styles.h6}>Verify & Approve</Text>
+                                <View style={{ flexDirection: "row" }}>
+                                    <Text
+                                        style={[
+                                            styles.bold,
+                                            styles.pr4,
+                                            { fontSize: 8 },
+                                        ]}
+                                    >
+                                        {props.info.verify.value}
+                                    </Text>
+                                    <Text
+                                        style={{
+                                            fontSize: 8,
+                                            color: "#637381",
+                                        }}
+                                    >
+                                        inspections
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View
+                            style={[
+                                styles.gridContainer,
+                                styles.pl4,
+                                {
+                                    alignItems: "center",
+                                    width: "100%",
+                                    justifyContent: "flex-start",
+                                },
+                            ]}
+                        >
+                            <View
+                                style={[{ position: "relative", height: 30 }]}
+                            >
+                                <Image
+                                    src={props.info.closeout.img}
+                                    style={{ height: 30, width: 30 }}
+                                />
+                                <View
+                                    style={{
+                                        width: 16,
+                                        height: 16,
+                                        position: "absolute",
+                                        left: 7.5,
+                                        top: 7,
+                                    }}
+                                >
+                                    <FileSVG
+                                        color={props.info.closeout.color}
+                                    />
+                                </View>
+                            </View>
+                            <View style={[styles.pl4]}>
+                                <Text style={styles.h6}>Closeout</Text>
+                                <View style={{ flexDirection: "row" }}>
+                                    <Text
+                                        style={[
+                                            styles.bold,
+                                            styles.pr4,
+                                            { fontSize: 8 },
+                                        ]}
+                                    >
+                                        {props.info.closeout.value}
+                                    </Text>
+                                    <Text
+                                        style={{
+                                            fontSize: 8,
+                                            color: "#637381",
+                                        }}
+                                    >
+                                        inspections
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+
                 <View
                     style={[
-                        styles.bt,
-                        styles.bm,
+                        styles.pl24,
+                        styles.pr24,
                         styles.mb16,
-                        styles.bgPrimary,
-                        styles.pt8,
-                        styles.pl8,
-                        styles.mb16,
-                        {
-                            justifyContent: "center",
-                            borderTopWidth: 1.5,
-                            borderBottomWidth: 1.5,
-                        },
+                        { width: "100%", alignItems: "flex-end" },
                     ]}
                 >
-                    <Text style={[styles.h2]}>HSE Inspection Tracker</Text>
+                    <View style={{ width: 228 }}>
+                        <View style={styles.mb8}>
+                            <Text
+                                style={[styles.subtitle2, { color: "#637381" }]}
+                            >
+                                Status Legend:
+                            </Text>
+                            <View
+                                style={[
+                                    styles.mb4,
+                                    {
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                    },
+                                ]}
+                            >
+                                <View
+                                    style={[
+                                        styles.labelOutline,
+                                        {
+                                            borderColor: colors.warning,
+                                            color: colors.warning,
+                                        },
+                                    ]}
+                                >
+                                    <Text>I P = In Progress</Text>
+                                </View>
+                                <View
+                                    style={[
+                                        styles.labelOutline,
+                                        {
+                                            borderColor: colors.error,
+                                            color: colors.error,
+                                        },
+                                    ]}
+                                >
+                                    <Text>W F C = Waiting For Closure</Text>
+                                </View>
+                                <View
+                                    style={[
+                                        styles.labelOutline,
+                                        {
+                                            borderColor: colors.success,
+                                            color: colors.success,
+                                        },
+                                    ]}
+                                >
+                                    <Text>C = Closed</Text>
+                                </View>
+                            </View>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                }}
+                            >
+                                <View
+                                    style={[
+                                        styles.labelOutline,
+                                        {
+                                            borderColor: colors.error,
+                                            color: colors.error,
+                                        },
+                                    ]}
+                                >
+                                    <Text>F R = For Revision</Text>
+                                </View>
+                                <View
+                                    style={[
+                                        styles.labelOutline,
+                                        {
+                                            borderColor: colors.success,
+                                            color: colors.success,
+                                        },
+                                    ]}
+                                >
+                                    <Text>A,D, = Active Days</Text>
+                                </View>
+                                <View
+                                    style={[
+                                        styles.labelOutline,
+                                        {
+                                            borderColor: colors.error,
+                                            color: colors.error,
+                                        },
+                                    ]}
+                                >
+                                    <Text>O.D. = Overdue Days</Text>
+                                </View>
+                            </View>
+                        </View>
+                        <View>
+                            <Text
+                                style={[
+                                    styles.subtitle2,
+                                    styles.mb4,
+                                    { color: "#637381" },
+                                ]}
+                            >
+                                Table Title Legend:
+                            </Text>
+                            <View
+                                style={[
+                                    styles.mb4,
+                                    {
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                    },
+                                ]}
+                            >
+                                <View
+                                    style={[
+                                        styles.labelOutline,
+                                        {
+                                            borderColor: "#4f4f4f",
+                                            color: "#4f4f4f",
+                                        },
+                                    ]}
+                                >
+                                    <Text>O = Number of Observation</Text>
+                                </View>
+                                <View
+                                    style={[
+                                        styles.labelOutline,
+                                        {
+                                            borderColor: "#4f4f4f",
+                                            color: "#4f4f4f",
+                                        },
+                                    ]}
+                                >
+                                    <Text>
+                                        P = Number of Positive Observation
+                                    </Text>
+                                </View>
+                            </View>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                }}
+                            >
+                                <View
+                                    style={[
+                                        styles.labelOutline,
+                                        {
+                                            borderColor: "#4f4f4f",
+                                            color: "#4f4f4f",
+                                            marginRight: 4,
+                                        },
+                                    ]}
+                                >
+                                    <Text>
+                                        N = Number of Negative Observation
+                                    </Text>
+                                </View>
+                                <View
+                                    style={[
+                                        styles.labelOutline,
+                                        {
+                                            borderColor: "#4f4f4f",
+                                            color: "#4f4f4f",
+                                        },
+                                    ]}
+                                >
+                                    <Text>S = Statuses</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
                 </View>
 
                 {props.inspections.map((inspection) => (
@@ -253,12 +540,20 @@ const PDF = (props) => (
                                     styles.br,
                                     {
                                         flexGrow: 0,
-                                        paddingTop: 4,
+                                        paddingTop: 2,
+                                        paddingBottom: 2,
                                         flexBasis: 110,
                                     },
                                 ]}
                             >
-                                <Text style={styles.bold}>CMS Number</Text>
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        { color: "#363636", lineHeight: 1 },
+                                    ]}
+                                >
+                                    CMS Number
+                                </Text>
                             </View>
                             <View
                                 style={[
@@ -266,12 +561,20 @@ const PDF = (props) => (
                                     styles.br,
                                     {
                                         flexGrow: 0,
-                                        paddingTop: 4,
-                                        flexBasis: 106,
+                                        paddingTop: 2,
+                                        paddingBottom: 2,
+                                        flexBasis: 80,
                                     },
                                 ]}
                             >
-                                <Text style={styles.bold}>Submitted</Text>
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        { color: "#363636", lineHeight: 1 },
+                                    ]}
+                                >
+                                    Submitted
+                                </Text>
                             </View>
                             <View
                                 style={[
@@ -279,12 +582,20 @@ const PDF = (props) => (
                                     styles.br,
                                     {
                                         flexGrow: 0,
-                                        paddingTop: 4,
-                                        flexBasis: 106,
+                                        paddingTop: 2,
+                                        paddingBottom: 2,
+                                        flexBasis: 165,
                                     },
                                 ]}
                             >
-                                <Text style={styles.bold}>Action</Text>
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        { color: "#363636", lineHeight: 1 },
+                                    ]}
+                                >
+                                    Observation
+                                </Text>
                             </View>
                             <View
                                 style={[
@@ -292,12 +603,20 @@ const PDF = (props) => (
                                     styles.br,
                                     {
                                         flexGrow: 0,
-                                        paddingTop: 4,
-                                        flexBasis: 106,
+                                        paddingTop: 2,
+                                        paddingBottom: 2,
+                                        flexBasis: 80,
                                     },
                                 ]}
                             >
-                                <Text style={styles.bold}>Verify</Text>
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        { color: "#363636", lineHeight: 1 },
+                                    ]}
+                                >
+                                    Action
+                                </Text>
                             </View>
                             <View
                                 style={[
@@ -305,12 +624,62 @@ const PDF = (props) => (
                                     styles.br,
                                     {
                                         flexGrow: 0,
-                                        paddingTop: 4,
+                                        paddingTop: 2,
+                                        paddingBottom: 2,
+                                        flexBasis: 165,
+                                    },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        { color: "#363636", lineHeight: 1 },
+                                    ]}
+                                >
+                                    Result
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 2,
+                                        paddingBottom: 2,
+                                        flexBasis: 80,
+                                    },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        { color: "#363636", lineHeight: 1 },
+                                    ]}
+                                >
+                                    Verify
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 2,
+                                        paddingBottom: 2,
                                         flexBasis: 50,
                                     },
                                 ]}
                             >
-                                <Text style={styles.bold}>Date Issued</Text>
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        { color: "#363636", lineHeight: 1 },
+                                    ]}
+                                >
+                                    Date Issued
+                                </Text>
                             </View>
                             <View
                                 style={[
@@ -318,12 +687,20 @@ const PDF = (props) => (
                                     styles.br,
                                     {
                                         flexGrow: 0,
-                                        paddingTop: 4,
+                                        paddingTop: 2,
+                                        paddingBottom: 2,
                                         flexBasis: 18,
                                     },
                                 ]}
                             >
-                                <Text style={styles.bold}>O</Text>
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        { color: "#363636", lineHeight: 1 },
+                                    ]}
+                                >
+                                    O
+                                </Text>
                             </View>
                             <View
                                 style={[
@@ -331,12 +708,20 @@ const PDF = (props) => (
                                     styles.br,
                                     {
                                         flexGrow: 0,
-                                        paddingTop: 4,
+                                        paddingTop: 2,
+                                        paddingBottom: 2,
                                         flexBasis: 18,
                                     },
                                 ]}
                             >
-                                <Text style={styles.bold}>N</Text>
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        { color: "#363636", lineHeight: 1 },
+                                    ]}
+                                >
+                                    N
+                                </Text>
                             </View>
                             <View
                                 style={[
@@ -344,21 +729,40 @@ const PDF = (props) => (
                                     styles.br,
                                     {
                                         flexGrow: 0,
-                                        paddingTop: 4,
+                                        paddingTop: 2,
+                                        paddingBottom: 2,
                                         flexBasis: 18,
                                     },
                                 ]}
                             >
-                                <Text style={styles.bold}>P</Text>
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        { color: "#363636", lineHeight: 1 },
+                                    ]}
+                                >
+                                    P
+                                </Text>
                             </View>
                             <View
                                 style={[
                                     styles.pl4,
                                     styles.br,
-                                    { flexGrow: 1, paddingTop: 4 },
+                                    {
+                                        flexGrow: 1,
+                                        paddingTop: 2,
+                                        paddingBottom: 2,
+                                    },
                                 ]}
                             >
-                                <Text style={styles.bold}>S</Text>
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        { color: "#363636", lineHeight: 1 },
+                                    ]}
+                                >
+                                    S
+                                </Text>
                             </View>
                         </View>
 
@@ -381,7 +785,9 @@ const PDF = (props) => (
                                     },
                                 ]}
                             >
-                                <Text>{inspection?.form_number}</Text>
+                                <Text style={styles.bold}>
+                                    {inspection?.form_number}
+                                </Text>
                             </View>
                             <View
                                 style={[
@@ -390,7 +796,7 @@ const PDF = (props) => (
                                     {
                                         flexGrow: 0,
                                         paddingTop: 4,
-                                        flexBasis: 106,
+                                        flexBasis: 80,
                                     },
                                 ]}
                             >
@@ -398,16 +804,44 @@ const PDF = (props) => (
                             </View>
                             <View
                                 style={[
-                                    styles.pl4,
                                     styles.br,
                                     {
                                         flexGrow: 0,
-                                        paddingTop: 4,
-                                        flexBasis: 106,
+                                        flexBasis: 165,
                                     },
                                 ]}
                             >
-                                <Text>{inspection?.reviewer}</Text>
+                                {inspection.report_list.observation.map(
+                                    (observation, idx) => (
+                                        <View
+                                            key={idx}
+                                            style={[
+                                                styles.pl4,
+                                                styles.pt4,
+                                                idx !==
+                                                    inspection.report_list
+                                                        .observation.length -
+                                                        1 && styles.bm,
+                                            ]}
+                                        >
+                                            <Text
+                                                style={[
+                                                    {
+                                                        fontFamily: observation
+                                                            ? "Helvetica-Oblique"
+                                                            : "Helvetica-BoldOblique",
+                                                    },
+                                                ]}
+                                            >
+                                                {observation
+                                                    ? `${
+                                                          idx + 1
+                                                      }. ${observation}`
+                                                    : "TBA"}
+                                            </Text>
+                                        </View>
+                                    )
+                                )}
                             </View>
                             <View
                                 style={[
@@ -416,7 +850,59 @@ const PDF = (props) => (
                                     {
                                         flexGrow: 0,
                                         paddingTop: 4,
-                                        flexBasis: 106,
+                                        flexBasis: 80,
+                                    },
+                                ]}
+                            >
+                                <Text>{inspection?.reviewer}</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        flexBasis: 165,
+                                    },
+                                ]}
+                            >
+                                {inspection.report_list.result.map(
+                                    (result, idx) => (
+                                        <View
+                                            key={idx}
+                                            style={[
+                                                styles.pl4,
+                                                styles.pt4,
+                                                idx !==
+                                                    inspection.report_list
+                                                        .result.length -
+                                                        1 && styles.bm,
+                                            ]}
+                                        >
+                                            <Text
+                                                style={[
+                                                    {
+                                                        fontFamily: result
+                                                            ? "Helvetica-Oblique"
+                                                            : "Helvetica-BoldOblique",
+                                                    },
+                                                ]}
+                                            >
+                                                {result
+                                                    ? `${idx}. ${result}`
+                                                    : "TBA"}
+                                            </Text>
+                                        </View>
+                                    )
+                                )}
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 80,
                                     },
                                 ]}
                             >
@@ -430,6 +916,7 @@ const PDF = (props) => (
                                         flexGrow: 0,
                                         paddingTop: 4,
                                         flexBasis: 50,
+                                        fontFamily: "Helvetica-Oblique",
                                     },
                                 ]}
                             >
@@ -476,237 +963,75 @@ const PDF = (props) => (
                             </View>
                             <View
                                 style={[
-                                    styles.pl4,
                                     styles.br,
-                                    inspection.status
-                                        ? styles[
-                                              `bg${capitalCase(
-                                                  inspection.status.classType
-                                              )}`
-                                          ]
-                                        : {},
                                     {
                                         flexGrow: 1,
-                                        paddingTop: 4,
                                     },
                                 ]}
                             >
-                                <Text style={[styles.bold, { color: "#fff" }]}>
-                                    {inspection?.status?.text}
-                                </Text>
-                            </View>
-                        </View>
-
-                        <View wrap={false}>
-                            {inspection?.report_list &&
-                                inspection.report_list.map((report) => (
-                                    <View key={report.list_id}>
-                                        <View
+                                <View
+                                    style={
+                                        inspection.status
+                                            ? styles[
+                                                  `bg${capitalCase(
+                                                      inspection.status
+                                                          .classType
+                                                  )}`
+                                              ]
+                                            : {}
+                                    }
+                                >
+                                    <Text
+                                        style={[
+                                            styles.bold,
+                                            {
+                                                color: "#fff",
+                                                textAlign: "center",
+                                                paddingTop: 4,
+                                            },
+                                        ]}
+                                    >
+                                        {inspection?.status?.text}
+                                    </Text>
+                                </View>
+                                {(inspection.type === "verify" ||
+                                    inspection.type === "review") && (
+                                    <View
+                                        style={
+                                            inspection.status
+                                                ? styles[
+                                                      `bg${capitalCase(
+                                                          inspection.status
+                                                              .classType
+                                                      )}`
+                                                  ]
+                                                : {}
+                                        }
+                                    >
+                                        <Text
                                             style={[
-                                                styles.tableRow,
-                                                styles.w1,
-                                                styles.bl,
-                                                styles.bgOffPrimary,
-                                                { padding: 0 },
+                                                styles.bold,
+                                                inspection?.dueStatus
+                                                    ? styles[
+                                                          `bg${capitalCase(
+                                                              inspection
+                                                                  .dueStatus
+                                                                  .classType
+                                                          )}`
+                                                      ]
+                                                    : {},
+                                                {
+                                                    color: "#fff",
+                                                    textAlign: "center",
+                                                    paddingTop: 4,
+                                                },
                                             ]}
                                         >
-                                            <View
-                                                style={[
-                                                    styles.pl4,
-                                                    styles.br,
-                                                    {
-                                                        flexGrow: 0,
-                                                        paddingTop: 4,
-                                                        flexBasis: 110,
-                                                    },
-                                                ]}
-                                            >
-                                                <Text style={styles.bold}>
-                                                    Ref #: {report.ref_num}
-                                                </Text>
-                                            </View>
-                                            <View
-                                                style={[
-                                                    styles.pl4,
-                                                    styles.br,
-                                                    {
-                                                        flexGrow: 0,
-                                                        paddingTop: 4,
-                                                        flexBasis: 318,
-                                                    },
-                                                ]}
-                                            >
-                                                <Text style={styles.bold}>
-                                                    Title:{" "}
-                                                    {report.section_title}
-                                                </Text>
-                                            </View>
-                                            <View
-                                                style={[
-                                                    styles.pl4,
-                                                    styles.br,
-                                                    {
-                                                        flexGrow: 1,
-                                                        paddingTop: 4,
-                                                    },
-                                                ]}
-                                            >
-                                                <Text style={styles.bold}>
-                                                    Location:{" "}
-                                                    {inspection?.location}
-                                                </Text>
-                                            </View>
-                                        </View>
-
-                                        <View>
-                                            <View
-                                                style={[
-                                                    styles.tableRow,
-                                                    styles.w1,
-                                                    styles.bl,
-                                                    styles.bgGray,
-                                                    { padding: 0 },
-                                                ]}
-                                            >
-                                                <View
-                                                    style={[
-                                                        styles.pl4,
-                                                        styles.br,
-                                                        {
-                                                            flexGrow: 1,
-                                                            paddingTop: 4,
-                                                            flexBasis: "50%",
-                                                        },
-                                                    ]}
-                                                >
-                                                    <Text style={styles.bold}>
-                                                        Findings
-                                                    </Text>
-                                                </View>
-                                                <View
-                                                    style={[
-                                                        styles.pl4,
-                                                        styles.br,
-                                                        {
-                                                            flexGrow: 1,
-                                                            paddingTop: 4,
-                                                            flexBasis: "50%",
-                                                        },
-                                                    ]}
-                                                >
-                                                    <Text style={styles.bold}>
-                                                        Action
-                                                    </Text>
-                                                </View>
-                                            </View>
-                                            <View
-                                                style={[
-                                                    styles.tableRow,
-                                                    styles.w1,
-                                                    styles.bl,
-                                                    { padding: 0 },
-                                                ]}
-                                            >
-                                                <View
-                                                    style={[
-                                                        styles.br,
-                                                        {
-                                                            flexGrow: 1,
-                                                            flexBasis: "50%",
-                                                        },
-                                                    ]}
-                                                >
-                                                    {report?.photo_before && (
-                                                        <View
-                                                            style={[
-                                                                styles.bm,
-                                                                {
-                                                                    maxHeight: 180,
-                                                                },
-                                                            ]}
-                                                        >
-                                                            <Image
-                                                                style={{
-                                                                    width: "100%",
-                                                                    height: "100%",
-                                                                    padding: 2,
-                                                                }}
-                                                                src={
-                                                                    report.photo_before
-                                                                }
-                                                            />
-                                                        </View>
-                                                    )}
-                                                    <View
-                                                        style={[
-                                                            styles.pl4,
-                                                            styles.pr4,
-                                                            styles.pt4,
-                                                        ]}
-                                                    >
-                                                        <Text
-                                                            style={{
-                                                                fontFamily:
-                                                                    "Helvetica-Oblique",
-                                                            }}
-                                                        >
-                                                            {report?.findings ||
-                                                                ""}
-                                                        </Text>
-                                                    </View>
-                                                </View>
-                                                <View
-                                                    style={[
-                                                        styles.br,
-                                                        {
-                                                            flexGrow: 1,
-                                                            flexBasis: "50%",
-                                                        },
-                                                    ]}
-                                                >
-                                                    {report?.photo_after && (
-                                                        <View
-                                                            style={[
-                                                                styles.bm,
-                                                                {
-                                                                    maxHeight: 180,
-                                                                },
-                                                            ]}
-                                                        >
-                                                            <Image
-                                                                style={{
-                                                                    width: "100%",
-                                                                    height: "100%",
-                                                                    padding: 2,
-                                                                }}
-                                                                src={
-                                                                    report.photo_after
-                                                                }
-                                                            />
-                                                        </View>
-                                                    )}
-                                                    <View
-                                                        style={[
-                                                            styles.pl4,
-                                                            styles.pr4,
-                                                            styles.pt4,
-                                                        ]}
-                                                    >
-                                                        <Text
-                                                            style={{
-                                                                fontFamily:
-                                                                    "Helvetica-Oblique",
-                                                            }}
-                                                        >
-                                                            {report?.action_taken ||
-                                                                "TBA"}
-                                                        </Text>
-                                                    </View>
-                                                </View>
-                                            </View>
-                                        </View>
+                                            {inspection?.dueStatus?.text}
+                                        </Text>
                                     </View>
-                                ))}
+                                )}
+                            </View>
                         </View>
                     </View>
                 ))}

@@ -1,33 +1,30 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Head } from "@inertiajs/inertia-react";
 import Box from "@mui/material/Box";
 import LoadingScreen from "@/Components/loading-screen";
-// import RenderedPDFViewer from "./RenderPDFViewer";
-// import PDF from "./PDF";
 const PDF = lazy(() => import("./PDF"));
 
-const index = ({ inspections }) => {
+const index = ({ inspections, info }) => {
     const [isRendered, setIsRendered] = useState(false);
+    useEffect(() => {
+        document.body.style.overflow = "hidden";
+    }, []);
     return (
         <>
             <Head>
-                <title>Inspection Report PDF</title>
+                <title>Inspection Tracker Report</title>
             </Head>
             <Suspense fallback={<LoadingScreen />}>
-                <Box height="100%" minHeight="100vh">
+                <Box height="100vh" overflow="clip">
                     {!isRendered && <LoadingScreen />}
                     <PDF
-                        title="HSE Inspection Tracker"
+                        title="Inspection Tracker Report"
                         inspections={inspections}
+                        info={info}
                         rendered={() => {
                             setIsRendered(true);
                         }}
                     />
-                    {/* <RenderedPDFViewer
-                        title="HSE Inspection Tracker"
-                        style={{ minHeight: "100vh", width: "100%" }}
-                        props={{ inspections }}
-                    /> */}
                 </Box>
             </Suspense>
         </>
