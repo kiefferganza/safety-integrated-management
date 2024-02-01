@@ -13,9 +13,9 @@ import {
 } from "@mui/material";
 // components
 import Iconify from "@/Components/iconify";
-// import Label from '@/Components/label';
 //
-import InspectionPDFStyle from "./InspectionPDF";
+// import InspectionPDF from "./InspectionPDF";
+import { useRenderPDF } from "@/hooks/useRenderPDF";
 
 // ----------------------------------------------------------------------
 
@@ -31,6 +31,17 @@ export default function InspectionToolbar({
     findings,
     rolloutDate,
 }) {
+    const { url, loading, error } = useRenderPDF({
+        path: "../../sections/@dashboard/inspection/details/PDF",
+        inspection,
+        cms,
+        reports,
+        findings,
+        rolloutDate,
+        logo: route("image", { path: "media/logo/Fiafi-logo.png" }),
+    });
+    const src = url ? `${url}#toolbar=1` : null;
+
     const [open, setOpen] = useState(false);
 
     const handleOpen = () => {
@@ -41,6 +52,15 @@ export default function InspectionToolbar({
         setOpen(false);
     };
 
+    if (error) {
+        console.log({ error });
+        return (
+            <div>
+                <h3>Something went wrong!</h3>
+                {/* {JSON.stringify(error)} */}
+            </div>
+        );
+    }
     return (
         <>
             <Stack
@@ -57,34 +77,37 @@ export default function InspectionToolbar({
                         </IconButton>
                     </Tooltip>
 
-                    <PDFDownloadLink
-                        document={
-                            <InspectionPDFStyle
-                                inspection={inspection}
-                                reports={reports}
-                                cms={cms}
-                                findings={findings}
-                                rolloutDate={rolloutDate}
-                            />
-                        }
-                        fileName={cms !== "N/A" ? cms : "Toolbox Talk"}
-                        style={{ textDecoration: "none" }}
-                    >
-                        {({ loading }) => (
-                            <Tooltip title="Download">
-                                <IconButton>
-                                    {loading ? (
-                                        <CircularProgress
-                                            size={24}
-                                            color="inherit"
-                                        />
-                                    ) : (
-                                        <Iconify icon="eva:download-fill" />
-                                    )}
-                                </IconButton>
-                            </Tooltip>
-                        )}
-                    </PDFDownloadLink>
+                    {loading ? (
+                        <IconButton>
+                            <CircularProgress size={18} color="inherit" />
+                        </IconButton>
+                    ) : (
+                        <PDFDownloadLink
+                            document={
+                                <iframe
+                                    src={src}
+                                    style={{ height: "100%", width: "100%" }}
+                                />
+                            }
+                            fileName={cms !== "N/A" ? cms : "Toolbox Talk"}
+                            style={{ textDecoration: "none" }}
+                        >
+                            {({ loading }) => (
+                                <Tooltip title="Download">
+                                    <IconButton>
+                                        {loading ? (
+                                            <CircularProgress
+                                                size={22}
+                                                color="inherit"
+                                            />
+                                        ) : (
+                                            <Iconify icon="eva:download-fill" />
+                                        )}
+                                    </IconButton>
+                                </Tooltip>
+                            )}
+                        </PDFDownloadLink>
+                    )}
 
                     <Tooltip title="Print">
                         <IconButton onClick={handleOpen}>
@@ -131,19 +154,29 @@ export default function InspectionToolbar({
                     <Box
                         sx={{ flexGrow: 1, height: "100%", overflow: "hidden" }}
                     >
-                        <PDFViewer
+                        {loading ? (
+                            <IconButton>
+                                <CircularProgress size={18} color="inherit" />
+                            </IconButton>
+                        ) : (
+                            <iframe
+                                src={src}
+                                style={{ height: "100%", width: "100%" }}
+                            />
+                        )}
+                        {/* <PDFViewer
                             width="100%"
                             height="100%"
                             style={{ border: "none" }}
                         >
-                            <InspectionPDFStyle
+                            <InspectionPDF
                                 inspection={inspection}
                                 reports={reports}
                                 cms={cms}
                                 findings={findings}
                                 rolloutDate={rolloutDate}
                             />
-                        </PDFViewer>
+                        </PDFViewer> */}
                     </Box>
                 </Box>
             </Dialog>

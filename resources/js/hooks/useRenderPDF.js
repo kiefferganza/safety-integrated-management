@@ -9,30 +9,27 @@ const blob = new Blob([js], { type: "application/javascript" })
 function WorkaroundWorker() {
   const objURL = URL.createObjectURL(blob);
   const worker = new Worker(objURL, { type: "module" });
-  worker.addEventListener("error", () => {
+  worker.addEventListener("error", (e) => {
     URL.revokeObjectURL(objURL)
   })
   return worker;
 }
 
-export const pdfWorker = wrap(WorkaroundWorker());
-pdfWorker.onProgress(proxy((info) => console.log(info)));
+const pdfWorker = wrap(WorkaroundWorker());
+// import Worker from "../worker/pdf.worker?worker";
+// const pdfWorker = wrap(new Worker());
+// pdfWorker.onProgress(proxy((info) => console.log(info)));
 
 
-export const useRenderPDF = ({
-  title = "",
-  author = "",
-  description = "",
-  props = {}
-}) => {
+export const useRenderPDF = (props) => {
   const {
     value: url,
     loading,
     error,
   } = useAsync(async () => {
-    return pdfWorker.renderPDFInWorker({ title, author, description, ...props });
-  }, [title, author, description, props]);
-
+    return pdfWorker.renderPDFInWorker(props);
+  }, []);
+ 
   useEffect(() => (url ? () => URL.revokeObjectURL(url) : undefined), [url]);
   return { url, loading, error };
 };
