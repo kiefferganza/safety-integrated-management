@@ -87,7 +87,7 @@ Route::middleware('auth')->as('api.')->group(function ()
 
 
 		Route::prefix('inspections')->as('inspections.')->group(function() {
-			Route::get('/', [InspectionAPIController::class, 'index'])->name('index');
+			Route::get('/', [InspectionApiController::class, 'index'])->name('index');
 		});
 
 });
