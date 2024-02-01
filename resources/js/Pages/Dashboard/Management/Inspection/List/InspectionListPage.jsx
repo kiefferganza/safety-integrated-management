@@ -722,53 +722,57 @@ const InspectionListPage = ({ user, inspections, isLoading }) => {
                                 />
 
                                 <TableBody>
-                                    {isLoading || !inspections
-                                        ? [...Array(rowsPerPage)].map(
-                                              (_i, index) => (
-                                                  <TableSkeleton
-                                                      key={index}
-                                                      sx={{
-                                                          height: denseHeight,
-                                                      }}
-                                                  />
-                                              )
-                                          )
-                                        : currentData
-                                              .slice(
-                                                  page * rowsPerPage,
-                                                  page * rowsPerPage +
-                                                      rowsPerPage
-                                              )
-                                              .map((row) => (
-                                                  <InspectionTableRow
-                                                      key={row.id}
-                                                      row={row}
-                                                      selected={selected.includes(
-                                                          row.id
-                                                      )}
-                                                      onSelectRow={() =>
-                                                          onSelectRow(row.id)
-                                                      }
-                                                      onDeleteRow={() =>
-                                                          handleDeleteRow(
-                                                              row.id
-                                                          )
-                                                      }
-                                                      canEdit={canEdit}
-                                                      canDelete={canDelete}
-                                                  />
-                                              ))}
-
-                                    <TableEmptyRows
-                                        height={denseHeight}
-                                        emptyRows={emptyRows(
-                                            page,
-                                            rowsPerPage,
-                                            tableData.length
-                                        )}
-                                    />
-
-                                    <TableNoData isNotFound={isNotFound} />
+                                    {isLoading || !inspections ? (
+                                        [...Array(rowsPerPage)].map(
+                                            (_i, index) => (
+                                                <TableSkeleton
+                                                    key={index}
+                                                    sx={{
+                                                        height: denseHeight,
+                                                    }}
+                                                />
+                                            )
+                                        )
+                                    ) : (
+                                        <>
+                                            {currentData
+                                                .slice(
+                                                    page * rowsPerPage,
+                                                    page * rowsPerPage +
+                                                        rowsPerPage
+                                                )
+                                                .map((row) => (
+                                                    <InspectionTableRow
+                                                        key={row.id}
+                                                        row={row}
+                                                        selected={selected.includes(
+                                                            row.id
+                                                        )}
+                                                        onSelectRow={() =>
+                                                            onSelectRow(row.id)
+                                                        }
+                                                        onDeleteRow={() =>
+                                                            handleDeleteRow(
+                                                                row.id
+                                                            )
+                                                        }
+                                                        canEdit={canEdit}
+                                                        canDelete={canDelete}
+                                                    />
+                                                ))}
+                                            <TableEmptyRows
+                                                height={denseHeight}
+                                                emptyRows={emptyRows(
+                                                    page,
+                                                    rowsPerPage,
+                                                    tableData.length
+                                                )}
+                                            />
+                                            <TableNoData
+                                                isNotFound={isNotFound}
+                                            />
+                                        </>
+                                    )}
                                 </TableBody>
                             </Table>
                         </Scrollbar>
