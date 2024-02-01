@@ -21,7 +21,11 @@ const InspectionAnalytic = forwardRef(
                 sx={{ width: 1, minWidth: 200 }}
             >
                 <Stack
-                    ref={(el) => (ref.current[idx] = el)}
+                    ref={(el) => {
+                        if (ref) {
+                            ref.current[idx] = el;
+                        }
+                    }}
                     alignItems="center"
                     justifyContent="center"
                     sx={{ position: "relative" }}
