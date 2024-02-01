@@ -34,14 +34,7 @@ const getItemStatus = (status) => {
     }
 };
 
-export function PDF({
-    inspection,
-    cms,
-    reports,
-    findings = [],
-    rolloutDate,
-    logo,
-}) {
+export function PDF({ inspection, cms, reports, findings = [], rolloutDate }) {
     const section_C_A = reports.sectionC.slice(0, 6);
     const remainingC_A = reports.sectionC.slice(6);
 

@@ -32,13 +32,12 @@ export default function InspectionToolbar({
     rolloutDate,
 }) {
     const { url, loading, error } = useRenderPDF({
-        path: "../../sections/@dashboard/inspection/details/PDF",
+        pdf_type: "inspection_view",
         inspection,
         cms,
         reports,
         findings,
         rolloutDate,
-        logo: route("image", { path: "media/logo/Fiafi-logo.png" }),
     });
     const src = url ? `${url}#toolbar=1` : null;
 
