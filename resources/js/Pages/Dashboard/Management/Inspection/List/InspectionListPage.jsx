@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { differenceInDays } from "date-fns";
 import { Head, Link } from "@inertiajs/inertia-react";
 import { useSwal } from "@/hooks/useSwal";
 import { Inertia } from "@inertiajs/inertia";
-import { employeeName } from "@/utils/formatName";
 // @mui
 import { useTheme } from "@mui/material/styles";
 import {
@@ -45,6 +43,7 @@ import {
     TableHeadCustom,
     TableSelectedAction,
     TablePaginationCustom,
+    TableSkeleton,
 } from "@/Components/table";
 // sections
 import {
@@ -53,7 +52,6 @@ import {
 } from "@/sections/@dashboard/inspection/list";
 import InspectionAnalytic from "@/sections/@dashboard/inspection/InspectionAnalytic";
 import usePermission from "@/hooks/usePermission";
-import { getObservation } from "@/utils/inspection";
 
 // ----------------------------------------------------------------------
 
@@ -70,7 +68,7 @@ const TABLE_HEAD = [
     { id: "" },
 ];
 
-const InspectionListPage = ({ user, inspections }) => {
+const InspectionListPage = ({ user, inspections, isLoading }) => {
     const [hasPermission] = usePermission();
     const theme = useTheme();
     const { themeStretch } = useSettingsContext();
@@ -112,6 +110,12 @@ const InspectionListPage = ({ user, inspections }) => {
 
     const [filterEndDate, setFilterEndDate] = useState(null);
 
+    useEffect(() => {
+        if (inspections?.length > 0) {
+            setTableData(inspections);
+        }
+    }, [inspections]);
+
     const dataFiltered = applyFilter({
         inputData: tableData,
         comparator: getComparator(order, orderBy),
@@ -128,34 +132,6 @@ const InspectionListPage = ({ user, inspections }) => {
         filterStatus,
         filterType,
     });
-
-    useEffect(() => {
-        const data = inspections?.map((inspection) => ({
-            ...inspection,
-            id: inspection.inspection_id,
-            reviewer: employeeName(inspection.reviewer).trim(),
-            verifier: employeeName(inspection.verifier).trim(),
-            status: getInspectionStatus(inspection.status),
-            type: getInspectionType({ status: inspection.status }),
-            ...getObservation(inspection.report_list),
-            dueStatus: getDueDateStatus(inspection.date_due),
-        }));
-        setTableData(data || []);
-    }, [user, inspections]);
-
-    const getInspectionType = ({ status }) => {
-        switch (status) {
-            case 1:
-            case 0:
-                return "submitted";
-            case 2:
-                return "verify";
-            case 3:
-                return "closeout";
-            default:
-                return "review";
-        }
-    };
 
     const denseHeight = dense ? 56 : 76;
 
@@ -686,28 +662,42 @@ const InspectionListPage = ({ user, inspections }) => {
                                 />
 
                                 <TableBody>
-                                    {currentData
-                                        .slice(
-                                            page * rowsPerPage,
-                                            page * rowsPerPage + rowsPerPage
-                                        )
-                                        .map((row) => (
-                                            <InspectionTableRow
-                                                key={row.id}
-                                                row={row}
-                                                selected={selected.includes(
-                                                    row.id
-                                                )}
-                                                onSelectRow={() =>
-                                                    onSelectRow(row.id)
-                                                }
-                                                onDeleteRow={() =>
-                                                    handleDeleteRow(row.id)
-                                                }
-                                                canEdit={canEdit}
-                                                canDelete={canDelete}
-                                            />
-                                        ))}
+                                    {isLoading || !inspections
+                                        ? [...Array(rowsPerPage)].map(
+                                              (_i, index) => (
+                                                  <TableSkeleton
+                                                      key={index}
+                                                      sx={{
+                                                          height: denseHeight,
+                                                      }}
+                                                  />
+                                              )
+                                          )
+                                        : currentData
+                                              .slice(
+                                                  page * rowsPerPage,
+                                                  page * rowsPerPage +
+                                                      rowsPerPage
+                                              )
+                                              .map((row) => (
+                                                  <InspectionTableRow
+                                                      key={row.id}
+                                                      row={row}
+                                                      selected={selected.includes(
+                                                          row.id
+                                                      )}
+                                                      onSelectRow={() =>
+                                                          onSelectRow(row.id)
+                                                      }
+                                                      onDeleteRow={() =>
+                                                          handleDeleteRow(
+                                                              row.id
+                                                          )
+                                                      }
+                                                      canEdit={canEdit}
+                                                      canDelete={canDelete}
+                                                  />
+                                              ))}
 
                                     <TableEmptyRows
                                         height={denseHeight}
@@ -855,59 +845,6 @@ const InspectionListPage = ({ user, inspections }) => {
         </>
     );
 };
-
-const getInspectionStatus = (status) => {
-    let result = {
-        code: status,
-        classType: "default",
-        text: "",
-        tooltip: "",
-    };
-    switch (status) {
-        case 1:
-        case 0:
-            result.classType = "warning";
-            result.text = "I P";
-            result.tooltip = "In Progress";
-            break;
-        case 2:
-            result.classType = "warning";
-            result.text = "W F C";
-            result.tooltip = "Waiting For Closure";
-            break;
-        case 3:
-            result.classType = "success";
-            result.text = "C";
-            result.tooltip = "Closed";
-            break;
-        default:
-            result.classType = "error";
-            result.text = "F R";
-            result.tooltip = "For Revision";
-    }
-    return result;
-};
-
-const getDueDateStatus = (dueDate) => {
-    const diff = differenceInDays(new Date(dueDate), new Date());
-
-    if (diff === 0) {
-        return {
-            text: "A.T.",
-            tooltip: "Active Today",
-            classType: "warning",
-        };
-    }
-
-    return {
-        text: diff > 0 ? `${diff} A.D.` : `${Math.abs(diff)} O.D.`,
-        tooltip: diff > 0 ? `Active ${diff} days` : `Overdue ${Math.abs(diff)}`,
-        classType: diff > 0 ? "success" : "error",
-        type: diff > 0 ? "A.D." : "O.D.",
-    };
-};
-
-// ----------------------------------------------------------------------
 
 function applyFilter({
     inputData,

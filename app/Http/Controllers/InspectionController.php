@@ -18,38 +18,7 @@ class InspectionController extends Controller
 
 	public function index()
 	{
-		$inspections =	Inspection::select("inspection_id","employee_id", "reviewer_id", "verifier_id","accompanied_by", "form_number", "status", "revision_no", "location", "contract_no", "inspected_by", "inspected_date","inspected_time", "avg_score", "date_issued","date_due")
-		->where("is_deleted", 0)
-		->with([
-			"reviewer",
-			"verifier",
-			"report_list" => fn($q) => $q->orderBy("ref_num")
-		])
-		->get()
-		->reverse()
-		->flatten();
-
-		$inspections->each(function($inspection) {
-			$inspection->report_list->transform(function ($item) {
-					if($item->ref_score === 2 || $item->ref_score === 3) { 
-							$before = $item->getFirstMedia("before");
-							$after = $item->getFirstMedia("after");
-							if($before) {
-								$path = "inspection-report-list/" . md5($before->id . config('app.key')). "/" .$before->file_name;
-								$item->photo_before = URL::route("image", ["path" => $path, "h" => 180]);
-							}
-							if($after) {
-								$path = "inspection-report-list/" . md5($after->id . config('app.key')). "/" .$after->file_name;
-								$item->photo_after = URL::route("image", ["path" => $path, "h" => 180]);
-							}
-					}
-					return $item;
-			});
-		});
-
-		return Inertia::render("Dashboard/Management/Inspection/List/index", [
-			"inspections" => $inspections
-		]);
+		return Inertia::render("Dashboard/Management/Inspection/List/index");
 	}
 
 

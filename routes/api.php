@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApiControllers\DashboardController;
 use App\Http\Controllers\ApiControllers\FolderApiController;
 use App\Http\Controllers\ApiControllers\ImageApiController;
+use App\Http\Controllers\ApiControllers\InspectionAPIController;
 use App\Http\Controllers\ApiControllers\ToolboxTalkController;
 use App\Http\Controllers\ApiControllers\TrainingApiController;
 use App\Http\Controllers\ApiControllers\UserApiController;
@@ -83,6 +84,11 @@ Route::middleware('auth')->as('api.')->group(function ()
     Route::get('in-house/matrix', [TrainingApiController::class, 'inhouseMatrix'])->name('inhouse_matrix');
     Route::get('external/matrix', [TrainingApiController::class, 'externalMatrix'])->name('external_matrix');
   });
+
+
+		Route::prefix('inspections')->as('inspections.')->group(function() {
+			Route::get('/', [InspectionAPIController::class, 'index'])->name('index');
+		});
 
 });
 

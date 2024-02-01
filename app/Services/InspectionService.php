@@ -10,9 +10,11 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 
-class InspectionService {
+class InspectionService
+{
 
-	public function insertInspection(Request $request){
+	public function insertInspection(Request $request)
+	{
 		$user = auth()->user();
 		$request->validate([
 			"project_code" => ["string", "required"],
@@ -25,7 +27,7 @@ class InspectionService {
 			"date_due" => ["string", "required"],
 			"reviewer_id" => ["string", "required"],
 			"verifier_id" => ["string", "required"],
-      "autoClose" => ["boolean", "required"]
+			"autoClose" => ["boolean", "required"]
 		]);
 		// TODO: GENERATE FORM NUMBER ON CREATING AND UPDATE ALL FORM NUMBER
 		$inspection = new Inspection;
@@ -46,27 +48,33 @@ class InspectionService {
 		$inspection->status = $request?->autoClose ? 3 : $request->status;
 		$inspection->revision_no = 0;
 		$inspection->is_deleted = 0;
-		
+
 		$inspection->save();
 		$inspection_id = $inspection->inspection_id;
 
 		$sectionE = $request->sectionE ? $request->sectionE : [];
 		$sections_merged = array_merge($request->sectionA, $request->sectionB, $request->sectionC, $request->sectionC_B, $request->sectionD, $sectionE);
-		
+
 		$obs = [
 			"total" => 0,
 			"positive" => 0,
 			"negative" => 0
 		];
-		
-		foreach ($sections_merged as $section) {
-			if($section['score'] !== null) {
-				if($section["score"] !== "4") {
+
+		foreach ($sections_merged as $section)
+		{
+			if ($section['score'] !== null)
+			{
+				if ($section["score"] !== "4")
+				{
 					$obs['total'] += 1;
 				}
-				if($section["score"] === "1") {
+				if ($section["score"] === "1")
+				{
 					$obs['positive'] += 1;
-				}else if($section["score"] === "2" || $section["score"] === "3") {
+				}
+				else if ($section["score"] === "2" || $section["score"] === "3")
+				{
 					$obs['negative'] += 1;
 				}
 			}
@@ -81,20 +89,22 @@ class InspectionService {
 				"date_submitted" => $request->date_issued,
 				"is_deleted" => 0
 			]);
-			if($section["photo_before"] !== null) {
+			if ($section["photo_before"] !== null)
+			{
 				$report->addMedia($section["photo_before"])->toMediaCollection("before");
 			}
 		}
 
 		// Notification
-		$message = '<p>Total Observation: <strong>'. $obs['total'] .'</strong></p>';
-		$message .= '<p>Positive Observation: <strong>'. $obs['positive'] .'</strong></p>';
-		$message .= '<p>Negative Observation: <strong>'. $obs['negative'] .'</strong></p>';
-		$message .= '<p>Due Date: <strong>'. Carbon::parse($request->date_due)->format('M j, Y') .'</strong></p>';
-		$message .= '<p>CMS: <strong>'. $request->form_number .'</strong></p>';
+		$message = '<p>Total Observation: <strong>' . $obs['total'] . '</strong></p>';
+		$message .= '<p>Positive Observation: <strong>' . $obs['positive'] . '</strong></p>';
+		$message .= '<p>Negative Observation: <strong>' . $obs['negative'] . '</strong></p>';
+		$message .= '<p>Due Date: <strong>' . Carbon::parse($request->date_due)->format('M j, Y') . '</strong></p>';
+		$message .= '<p>CMS: <strong>' . $request->form_number . '</strong></p>';
 
 		$toReviewer = User::where("emp_id", $request->reviewer_id)->first();
-		if($toReviewer) {
+		if ($toReviewer)
+		{
 			Notification::send($toReviewer, new ModuleBasicNotification(
 				title: 'set you as a reviewer',
 				message: $message,
@@ -105,7 +115,8 @@ class InspectionService {
 			));
 		}
 		$toApprover = User::where("emp_id", $request->verifier_id)->first();
-		if($toApprover) {
+		if ($toApprover)
+		{
 			Notification::send($toApprover, new ModuleBasicNotification(
 				title: 'set you as an approver',
 				message: $message,
@@ -117,24 +128,29 @@ class InspectionService {
 		}
 	}
 
-	public function getUnsatisfactoryItems(Inspection $inspection) {
+	public function getUnsatisfactoryItems(Inspection $inspection)
+	{
 		$inspection->load([
-			"report_list" => function($q) use ($inspection) {
+			"report_list" => function ($q) use ($inspection)
+			{
 				$q->select("list_id", "inspection_id", "ref_num", "ref_score", "photo_before", "findings", "photo_after", "action_taken", "employee_id", "date_submitted", "item_status");
 				// if($inspection->status === 4) {
 				// 	return $q->where("item_status", 2)->orderBy("ref_num");
 				// }
-				return $q->whereIn("ref_score", [2,3])->orderBy("ref_num");
+				return $q->whereIn("ref_score", [2, 3])->orderBy("ref_num");
 			}
 		]);
-		
-		$inspection->report_list->transform(function ($item) {
+
+		$inspection->report_list->transform(function ($item)
+		{
 			$before = $item->getFirstMedia("before");
 			$after = $item->getFirstMedia("after");
-			if($before) {
+			if ($before)
+			{
 				$item->photo_before = $before->getFullUrl();
 			}
-			if($after) {
+			if ($after)
+			{
 				$item->photo_after = $after->getFullUrl();
 			}
 			return $item;
@@ -142,12 +158,145 @@ class InspectionService {
 		return $inspection;
 	}
 
-	public static function getTableName($ref) {
-		if($ref <= 6) return "Offices/Welfare Facilities";
-		if($ref >= 7 && $ref <= 13) return "Monitoring/Control";
-		if($ref >= 14 && $ref <= 31) return "Site Operations";
-		if($ref >= 32 && $ref <= 34) return "Environmental";
+	public static function getTableName($ref)
+	{
+		if ($ref <= 6) return "Offices/Welfare Facilities";
+		if ($ref >= 7 && $ref <= 13) return "Monitoring/Control";
+		if ($ref >= 14 && $ref <= 31) return "Site Operations";
+		if ($ref >= 32 && $ref <= 34) return "Environmental";
 		return "Others";
 	}
+
+
+	public function getAllInspections()
+	{
+		return Inspection::select("inspection_id", "employee_id", "reviewer_id", "verifier_id", "accompanied_by", "form_number", "status", "revision_no", "location", "contract_no", "inspected_by", "inspected_date", "inspected_time", "avg_score", "date_issued", "date_due")
+			->where("is_deleted", 0)
+			->with([
+				"reviewer",
+				"verifier",
+				"report_list" => fn ($q) => $q->orderBy("ref_num")
+			])
+			->get()
+			->reverse()
+			->flatten()
+			->transform(function($inspection) {
+				return [
+					...$inspection->toArray(),
+					"id" => $inspection->inspection_id,
+					"reviewer" => trim($inspection?->reviewer?->fullName ?? ""),
+					"verifier" => trim($inspection?->verifier?->fullName ?? ""),
+					"status" => $this->getInspectionStatus($inspection->status),
+					"type" => $this->getInspectionType($inspection->status),
+					...$this->getObservation($inspection?->report_list ?? collect([])),
+					"dueStatus" => $this->getDueDateStatus($inspection->date_due),
+				];
+			});
+	}
+
+	public function getObservation($reports) {
+		return $reports->reduce(function ($acc, $curr) {
+			if ($curr["ref_score"] !== 0 && $curr["ref_score"] !== 4 && $curr["ref_score"] !== null) {
+				$acc["totalObservation"] += 1;
+			}
+			if ($curr["ref_score"] === 1) {
+				$acc["positiveObservation"] += 1;
+			} else if (($curr["ref_score"] === 2 || $curr["ref_score"] === 3) && $curr["item_status"] !== "2") {
+				$acc["negativeObservation"] += 1;
+			}
+			return $acc;
+		}, ["totalObservation" => 0, "positiveObservation" => 0, "negativeObservation" => 0]);
+	}
+	
+
+	private function getInspectionType($status) {
+		switch ($status) {
+			case 1:
+			case 0:
+							return "submitted";
+			case 2:
+							return "verify";
+			case 3:
+							return "closeout";
+			default:
+							return "review";
+		}
+	}
+
+	private function getInspectionStatus($status) 
+	{
+		$result = [
+			"code" => $status,
+			"classType" => "default",
+			"text" => "",
+			"tooltip" => "",
+		];
+		switch ($status)
+		{
+			case 1:
+			case 0:
+				$result["classType"] = "warning";
+				$result["text"] = "I P";
+				$result["tooltip"] = "In Progress";
+				break;
+			case 2:
+				$result["classType"] = "warning";
+				$result["text"] = "W F C";
+				$result["tooltip"] = "Waiting For Closure";
+				break;
+			case 3:
+				$result["classType"] = "success";
+				$result["text"] = "C";
+				$result["tooltip"] = "Closed";
+				break;
+			default:
+				$result["classType"] = "error";
+				$result["text"] = "F R";
+				$result["tooltip"] = "For Revision";
+		}
+		return $result;
+	}
+
+	public function getDueDateStatus($dueDate) {
+		$date = Carbon::parse($dueDate);
+		$diff = now()->diffInDays($date, false);
+
+		if ($diff === 0) {
+						return [
+							"text" => "A.T.",
+							"tooltip" => "Active Today",
+							"classType" => "warning",
+						];
+		}
+
+		return [
+			"text" => $diff > 0 ? abs($diff) . " A.D." : abs($diff) . " O.D.",
+			"tooltip" => $diff > 0 ? "Active ". $diff ." days" : "Overdue ". abs($diff),
+			"classType" => $diff > 0 ? "success" : "error",
+			"type" => $diff > 0 ? "A.D." : "O.D.",
+		];
+	}
+
+	// const getDueDateStatus = (dueDate) => {
+	 // const diff = differenceInDays(new Date(dueDate), new Date());
+
+	 // if (diff === 0) {
+	 //     return {
+	 //         text: "A.T.",
+	 //         tooltip: "Active Today",
+	 //         classType: "warning",
+	 //     };
+	 // }
+
+	 // return {
+	 //     text: diff > 0 ? `${diff} A.D.` : `${Math.abs(diff)} O.D.`,
+	 //     tooltip: diff > 0 ? `Active ${diff} days` : `Overdue ${Math.abs(diff)}`,
+	 //     classType: diff > 0 ? "success" : "error",
+	 //     type: diff > 0 ? "A.D." : "O.D.",
+	 // };
+	// };
+
+
+
 
 }
