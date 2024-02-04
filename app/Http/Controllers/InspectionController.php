@@ -9,27 +9,16 @@ use App\Models\InspectionReportList;
 use App\Services\InspectionService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 class InspectionController extends Controller
 {
 
 	public function index()
 	{
-		$inspections =	Inspection::select("inspection_id","employee_id", "reviewer_id", "verifier_id","accompanied_by", "form_number", "status", "revision_no", "location", "contract_no", "inspected_by", "inspected_date","inspected_time", "avg_score", "date_issued","date_due")
-		->where("is_deleted", 0)
-		->with([
-			"reviewer",
-			"verifier",
-			"report_list" => fn($q) => $q->orderBy("ref_num")
-		])
-		->get()
-		->reverse()
-		->flatten();
-
-		return Inertia::render("Dashboard/Management/Inspection/List/index", [
-			"inspections" => $inspections
-		]);
+		return Inertia::render("Dashboard/Management/Inspection/List/index");
 	}
 
 
@@ -257,5 +246,52 @@ class InspectionController extends Controller
 		->with('type', 'success')
 		->with('message', 'Inspection updated successfully');
 	}
+
+
+	public function inspection_list_pdf_post(Request $request)
+	{
+		if(!$request->inspections && empty($request->all())) {
+			abort(404);
+			Cache::forget("inspection_pdf");
+		}
+
+		Cache::put("inspection_pdf", $request->all());
+
+		return redirect()->route("inspection.management.pdfListGet");
+	}
+
+	public function inspection_list_pdf_get()
+	{
+		
+		$inspectionsCached = Cache::get("inspection_pdf");
+		if(!$inspectionsCached) {
+			abort(404);
+		}
+
+		$inspections = [];
+
+		foreach ($inspectionsCached['inspections'] as $inspection) {
+			$inspection_report = $inspection["report_list"];
+			$inspection["report_list"] = [
+				"observation" => [],
+				"result" => [],
+				"titles" => []
+			];
+			foreach ($inspection_report as $report) {
+				$inspection["report_list"]["titles"][] = $report["section_title"];
+				$inspection["report_list"]["observation"][] = $report["findings"];
+				$inspection["report_list"]["result"][] = $report["action_taken"];
+			}
+			$inspections[] = $inspection;
+		}
+
+
+		return Inertia::render("Dashboard/Management/Inspection/List/PDF/index", [
+			"inspections" => $inspections,
+			"info" => $inspectionsCached["info"]
+		]);
+	}
+
+
 
 }

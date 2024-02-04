@@ -1,10 +1,13 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
 // You don't need to add this to deps, it's included by @esbuild-plugins/node-modules-polyfill
 // import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
+
+const reactPlugin = react();
 
 export default defineConfig({
 	plugins: [
@@ -12,7 +15,8 @@ export default defineConfig({
 			input: 'resources/js/app.jsx',
 			refresh: true,
 		}),
-		react(),
+		reactPlugin,
+		VitePWA({ registerType: 'autoUpdate' })
 	],
 	resolve: {
 		alias: {
@@ -74,6 +78,10 @@ export default defineConfig({
 	build: {
 		target: 'esnext',
 		chunkSizeWarningLimit: 3000
+	},
+	worker: {
+		plugins: [reactPlugin],
+		format: 'es'
 	}
 });
 

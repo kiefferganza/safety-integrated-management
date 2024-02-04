@@ -252,6 +252,10 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/{inspection}/verify', [InspectionController::class, "verify"]);
 			Route::post('/{inspection}/verify', [InspectionReportController::class, "verify_update"]);
 		});
+
+		Route::post('/pdf/list/post', [InspectionController::class, 'inspection_list_pdf_post'])->name('pdfListPost');
+		Route::get('/pdf/list', [InspectionController::class, 'inspection_list_pdf_get'])->name('pdfListGet');
+
 	});
 
 	/**
