@@ -38,7 +38,7 @@ const PDF = (props) => (
                     />
                 </View>
                 <View style={{ textAlign: "center", marginTop: "-30px" }}>
-                    <Text style={[styles.h2]}>HSE Inspection Tracker</Text>
+                    <Text style={[styles.h2]}>{props.title}</Text>
                 </View>
 
                 <View style={[styles.pl24, styles.pr24]}>
@@ -888,7 +888,7 @@ const PDF = (props) => (
                                                 ]}
                                             >
                                                 {result
-                                                    ? `${idx}. ${result}`
+                                                    ? `${idx + 1}. ${result}`
                                                     : "TBA"}
                                             </Text>
                                         </View>
