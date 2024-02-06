@@ -1,19 +1,9 @@
 import Chart, { useChart } from "@/Components/chart";
 import { useTheme } from "@mui/material/styles";
 
-export default function NatureOfInjury() {
+export default function NatureOfInjury({ data }) {
     const theme = useTheme();
-    const categories = [
-        "Abrasion",
-        "Asphyxia",
-        "Bruise/Contusion",
-        "Burn - Thermal",
-        "Concussion",
-        "Electric Shock",
-        "Hearing Loss",
-        "Ingetsion",
-        "Skin Disorder",
-    ];
+    const categories = data?.categories || [];
     const chartOptions = useChart({
         colors: [],
         xaxis: {
@@ -70,11 +60,11 @@ export default function NatureOfInjury() {
             opacity: 0,
             borderRadius: 0,
         },
-        colors: [theme.palette.primary.main],
+        colors: ["#31869b"],
     });
     const series = [
         {
-            data: [0, 0, 0, 0, 1, 0, 0, 0, 0],
+            data: data?.data || [],
         },
     ];
     return (

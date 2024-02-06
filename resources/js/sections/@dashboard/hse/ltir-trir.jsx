@@ -53,10 +53,7 @@ export default function LtirTrir() {
         {
             name: "Manpower",
             type: "line",
-            data: [
-                4000, 3400, 3432, 3490, 3800, 2900, 4000, 2890, 2700, 2900,
-                2600, 2400,
-            ],
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         },
         {
             name: "LTIR",
@@ -66,7 +63,7 @@ export default function LtirTrir() {
         {
             name: "TRIR",
             type: "column",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 4350, 3700, 3500],
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         },
     ];
     return (

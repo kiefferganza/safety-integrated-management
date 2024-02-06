@@ -25,47 +25,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth')->as('api.')->group(function ()
 {
 
-	Route::get('toolbox-talks', function() {
-		$tbt = ToolboxTalk::where("is_deleted", 0)
-			->with([
-				"participants" => fn ($q) => $q->select("firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
-				"file" => fn ($q) => $q->select("tbt_id","img_src"),
-				"conducted"
-			])
-			->orderBy('date_conducted')
-			->get();
+	Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-		return response()->json([
-			"tbt" => $tbt
-		]);
-	})->name('toolbox_talks');
-
-	// Route::post('/user/follow/{user_id}', [UsersController::class, "followUser"]);
-
-	Route::prefix('user')->as('user.')->group(function() {
-		Route::get('/emails', [UserApiController::class, 'getEmails'])->name('emails');
-		Route::get('/notifications', [UserApiController::class, 'notifications'])->name('notifications');
-		Route::post('/read-notifications', [UserApiController::class, 'readNotifications'])->name('read_notifications');
-
-		Route::get('/cover/{user}', [UserApiController::class, 'coverImages'])->name('cover_images');
-		Route::post('/cover/{user}', [UserApiController::class, 'addCoverImage'])->name('add_cover');
-		Route::post('/profile-image-update/{user}', [UserApiController::class, 'updateProfileImage'])->name('update_profile_image');
-		Route::post('/set-image/{media}', [UsersController::class, 'setProfilePic'])->name('set-profile');
-		Route::get('/{user}', [UserApiController::class, 'profileImages'])->name('profile_images');
-
-	});
-
-	Route::prefix('images')->as('images.')->group(function() {
-		Route::post('/set-image/{user}', [ImageApiController::class, 'setImageByMediaAndCollectionName'])->name('set-image');
-		Route::delete('/delete-image/{media}', [ImageApiController::class, 'deleteImageById'])->name('delete-image');
-	});
-
-	Route::prefix('folder')->as('folder.')->group(function() {
-		Route::post('/update-order', [FolderApiController::class, 'updateOrder'])->name('update-order');
-		Route::post('/generate-url/{document}', [FolderApiController::class, 'generateUrl'])->name('generate-url');
-	});
-
-	Route::prefix('dashboard')->as('dashboard.')->group(function() {
+	Route::prefix('dashboard')->as('dashboard.')->group(function ()
+	{
 		Route::get('/slider-images', [DashboardController::class, 'sliderImages'])->name('slider_images');
 		Route::get('/toolboxtalks', [DashboardController::class, 'toolboxtalks'])->name('toolboxtalks');
 		Route::get('/toolboxtalks-statistics', [DashboardController::class, 'tbtStatistics'])->name('tbt_statistics');
@@ -75,21 +38,66 @@ Route::middleware('auth')->as('api.')->group(function ()
 		Route::get('/inspections', [DashboardController::class, 'inspections'])->name('inspections');
 	});
 
-	Route::prefix('toolbox-talks')->as('tbt.')->group(function() {
+	Route::prefix('toolbox-talks')->as('tbt.')->group(function ()
+	{
 		Route::get('/all', [ToolboxTalkController::class, 'index'])->name('index');
 		Route::get('/type', [ToolboxTalkController::class, 'byType'])->name('type');
 	});
 
-  Route::prefix('training')->as('training.')->group(function(){
-    Route::get('in-house/matrix', [TrainingApiController::class, 'inhouseMatrix'])->name('inhouse_matrix');
-    Route::get('external/matrix', [TrainingApiController::class, 'externalMatrix'])->name('external_matrix');
-  });
+	Route::prefix('training')->as('training.')->group(function ()
+	{
+		Route::get('in-house/matrix', [TrainingApiController::class, 'inhouseMatrix'])->name('inhouse_matrix');
+		Route::get('external/matrix', [TrainingApiController::class, 'externalMatrix'])->name('external_matrix');
+	});
 
 
-		Route::prefix('inspections')->as('inspections.')->group(function() {
-			Route::get('/', [InspectionApiController::class, 'index'])->name('index');
-		});
+	Route::prefix('inspections')->as('inspections.')->group(function ()
+	{
+		Route::get('/', [InspectionApiController::class, 'index'])->name('index');
+	});
 
+	// Route::get('toolbox-talks', function ()
+	// {
+	// 	$tbt = ToolboxTalk::where("is_deleted", 0)
+	// 		->with([
+	// 			"participants" => fn ($q) => $q->select("firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+	// 			"file" => fn ($q) => $q->select("tbt_id", "img_src"),
+	// 			"conducted"
+	// 		])
+	// 		->orderBy('date_conducted')
+	// 		->get();
+
+	// 	return response()->json([
+	// 		"tbt" => $tbt
+	// 	]);
+	// })->name('toolbox_talks');
+
+	// Route::post('/user/follow/{user_id}', [UsersController::class, "followUser"]);
+
+	Route::prefix('user')->as('user.')->group(function ()
+	{
+		Route::get('/emails', [UserApiController::class, 'getEmails'])->name('emails');
+		Route::get('/notifications', [UserApiController::class, 'notifications'])->name('notifications');
+		Route::post('/read-notifications', [UserApiController::class, 'readNotifications'])->name('read_notifications');
+
+		Route::get('/cover/{user}', [UserApiController::class, 'coverImages'])->name('cover_images');
+		Route::post('/cover/{user}', [UserApiController::class, 'addCoverImage'])->name('add_cover');
+		Route::post('/profile-image-update/{user}', [UserApiController::class, 'updateProfileImage'])->name('update_profile_image');
+		Route::post('/set-image/{media}', [UsersController::class, 'setProfilePic'])->name('set-profile');
+		Route::get('/{user}', [UserApiController::class, 'profileImages'])->name('profile_images');
+	});
+
+	Route::prefix('images')->as('images.')->group(function ()
+	{
+		Route::post('/set-image/{user}', [ImageApiController::class, 'setImageByMediaAndCollectionName'])->name('set-image');
+		Route::delete('/delete-image/{media}', [ImageApiController::class, 'deleteImageById'])->name('delete-image');
+	});
+
+	Route::prefix('folder')->as('folder.')->group(function ()
+	{
+		Route::post('/update-order', [FolderApiController::class, 'updateOrder'])->name('update-order');
+		Route::post('/generate-url/{document}', [FolderApiController::class, 'generateUrl'])->name('generate-url');
+	});
 });
 
 // Route::get("/update", function() {

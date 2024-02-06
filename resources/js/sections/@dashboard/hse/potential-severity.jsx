@@ -1,10 +1,14 @@
 import Chart, { useChart } from "@/Components/chart";
 
-export default function PotentialSeverity() {
-    const categories = ["EXTERME 4", "HIGH 3", "MEDIUM 2", "LOW 1"];
+export default function PotentialSeverity({ data }) {
+    // const categories = ["EXTERME 4", "HIGH 3", "MEDIUM 2", "LOW 1"];
+    const categories = data?.categories || [];
     const chartOptions = useChart({
         xaxis: {
             categories,
+        },
+        legend: {
+            show: false,
         },
         plotOptions: {
             bar: {
@@ -12,6 +16,7 @@ export default function PotentialSeverity() {
                 horizontal: true,
                 barHeight: "30%",
                 hideOverflowingLabels: true,
+                distributed: true,
                 dataLabels: {
                     position: "start",
                 },
@@ -22,16 +27,18 @@ export default function PotentialSeverity() {
             offsetX: 0,
             offsetY: 0,
             style: {
-                fontSize: "10px",
+                fontSize: "9px",
+                colors: ["#000"],
             },
         },
         grid: {
             strokeDashArray: 0,
         },
+        colors: ["#ff0000", "#ffc000", "#ffff00", "#00b050"],
     });
     const series = [
         {
-            data: [0, 1, 0, 0],
+            data: data?.data || [],
         },
     ];
     return (

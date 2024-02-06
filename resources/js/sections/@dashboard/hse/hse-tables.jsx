@@ -63,7 +63,7 @@ const TableBoxRow = styled(Box)(({ theme }) => ({
     },
 }));
 
-export default function HseTables() {
+export default function HseTables({ data }) {
     return (
         <Stack direction="row" gap={0.5} flexWrap="wrap">
             <TableBox>
@@ -74,7 +74,9 @@ export default function HseTables() {
                             <Typography>This Month</Typography>
                         </Box>
                         <Box>
-                            <Typography>340,866</Typography>
+                            <Typography>
+                                {data?.manhours_worked?.this_month || "0"}
+                            </Typography>
                         </Box>
                     </Stack>
                     <Stack>
@@ -82,7 +84,9 @@ export default function HseTables() {
                             <Typography>PTD</Typography>
                         </Box>
                         <Box>
-                            <Typography>340,866</Typography>
+                            <Typography>
+                                {data?.manhours_worked?.PTD || "-"}
+                            </Typography>
                         </Box>
                     </Stack>
                     <Stack>
@@ -90,7 +94,9 @@ export default function HseTables() {
                             <Typography>YTD Safe Manhours</Typography>
                         </Box>
                         <Box>
-                            <Typography>1,875,714</Typography>
+                            <Typography>
+                                {data?.manhours_worked?.safe_manhours || "-"}
+                            </Typography>
                         </Box>
                     </Stack>
                 </TableBoxRow>
@@ -103,7 +109,9 @@ export default function HseTables() {
                             <Typography>Ave/Day</Typography>
                         </Box>
                         <Box>
-                            <Typography>105</Typography>
+                            <Typography>
+                                {data?.man_power?.ave_day || "-"}
+                            </Typography>
                         </Box>
                     </Stack>
                     <Stack>
@@ -111,7 +119,9 @@ export default function HseTables() {
                             <Typography>This Month</Typography>
                         </Box>
                         <Box>
-                            <Typography>-</Typography>
+                            <Typography>
+                                {data?.man_power?.this_month || "0"}
+                            </Typography>
                         </Box>
                     </Stack>
                     <Stack>
@@ -119,7 +129,9 @@ export default function HseTables() {
                             <Typography>PTD</Typography>
                         </Box>
                         <Box>
-                            <Typography>-</Typography>
+                            <Typography>
+                                {data?.man_power?.PTD || "-"}
+                            </Typography>
                         </Box>
                     </Stack>
                 </TableBoxRow>
@@ -132,7 +144,7 @@ export default function HseTables() {
                             <Typography>Acident Free</Typography>
                         </Box>
                         <Box>
-                            <Typography>60,693</Typography>
+                            <Typography>-</Typography>
                         </Box>
                     </Stack>
                     <Stack>
@@ -153,7 +165,7 @@ export default function HseTables() {
                             <Typography>Internal</Typography>
                         </Box>
                         <Box>
-                            <Typography>1</Typography>
+                            <Typography>-</Typography>
                         </Box>
                     </Stack>
                     <Stack>
@@ -161,7 +173,7 @@ export default function HseTables() {
                             <Typography>ROO Dept.</Typography>
                         </Box>
                         <Box>
-                            <Typography>1</Typography>
+                            <Typography>-</Typography>
                         </Box>
                     </Stack>
                 </TableBoxRow>
@@ -174,7 +186,7 @@ export default function HseTables() {
                             <Typography>Internal</Typography>
                         </Box>
                         <Box>
-                            <Typography>6</Typography>
+                            <Typography>-</Typography>
                         </Box>
                     </Stack>
                     <Stack>
@@ -195,7 +207,9 @@ export default function HseTables() {
                             <Typography>This Month</Typography>
                         </Box>
                         <Box>
-                            <Typography>138</Typography>
+                            <Typography>
+                                {data?.hse_inspection?.this_month || "0"}
+                            </Typography>
                         </Box>
                     </Stack>
                     <Stack>
@@ -203,7 +217,9 @@ export default function HseTables() {
                             <Typography>PTD</Typography>
                         </Box>
                         <Box>
-                            <Typography>522</Typography>
+                            <Typography>
+                                {data?.hse_inspection?.PTD || "-"}
+                            </Typography>
                         </Box>
                     </Stack>
                 </TableBoxRow>
@@ -216,7 +232,9 @@ export default function HseTables() {
                             <Typography>This Month</Typography>
                         </Box>
                         <Box>
-                            <Typography>98</Typography>
+                            <Typography>
+                                {data?.negative_obs?.this_month || "0"}
+                            </Typography>
                         </Box>
                     </Stack>
                     <Stack>
@@ -224,7 +242,9 @@ export default function HseTables() {
                             <Typography>PTD</Typography>
                         </Box>
                         <Box>
-                            <Typography>270</Typography>
+                            <Typography>
+                                {data?.negative_obs?.PTD || "-"}
+                            </Typography>
                         </Box>
                     </Stack>
                 </TableBoxRow>
@@ -237,7 +257,9 @@ export default function HseTables() {
                             <Typography>This Month</Typography>
                         </Box>
                         <Box>
-                            <Typography>296</Typography>
+                            <Typography>
+                                {data?.toolbox_talk?.this_month || "0"}
+                            </Typography>
                         </Box>
                     </Stack>
                     <Stack>
@@ -245,7 +267,9 @@ export default function HseTables() {
                             <Typography>PTD</Typography>
                         </Box>
                         <Box>
-                            <Typography>3482</Typography>
+                            <Typography>
+                                {data?.toolbox_talk?.PTD || "-"}
+                            </Typography>
                         </Box>
                     </Stack>
                 </TableBoxRow>
@@ -258,7 +282,9 @@ export default function HseTables() {
                             <Typography>This Month</Typography>
                         </Box>
                         <Box>
-                            <Typography>8</Typography>
+                            <Typography>
+                                {data?.hse_training_hours?.this_month || "0"}
+                            </Typography>
                         </Box>
                     </Stack>
                     <Stack>
@@ -266,7 +292,9 @@ export default function HseTables() {
                             <Typography>PTD</Typography>
                         </Box>
                         <Box>
-                            <Typography>2,096</Typography>
+                            <Typography>
+                                {data?.hse_training_hours?.PTD || "-"}
+                            </Typography>
                         </Box>
                     </Stack>
                 </TableBoxRow>

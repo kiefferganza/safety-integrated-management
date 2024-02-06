@@ -1,23 +1,9 @@
 import Chart, { useChart } from "@/Components/chart";
 import { useTheme } from "@mui/material/styles";
 
-export default function JobDescriptionGraph() {
+export default function JobDescriptionGraph({ data }) {
     const theme = useTheme();
-    const categories = [
-        "Carpenter",
-        "Labour",
-        "Driver",
-        "Welder",
-        "Mechanic",
-        "Painter",
-        "HVAC",
-        "Field Staff",
-        "Engineer",
-        "Equipment...",
-        "Visitor",
-        "Fitter",
-        "Supervior",
-    ];
+    const categories = data?.categories || [];
     const chartOptions = useChart({
         colors: [],
         xaxis: {
@@ -74,11 +60,11 @@ export default function JobDescriptionGraph() {
             opacity: 0,
             borderRadius: 0,
         },
-        colors: [theme.palette.secondary.main],
+        colors: ["#e46c0a"],
     });
     const series = [
         {
-            data: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            data: data?.data || [],
         },
     ];
     return (

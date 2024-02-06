@@ -1,18 +1,7 @@
 import Chart, { useChart } from "@/Components/chart";
 
-export default function IncidentClassification() {
-    const categories = [
-        "FAT",
-        "LTC",
-        "RWC",
-        "MTC",
-        "FAC",
-        "NM",
-        "PD",
-        "TRAF",
-        "FIRE",
-        "ENV",
-    ];
+export default function IncidentClassification({ data }) {
+    const categories = data?.categories || [];
     const chartOptions = useChart({
         xaxis: {
             categories,
@@ -40,18 +29,18 @@ export default function IncidentClassification() {
         },
         dataLabels: {
             enabled: true,
-            offsetY: -10,
+            offsetY: 0,
             offsetX: 0,
             style: {
                 fontSize: "9px", // Customize the font size of data labels
             },
             value: true, // Display data labels for 0 values
         },
+        colors: ["#31869b"],
     });
     const series = [
         {
-            name: "Net Profit",
-            data: [0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
+            data: data?.data || [],
         },
     ];
     return (

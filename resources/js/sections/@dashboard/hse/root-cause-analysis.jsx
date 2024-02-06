@@ -1,17 +1,7 @@
 import Chart, { useChart } from "@/Components/chart";
 
-export default function RootCauseAnalysis() {
-    const categories = [
-        "Other",
-        "Organizational",
-        "Workplace Hazards",
-        "Integrity of tools...",
-        "Protective Systems",
-        "Inattention / Lack of...",
-        "Use of Protective Methods",
-        "Use of Tools,Equipment,...",
-        "Not following Procedures",
-    ];
+export default function RootCauseAnalysis({ data }) {
+    const categories = data?.categories || [];
     const chartOptions = useChart({
         xaxis: {
             categories,
@@ -39,10 +29,11 @@ export default function RootCauseAnalysis() {
         grid: {
             strokeDashArray: 0,
         },
+        colors: ["#31869b"],
     });
     const series = [
         {
-            data: [0, 0, 1, 0, 0, 0, 0, 0, 1],
+            data: data?.data || [],
         },
     ];
     return (

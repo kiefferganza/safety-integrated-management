@@ -1,19 +1,19 @@
 import Chart, { useChart } from "@/Components/chart";
-
-export default function IncidentPerMonth() {
+const YEAR = new Date().getFullYear().toString().substr(2);
+export default function IncidentPerMonth({ data }) {
     const categories = [
-        "JAN-23",
-        "FEB-23",
-        "MAR-23",
-        "APR-23",
-        "MAY-23",
-        "JUN-23",
-        "JUL-23",
-        "AUG-23",
-        "SEP-23",
-        "OCT-23",
-        "NOV-23",
-        "DEC-23",
+        "JAN-" + YEAR,
+        "FEB-" + YEAR,
+        "MAR-" + YEAR,
+        "APR-" + YEAR,
+        "MAY-" + YEAR,
+        "JUN-" + YEAR,
+        "JUL-" + YEAR,
+        "AUG-" + YEAR,
+        "SEP-" + YEAR,
+        "OCT-" + YEAR,
+        "NOV-" + YEAR,
+        "DEC-" + YEAR,
     ];
     const chartOptions = useChart({
         xaxis: {
@@ -49,6 +49,7 @@ export default function IncidentPerMonth() {
             enabled: true,
             offsetY: 0,
             offsetX: 0,
+            distributed: true,
             enabledOnSeries: [0, 1, 2, 3, 4],
             style: {
                 fontSize: "9px", // Customize the font size of data labels
@@ -58,29 +59,16 @@ export default function IncidentPerMonth() {
         grid: {
             strokeDashArray: 0,
         },
+        colors: [
+            "#000000",
+            "#d81c0e",
+            "#953735",
+            "#e46c0a",
+            "#77933c",
+            "#31869b",
+        ],
     });
-    const series = [
-        {
-            name: "FAT",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        {
-            name: "LTC",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        {
-            name: "MTC",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-        },
-        {
-            name: "FAC",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        {
-            name: "NM",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-        },
-    ];
+    const series = data || [];
     return (
         <Chart type="bar" series={series} options={chartOptions} height={280} />
     );

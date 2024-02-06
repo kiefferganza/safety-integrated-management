@@ -1,29 +1,14 @@
 import Chart, { useChart } from "@/Components/chart";
 
-export default function IncidentPerLocation() {
-    const categories = [
-        "Ratqa",
-        "Janubia",
-        "Markaziya",
-        "Shamiya",
-        "Mushrif Shamiya",
-        "Qurainat",
-        "Mushrif Qurainat",
-        "SIDS",
-        "NIDS",
-        "DS5",
-        "DS4",
-        "DS3",
-        "DS2",
-        "DS1",
-    ];
+export default function IncidentPerLocation({ data }) {
+    const categories = data?.categories || [];
     const chartOptions = useChart({
         xaxis: {
             categories,
             labels: {
                 rotate: -50,
                 style: {
-                    fontSize: "0.7rem",
+                    fontSize: "7px",
                 },
             },
         },
@@ -51,6 +36,7 @@ export default function IncidentPerLocation() {
             enabled: true,
             offsetX: 0,
             offsetY: 10,
+            distributed: true,
             enabledOnSeries: [0, 1, 2, 3, 4],
             style: {
                 fontSize: "9px",
@@ -59,29 +45,9 @@ export default function IncidentPerLocation() {
         grid: {
             strokeDashArray: 0,
         },
+        colors: ["#000000", "#d81c0e", "#953735", "#e46c0a", "#77933c"],
     });
-    const series = [
-        {
-            name: "FAT",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        {
-            name: "LTC",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        {
-            name: "RWC",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        {
-            name: "MTC",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-        },
-        {
-            name: "FAC",
-            data: [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-    ];
+    const series = data?.data || [];
     return (
         <Chart type="bar" series={series} options={chartOptions} height={280} />
     );

@@ -1,6 +1,6 @@
 import Chart, { useChart } from "@/Components/chart";
-export default function RecordableIncident() {
-    const categories = ["FAT", "LTC", "RWC", "MTC", "FAC"];
+export default function RecordableIncident({ data }) {
+    const categories = data?.categories || [];
     const chartOptions = useChart({
         labels: categories,
         // labels: [],
@@ -24,7 +24,7 @@ export default function RecordableIncident() {
         },
         plotOptions: {
             pie: {
-                customScale: 0.8,
+                customScale: 1,
                 offsetX: 0,
                 offsetY: 0,
                 donut: {
@@ -35,16 +35,15 @@ export default function RecordableIncident() {
                         total: {
                             show: false,
                         },
-                        // value: {
-                        //     show: false,
-                        // },
+                        value: {
+                            show: false,
+                        },
                     },
                 },
             },
         },
     });
-    const series = [1];
-    // const series = [0];
+    const series = data?.data || [1];
     return (
         <Chart
             type="donut"

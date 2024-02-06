@@ -1,25 +1,10 @@
 import Chart, { useChart } from "@/Components/chart";
 import { useTheme } from "@mui/material/styles";
 
-export default function MechanismOfInjury() {
+export default function MechanismOfInjury({ data }) {
     const theme = useTheme();
-    const categories = [
-        "Struct By...",
-        "Struct Againts...",
-        "Fall to lower level",
-        "Fall to same level",
-        "Caught In...",
-        "Movement, Posture / Manual Handling",
-        "Caught On (Snagged, hung)",
-        "Caught Between Or Under...",
-        "Contact With (particulate, electricity,...",
-        "Overstress, Overexertion, Overload",
-        "Slip / Trip / Fall at the same level",
-        "Working at Heights",
-        "Others",
-    ];
+    const categories = data?.categories || [];
     const chartOptions = useChart({
-        colors: [],
         xaxis: {
             categories,
             labels: {
@@ -74,11 +59,11 @@ export default function MechanismOfInjury() {
             opacity: 0,
             borderRadius: 0,
         },
-        colors: [theme.palette.primary.main],
+        colors: ["#ffc000"],
     });
     const series = [
         {
-            data: [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+            data: data?.data || [],
         },
     ];
     return (

@@ -59,7 +59,7 @@ export default function LeadingIndicators() {
     });
     const series = [
         {
-            data: [270, 48, 522, 48, 120, 237, 6, 1, 6],
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
         },
     ];
     return (

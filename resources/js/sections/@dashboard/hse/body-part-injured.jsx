@@ -1,20 +1,9 @@
 import Chart, { useChart } from "@/Components/chart";
 import { useTheme } from "@mui/material/styles";
 
-export default function BodyPartInjured() {
+export default function BodyPartInjured({ data }) {
     const theme = useTheme();
-    const categories = [
-        "Arms",
-        "Back",
-        "Eyebrow",
-        "Hand",
-        "Foot",
-        "Head",
-        "Legs",
-        "Mouth",
-        "Nose",
-        "Eye",
-    ];
+    const categories = data?.categories || [];
     const chartOptions = useChart({
         colors: [],
         xaxis: {
@@ -71,11 +60,11 @@ export default function BodyPartInjured() {
             opacity: 0,
             borderRadius: 0,
         },
-        colors: [theme.palette.primary.main],
+        colors: ["#31869b"],
     });
     const series = [
         {
-            data: [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            data: data?.data || [],
         },
     ];
     return (
