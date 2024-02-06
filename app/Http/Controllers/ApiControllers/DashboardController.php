@@ -7,6 +7,7 @@ use App\Models\Incident;
 use App\Models\Inspection;
 use App\Models\TbtStatisticMonth;
 use App\Models\ToolboxTalk;
+use App\Models\ToolboxTalkParticipant;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Training;
 use App\Services\DashboardService;
@@ -115,7 +116,7 @@ class DashboardController extends Controller
 
 			return $current;
 		}, $years);
-		
+
 		$analytics["this_month"]["total_tbt"] = $tbtByYear["this_month"];
 		if ($tbtByYear[$currentYear][$currentMonth])
 		{
@@ -229,7 +230,7 @@ class DashboardController extends Controller
 					"MTC",
 					"FAC",
 				],
-				'data' => [0,0,0,0,0]
+				'data' => [0, 0, 0, 0, 0]
 			],
 			'incident_per_location' => [
 				'categories' => [
@@ -348,7 +349,7 @@ class DashboardController extends Controller
 					"Ingetsion",
 					"Skin Disorder",
 				],
-				'data' => [0,0,0,0,0,0,0,0,0]
+				'data' => [0, 0, 0, 0, 0, 0, 0, 0, 0]
 			],
 			'job_description' => [
 				'categories' => [
@@ -366,7 +367,7 @@ class DashboardController extends Controller
 					"Fitter",
 					"Supervior",
 				],
-				'data' => [0,0,0,0,0,0,0,0,0,0,0,0,0]
+				'data' => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 			],
 			'equipment_material_involved' => [
 				'categories' => [
@@ -381,7 +382,7 @@ class DashboardController extends Controller
 					"SUV",
 					"Rebars",
 				],
-				'data' => [0,0,0,0,0,0,0,0,0,0]
+				'data' => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 			]
 		];
 
@@ -408,14 +409,15 @@ class DashboardController extends Controller
 			],
 		];
 
+		$currentYear = now()->year;
+
 		$incident_per_month = Incident::select(
 			DB::raw("MONTH(incident_date) as month"),
 			'incident'
 		)
 			->whereIn("incident", ["FAT", "LTC", "MTC", "FAC", "NM"])
 			->whereNull('deleted_at')
-			->whereYear('incident_date', 2023)
-			// ->whereYear('incident_date', now()->year)
+			->whereYear('incident_date', $currentYear)
 			->get()
 			->reduce(function ($current, $ins)
 			{
@@ -442,645 +444,736 @@ class DashboardController extends Controller
 			}, $incident_per_month_default);
 
 		$incidents = Incident::select('injured_id', 'incident', 'root_cause', 'location', 'body_part', 'severity', 'mechanism', 'nature', 'equipment')
-		->with([
-			'injured' => fn ($q) => $q->select("employee_id", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
-		])
-		->whereNull('deleted_at')
-		->get()
-		->reduce(function ($current, $incident)
-		{
-			if($incident->injured) {
-				switch (trim($incident->injured->position)) {
-					case "Carpenter":
-						$current['job_description']['data'][0] += 1;
+			->with([
+				'injured' => fn ($q) => $q->select("employee_id", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+			])
+			->whereNull('deleted_at')
+			->get()
+			->reduce(function ($current, $incident)
+			{
+				if ($incident->injured)
+				{
+					switch (trim($incident->injured->position))
+					{
+						case "Carpenter":
+							$current['job_description']['data'][0] += 1;
+							break;
+						case "laborer":
+							$current['job_description']['data'][1] += 1;
+							break;
+						case "Driver":
+							$current['job_description']['data'][2] += 1;
+							break;
+						case "Welder":
+							$current['job_description']['data'][3] += 1;
+							break;
+						case "Mechanical Technician":
+							$current['job_description']['data'][4] += 1;
+							break;
+						case "Mechanical Manager":
+							$current['job_description']['data'][4] += 1;
+							break;
+						case "Painter":
+							$current['job_description']['data'][5] += 1;
+							break;
+						case "HVAC":
+							$current['job_description']['data'][6] += 1;
+							break;
+						case "Field Staff":
+							$current['job_description']['data'][7] += 1;
+							break;
+						case "Engineer":
+							$current['job_description']['data'][8] += 1;
+							break;
+						case "PA/Engineer":
+							$current['job_description']['data'][8] += 1;
+							break;
+						case "QA/QC Engineer":
+							$current['job_description']['data'][8] += 1;
+							break;
+						case "Planner Engineer":
+							$current['job_description']['data'][8] += 1;
+							break;
+						case "Equipment":
+							$current['job_description']['data'][9] += 1;
+							break;
+						case "Visitor":
+							$current['job_description']['data'][10] += 1;
+							break;
+						case "Fitter":
+							$current['job_description']['data'][11] += 1;
+							break;
+						case "Site Supervisor":
+							$current['job_description']['data'][12] += 1;
+							break;
+						case "PA/Supervisor":
+							$current['job_description']['data'][12] += 1;
+							break;
+						default:
+							# code...
+							break;
+					}
+				}
+				$equipments = explode(',', $incident->equipment);
+				foreach ($equipments as $equipment)
+				{
+					switch ($equipment)
+					{
+						case "Crane":
+							$current['equipment_material_involved']['data'][0] += 1;
+							break;
+						case "Forklift":
+							$current['equipment_material_involved']['data'][1] += 1;
+							break;
+						case "Tanker":
+							$current['equipment_material_involved']['data'][2] += 1;
+							break;
+						case "Scaffolding":
+							$current['equipment_material_involved']['data'][3] += 1;
+							break;
+						case "Power Tools":
+							$current['equipment_material_involved']['data'][4] += 1;
+							break;
+						case "Welding/Compressors":
+							$current['equipment_material_involved']['data'][5] += 1;
+							break;
+						case "Bus":
+							$current['equipment_material_involved']['data'][6] += 1;
+							break;
+						case "Coaster":
+							$current['equipment_material_involved']['data'][7] += 1;
+							break;
+						case "Suv":
+							$current['equipment_material_involved']['data'][8] += 1;
+							break;
+						case "Rebars":
+							$current['equipment_material_involved']['data'][9] += 1;
+							break;
+						default:
+							# code...
+							break;
+					}
+				}
+				switch ($incident->nature)
+				{
+					case "Abrasion":
+						$current['nature_of_injury']['data'][0] += 1;
 						break;
-					case "laborer":
-						$current['job_description']['data'][1] += 1;
+					case "Asphyxia":
+						$current['nature_of_injury']['data'][1] += 1;
 						break;
-					case "Driver":
-						$current['job_description']['data'][2] += 1;
+					case "Bruise/Contusion":
+						$current['nature_of_injury']['data'][2] += 1;
 						break;
-					case "Welder":
-						$current['job_description']['data'][3] += 1;
+					case "Burn/Thermal":
+						$current['nature_of_injury']['data'][3] += 1;
 						break;
-					case "Mechanical Technician":
-						$current['job_description']['data'][4] += 1;
+					case "Concussion":
+						$current['nature_of_injury']['data'][4] += 1;
 						break;
-					case "Mechanical Manager":
-						$current['job_description']['data'][4] += 1;
+					case "Electrical Shock":
+						$current['nature_of_injury']['data'][5] += 1;
 						break;
-					case "Painter":
-						$current['job_description']['data'][5] += 1;
+					case "Hearing Loss":
+						$current['nature_of_injury']['data'][6] += 1;
 						break;
-					case "HVAC":
-						$current['job_description']['data'][6] += 1;
+					case "Poisoning":
+						$current['nature_of_injury']['data'][7] += 1;
 						break;
-					case "Field Staff":
-						$current['job_description']['data'][7] += 1;
-						break;
-					case "Engineer":
-						$current['job_description']['data'][8] += 1;
-						break;
-					case "PA/Engineer":
-						$current['job_description']['data'][8] += 1;
-						break;
-					case "QA/QC Engineer":
-						$current['job_description']['data'][8] += 1;
-						break;
-					case "Planner Engineer":
-						$current['job_description']['data'][8] += 1;
-						break;
-					case "Equipment":
-						$current['job_description']['data'][9] += 1;
-						break;
-					case "Visitor":
-						$current['job_description']['data'][10] += 1;
-						break;
-					case "Fitter":
-						$current['job_description']['data'][11] += 1;
-						break;
-					case "Site Supervisor":
-						$current['job_description']['data'][12] += 1;
-						break;
-					case "PA/Supervisor":
-						$current['job_description']['data'][12] += 1;
+					case "Skin Disorder":
+						$current['nature_of_injury']['data'][8] += 1;
 						break;
 					default:
 						# code...
 						break;
 				}
-			}
-			$equipments = explode(',', $incident->equipment);
-			foreach ($equipments as $equipment) {
-				switch ($equipment) {
-					case "Crane":
-						$current['equipment_material_involved']['data'][0] += 1;
+				switch ($incident->mechanism)
+				{
+					case "Struck By Moving Object":
+						$current['mechanism_of_injury']['data'][0] += 1;
 						break;
-					case "Forklift":
-						$current['equipment_material_involved']['data'][1] += 1;
+					case "Struck Against":
+						$current['mechanism_of_injury']['data'][1] += 1;
 						break;
-					case "Tanker":
-						$current['equipment_material_involved']['data'][2] += 1;
+					case "Fall to lower level":
+						$current['mechanism_of_injury']['data'][2] += 1;
 						break;
-					case "Scaffolding":
-						$current['equipment_material_involved']['data'][3] += 1;
+					case "Fall to same level":
+						$current['mechanism_of_injury']['data'][3] += 1;
 						break;
-					case "Power Tools":
-						$current['equipment_material_involved']['data'][4] += 1;
+					case "Caught In":
+						$current['mechanism_of_injury']['data'][4] += 1;
 						break;
-					case "Welding/Compressors":
-						$current['equipment_material_involved']['data'][5] += 1;
+					case "Movement, Posture / Manual":
+						$current['mechanism_of_injury']['data'][5] += 1;
 						break;
-					case "Bus":
-						$current['equipment_material_involved']['data'][6] += 1;
+					case "Caught On":
+						$current['mechanism_of_injury']['data'][6] += 1;
 						break;
-					case "Coaster":
-						$current['equipment_material_involved']['data'][7] += 1;
+					case "Caught Between Or Under":
+						$current['mechanism_of_injury']['data'][7] += 1;
 						break;
-					case "Suv":
-						$current['equipment_material_involved']['data'][8] += 1;
+					case "Contact With (particulate, electricity, heat, cold, radiation,  noise, chemical)":
+						$current['mechanism_of_injury']['data'][8] += 1;
 						break;
-					case "Rebars":
-						$current['equipment_material_involved']['data'][9] += 1;
+					case "Overstress, Overexertion, Overload":
+						$current['mechanism_of_injury']['data'][9] += 1;
+						break;
+					case "Slip / Trip / Fall at the same level":
+						$current['mechanism_of_injury']['data'][10] += 1;
+						break;
+					case "Working at Heights":
+						$current['mechanism_of_injury']['data'][11] += 1;
+						break;
+					case "other":
+						$current['mechanism_of_injury']['data'][12] += 1;
 						break;
 					default:
 						# code...
 						break;
 				}
-			}
-			switch ($incident->nature) {
-				case "Abrasion":
-					$current['nature_of_injury']['data'][0] += 1;
-					break;
-				case "Asphyxia":
-					$current['nature_of_injury']['data'][1] += 1;
-					break;
-				case "Bruise/Contusion":
-					$current['nature_of_injury']['data'][2] += 1;
-					break;
-				case "Burn/Thermal":
-					$current['nature_of_injury']['data'][3] += 1;
-					break;
-				case "Concussion":
-					$current['nature_of_injury']['data'][4] += 1;
-					break;
-				case "Electrical Shock":
-					$current['nature_of_injury']['data'][5] += 1;
-					break;
-				case "Hearing Loss":
-					$current['nature_of_injury']['data'][6] += 1;
-					break;
-				case "Poisoning":
-					$current['nature_of_injury']['data'][7] += 1;
-					break;
-				case "Skin Disorder":
-					$current['nature_of_injury']['data'][8] += 1;
-					break;
-				default:
-					# code...
-					break;
-			}
-			switch ($incident->mechanism)
+				switch ($incident->body_part)
+				{
+					case "Arms":
+						$current['body_part_injured']['data'][0] += 1;
+						break;
+					case "Back":
+						$current['body_part_injured']['data'][1] += 1;
+						break;
+					case "Eyebrow":
+						$current['body_part_injured']['data'][2] += 1;
+						break;
+					case "Hand":
+						$current['body_part_injured']['data'][3] += 1;
+						break;
+					case "Foot":
+						$current['body_part_injured']['data'][4] += 1;
+						break;
+					case "Head":
+						$current['body_part_injured']['data'][5] += 1;
+						break;
+					case "Legs":
+						$current['body_part_injured']['data'][6] += 1;
+						break;
+					case "Mouth":
+						$current['body_part_injured']['data'][7] += 1;
+						break;
+					case "Nose":
+						$current['body_part_injured']['data'][8] += 1;
+						break;
+					case "Eye":
+						$current['body_part_injured']['data'][9] += 1;
+						break;
+					default:
+						# code...
+						break;
+				}
+				switch ($incident->root_cause)
+				{
+					case "other":
+						$current["root_cause_analysis"]['data'][0] += 1;
+						break;
+					case "Organizational":
+						$current["root_cause_analysis"]['data'][1] += 1;
+						break;
+					case "Workplace Hazards":
+						$current["root_cause_analysis"]['data'][2] += 1;
+						break;
+					case "Integrity of Tools/PLan/Equipment, Material":
+						$current["root_cause_analysis"]['data'][3] += 1;
+						break;
+					case "Protective Systems":
+						$current["root_cause_analysis"]['data'][4] += 1;
+						break;
+					case "Intentional/Lack of Awareness/Behaviors":
+						$current["root_cause_analysis"]['data'][5] += 1;
+						break;
+					case "Use of Protective Methods":
+						$current["root_cause_analysis"]['data'][6] += 1;
+						break;
+					case "Use of Tools Equipment,Materials and Products":
+						$current["root_cause_analysis"]['data'][7] += 1;
+						break;
+					case "Not Following Procedures":
+						$current["root_cause_analysis"]['data'][8] += 1;
+						break;
+					default:
+						# code...
+						break;
+				}
+				switch ($incident->severity)
+				{
+					case 'Minor':
+						$current['potential_severity']['data'][3] += 1;
+						break;
+					case 'Significant':
+						$current['potential_severity']['data'][2] += 1;
+						break;
+					case 'Major':
+						$current['potential_severity']['data'][1] += 1;
+						break;
+					case 'Fatality':
+						$current['potential_severity']['data'][0] += 1;
+						break;
+					default:
+						# code...
+						break;
+				}
+				switch ($incident->location)
+				{
+					case "Ratqa":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][0] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][0] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][0] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][0] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][0] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "Janubia":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][1] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][1] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][1] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][1] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][1] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "Markaziya":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][2] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][2] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][2] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][2] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][2] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "Shamiya":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][3] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][3] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][3] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][3] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][3] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "Mushrifcase  Shamiya":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][4] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][4] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][4] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][4] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][4] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "Qurainat":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][5] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][5] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][5] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][5] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][5] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "Mushrifcase  Qurainat":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][6] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][6] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][6] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][6] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][6] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "SIDS":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][7] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][7] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][7] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][7] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][7] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "NIDS":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][8] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][8] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][8] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][8] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][8] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "DS5":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][9] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][9] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][9] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][9] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][9] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "DS4":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][10] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][10] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][10] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][10] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][10] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "DS3":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][11] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][11] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][11] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][11] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][11] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "DS2":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][12] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][12] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][12] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][12] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][12] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					case "DS1":
+						switch ($incident->incident)
+						{
+							case "FAT":
+								$current['incident_per_location']['data'][0]['data'][13] += 1;
+								break;
+							case "LTC":
+								$current['incident_per_location']['data'][1]['data'][13] += 1;
+								break;
+							case "RWC":
+								$current['incident_per_location']['data'][2]['data'][13] += 1;
+								break;
+							case "MTC":
+								$current['incident_per_location']['data'][3]['data'][13] += 1;
+								break;
+							case "FAC":
+								$current['incident_per_location']['data'][4]['data'][13] += 1;
+								break;
+							default:
+								# code...
+								break;
+						}
+						break;
+					default:
+						break;
+				}
+				switch ($incident->incident)
+				{
+					case 'FAT':
+						// classification
+						$current['incident_classification']['data'][0] += 1;
+						// recordable_incident
+						$current['recordable_incident']['data'][0] += 1;
+						break;
+					case 'LTC':
+						// classification
+						$current['incident_classification']['data'][1] += 1;
+						// recordable_incident
+						$current['recordable_incident']['data'][1] += 1;
+						break;
+					case 'RWC':
+						// classification
+						$current['incident_classification']['data'][2] += 1;
+						// recordable_incident
+						$current['recordable_incident']['data'][2] += 1;
+						break;
+					case 'MTC':
+						// classification
+						$current['incident_classification']['data'][3] += 1;
+						// recordable_incident
+						$current['recordable_incident']['data'][3] += 1;
+						break;
+					case 'FAC':
+						// classification
+						$current['incident_classification']['data'][4] += 1;
+						// recordable_incident
+						$current['recordable_incident']['data'][4] += 1;
+						break;
+					case 'NM':
+						$current['incident_classification']['data'][5] += 1;
+						break;
+					case 'PD':
+						$current['incident_classification']['data'][6] += 1;
+						break;
+					case 'TRAF':
+						$current['incident_classification']['data'][7] += 1;
+						break;
+					case 'FIRE':
+						$current['incident_classification']['data'][8] += 1;
+						break;
+					case 'ENV':
+						$current['incident_classification']['data'][9] += 1;
+						break;
+					default:
+						break;
+				}
+				return $current;
+			}, $default);
+
+
+		$recordable_incidents = ["FAT", "LTC", "RWC", "MTC", "FAC"];
+		$recordableCases = ["Amputation", "Asphyxia", "Fracture", "Hearing Loss", "Poisoning"];
+		$manpower_LTIR_TRIR_data = ToolboxTalkParticipant::select(DB::raw("MONTH(date_added) as month"), 'tbt_id')
+			->whereYear('date_added', $currentYear)
+			->where('is_removed', 0)
+			->orderBy('month', 'asc')
+			->get()
+			->reduce(function ($current, $participant) use ($currentYear, $recordable_incidents, $recordableCases)
 			{
-				case "Struck By Moving Object":
-					$current['mechanism_of_injury']['data'][0] += 1;
-					break;
-				case "Struck Against":
-					$current['mechanism_of_injury']['data'][1] += 1;
-					break;
-				case "Fall to lower level":
-					$current['mechanism_of_injury']['data'][2] += 1;
-					break;
-				case "Fall to same level":
-					$current['mechanism_of_injury']['data'][3] += 1;
-					break;
-				case "Caught In":
-					$current['mechanism_of_injury']['data'][4] += 1;
-					break;
-				case "Movement, Posture / Manual":
-					$current['mechanism_of_injury']['data'][5] += 1;
-					break;
-				case "Caught On":
-					$current['mechanism_of_injury']['data'][6] += 1;
-					break;
-				case "Caught Between Or Under":
-					$current['mechanism_of_injury']['data'][7] += 1;
-					break;
-				case "Contact With (particulate, electricity, heat, cold, radiation,  noise, chemical)":
-					$current['mechanism_of_injury']['data'][8] += 1;
-					break;
-				case "Overstress, Overexertion, Overload":
-					$current['mechanism_of_injury']['data'][9] += 1;
-					break;
-				case "Slip / Trip / Fall at the same level":
-					$current['mechanism_of_injury']['data'][10] += 1;
-					break;
-				case "Working at Heights":
-					$current['mechanism_of_injury']['data'][11] += 1;
-					break;
-				case "other":
-					$current['mechanism_of_injury']['data'][12] += 1;
-					break;
-				default:
-					# code...
-					break;
+				if ($current["currentMonth"] !== $participant->month)
+				{
+					$incident = Incident::select(DB::raw("MONTH(incident_date) as month"), DB::raw("YEAR(incident_date) as year"), "day_loss", "incident", "nature")
+						->whereNull("deleted_at")
+						->whereMonth("incident_date", $current["currentMonth"])
+						->whereYear("incident_date", $currentYear)
+						->get()
+						->toArray();
+					if (!empty($incident))
+					{
+						foreach ($incident as $inc)
+						{
+							$current["lost_time_incident"][$participant->month - 1] += $inc['day_loss'];
+							if (in_array($inc["incident"], $recordable_incidents) || in_array($inc["nature"], $recordableCases))
+							{
+								$current["num_recordable_incidents"][$participant->month - 1] += 1;
+							}
+						}
+					}
+				}
+				$current["manpower"][$participant->month - 1] += 1;
+				$current["currentMonth"] = $participant->month;
+				return $current;
+			}, [
+				"currentMonth" => 0,
+				"manpower" => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				"lost_time_incident" => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				"num_recordable_incidents" => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			]);
+		// dd($manpower_LTIR_TRIR_data);
+
+		$manpower_LTIR_TRIR = [
+			[
+				"name" => "Manpower",
+				"type" => "line",
+				"data" => []
+			],
+			[
+				"name" => "LTIR",
+				"type" => "column",
+				"data" => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+			],
+			[
+				"name" => "TRIR",
+				"type" => "column",
+				"data" => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+			]
+		];
+		for ($i=0; $i < 12; $i++) { 
+			$manpower = $manpower_LTIR_TRIR_data['manpower'][$i];
+			$manpower_LTIR_TRIR[0]['data'][] = $manpower;
+			$rec_inc = $manpower_LTIR_TRIR_data['num_recordable_incidents'][$i];
+			$lost_time = $manpower_LTIR_TRIR_data['lost_time_incident'][$i];
+			if($lost_time > 0) {
+				// LTIR = (Number of Lost Time Incidents x 1,000,000) / Total Hours Worked
+				$manpower_LTIR_TRIR[1]['data'][$i] = ceil(($lost_time * 1_000_000) / ($manpower * 9));
 			}
-			switch ($incident->body_part)
-			{
-				case "Arms":
-					$current['body_part_injured']['data'][0] += 1;
-					break;
-				case "Back":
-					$current['body_part_injured']['data'][1] += 1;
-					break;
-				case "Eyebrow":
-					$current['body_part_injured']['data'][2] += 1;
-					break;
-				case "Hand":
-					$current['body_part_injured']['data'][3] += 1;
-					break;
-				case "Foot":
-					$current['body_part_injured']['data'][4] += 1;
-					break;
-				case "Head":
-					$current['body_part_injured']['data'][5] += 1;
-					break;
-				case "Legs":
-					$current['body_part_injured']['data'][6] += 1;
-					break;
-				case "Mouth":
-					$current['body_part_injured']['data'][7] += 1;
-					break;
-				case "Nose":
-					$current['body_part_injured']['data'][8] += 1;
-					break;
-				case "Eye":
-					$current['body_part_injured']['data'][9] += 1;
-					break;
-				default:
-					# code...
-					break;
+			if($rec_inc > 0) {
+				$manpower_LTIR_TRIR[2]['data'][$i] = ceil(($rec_inc * 1_000_000) / ($manpower * 9));
 			}
-			switch ($incident->root_cause)
-			{
-				case "other":
-					$current["root_cause_analysis"]['data'][0] += 1;
-					break;
-				case "Organizational":
-					$current["root_cause_analysis"]['data'][1] += 1;
-					break;
-				case "Workplace Hazards":
-					$current["root_cause_analysis"]['data'][2] += 1;
-					break;
-				case "Integrity of Tools/PLan/Equipment, Material":
-					$current["root_cause_analysis"]['data'][3] += 1;
-					break;
-				case "Protective Systems":
-					$current["root_cause_analysis"]['data'][4] += 1;
-					break;
-				case "Intentional/Lack of Awareness/Behaviors":
-					$current["root_cause_analysis"]['data'][5] += 1;
-					break;
-				case "Use of Protective Methods":
-					$current["root_cause_analysis"]['data'][6] += 1;
-					break;
-				case "Use of Tools Equipment,Materials and Products":
-					$current["root_cause_analysis"]['data'][7] += 1;
-					break;
-				case "Not Following Procedures":
-					$current["root_cause_analysis"]['data'][8] += 1;
-					break;
-				default:
-					# code...
-					break;
-			}
-			switch ($incident->severity)
-			{
-				case 'Minor':
-					$current['potential_severity']['data'][3] += 1;
-					break;
-				case 'Significant':
-					$current['potential_severity']['data'][2] += 1;
-					break;
-				case 'Major':
-					$current['potential_severity']['data'][1] += 1;
-					break;
-				case 'Fatality':
-					$current['potential_severity']['data'][0] += 1;
-					break;
-				default:
-					# code...
-					break;
-			}
-			switch ($incident->location)
-			{
-				case "Ratqa":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][0] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][0] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][0] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][0] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][0] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "Janubia":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][1] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][1] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][1] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][1] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][1] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "Markaziya":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][2] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][2] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][2] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][2] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][2] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "Shamiya":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][3] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][3] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][3] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][3] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][3] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "Mushrifcase  Shamiya":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][4] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][4] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][4] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][4] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][4] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "Qurainat":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][5] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][5] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][5] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][5] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][5] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "Mushrifcase  Qurainat":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][6] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][6] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][6] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][6] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][6] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "SIDS":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][7] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][7] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][7] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][7] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][7] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "NIDS":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][8] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][8] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][8] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][8] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][8] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "DS5":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][9] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][9] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][9] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][9] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][9] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "DS4":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][10] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][10] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][10] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][10] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][10] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "DS3":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][11] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][11] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][11] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][11] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][11] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "DS2":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][12] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][12] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][12] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][12] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][12] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				case "DS1":
-					switch ($incident->incident) {
-						case "FAT":
-							$current['incident_per_location']['data'][0]['data'][13] += 1;
-							break;
-						case "LTC":
-							$current['incident_per_location']['data'][1]['data'][13] += 1;
-							break;
-						case "RWC":
-							$current['incident_per_location']['data'][2]['data'][13] += 1;
-							break;
-						case "MTC":
-							$current['incident_per_location']['data'][3]['data'][13] += 1;
-							break;
-						case "FAC":
-							$current['incident_per_location']['data'][4]['data'][13] += 1;
-							break;
-						default:
-							# code...
-							break;
-					}
-					break;
-				default:
-					break;
-			}
-			switch ($incident->incident)
-			{
-				case 'FAT':
-					// classification
-					$current['incident_classification']['data'][0] += 1;
-					// recordable_incident
-					$current['recordable_incident']['data'][0] += 1;
-					break;
-				case 'LTC':
-					// classification
-					$current['incident_classification']['data'][1] += 1;
-					// recordable_incident
-					$current['recordable_incident']['data'][1] += 1;
-					break;
-				case 'RWC':
-					// classification
-					$current['incident_classification']['data'][2] += 1;
-					// recordable_incident
-					$current['recordable_incident']['data'][2] += 1;
-					break;
-				case 'MTC':
-					// classification
-					$current['incident_classification']['data'][3] += 1;
-					// recordable_incident
-					$current['recordable_incident']['data'][3] += 1;
-					break;
-				case 'FAC':
-					// classification
-					$current['incident_classification']['data'][4] += 1;
-					// recordable_incident
-					$current['recordable_incident']['data'][4] += 1;
-					break;
-				case 'NM':
-					$current['incident_classification']['data'][5] += 1;
-					break;
-				case 'PD':
-					$current['incident_classification']['data'][6] += 1;
-					break;
-				case 'TRAF':
-					$current['incident_classification']['data'][7] += 1;
-					break;
-				case 'FIRE':
-					$current['incident_classification']['data'][8] += 1;
-					break;
-				case 'ENV':
-					$current['incident_classification']['data'][9] += 1;
-					break;
-				default:
-					break;
-			}
-			return $current;
-		}, $default);
-		
+		}
 		return [
 			...$incidents,
-			"incident_per_month" => [...$incident_per_month]
+			"incident_per_month" => $incident_per_month,
+			"LTIR_TRIR" => $manpower_LTIR_TRIR
 		];
 	}
 

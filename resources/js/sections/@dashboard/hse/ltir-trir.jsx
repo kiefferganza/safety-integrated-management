@@ -1,19 +1,20 @@
 import Chart, { useChart } from "@/Components/chart";
 
-export default function LtirTrir() {
+const YEAR = new Date().getFullYear().toString().substr(2);
+export default function LtirTrir({ data }) {
     const categories = [
-        "JAN-23",
-        "FEB-23",
-        "MAR-23",
-        "APR-23",
-        "MAY-23",
-        "JUN-23",
-        "JUL-23",
-        "AUG-23",
-        "SEP-23",
-        "OCT-23",
-        "NOV-23",
-        "DEC-23",
+        "JAN-" + YEAR,
+        "FEB-" + YEAR,
+        "MAR-" + YEAR,
+        "APR-" + YEAR,
+        "MAY-" + YEAR,
+        "JUN-" + YEAR,
+        "JUL-" + YEAR,
+        "AUG-" + YEAR,
+        "SEP-" + YEAR,
+        "OCT-" + YEAR,
+        "NOV-" + YEAR,
+        "DEC-" + YEAR,
     ];
     const chartOptions = useChart({
         xaxis: {
@@ -49,23 +50,7 @@ export default function LtirTrir() {
             strokeDashArray: 0,
         },
     });
-    const series = [
-        {
-            name: "Manpower",
-            type: "line",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        {
-            name: "LTIR",
-            type: "column",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-        {
-            name: "TRIR",
-            type: "column",
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
-    ];
+    const series = data || [];
     return (
         <Chart
             type="line"

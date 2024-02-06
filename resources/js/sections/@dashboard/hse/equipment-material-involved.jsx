@@ -1,20 +1,9 @@
 import Chart, { useChart } from "@/Components/chart";
 import { useTheme } from "@mui/material/styles";
 
-export default function EquipmentMaterialInvolved() {
+export default function EquipmentMaterialInvolved({ data }) {
     const theme = useTheme();
-    const categories = [
-        "Crane",
-        "Forklift",
-        "Tanker",
-        "Scaffolding",
-        "Power Tools",
-        "Welding/...",
-        "Bus",
-        "Coster",
-        "SUV",
-        "Rebars",
-    ];
+    const categories = data?.categories || [];
     const chartOptions = useChart({
         xaxis: {
             categories,
@@ -74,7 +63,7 @@ export default function EquipmentMaterialInvolved() {
     });
     const series = [
         {
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            data: data?.data || [],
         },
     ];
     return (

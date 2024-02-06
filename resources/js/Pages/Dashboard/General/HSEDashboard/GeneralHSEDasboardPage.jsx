@@ -232,7 +232,9 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                             />
                                         </Box>
                                     ) : (
-                                        <LtirTrir />
+                                        <LtirTrir
+                                            data={data?.graph?.LTIR_TRIR}
+                                        />
                                     )}
                                 </Box>
 

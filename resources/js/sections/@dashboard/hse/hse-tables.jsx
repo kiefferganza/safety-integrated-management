@@ -75,7 +75,9 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.manhours_worked?.this_month || "0"}
+                                {(
+                                    data?.manhours_worked?.this_month || 0
+                                ).toLocaleString("en-US")}
                             </Typography>
                         </Box>
                     </Stack>
@@ -85,7 +87,10 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.manhours_worked?.PTD || "-"}
+                                {data?.manhours_worked?.PTD
+                                    ? (+data?.manhours_worked
+                                          ?.PTD).toLocaleString("en-US")
+                                    : "-"}
                             </Typography>
                         </Box>
                     </Stack>
@@ -95,7 +100,12 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.manhours_worked?.safe_manhours || "-"}
+                                {data?.manhours_worked?.safe_manhours
+                                    ? (+data?.manhours_worked
+                                          ?.safe_manhours).toLocaleString(
+                                          "en-US"
+                                      )
+                                    : "-"}
                             </Typography>
                         </Box>
                     </Stack>
@@ -110,7 +120,10 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.man_power?.ave_day || "-"}
+                                {data?.man_power?.ave_day
+                                    ? (+data?.man_power
+                                          ?.ave_day).toLocaleString("en-US")
+                                    : "-"}
                             </Typography>
                         </Box>
                     </Stack>
@@ -120,7 +133,9 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.man_power?.this_month || "0"}
+                                {(
+                                    data?.man_power?.this_month || 0
+                                ).toLocaleString("en-US")}
                             </Typography>
                         </Box>
                     </Stack>
@@ -130,7 +145,11 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.man_power?.PTD || "-"}
+                                {data?.man_power?.PTD
+                                    ? (+data?.man_power?.PTD).toLocaleString(
+                                          "en-US"
+                                      )
+                                    : "-"}
                             </Typography>
                         </Box>
                     </Stack>
@@ -208,7 +227,9 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.hse_inspection?.this_month || "0"}
+                                {(
+                                    data?.hse_inspection?.this_month || 0
+                                ).toLocaleString("en-US")}
                             </Typography>
                         </Box>
                     </Stack>
@@ -218,7 +239,10 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.hse_inspection?.PTD || "-"}
+                                {data?.hse_inspection?.PTD
+                                    ? (+data?.hse_inspection
+                                          ?.PTD).toLocaleString("en-US")
+                                    : "-"}
                             </Typography>
                         </Box>
                     </Stack>
@@ -233,7 +257,9 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.negative_obs?.this_month || "0"}
+                                {(
+                                    data?.negative_obs?.this_month || 0
+                                ).toLocaleString("en-US")}
                             </Typography>
                         </Box>
                     </Stack>
@@ -243,7 +269,11 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.negative_obs?.PTD || "-"}
+                                {data?.negative_obs?.PTD
+                                    ? (+data?.negative_obs?.PTD).toLocaleString(
+                                          "en-US"
+                                      )
+                                    : "-"}
                             </Typography>
                         </Box>
                     </Stack>
@@ -258,7 +288,9 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.toolbox_talk?.this_month || "0"}
+                                {(
+                                    data?.toolbox_talk?.this_month || 0
+                                ).toLocaleString("en-US")}
                             </Typography>
                         </Box>
                     </Stack>
@@ -268,7 +300,11 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.toolbox_talk?.PTD || "-"}
+                                {data?.toolbox_talk?.PTD
+                                    ? (+data?.toolbox_talk?.PTD).toLocaleString(
+                                          "en-US"
+                                      )
+                                    : "-"}
                             </Typography>
                         </Box>
                     </Stack>
@@ -283,7 +319,9 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.hse_training_hours?.this_month || "0"}
+                                {(
+                                    data?.hse_training_hours?.this_month || 0
+                                ).toLocaleString("en-US")}
                             </Typography>
                         </Box>
                     </Stack>
@@ -293,7 +331,10 @@ export default function HseTables({ data }) {
                         </Box>
                         <Box>
                             <Typography>
-                                {data?.hse_training_hours?.PTD || "-"}
+                                {data?.hse_training_hours?.PTD
+                                    ? (+data?.hse_training_hours
+                                          ?.PTD).toLocaleString("en-US")
+                                    : "-"}
                             </Typography>
                         </Box>
                     </Stack>

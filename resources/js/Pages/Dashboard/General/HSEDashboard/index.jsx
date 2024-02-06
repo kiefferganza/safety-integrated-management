@@ -15,7 +15,7 @@ const index = ({ auth: { user }, from, to }) => {
     const { data, isLoading } = useQuery({
         queryKey: ["dashboard", { sub: user.subscriber_id, from, to }],
         queryFn: () => fetchTbt(from, to),
-        refetchOnWindowFocus: false,
+        // refetchOnWindowFocus: false,
     });
 
     return (
