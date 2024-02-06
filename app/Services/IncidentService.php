@@ -172,11 +172,11 @@ class IncidentService {
 			"injured_id" => $request->injured_id,
 			"location" => $request->location,
 			"incident" => $request->incident,
-			"nature" => $request->nature,
+			"nature" => $request->nature ?? "other",
 			"indicator" => $request->indicator,
-			"mechanism" => $request->mechanism,
+			"mechanism" => $request->mechanism ?? "other",
 			"severity" => $request->severity,
-			"root_cause" => $request->root_cause,
+			"root_cause" => $request->root_cause ?? "other",
 			"equipment" => $request->equipment,
 			"body_part" => $request->body_part,
 			"remarks" => $request->remarks,
@@ -212,7 +212,7 @@ class IncidentService {
 			"prevention" => $request->prevention,
 			"witnesses" => $request->witnesses,
 			"similar_incident" => $request->similar_incident,
-			"step_by_step" => $request->step_by_step,
+			"step_by_step" => $request->step_by_step
 		]);
 	}
 
