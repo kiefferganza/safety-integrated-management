@@ -3,7 +3,6 @@ export default function RecordableIncident({ data }) {
     const categories = data?.categories || [];
     const chartOptions = useChart({
         labels: categories,
-        // labels: [],
         dataLabels: {
             enabled: false,
             formatter: function (val) {

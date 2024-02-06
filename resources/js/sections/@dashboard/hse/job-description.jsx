@@ -5,7 +5,6 @@ export default function JobDescriptionGraph({ data }) {
     const theme = useTheme();
     const categories = data?.categories || [];
     const chartOptions = useChart({
-        colors: [],
         xaxis: {
             categories,
             labels: {

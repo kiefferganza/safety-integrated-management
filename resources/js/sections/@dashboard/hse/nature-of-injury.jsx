@@ -5,7 +5,6 @@ export default function NatureOfInjury({ data }) {
     const theme = useTheme();
     const categories = data?.categories || [];
     const chartOptions = useChart({
-        colors: [],
         xaxis: {
             categories,
             labels: {
