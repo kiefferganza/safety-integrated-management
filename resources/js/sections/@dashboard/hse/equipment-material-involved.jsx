@@ -16,7 +16,6 @@ export default function EquipmentMaterialInvolved() {
         "Rebars",
     ];
     const chartOptions = useChart({
-        colors: [],
         xaxis: {
             categories,
             labels: {
