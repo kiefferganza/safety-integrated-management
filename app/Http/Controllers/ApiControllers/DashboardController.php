@@ -44,7 +44,9 @@ class DashboardController extends Controller
 			"days" => [],
 			"totalDays" => 0
 		];
-		$years = [];
+		$years = [
+			"this_month" => 0
+		];
 		$months = [
 			1 => $defaultTotal,
 			2 => $defaultTotal,
@@ -90,7 +92,7 @@ class DashboardController extends Controller
 			->withCount("participants")
 			->get();
 
-		$tbtByYear = $tbt->reduce(function ($current, $tbt) use ($currentMonth, $currentYear)
+		$tbtByYear = $tbt->reduce(function ($current, $tbt) use ($currentMonth, $currentYear, $analytics)
 		{
 			$dateConducted = Carbon::parse($tbt->date_conducted);
 			if (!in_array($dateConducted->day, $current[$tbt->year][$tbt->month]['days']))
@@ -105,7 +107,7 @@ class DashboardController extends Controller
 
 			if ($tbt->year == $currentYear && $tbt->month == $currentMonth)
 			{
-				$current["this_month"]["total_tbt"] = $current["this_month"]["total_tbt"] + 1;
+				$current["this_month"] += 1;
 			}
 
 			$current[$tbt->year][$tbt->month]['totalManHours'] += $tbt->participants_count * 9;
@@ -113,7 +115,8 @@ class DashboardController extends Controller
 
 			return $current;
 		}, $years);
-
+		
+		$analytics["this_month"]["total_tbt"] = $tbtByYear["this_month"];
 		if ($tbtByYear[$currentYear][$currentMonth])
 		{
 			$analytics["this_month"]["manpower"] = $tbtByYear[$currentYear][$currentMonth]["totalManpower"];
