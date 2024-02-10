@@ -37,8 +37,8 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                 ) : (
                     <HseTables data={data?.analytics} />
                 )}
-                <Grid container spacing={1.5}>
-                    <Grid item lg={4}>
+                <Grid container spacing={1}>
+                    <Grid item md={6} sm={12} xs={12} lg={4}>
                         <Card
                             sx={{
                                 height: "100%",
@@ -73,7 +73,7 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                             )}
                         </Card>
                     </Grid>
-                    <Grid item lg={2.5}>
+                    <Grid item md={6} sm={12} xs={12} lg={2.5}>
                         <Card
                             sx={{
                                 height: "100%",
@@ -123,7 +123,7 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                             )}
                         </Card>
                     </Grid>
-                    <Grid item lg={2.5}>
+                    <Grid item md={6} sm={12} xs={12} lg={2.5}>
                         <Card
                             sx={{
                                 height: "100%",
@@ -158,7 +158,7 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                             )}
                         </Card>
                     </Grid>
-                    <Grid item lg={3}>
+                    <Grid item md={6} sm={12} xs={12} lg={3}>
                         <Card
                             sx={{
                                 height: "100%",
@@ -194,8 +194,8 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                         </Card>
                     </Grid>
                 </Grid>
-                <Grid container spacing={1.5}>
-                    <Grid item lg={12}>
+                <Grid container spacing={1}>
+                    <Grid item md={6} sm={12} xs={12} lg={3}>
                         <Card
                             sx={{
                                 height: "100%",
@@ -203,159 +203,178 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                 padding: 0.5,
                             }}
                         >
-                            <Stack direction="row">
-                                <Box width={1}>
-                                    <Box
-                                        p={0.5}
-                                        bgcolor={theme.palette.primary.main}
-                                        display="inline-block"
+                            <Box width={1}>
+                                <Box
+                                    p={0.5}
+                                    bgcolor={theme.palette.primary.main}
+                                    display="inline-block"
+                                >
+                                    <Typography
+                                        fontSize={theme.typography.body2}
+                                        color="#ffffff"
+                                        fontWeight={600}
                                     >
-                                        <Typography
-                                            fontSize={theme.typography.body2}
-                                            color="#ffffff"
-                                            fontWeight={600}
-                                        >
-                                            LTIR/TRIR
-                                        </Typography>
-                                    </Box>
-                                    {isLoading ? (
-                                        <Box
-                                            display="flex"
-                                            alignItems="center"
-                                            justifyContent="center"
-                                        >
-                                            <Skeleton
-                                                width="90%"
-                                                height={280}
-                                                variant="rounded"
-                                                sx={{ mt: 1 }}
-                                            />
-                                        </Box>
-                                    ) : (
-                                        <LtirTrir
-                                            data={data?.graph?.LTIR_TRIR}
+                                        LTIR/TRIR
+                                    </Typography>
+                                </Box>
+                                {isLoading ? (
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                    >
+                                        <Skeleton
+                                            width="90%"
+                                            height={280}
+                                            variant="rounded"
+                                            sx={{ mt: 1 }}
                                         />
-                                    )}
-                                </Box>
-
-                                <Box width={1}>
-                                    <Box
-                                        p={0.5}
-                                        bgcolor={theme.palette.primary.main}
-                                        display="inline-block"
-                                    >
-                                        <Typography
-                                            fontSize={theme.typography.body2}
-                                            color="#ffffff"
-                                            fontWeight={600}
-                                        >
-                                            POTENTIAL SEVERITY
-                                        </Typography>
                                     </Box>
-                                    {isLoading ? (
-                                        <Box
-                                            display="flex"
-                                            alignItems="center"
-                                            justifyContent="center"
-                                        >
-                                            <Skeleton
-                                                width="90%"
-                                                height={280}
-                                                variant="rounded"
-                                                sx={{ mt: 1 }}
-                                            />
-                                        </Box>
-                                    ) : (
-                                        <PotentialSeverity
-                                            data={
-                                                data?.graph?.potential_severity
-                                            }
+                                ) : (
+                                    <LtirTrir data={data?.graph?.LTIR_TRIR} />
+                                )}
+                            </Box>
+                        </Card>
+                    </Grid>
+                    <Grid item md={6} sm={12} xs={12} lg={3}>
+                        <Card
+                            sx={{
+                                height: "100%",
+                                borderRadius: 0,
+                                padding: 0.5,
+                            }}
+                        >
+                            <Box width={1}>
+                                <Box
+                                    p={0.5}
+                                    bgcolor={theme.palette.primary.main}
+                                    display="inline-block"
+                                >
+                                    <Typography
+                                        fontSize={theme.typography.body2}
+                                        color="#ffffff"
+                                        fontWeight={600}
+                                    >
+                                        POTENTIAL SEVERITY
+                                    </Typography>
+                                </Box>
+                                {isLoading ? (
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                    >
+                                        <Skeleton
+                                            width="90%"
+                                            height={280}
+                                            variant="rounded"
+                                            sx={{ mt: 1 }}
                                         />
-                                    )}
-                                </Box>
-
-                                <Box width={1}>
-                                    <Box
-                                        p={0.5}
-                                        bgcolor={theme.palette.primary.main}
-                                        display="inline-block"
-                                    >
-                                        <Typography
-                                            fontSize={theme.typography.body2}
-                                            color="#ffffff"
-                                            fontWeight={600}
-                                        >
-                                            ROOT CAUSE ANALYSIS
-                                        </Typography>
                                     </Box>
-                                    {isLoading ? (
-                                        <Box
-                                            display="flex"
-                                            alignItems="center"
-                                            justifyContent="center"
-                                        >
-                                            <Skeleton
-                                                width="90%"
-                                                height={280}
-                                                variant="rounded"
-                                                sx={{ mt: 1 }}
-                                            />
-                                        </Box>
-                                    ) : (
-                                        <RootCauseAnalysis
-                                            data={
-                                                data?.graph?.root_cause_analysis
-                                            }
+                                ) : (
+                                    <PotentialSeverity
+                                        data={data?.graph?.potential_severity}
+                                    />
+                                )}
+                            </Box>
+                        </Card>
+                    </Grid>
+                    <Grid item md={6} sm={12} xs={12} lg={3}>
+                        <Card
+                            sx={{
+                                height: "100%",
+                                borderRadius: 0,
+                                padding: 0.5,
+                            }}
+                        >
+                            <Box width={1}>
+                                <Box
+                                    p={0.5}
+                                    bgcolor={theme.palette.primary.main}
+                                    display="inline-block"
+                                >
+                                    <Typography
+                                        fontSize={theme.typography.body2}
+                                        color="#ffffff"
+                                        fontWeight={600}
+                                    >
+                                        ROOT CAUSE ANALYSIS
+                                    </Typography>
+                                </Box>
+                                {isLoading ? (
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                    >
+                                        <Skeleton
+                                            width="90%"
+                                            height={280}
+                                            variant="rounded"
+                                            sx={{ mt: 1 }}
                                         />
-                                    )}
-                                </Box>
-
-                                <Box width={1}>
-                                    <Box
-                                        p={0.5}
-                                        bgcolor={theme.palette.primary.main}
-                                        display="inline-block"
-                                    >
-                                        <Typography
-                                            fontSize={theme.typography.body2}
-                                            color="#ffffff"
-                                            fontWeight={600}
-                                        >
-                                            LEADING INDICATORS
-                                        </Typography>
                                     </Box>
-                                    {isLoading ? (
-                                        <Box
-                                            display="flex"
-                                            alignItems="center"
-                                            justifyContent="center"
-                                        >
-                                            <Skeleton
-                                                width="90%"
-                                                height={280}
-                                                variant="rounded"
-                                                sx={{ mt: 1 }}
-                                            />
-                                        </Box>
-                                    ) : (
-                                        <LeadingIndicators />
-                                    )}
+                                ) : (
+                                    <RootCauseAnalysis
+                                        data={data?.graph?.root_cause_analysis}
+                                    />
+                                )}
+                            </Box>
+                        </Card>
+                    </Grid>
+                    <Grid item md={6} sm={12} xs={12} lg={3}>
+                        <Card
+                            sx={{
+                                height: "100%",
+                                borderRadius: 0,
+                                padding: 0.5,
+                            }}
+                        >
+                            <Box width={1}>
+                                <Box
+                                    p={0.5}
+                                    bgcolor={theme.palette.primary.main}
+                                    display="inline-block"
+                                >
+                                    <Typography
+                                        fontSize={theme.typography.body2}
+                                        color="#ffffff"
+                                        fontWeight={600}
+                                    >
+                                        LEADING INDICATORS
+                                    </Typography>
                                 </Box>
-                            </Stack>
+                                {isLoading ? (
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                    >
+                                        <Skeleton
+                                            width="90%"
+                                            height={280}
+                                            variant="rounded"
+                                            sx={{ mt: 1 }}
+                                        />
+                                    </Box>
+                                ) : (
+                                    <LeadingIndicators />
+                                )}
+                            </Box>
                         </Card>
                     </Grid>
                 </Grid>
-                <Grid container spacing={1.5}>
+                <Grid container spacing={1}>
                     {!isLoading && (
-                        <Grid item lg={12}>
-                            <Card
-                                sx={{
-                                    height: "100%",
-                                    borderRadius: 0,
-                                    padding: 0.5,
-                                }}
-                            >
-                                <Stack direction="row">
+                        <>
+                            <Grid item md={6} sm={12} xs={12} lg={2.4}>
+                                <Card
+                                    sx={{
+                                        height: "100%",
+                                        borderRadius: 0,
+                                        padding: 0.5,
+                                    }}
+                                >
                                     <Box width={1}>
                                         <Box
                                             p={0.5}
@@ -378,7 +397,16 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                             }
                                         />
                                     </Box>
-
+                                </Card>
+                            </Grid>
+                            <Grid item md={6} sm={12} xs={12} lg={2.4}>
+                                <Card
+                                    sx={{
+                                        height: "100%",
+                                        borderRadius: 0,
+                                        padding: 0.5,
+                                    }}
+                                >
                                     <Box width={1}>
                                         <Box
                                             p={0.5}
@@ -401,7 +429,16 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                             }
                                         />
                                     </Box>
-
+                                </Card>
+                            </Grid>
+                            <Grid item md={6} sm={12} xs={12} lg={2.4}>
+                                <Card
+                                    sx={{
+                                        height: "100%",
+                                        borderRadius: 0,
+                                        padding: 0.5,
+                                    }}
+                                >
                                     <Box width={1}>
                                         <Box
                                             p={0.5}
@@ -422,7 +459,16 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                             data={data?.graph?.nature_of_injury}
                                         />
                                     </Box>
-
+                                </Card>
+                            </Grid>
+                            <Grid item md={6} sm={12} xs={12} lg={2.4}>
+                                <Card
+                                    sx={{
+                                        height: "100%",
+                                        borderRadius: 0,
+                                        padding: 0.5,
+                                    }}
+                                >
                                     <Box width={1}>
                                         <Box
                                             p={0.5}
@@ -443,7 +489,16 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                             data={data?.graph?.job_description}
                                         />
                                     </Box>
-
+                                </Card>
+                            </Grid>
+                            <Grid item md={6} sm={12} xs={12} lg={2.4}>
+                                <Card
+                                    sx={{
+                                        height: "100%",
+                                        borderRadius: 0,
+                                        padding: 0.5,
+                                    }}
+                                >
                                     <Box width={1}>
                                         <Box
                                             p={0.5}
@@ -467,9 +522,9 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                             }
                                         />
                                     </Box>
-                                </Stack>
-                            </Card>
-                        </Grid>
+                                </Card>
+                            </Grid>
+                        </>
                     )}
                 </Grid>
             </Stack>
