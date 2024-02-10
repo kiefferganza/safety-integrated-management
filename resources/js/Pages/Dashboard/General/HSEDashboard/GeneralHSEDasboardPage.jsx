@@ -47,12 +47,14 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                             }}
                         >
                             <Box
-                                p={0.5}
+                                py={0.5}
+                                px={1}
+                                borderRadius={99}
                                 bgcolor={theme.palette.primary.main}
                                 display="inline-block"
                             >
                                 <Typography
-                                    fontSize={theme.typography.body2}
+                                    fontSize={theme.typography.subtitle2}
                                     color="#ffffff"
                                     fontWeight={600}
                                 >
@@ -82,12 +84,14 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                             }}
                         >
                             <Box
-                                p={0.5}
+                                py={0.5}
+                                px={1}
+                                borderRadius={99}
                                 bgcolor={theme.palette.primary.main}
                                 display="inline-block"
                             >
                                 <Typography
-                                    fontSize={theme.typography.body2}
+                                    fontSize={theme.typography.subtitle2}
                                     color="#ffffff"
                                     fontWeight={600}
                                 >
@@ -132,12 +136,14 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                             }}
                         >
                             <Box
-                                p={0.5}
+                                py={0.5}
+                                px={1}
+                                borderRadius={99}
                                 bgcolor={theme.palette.primary.main}
                                 display="inline-block"
                             >
                                 <Typography
-                                    fontSize={theme.typography.body2}
+                                    fontSize={theme.typography.subtitle2}
                                     color="#ffffff"
                                     fontWeight={600}
                                 >
@@ -167,12 +173,14 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                             }}
                         >
                             <Box
-                                p={0.5}
+                                py={0.5}
+                                px={1}
+                                borderRadius={99}
                                 bgcolor={theme.palette.primary.main}
                                 display="inline-block"
                             >
                                 <Typography
-                                    fontSize={theme.typography.body2}
+                                    fontSize={theme.typography.subtitle2}
                                     color="#ffffff"
                                     fontWeight={600}
                                 >
@@ -205,12 +213,14 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                         >
                             <Box width={1}>
                                 <Box
-                                    p={0.5}
+                                    py={0.5}
+                                    px={1}
+                                    borderRadius={99}
                                     bgcolor={theme.palette.primary.main}
                                     display="inline-block"
                                 >
                                     <Typography
-                                        fontSize={theme.typography.body2}
+                                        fontSize={theme.typography.subtitle2}
                                         color="#ffffff"
                                         fontWeight={600}
                                     >
@@ -246,12 +256,14 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                         >
                             <Box width={1}>
                                 <Box
-                                    p={0.5}
+                                    py={0.5}
+                                    px={1}
+                                    borderRadius={99}
                                     bgcolor={theme.palette.primary.main}
                                     display="inline-block"
                                 >
                                     <Typography
-                                        fontSize={theme.typography.body2}
+                                        fontSize={theme.typography.subtitle2}
                                         color="#ffffff"
                                         fontWeight={600}
                                     >
@@ -289,12 +301,14 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                         >
                             <Box width={1}>
                                 <Box
-                                    p={0.5}
+                                    py={0.5}
+                                    px={1}
+                                    borderRadius={99}
                                     bgcolor={theme.palette.primary.main}
                                     display="inline-block"
                                 >
                                     <Typography
-                                        fontSize={theme.typography.body2}
+                                        fontSize={theme.typography.subtitle2}
                                         color="#ffffff"
                                         fontWeight={600}
                                     >
@@ -332,12 +346,14 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                         >
                             <Box width={1}>
                                 <Box
-                                    p={0.5}
+                                    py={0.5}
+                                    px={1}
+                                    borderRadius={99}
                                     bgcolor={theme.palette.primary.main}
                                     display="inline-block"
                                 >
                                     <Typography
-                                        fontSize={theme.typography.body2}
+                                        fontSize={theme.typography.subtitle2}
                                         color="#ffffff"
                                         fontWeight={600}
                                     >
@@ -383,7 +399,7 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                         >
                                             <Typography
                                                 fontSize={
-                                                    theme.typography.body2
+                                                    theme.typography.subtitle2
                                                 }
                                                 color="#ffffff"
                                                 fontWeight={600}
@@ -415,7 +431,7 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                         >
                                             <Typography
                                                 fontSize={
-                                                    theme.typography.body2
+                                                    theme.typography.subtitle2
                                                 }
                                                 color="#ffffff"
                                                 fontWeight={600}
@@ -447,7 +463,7 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                         >
                                             <Typography
                                                 fontSize={
-                                                    theme.typography.body2
+                                                    theme.typography.subtitle2
                                                 }
                                                 color="#ffffff"
                                                 fontWeight={600}
@@ -477,7 +493,7 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                         >
                                             <Typography
                                                 fontSize={
-                                                    theme.typography.body2
+                                                    theme.typography.subtitle2
                                                 }
                                                 color="#ffffff"
                                                 fontWeight={600}
@@ -507,7 +523,7 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                         >
                                             <Typography
                                                 fontSize={
-                                                    theme.typography.body2
+                                                    theme.typography.subtitle2
                                                 }
                                                 color="#ffffff"
                                                 fontWeight={600}

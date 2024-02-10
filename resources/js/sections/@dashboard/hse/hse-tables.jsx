@@ -189,7 +189,7 @@ export default function HseTables({ data }) {
                     </Stack>
                     <Stack>
                         <Box>
-                            <Typography>ROO Dept.</Typography>
+                            <Typography>External</Typography>
                         </Box>
                         <Box>
                             <Typography>-</Typography>
