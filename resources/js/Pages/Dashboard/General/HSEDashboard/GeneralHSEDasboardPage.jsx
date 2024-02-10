@@ -393,7 +393,9 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                 >
                                     <Box width={1}>
                                         <Box
-                                            p={0.5}
+                                            py={0.5}
+                                            px={1}
+                                            borderRadius={99}
                                             bgcolor={theme.palette.primary.main}
                                             display="inline-block"
                                         >
@@ -425,7 +427,9 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                 >
                                     <Box width={1}>
                                         <Box
-                                            p={0.5}
+                                            py={0.5}
+                                            px={1}
+                                            borderRadius={99}
                                             bgcolor={theme.palette.primary.main}
                                             display="inline-block"
                                         >
@@ -457,7 +461,9 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                 >
                                     <Box width={1}>
                                         <Box
-                                            p={0.5}
+                                            py={0.5}
+                                            px={1}
+                                            borderRadius={99}
                                             bgcolor={theme.palette.primary.main}
                                             display="inline-block"
                                         >
@@ -487,7 +493,9 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                 >
                                     <Box width={1}>
                                         <Box
-                                            p={0.5}
+                                            py={0.5}
+                                            px={1}
+                                            borderRadius={99}
                                             bgcolor={theme.palette.primary.main}
                                             display="inline-block"
                                         >
@@ -517,7 +525,9 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                                 >
                                     <Box width={1}>
                                         <Box
-                                            p={0.5}
+                                            py={0.5}
+                                            px={1}
+                                            borderRadius={99}
                                             bgcolor={theme.palette.primary.main}
                                             display="inline-block"
                                         >
