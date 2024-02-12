@@ -12,3 +12,4 @@ export { default as MechanismOfInjury } from "./mechanism-of-injury";
 export { default as NatureOfInjury } from "./nature-of-injury";
 export { default as EquipmentMaterialInvolved } from "./equipment-material-involved";
 export { default as JobDescriptionGraph } from "./job-description";
+export { default as TrendingObservation } from "./trending-observation";

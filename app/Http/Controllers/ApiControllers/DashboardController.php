@@ -26,7 +26,8 @@ class DashboardController extends Controller
 		$to = (new Carbon($request->to));
 		return response()->json([
 			"analytics" => $this->analytics($from, $to),
-			"graph" => $this->incident_graph_data()
+			"graph" => $this->incident_graph_data(),
+			"trending_observation" => (new DashboardService())->getTrendingObservation()
 		]);
 	}
 

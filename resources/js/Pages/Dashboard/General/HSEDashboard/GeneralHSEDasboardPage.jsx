@@ -5,6 +5,11 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableRow from "@mui/material/TableRow";
 import Skeleton from "@mui/material/Skeleton";
 import { useTheme } from "@mui/material/styles";
 import { useSettingsContext } from "@/Components/settings";
@@ -23,7 +28,9 @@ import {
     PotentialSeverity,
     RecordableIncident,
     RootCauseAnalysis,
+    TrendingObservation,
 } from "@/sections/@dashboard/hse";
+// import Scrollbar from "@/Components/scrollbar";
 
 export default function GeneralHSEDasboardPage({ data, isLoading }) {
     console.log({ data });
@@ -553,6 +560,138 @@ export default function GeneralHSEDasboardPage({ data, isLoading }) {
                         </>
                     )}
                 </Grid>
+                {!isLoading && (
+                    <Grid container spacing={1}>
+                        <Grid item md={6} sm={12} xs={12} lg={8}>
+                            <Card
+                                sx={{
+                                    height: "100%",
+                                    borderRadius: 0,
+                                    padding: 0.5,
+                                }}
+                            >
+                                <Box width={1}>
+                                    <Box
+                                        py={0.5}
+                                        px={1}
+                                        borderRadius={99}
+                                        bgcolor={theme.palette.primary.main}
+                                        display="inline-block"
+                                    >
+                                        <Typography
+                                            fontSize={
+                                                theme.typography.subtitle2
+                                            }
+                                            color="#ffffff"
+                                            fontWeight={600}
+                                        >
+                                            Trending Observation
+                                        </Typography>
+                                    </Box>
+                                    <TrendingObservation
+                                        chart={{
+                                            series:
+                                                data?.trending_observation
+                                                    ?.series || [],
+                                            categories:
+                                                data?.trending_observation
+                                                    ?.categories || [],
+                                        }}
+                                        trends={
+                                            data?.trending_observation
+                                                ?.trends || []
+                                        }
+                                    />
+                                </Box>
+                            </Card>
+                        </Grid>
+                        <Grid item md={6} sm={12} xs={12} lg={4}>
+                            <Card
+                                sx={{
+                                    height: "100%",
+                                    borderRadius: 0,
+                                    padding: 0.5,
+                                }}
+                            >
+                                <Box width={1}>
+                                    <Box
+                                        py={0.5}
+                                        px={1}
+                                        borderRadius={99}
+                                        bgcolor={theme.palette.primary.main}
+                                        display="inline-block"
+                                    >
+                                        <Typography
+                                            fontSize={
+                                                theme.typography.subtitle2
+                                            }
+                                            color="#ffffff"
+                                            fontWeight={600}
+                                        >
+                                            Top 5 HSE Hazards (Month)
+                                        </Typography>
+                                    </Box>
+                                    <TableContainer sx={{ mt: 1 }}>
+                                        <Table>
+                                            <TableBody>
+                                                {data?.trending_observation?.trends.map(
+                                                    (trend, idx) => (
+                                                        <TableRow
+                                                            key={trend.name}
+                                                            sx={{
+                                                                "&:nth-of-type(odd)":
+                                                                    {
+                                                                        backgroundColor:
+                                                                            (
+                                                                                theme
+                                                                            ) =>
+                                                                                theme
+                                                                                    .palette
+                                                                                    .action
+                                                                                    .hover,
+                                                                    },
+                                                            }}
+                                                        >
+                                                            <TableCell
+                                                                sx={{
+                                                                    display:
+                                                                        "flex",
+                                                                }}
+                                                            >
+                                                                <Typography variant="subtitle2">
+                                                                    {idx + 1}
+                                                                </Typography>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Typography variant="subtitle2">
+                                                                    {trend.name}
+                                                                </Typography>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Typography
+                                                                    variant="subtitle2"
+                                                                    color="error.dark"
+                                                                    sx={{
+                                                                        textDecoration:
+                                                                            "underline",
+                                                                    }}
+                                                                >
+                                                                    {
+                                                                        trend.value
+                                                                    }
+                                                                </Typography>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Box>
+                            </Card>
+                        </Grid>
+                    </Grid>
+                )}
             </Stack>
         </Container>
     );

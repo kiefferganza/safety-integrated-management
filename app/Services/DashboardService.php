@@ -130,6 +130,56 @@ class DashboardService {
 	}
 
 
+	public function getTrendingObservation() {
+		$inspections =  InspectionReportList::select("list_id", "ref_num", "table_name", "tbl_inspection_reports_list.inspection_id", "ref_score", "section_title", "tbl_inspection_reports.status")
+		->where("ref_score", 2)
+		->orWhere("ref_score", 3)
+		->where("section_title", "!=", null)
+		->where("tbl_inspection_reports.is_deleted", 0)
+		->join("tbl_inspection_reports", "tbl_inspection_reports.inspection_id", "tbl_inspection_reports_list.inspection_id")
+		->orderBy("ref_num")
+		->get()
+		->groupBy("section_title")
+		->reduce(function($arr, $item) {
+			$title = $item->first()?->section_title;
+			if($title){
+				$arr["categories"][] = $title;
+			}
+			$arr["series"][0]["data"][] = count($item);
+			$arr["merged"][$title] = count($item);
+			return $arr;
+		}, [
+				"categories" => [],
+				"series" => [
+					[
+						"name" => "Negative",
+						"data" => [],
+					],
+				],
+				"merged" => [],
+		]);
+		$copiedTrend = [...$inspections["series"][0]["data"]];
+		rsort($copiedTrend);
+		$copiedTrend = array_unique(array_slice($copiedTrend, 0, 5));
+
+		$mergedTrends = collect($inspections["merged"]);
+		$trends = [];
+		foreach ($copiedTrend as $cTrend) {
+			if(count($trends) === 5 || $cTrend === 0) break;
+			$getTrend = $mergedTrends->filter(fn($value) => $cTrend === $value)->toArray();
+			foreach ($getTrend as $name => $value) {
+				if(count($trends) === 5) break;
+				$trends[] = [
+					"name" => $name,
+					"value" => $value
+				];
+			}
+		}
+		$inspections["trends"] = $trends;
+		return $inspections;
+	}
+
+
 	public function getIncidents() {
 		$now = Carbon::now();
 		$recordableCases = array("Amputation", "Asphyxia", "Fracture", "Hearing Loss", "Poisoning");
