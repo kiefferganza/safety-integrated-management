@@ -74,10 +74,10 @@ class InspectionController extends Controller
 			$before = $item->getFirstMedia("before");
 			$after = $item->getFirstMedia("after");
 			if($before) {
-				$item->photo_before = $before->getUrl("small");
+				$item->photo_before = $before->hasGeneratedConversion("small") ? $before->getUrl("small") : $before->getUrl();
 			}
 			if($after) {
-				$item->photo_after = $after->getUrl("small");
+				$item->photo_after = $after->hasGeneratedConversion("small") ? $after->getUrl("small") : $after->getUrl();
 			}
 			return $item;
 		});
