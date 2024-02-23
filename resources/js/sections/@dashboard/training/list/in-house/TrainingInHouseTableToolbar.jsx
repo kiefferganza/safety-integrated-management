@@ -120,7 +120,7 @@ export default function TrainingInHouseTableToolbar({
             </TextField>
 
             <DatePicker
-                label="Training date"
+                label="Start Date"
                 value={filterStartDate}
                 onChange={onFilterStartDate}
                 renderInput={(params) => (
@@ -135,7 +135,7 @@ export default function TrainingInHouseTableToolbar({
             />
 
             <DatePicker
-                label="Expiration date"
+                label="End Date"
                 value={filterEndDate}
                 onChange={onFilterEndDate}
                 renderInput={(params) => (

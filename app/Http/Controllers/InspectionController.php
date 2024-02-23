@@ -7,11 +7,9 @@ use App\Models\Employee;
 use App\Models\Inspection;
 use App\Models\InspectionReportList;
 use App\Services\InspectionService;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 class InspectionController extends Controller
 {

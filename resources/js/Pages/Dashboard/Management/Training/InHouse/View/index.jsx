@@ -46,10 +46,12 @@ const index = ({ training, rolloutDate }) => {
                               : ""
                       }${training?.sequence_no}`
                     : null,
-                trainees: joinTrainees()
+                trainees: joinTrainees(),
             });
         }
     }, []);
+
+    console.log(trainingData);
 
     return (
         <>
@@ -78,7 +80,10 @@ const index = ({ training, rolloutDate }) => {
                             ]}
                         />
 
-                        <TrainingDetails training={trainingData} rolloutDate={rolloutDate} />
+                        <TrainingDetails
+                            training={trainingData}
+                            rolloutDate={rolloutDate}
+                        />
                     </Container>
                 </DashboardLayout>
             </Suspense>

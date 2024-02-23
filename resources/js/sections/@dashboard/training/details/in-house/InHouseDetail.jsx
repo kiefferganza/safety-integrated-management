@@ -39,7 +39,11 @@ export default function InHouseDetail({ training, rolloutDate }) {
 
     return (
         <>
-            <TrainingToolbar training={training} module="In House" rolloutDate={rolloutDate} />
+            <TrainingToolbar
+                training={training}
+                module="In House"
+                rolloutDate={rolloutDate}
+            />
 
             <Card sx={{ pt: { xs: 3, md: 5 }, px: { xs: 3, md: 8 } }}>
                 <Box sx={{ mb: 2 }}>
@@ -89,12 +93,9 @@ export default function InHouseDetail({ training, rolloutDate }) {
                                 variant="body2"
                                 fontWeight={700}
                                 textAlign="center"
-                            >
-                                
-                            </Typography>
+                            ></Typography>
                         </Box>
-                        <Box>
-                        </Box>
+                        <Box></Box>
                     </Stack>
 
                     <Stack alignItems="center" flex={1}>
@@ -104,7 +105,11 @@ export default function InHouseDetail({ training, rolloutDate }) {
                             </Typography>
                         </Box>
                         <Box>
-                            <Typography>{rolloutDate ? (new Date(rolloutDate)).toLocaleDateString() : ''}</Typography>
+                            <Typography>
+                                {rolloutDate
+                                    ? new Date(rolloutDate).toLocaleDateString()
+                                    : ""}
+                            </Typography>
                         </Box>
                     </Stack>
                 </Stack>
@@ -242,9 +247,15 @@ export default function InHouseDetail({ training, rolloutDate }) {
                             <Box>
                                 <Typography
                                     variant="body1"
-                                    color={training?.status === 'completed' ? '#86E8AB' : '#FFAC82'}
+                                    color={
+                                        training?.status === "completed"
+                                            ? "#86E8AB"
+                                            : "#FFAC82"
+                                    }
                                 >
-                                    {training?.status === 'completed' ? 'Completed' : 'Incomplete'}
+                                    {training?.status === "completed"
+                                        ? "Completed"
+                                        : "Incomplete"}
                                 </Typography>
                             </Box>
                         </Box>
@@ -262,7 +273,7 @@ export default function InHouseDetail({ training, rolloutDate }) {
                                     <Tooltip title={training.attachment.name}>
                                         <MuiLink
                                             component="a"
-                                            href={training.attachment.name}
+                                            href={training.attachment.url}
                                             sx={{
                                                 color: "text.primary",
                                             }}

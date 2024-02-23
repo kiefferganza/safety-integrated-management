@@ -631,7 +631,7 @@ function applyFilter({
             (training) =>
                 fTimestamp(training.training_date) >=
                     filterStartDate.setHours(0, 0, 0, 0) &&
-                fTimestamp(training.date_expired) <=
+                fTimestamp(training.training_date) <=
                     filterEndDate.setHours(0, 0, 0, 0)
         );
     }
