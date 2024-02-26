@@ -152,7 +152,7 @@ class User extends Authenticatable implements HasMedia
 	}
 
 	public function followers() {
-		return $this->hasMany(Follower::class, 'follower_id', 'user_id');
+		// return $this->hasMany(Follower::class, 'follower_id', 'user_id');
 	}
 
 	public function social_accounts() {
@@ -160,7 +160,7 @@ class User extends Authenticatable implements HasMedia
 	}
 
 	public function following() {
-		return $this->hasMany(Follower::class, 'user_id', 'user_id');
+		// return $this->hasMany(Follower::class, 'user_id', 'user_id');
 	}
 
 	// public function getFullnameAttribute() {

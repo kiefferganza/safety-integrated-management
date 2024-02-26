@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApiControllers\DashboardController;
 use App\Http\Controllers\ApiControllers\FolderApiController;
+use App\Http\Controllers\ApiControllers\GeneralApiController;
 use App\Http\Controllers\ApiControllers\ImageApiController;
 use App\Http\Controllers\ApiControllers\InspectionApiController;
 use App\Http\Controllers\ApiControllers\ToolboxTalkController;
@@ -59,6 +60,9 @@ Route::middleware('auth')->as('api.')->group(function ()
 			Route::get('/employees', [InspectionApiController::class, 'employeeWithInspectionCount'])->name("employees");
 		});
 	});
+
+
+	Route::get("/positions", [GeneralApiController::class, "positions"])->name("positions");
 
 	// Route::get('toolbox-talks', function ()
 	// {

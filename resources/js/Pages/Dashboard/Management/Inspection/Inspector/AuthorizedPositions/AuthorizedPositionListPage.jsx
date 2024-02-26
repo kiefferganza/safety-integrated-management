@@ -14,6 +14,7 @@ import {
     Container,
     IconButton,
     TableContainer,
+    CircularProgress,
 } from "@mui/material";
 // routes
 import { PATH_DASHBOARD } from "@/routes/paths";
@@ -39,9 +40,9 @@ import {
     PositionsTableRow,
     PositionsTableToolbar,
 } from "@/sections/@dashboard/inspection/inspectors";
-import NewRegisterDialog from "@/sections/@dashboard/training/portal/NewRegisterDialog";
 import { Inertia } from "@inertiajs/inertia";
 import { useSwal } from "@/hooks/useSwal";
+import NewAuthorizedPosition from "@/sections/@dashboard/inspection/portal/NewAuthorizedPosition";
 
 const TABLE_HEAD = [
     { id: "index", label: "#", align: "left" },
@@ -53,17 +54,22 @@ const NewPositionSchema = Yup.object().shape({
     positionItem: Yup.array().of(
         Yup.object().shape({
             position: Yup.string().required("Position title is required."),
+            position_id: Yup.number().required(),
         })
     ),
 });
 
-export default function AuthorizedPositionListPage({ positions }) {
+export default function AuthorizedPositionListPage({
+    authorizedPositions,
+    positionList,
+    isLoading,
+}) {
     const { themeStretch } = useSettingsContext();
 
     const methods = useForm({
         resolver: yupResolver(NewPositionSchema),
         defaultValues: {
-            positionItem: [{ position: "", id: 0 }],
+            positionItem: authorizedPositions,
         },
     });
 
@@ -96,10 +102,10 @@ export default function AuthorizedPositionListPage({ positions }) {
     const [tableData, setTableData] = useState([]);
 
     useEffect(() => {
-        if (positions && positions.length > 0) {
-            setTableData(positions);
+        if (authorizedPositions && authorizedPositions.length > 0) {
+            setTableData(authorizedPositions);
         }
-    }, [positions]);
+    }, [authorizedPositions]);
 
     const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -133,8 +139,9 @@ export default function AuthorizedPositionListPage({ positions }) {
     };
 
     const handleCreateCourse = ({ positionItem }) => {
-        const positions = positionItem.map((course) => ({
-            position: course.position,
+        const positions = positionItem.map((pos) => ({
+            position: pos.position,
+            position_id: pos.position_id,
         }));
 
         Inertia.post(
@@ -143,7 +150,7 @@ export default function AuthorizedPositionListPage({ positions }) {
             {
                 onStart: () => {
                     handleCloseAddCourse();
-                    load("Adding new course", "Please wait...");
+                    load("Adding new position", "Please wait...");
                 },
                 onFinish: stop,
                 preserveScroll: true,
@@ -165,7 +172,7 @@ export default function AuthorizedPositionListPage({ positions }) {
             { ids: [id] },
             {
                 onStart: () => {
-                    load("Deleting course", "Please wait...");
+                    load("Deleting position", "Please wait...");
                 },
                 onFinish: stop,
                 preserveScroll: true,
@@ -197,14 +204,14 @@ export default function AuthorizedPositionListPage({ positions }) {
         <>
             <Container maxWidth={themeStretch ? false : "lg"}>
                 <CustomBreadcrumbs
-                    heading="Registered Course List"
+                    heading="Authorized Positions List"
                     links={[
                         {
                             name: "Dashboard",
                             href: PATH_DASHBOARD.root,
                         },
                         {
-                            name: "Inspection Employees",
+                            name: "Inspector List",
                             href: PATH_DASHBOARD.inspection.inspectors,
                         },
                         {
@@ -214,10 +221,20 @@ export default function AuthorizedPositionListPage({ positions }) {
                     action={
                         <Button
                             variant="contained"
-                            startIcon={<Iconify icon="eva:plus-fill" />}
+                            startIcon={
+                                isLoading ? null : (
+                                    <Iconify icon="eva:plus-fill" />
+                                )
+                            }
                             onClick={handleOpenAddCourse}
+                            disabled={isLoading}
+                            sx={{ minWidth: 142, minHeight: 36 }}
                         >
-                            New Position
+                            {isLoading ? (
+                                <CircularProgress size={18} color="inherit" />
+                            ) : (
+                                "New Position"
+                            )}
                         </Button>
                     }
                 />
@@ -326,10 +343,12 @@ export default function AuthorizedPositionListPage({ positions }) {
                 </Card>
             </Container>
             <FormProvider methods={methods}>
-                <NewRegisterDialog
+                <NewAuthorizedPosition
                     open={openAdd}
                     onClose={handleCloseAddCourse}
                     onCreate={handleCreateCourse}
+                    positions={positionList}
+                    authorizedPositions={authorizedPositions}
                 />
             </FormProvider>
             <ConfirmDialog

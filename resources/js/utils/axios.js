@@ -41,4 +41,7 @@ export const getExternalMatrix = ({ from, to }) =>
         .get(route("api.training.external_matrix", { from, to }))
         .then((res) => res.data);
 
+export const fetchPositions = () =>
+    axiosInstance.get(route("api.positions")).then((res) => res.data);
+
 export default axiosInstance;

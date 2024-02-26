@@ -5,12 +5,10 @@ import {
     Button,
     Checkbox,
     TableRow,
-    MenuItem,
+    Tooltip,
     TableCell,
     IconButton,
 } from "@mui/material";
-// utils
-import { fDate } from "@/utils/formatTime";
 // components
 import Iconify from "@/Components/iconify";
 import MenuPopover from "@/Components/menu-popover";
@@ -58,9 +56,11 @@ export default function PositionsTableRow({
                 <TableCell align="left">{row.position}</TableCell>
 
                 <TableCell align="right">
-                    <IconButton onClick={handleOpenConfirm}>
-                        <Iconify icon="eva:trash-2-outline" />
-                    </IconButton>
+                    <Tooltip title="Delete">
+                        <IconButton onClick={handleOpenConfirm} color="error">
+                            <Iconify icon="eva:trash-2-outline" />
+                        </IconButton>
+                    </Tooltip>
                 </TableCell>
             </TableRow>
 

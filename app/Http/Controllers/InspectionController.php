@@ -15,6 +15,16 @@ use Inertia\Inertia;
 class InspectionController extends Controller
 {
 
+	public function checkAuthorizedPersonel() {
+		$user = auth()->user();
+		if($user->user_type !== 0) {
+			$registeredPositions = InspectionRegisteredPosition::where("position_id", $user->employee->position)->first();
+			if(!$registeredPositions) {
+				abort(403);
+			}
+		}
+	}
+
 	public function index()
 	{
 		return Inertia::render("Dashboard/Management/Inspection/List/index");
@@ -22,6 +32,7 @@ class InspectionController extends Controller
 
 
 	public function create() {
+		$this->checkAuthorizedPersonel();
 		$sequence = Inspection::where('is_deleted', 0)->count() + 1;
 		$user = auth()->user();
 		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
@@ -39,6 +50,7 @@ class InspectionController extends Controller
 
 
 	public function store(Request $request) {
+		$this->checkAuthorizedPersonel();
 		(new InspectionService())->insertInspection($request);
 
 		return redirect()->route('inspection.management.list')
@@ -300,25 +312,22 @@ class InspectionController extends Controller
 	}
 
 	public function authorizedPositionList() {
-		$position = InspectionRegisteredPosition::all();
-		if(empty($positionIds)) {
-			return Inertia::render("Dashboard/Management/Inspection/Inspector/AuthorizedPositions/index", [
-				"positions" => []
-			]);
-		}
-
+		$positions = InspectionRegisteredPosition::all()->toArray();
 		return Inertia::render("Dashboard/Management/Inspection/Inspector/AuthorizedPositions/index", [
-			"positions" => $position
+			"positions" => $positions
 		]);
 	}
 
 
 	public function addPosition(Request $request) {
 		$request->validate([
-			"position" => ["string", "required"],
-			"position_id" => ["numeric", "required"]
+			"positions" => ["required", "array", "min:1"],
+			"positions.*.position" => ["required", "string"],
+			"positions.*.position_id" => ["required", "numeric"],
 		]);
-		InspectionRegisteredPosition::create($request->all());
+
+		InspectionRegisteredPosition::truncate();
+		InspectionRegisteredPosition::insert($request->positions);
 		
 		return redirect()->back()
 		->with("message", "Position ". $request->position ." added successfully!")
