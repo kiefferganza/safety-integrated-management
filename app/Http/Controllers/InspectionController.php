@@ -299,13 +299,41 @@ class InspectionController extends Controller
 		return Inertia::render("Dashboard/Management/Inspection/Inspector/Employees/index", compact("registeredPositions"));
 	}
 
-	public function inspectorList() {
-		$positionIds = InspectionRegisteredPosition::select("position_id")->get()->pluck("position_id")->toArray();
+	public function authorizedPositionList() {
+		$position = InspectionRegisteredPosition::all();
 		if(empty($positionIds)) {
-			return Inertia::render("Dashboard/Management/Inspection/List/index");
+			return Inertia::render("Dashboard/Management/Inspection/Inspector/AuthorizedPositions/index", [
+				"positions" => []
+			]);
 		}
 
-		return Inertia::render("Dashboard/Management/Inspection/List/index");
+		return Inertia::render("Dashboard/Management/Inspection/Inspector/AuthorizedPositions/index", [
+			"positions" => $position
+		]);
+	}
+
+
+	public function addPosition(Request $request) {
+		$request->validate([
+			"position" => ["string", "required"],
+			"position_id" => ["numeric", "required"]
+		]);
+		InspectionRegisteredPosition::create($request->all());
+		
+		return redirect()->back()
+		->with("message", "Position ". $request->position ." added successfully!")
+		->with("type", "success");
+	}
+
+
+	public function deletePosition(Request $request) {
+		if(isset($request->ids)) {
+			InspectionRegisteredPosition::whereIn("id", $request->ids)->update(['deleted_at' => now()]);
+		}
+
+		return redirect()->back()
+		->with("message",	"Item deleted successfully!")
+		->with("type", "success");
 	}
 
 

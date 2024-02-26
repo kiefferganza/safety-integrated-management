@@ -206,7 +206,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 		// Create
 		Route::middleware("permission:training_create")->group(function() {
-			Route::post('/testemail', [TrainingController::class, 'sendEmail'])->name('testEmail');
+			// Route::post('/testemail', [TrainingController::class, 'sendEmail'])->name('testEmail');
 			Route::get('/new', [TrainingController::class, 'create'])->name('create');
 			Route::post('/create', [TrainingController::class, 'store'])->name('store');
 		});
@@ -243,8 +243,9 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 		Route::prefix('inspector')->as('inspector.')->group(function() {
 			Route::get('/list', [InspectionController::class, "emplooyes"])->name('list');
-			Route::get('/positions', [InspectionController::class, "emplooyes"])->name('positions');
-			Route::post('/positions/create', [InspectionController::class, "index"])->name('positions.create');
+			Route::get('/positions', [InspectionController::class, "authorizedPositionList"])->name('positions');
+			Route::post('/positions/create', [InspectionController::class, "addPosition"])->name('positions.create');
+			Route::post('/positions/delete', [InspectionController::class, "deletePosition"])->name('positions.delete');
 		});
 		
 		Route::middleware("permission:inspection_edit")->group(function() {
