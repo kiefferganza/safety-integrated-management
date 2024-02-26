@@ -355,13 +355,34 @@ const navConfig = [
                     "inspection.management.edit",
                     "inspection.management.review",
                     "inspection.management.verify",
+                    // inspector
+                    "inspection.management.inspector.list",
+                    "inspection.management.inspector.positions",
                 ],
                 children: [
                     {
-                        title: "Create",
-                        gate: "inspection_create",
-                        routeNames: ["inspection.management.new"],
-                        path: PATH_DASHBOARD.inspection.new,
+                        title: "Inspector",
+                        path: PATH_DASHBOARD.root,
+                        routeNames: [
+                            "inspection.management.inspector.list",
+                            "inspection.management.inspector.positions",
+                        ],
+                        children: [
+                            {
+                                title: "List",
+                                routeNames: [
+                                    "inspection.management.inspector.list",
+                                ],
+                                path: PATH_DASHBOARD.inspection.inspectors,
+                            },
+                            {
+                                title: "Authorized Positions",
+                                routeNames: [
+                                    "inspection.management.inspector.positions",
+                                ],
+                                path: PATH_DASHBOARD.inspection.positions,
+                            },
+                        ],
                     },
                     {
                         title: "Site",
@@ -369,8 +390,15 @@ const navConfig = [
                         routeNames: [
                             "inspection.management.report",
                             "inspection.management.list",
+                            "inspection.management.new",
                         ],
                         children: [
+                            {
+                                title: "Create",
+                                gate: "inspection_create",
+                                routeNames: ["inspection.management.new"],
+                                path: PATH_DASHBOARD.inspection.new,
+                            },
                             {
                                 title: "list",
                                 gate: "inspection_show",

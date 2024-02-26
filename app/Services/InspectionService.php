@@ -2,13 +2,17 @@
 
 namespace App\Services;
 
+use App\Models\Employee;
 use App\Models\Inspection;
+use App\Models\InspectionRegisteredPosition;
 use App\Models\InspectionReportList;
 use App\Models\User;
 use App\Notifications\ModuleBasicNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\URL;
 
 class InspectionService
 {
@@ -275,6 +279,50 @@ class InspectionService
 			"classType" => $diff > 0 ? "success" : "error",
 			"type" => $diff > 0 ? "A.D." : "O.D.",
 		];
+	}
+
+	public function registeredPosition() {
+		return InspectionRegisteredPosition::all();
+	}
+
+	public function employees() {
+		return Employee::select(DB::raw("
+		tbl_employees.user_id,
+		tbl_employees.employee_id,
+		tbl_employees.firstname,
+		tbl_employees.middlename,
+		tbl_employees.lastname,
+		tbl_employees.email,
+		tbl_employees.phone_no,
+		tbl_employees.date_created,
+		tbl_position.position,
+		tbl_department.department,
+		tbl_employees.is_deleted,
+		tbl_employees.is_active,
+		tbl_employees.country"))
+			->whereHas("inspections")
+			->where("tbl_employees.is_deleted", 0)
+			->leftJoin("tbl_department", "tbl_employees.department", "tbl_department.department_id")
+			->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+			->with(["user" => fn ($q) => $q->select("user_id")])
+			->withCount("inspections")
+			->get()
+			->transform(function ($employee)
+			{
+				$employee->profile = null;
+				if ($employee->user)
+				{
+					$profile = $employee->user->getFirstMedia("profile", ["primary" => true]);
+					if ($profile)
+					{
+						$path = "user/" . md5($profile->id . config('app.key')) . "/" . $profile->file_name;
+						$employee->profile = [
+							"thumbnail" => URL::route("image", ["path" => $path, "w" => 40, "h" => 40, "fit" => "crop"])
+						];
+					}
+				}
+				return $employee;
+			});
 	}
 
 

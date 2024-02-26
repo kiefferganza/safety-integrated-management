@@ -79,9 +79,15 @@ class Employee extends Model
         return $this->hasMany(ToolboxTalk::class, "employee_id", "employee_id");
     }
 
+    public function inspections()
+    {
+        return $this->hasMany(Inspection::class, "employee_id", "employee_id");
+    }
+
     public function following()
     {
-        return $this->hasMany(Follower::class, "user_id", "user_id");
+        return null;
+        // return $this->hasMany(Follower::class, "user_id", "user_id");
     }
 
     public function social_accounts()

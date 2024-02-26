@@ -47,7 +47,7 @@ export const PATH_DASHBOARD = {
 
     general: {
         hse_dashboard: path(ROOTS_DASHBOARD, "/hse-dashboard"),
-        hse_statistics: path(ROOTS_DASHBOARD, 'hse-statistics'),
+        hse_statistics: path(ROOTS_DASHBOARD, "hse-statistics"),
         employee: path(ROOTS_DASHBOARD, "/employees"),
         inventory: path(ROOTS_DASHBOARD, "/inventory"),
         // banking: path(ROOTS_DASHBOARD, '/banking'),
@@ -171,6 +171,8 @@ export const PATH_DASHBOARD = {
         edit: (id) => path(ROOTS_DASHBOARD, `/inspection/${id}/edit`),
         review: (id) => path(ROOTS_DASHBOARD, `/inspection/${id}/review`),
         verify: (id) => path(ROOTS_DASHBOARD, `/inspection/${id}/verify`),
+        inspectors: route("inspection.management.inspector.list"),
+        positions: route("inspection.management.inspector.positions"),
     },
 
     fileManager: {

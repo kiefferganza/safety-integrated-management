@@ -240,6 +240,13 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/site/list', [InspectionController::class, "index"])->name('list');
 			Route::get('/{inspection}', [InspectionController::class, "view"])->name('view');
 		});
+
+		Route::prefix('inspector')->as('inspector.')->group(function() {
+			Route::get('/list', [InspectionController::class, "emplooyes"])->name('list');
+			Route::get('/positions', [InspectionController::class, "emplooyes"])->name('positions');
+			Route::post('/positions/create', [InspectionController::class, "index"])->name('positions.create');
+		});
+		
 		Route::middleware("permission:inspection_edit")->group(function() {
 			Route::get('/{inspection}/edit', [InspectionController::class, "edit"]);
 			Route::post('/{inspection}/edit', [InspectionReportController::class, "update"]);

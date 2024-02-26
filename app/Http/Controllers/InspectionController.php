@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DocumentProjectDetail;
 use App\Models\Employee;
 use App\Models\Inspection;
+use App\Models\InspectionRegisteredPosition;
 use App\Models\InspectionReportList;
 use App\Services\InspectionService;
 use Illuminate\Http\Request;
@@ -290,6 +291,22 @@ class InspectionController extends Controller
 		]);
 	}
 
+
+	// INSPECTOR
+	public function emplooyes() {
+		$registeredPositions = InspectionRegisteredPosition::all();
+		
+		return Inertia::render("Dashboard/Management/Inspection/Inspector/Employees/index", compact("registeredPositions"));
+	}
+
+	public function inspectorList() {
+		$positionIds = InspectionRegisteredPosition::select("position_id")->get()->pluck("position_id")->toArray();
+		if(empty($positionIds)) {
+			return Inertia::render("Dashboard/Management/Inspection/List/index");
+		}
+
+		return Inertia::render("Dashboard/Management/Inspection/List/index");
+	}
 
 
 }
