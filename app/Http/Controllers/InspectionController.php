@@ -10,6 +10,7 @@ use App\Models\InspectionReportList;
 use App\Services\InspectionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 class InspectionController extends Controller

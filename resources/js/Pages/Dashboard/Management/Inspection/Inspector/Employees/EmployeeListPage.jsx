@@ -72,7 +72,6 @@ export default function EmployeeListPage({
         setPage,
         //
         selected,
-        setSelected,
         onSelectRow,
         onSelectAllRows,
         //
@@ -103,15 +102,19 @@ export default function EmployeeListPage({
         filterStatus,
         filterEndDate,
     });
-
     useEffect(() => {
-        const data = employees?.map((employee) => ({
-            ...employee,
-            id: employee.employee_id,
-            status: employee.is_active === 0 ? "active" : "inactive",
-            phone_no: employee.phone_no == 0 ? "N/A" : employee.phone_no,
-        }));
-        setTableData(data || []);
+        if (!!employees) {
+            const data = employees
+                ?.filter((e) => e.inspections_count !== 0)
+                ?.map((employee) => ({
+                    ...employee,
+                    id: employee.employee_id,
+                    status: employee.is_active === 0 ? "active" : "inactive",
+                    phone_no:
+                        employee.phone_no == 0 ? "N/A" : employee.phone_no,
+                }));
+            setTableData(data || []);
+        }
     }, [employees]);
 
     const denseHeight = dense ? 56 : 76;
@@ -130,6 +133,17 @@ export default function EmployeeListPage({
 
     const getPercentByStatus = (status) =>
         (getLengthByStatus(status) / dataFiltered.length) * 100;
+
+    const getTotalInspections = () =>
+        dataFiltered.reduce((acc, curr) => acc + curr.inspections_count, 0);
+
+    const totalInspections = tableData.reduce(
+        (acc, curr) => acc + curr.inspections_count,
+        0
+    );
+
+    const getPercentInspections = () =>
+        ((getTotalInspections() || 1) / totalInspections) * 100;
 
     const TABS = [
         { value: "all", label: "All", color: "info", count: tableData.length },
@@ -235,12 +249,12 @@ export default function EmployeeListPage({
                         />
 
                         <EmployeeAnalytic
-                            title="Total Positions"
-                            total={registeredPositions?.count}
-                            percent={100}
+                            title="Total Inspections"
+                            total={getTotalInspections()}
+                            percent={getPercentInspections()}
                             icon="heroicons:document-magnifying-glass"
                             color={theme.palette.info.main}
-                            listTitle="positions"
+                            listTitle="inspections"
                         />
                     </Stack>
                 </Scrollbar>
@@ -428,7 +442,7 @@ function applyFilter({
 
     if (filterPosition !== "all") {
         inputData = inputData.filter(
-            (employee) => employee.position === filterPosition
+            (employee) => employee.position.trim() === filterPosition.trim()
         );
     }
 

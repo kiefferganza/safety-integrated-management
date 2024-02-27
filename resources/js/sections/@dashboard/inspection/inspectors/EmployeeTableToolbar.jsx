@@ -19,7 +19,7 @@ EmployeeTableToolbar.propTypes = {
     onFilterName: PropTypes.func,
     onResetFilter: PropTypes.func,
     filterPosition: PropTypes.string,
-    optionsPositions: PropTypes.arrayOf(PropTypes.string),
+    optionsPositions: PropTypes.arrayOf(PropTypes.object),
     onFilterPosition: PropTypes.func,
 };
 
@@ -60,10 +60,24 @@ export default function EmployeeTableToolbar({
                     textTransform: "capitalize",
                 }}
             >
+                <MenuItem
+                    value={"all"}
+                    sx={{
+                        mx: 1,
+                        my: 0.5,
+                        borderRadius: 0.75,
+                        typography: "body2",
+                        textTransform: "capitalize",
+                        "&:first-of-type": { mt: 0 },
+                        "&:last-of-type": { mb: 0 },
+                    }}
+                >
+                    All
+                </MenuItem>
                 {optionsPositions.map((option) => (
                     <MenuItem
-                        key={option}
-                        value={option}
+                        key={option.id}
+                        value={option.position}
                         sx={{
                             mx: 1,
                             my: 0.5,
@@ -74,7 +88,7 @@ export default function EmployeeTableToolbar({
                             "&:last-of-type": { mb: 0 },
                         }}
                     >
-                        {option}
+                        {option.position}
                     </MenuItem>
                 ))}
             </TextField>

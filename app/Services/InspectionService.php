@@ -9,6 +9,7 @@ use App\Models\InspectionReportList;
 use App\Models\User;
 use App\Notifications\ModuleBasicNotification;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -174,8 +175,9 @@ class InspectionService
 
 	public function getAllInspections()
 	{
-		return Inspection::select("inspection_id", "employee_id", "reviewer_id", "verifier_id", "accompanied_by", "form_number", "status", "revision_no", "location", "contract_no", "inspected_by", "inspected_date", "inspected_time", "avg_score", "date_issued", "date_due")
-			->where("is_deleted", 0)
+		return Inspection::select("inspection_id", "tbl_inspection_reports.employee_id", "reviewer_id", "verifier_id", "accompanied_by", "form_number", "status", "revision_no", "location", "contract_no", "inspected_by", "inspected_date", "inspected_time", "avg_score", "date_issued", "date_due")
+			->where("tbl_inspection_reports.is_deleted", 0)
+			->rightJoin("tbl_employees", "tbl_employees.employee_id", "tbl_inspection_reports.employee_id")
 			->with([
 				"reviewer",
 				"verifier",
@@ -184,7 +186,8 @@ class InspectionService
 			->get()
 			->reverse()
 			->flatten()
-			->transform(function($inspection) {
+			->transform(function ($inspection)
+			{
 				return [
 					...$inspection->toArray(),
 					"id" => $inspection->inspection_id,
@@ -198,36 +201,44 @@ class InspectionService
 			});
 	}
 
-	public function getObservation($reports) {
-		return $reports->reduce(function ($acc, $curr) {
-			if ($curr["ref_score"] !== 0 && $curr["ref_score"] !== 4 && $curr["ref_score"] !== null) {
+	public function getObservation($reports)
+	{
+		return $reports->reduce(function ($acc, $curr)
+		{
+			if ($curr["ref_score"] !== 0 && $curr["ref_score"] !== 4 && $curr["ref_score"] !== null)
+			{
 				$acc["totalObservation"] += 1;
 			}
-			if ($curr["ref_score"] === 1) {
+			if ($curr["ref_score"] === 1)
+			{
 				$acc["positiveObservation"] += 1;
-			} else if (($curr["ref_score"] === 2 || $curr["ref_score"] === 3) && $curr["item_status"] !== "2") {
+			}
+			else if (($curr["ref_score"] === 2 || $curr["ref_score"] === 3) && $curr["item_status"] !== "2")
+			{
 				$acc["negativeObservation"] += 1;
 			}
 			return $acc;
 		}, ["totalObservation" => 0, "positiveObservation" => 0, "negativeObservation" => 0]);
 	}
-	
 
-	private function getInspectionType($status) {
-		switch ($status) {
+
+	private function getInspectionType($status)
+	{
+		switch ($status)
+		{
 			case 1:
 			case 0:
-							return "submitted";
+				return "submitted";
 			case 2:
-							return "verify";
+				return "verify";
 			case 3:
-							return "closeout";
+				return "closeout";
 			default:
-							return "review";
+				return "review";
 		}
 	}
 
-	private function getInspectionStatus($status) 
+	private function getInspectionStatus($status)
 	{
 		$result = [
 			"code" => $status,
@@ -261,31 +272,35 @@ class InspectionService
 		return $result;
 	}
 
-	public function getDueDateStatus($dueDate) {
+	public function getDueDateStatus($dueDate)
+	{
 		$date = Carbon::parse($dueDate);
 		$diff = now()->diffInDays($date, false);
 
-		if ($diff === 0) {
-						return [
-							"text" => "A.T.",
-							"tooltip" => "Active Today",
-							"classType" => "warning",
-						];
+		if ($diff === 0)
+		{
+			return [
+				"text" => "A.T.",
+				"tooltip" => "Active Today",
+				"classType" => "warning",
+			];
 		}
 
 		return [
 			"text" => $diff > 0 ? abs($diff) . " A.D." : abs($diff) . " O.D.",
-			"tooltip" => $diff > 0 ? "Active ". $diff ." days" : "Overdue ". abs($diff),
+			"tooltip" => $diff > 0 ? "Active " . $diff . " days" : "Overdue " . abs($diff),
 			"classType" => $diff > 0 ? "success" : "error",
 			"type" => $diff > 0 ? "A.D." : "O.D.",
 		];
 	}
 
-	public function registeredPosition() {
+	public function registeredPosition()
+	{
 		return InspectionRegisteredPosition::all();
 	}
 
-	public function employees() {
+	public function employees()
+	{
 		return Employee::select(DB::raw("
 		tbl_employees.user_id,
 		tbl_employees.employee_id,
@@ -305,7 +320,9 @@ class InspectionService
 			->leftJoin("tbl_department", "tbl_employees.department", "tbl_department.department_id")
 			->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->with(["user" => fn ($q) => $q->select("user_id")])
-			->withCount("inspections")
+			->withCount(["inspections" => function($q) {
+				$q->where("is_deleted", 0);
+			}])
 			->get()
 			->transform(function ($employee)
 			{
@@ -324,6 +341,4 @@ class InspectionService
 				return $employee;
 			});
 	}
-
-
 }

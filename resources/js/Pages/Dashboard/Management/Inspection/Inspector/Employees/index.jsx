@@ -19,8 +19,6 @@ const index = ({ auth: { user }, registeredPositions }) => {
         refetchOnWindowFocus: false,
     });
 
-    console.log({ data, registeredPositions });
-
     return (
         <>
             <Head>
