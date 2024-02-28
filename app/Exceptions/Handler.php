@@ -58,6 +58,7 @@ class Handler extends ExceptionHandler
 					break;
 				case 403:
 					$page = 'Page403';
+					break;
 				default:
 					$page = 'Page404';
 					break;
