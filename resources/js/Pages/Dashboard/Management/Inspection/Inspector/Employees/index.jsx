@@ -46,7 +46,7 @@ const index = ({ auth: { user }, registeredPositions = [] }) => {
         ],
         queryFn: () =>
             fetchInspectors(filterDate || new Date(), positionStrings),
-        // refetchOnWindowFocus: false,
+        refetchOnWindowFocus: false,
     });
 
     useEffect(() => {
@@ -96,6 +96,7 @@ const index = ({ auth: { user }, registeredPositions = [] }) => {
                     dataPDF={customDataPDF || dataPDF}
                     open={open}
                     onClose={closePDF}
+                    filterDate={filterDate}
                 />
             )}
         </>
