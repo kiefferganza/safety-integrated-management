@@ -64,21 +64,22 @@ Route::middleware('auth')->as('api.')->group(function ()
 
 	Route::get("/positions", [GeneralApiController::class, "positions"])->name("positions");
 
-	// Route::get('toolbox-talks', function ()
-	// {
-	// 	$tbt = ToolboxTalk::where("is_deleted", 0)
-	// 		->with([
-	// 			"participants" => fn ($q) => $q->select("firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
-	// 			"file" => fn ($q) => $q->select("tbt_id", "img_src"),
-	// 			"conducted"
-	// 		])
-	// 		->orderBy('date_conducted')
-	// 		->get();
+	// USED IN TBT REPORT AND STATISTICS
+	Route::get('toolbox-talks', function ()
+	{
+		$tbt = ToolboxTalk::where("is_deleted", 0)
+			->with([
+				"participants" => fn ($q) => $q->select("firstname", "lastname", "tbl_position.position")->join("tbl_position", "tbl_position.position_id", "tbl_employees.position"),
+				"file" => fn ($q) => $q->select("tbt_id", "img_src"),
+				"conducted"
+			])
+			->orderBy('date_conducted')
+			->get();
 
-	// 	return response()->json([
-	// 		"tbt" => $tbt
-	// 	]);
-	// })->name('toolbox_talks');
+		return response()->json([
+			"tbt" => $tbt
+		]);
+	})->name('toolbox_talks');
 
 	// Route::post('/user/follow/{user_id}', [UsersController::class, "followUser"]);
 
