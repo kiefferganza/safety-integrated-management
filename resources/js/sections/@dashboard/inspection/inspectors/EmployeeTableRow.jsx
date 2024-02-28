@@ -21,9 +21,6 @@ EmployeeTableRow.propTypes = {
 };
 
 export default function EmployeeTableRow({ row, selected, onSelectRow }) {
-    if (row.id === 348 || row.id === 710) {
-        console.log(row);
-    }
     return (
         <>
             <TableRow hover selected={selected}>

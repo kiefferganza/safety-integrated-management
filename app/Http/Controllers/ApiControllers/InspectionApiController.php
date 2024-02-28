@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ApiControllers;
 
 use App\Http\Controllers\Controller;
 use App\Services\InspectionService;
+use Illuminate\Http\Request;
 
 class InspectionApiController extends Controller
 {
@@ -13,7 +14,8 @@ class InspectionApiController extends Controller
   return response()->json((new InspectionService)->getAllInspections());
 	}
 
-	public function employeeWithInspectionCount() {
-		return response()->json((new InspectionService)->employees());
+	public function employeeWithInspectionCount(Request $request) {
+		$positions = $request->positions ? explode(",", $request->positions) : "";
+		return response()->json((new InspectionService)->employees($request->filterDate, $positions));
 	}
 }

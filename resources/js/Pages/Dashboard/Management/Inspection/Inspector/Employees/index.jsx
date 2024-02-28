@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import { useQuery } from "@tanstack/react-query";
@@ -13,50 +13,67 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import CircularProgress from "@mui/material/CircularProgress";
+import PDFRenderer from "./PDFRenderer";
 
 const EmployeeListPage = lazy(() => import("./EmployeeListPage"));
 
-const fetchInspectors = () =>
+const fetchInspectors = (filterDate, positions) =>
     axiosInstance
-        .get(route("api.inspections.inspectors.employees"))
+        .get(
+            route("api.inspections.inspectors.employees", {
+                filterDate,
+                positions,
+            })
+        )
         .then((res) => res.data);
 
-const index = ({ auth: { user }, registeredPositions }) => {
-    const { isLoading, data } = useQuery({
-        queryKey: ["inspectors", user.subscriber_id],
-        queryFn: fetchInspectors,
-        refetchOnWindowFocus: false,
-    });
-
+const index = ({ auth: { user }, registeredPositions = [] }) => {
+    const [filterDate, setFilterDate] = useState(null);
+    const [customDataPDF, setCustomDataPDF] = useState(null);
     const [dataPDF, setDataPDF] = useState([]);
     const [open, setOpen] = useState(false);
 
-    const { url, loading, error } = useRenderPDF({
-        pdf_type: "inspectors_view",
-        dataPDF,
-    });
-    const src = url ? `${url}#toolbar=1` : null;
+    const positionStrings = registeredPositions
+        .map((p) => p.position_id)
+        .join(",");
 
-    const openPDF = (data) => {
-        setDataPDF(data);
+    const { isLoading, data } = useQuery({
+        queryKey: [
+            "inspectors",
+            user.subscriber_id,
+            filterDate,
+            positionStrings,
+        ],
+        queryFn: () =>
+            fetchInspectors(filterDate || new Date(), positionStrings),
+        // refetchOnWindowFocus: false,
+    });
+
+    useEffect(() => {
+        if (!isLoading && data) {
+            const d = data
+                ?.filter((e) => e.inspections_count !== 0)
+                ?.map((employee) => ({
+                    ...employee,
+                    id: employee.employee_id,
+                    status: employee.is_active === 0 ? "active" : "inactive",
+                    phone_no:
+                        employee.phone_no == 0 ? "N/A" : employee.phone_no,
+                }));
+            setDataPDF(d || []);
+        }
+    }, [data, isLoading]);
+
+    const openPDF = ({ data = null }) => {
+        if (data !== null) {
+            setCustomDataPDF(data);
+        }
         setOpen(true);
     };
 
     const closePDF = () => {
         setOpen(false);
-        setDataPDF([]);
     };
-
-    if (error) {
-        console.log({ error });
-        return (
-            <div>
-                <h3>Something went wrong!</h3>
-                {/* {JSON.stringify(error)} */}
-            </div>
-        );
-    }
-    console.log(dataPDF);
     return (
         <>
             <Head>
@@ -65,51 +82,22 @@ const index = ({ auth: { user }, registeredPositions }) => {
             <Suspense fallback={<LoadingScreen />}>
                 <DashboardLayout>
                     <EmployeeListPage
-                        employees={data}
+                        employees={dataPDF}
                         isLoading={isLoading}
                         registeredPositions={registeredPositions}
                         openPDF={openPDF}
+                        filterDate={filterDate}
+                        setFilterDate={setFilterDate}
                     />
                 </DashboardLayout>
             </Suspense>
-            <Dialog fullScreen open={open}>
-                <Box
-                    sx={{
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                    }}
-                >
-                    <DialogActions
-                        sx={{
-                            zIndex: 9,
-                            padding: "12px !important",
-                            boxShadow: (theme) => theme.customShadows.z8,
-                        }}
-                    >
-                        <Tooltip title="Close">
-                            <IconButton color="inherit" onClick={closePDF}>
-                                <Iconify icon="eva:close-fill" />
-                            </IconButton>
-                        </Tooltip>
-                    </DialogActions>
-
-                    <Box
-                        sx={{ flexGrow: 1, height: "100%", overflow: "hidden" }}
-                    >
-                        {loading ? (
-                            <IconButton>
-                                <CircularProgress size={18} color="inherit" />
-                            </IconButton>
-                        ) : (
-                            <iframe
-                                src={src}
-                                style={{ height: "100%", width: "100%" }}
-                            />
-                        )}
-                    </Box>
-                </Box>
-            </Dialog>
+            {!isLoading && (
+                <PDFRenderer
+                    dataPDF={customDataPDF || dataPDF}
+                    open={open}
+                    onClose={closePDF}
+                />
+            )}
         </>
     );
 };

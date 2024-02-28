@@ -20,14 +20,14 @@ const pdfWorker = wrap(WorkaroundWorker());
 // const pdfWorker = wrap(new Worker());
 // pdfWorker.onProgress(proxy((info) => console.log(info)));
 
-export const useRenderPDF = (props) => {
+export const useRenderPDF = (props, deps = []) => {
     const {
         value: url,
         loading,
         error,
     } = useAsync(async () => {
         return pdfWorker.renderPDFInWorker(props);
-    }, []);
+    }, deps);
 
     useEffect(() => (url ? () => URL.revokeObjectURL(url) : undefined), [url]);
     return { url, loading, error };

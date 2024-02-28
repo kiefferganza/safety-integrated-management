@@ -299,8 +299,9 @@ class InspectionService
 		return InspectionRegisteredPosition::all();
 	}
 
-	public function employees()
+	public function employees($filterDate, $positions)
 	{
+		$date = Carbon::parse($filterDate);
 		return Employee::select(DB::raw("
 		tbl_employees.user_id,
 		tbl_employees.employee_id,
@@ -315,13 +316,13 @@ class InspectionService
 		tbl_employees.is_deleted,
 		tbl_employees.is_active,
 		tbl_employees.country"))
-			->whereHas("inspections")
+			->whereIn("tbl_employees.position", $positions)
 			->where("tbl_employees.is_deleted", 0)
 			->leftJoin("tbl_department", "tbl_employees.department", "tbl_department.department_id")
 			->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->with(["user" => fn ($q) => $q->select("user_id")])
-			->withCount(["inspections" => function($q) {
-				$q->where("is_deleted", 0);
+			->withCount(["inspections" => function($q) use($date){
+				$q->where("is_deleted", 0)->whereMonth("date_issued", $date->month)->whereYear("date_issued", $date->year);
 			}])
 			->get()
 			->transform(function ($employee)

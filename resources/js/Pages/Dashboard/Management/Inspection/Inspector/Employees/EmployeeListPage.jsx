@@ -8,18 +8,17 @@ import {
     Table,
     Stack,
     Button,
-    Tooltip,
     Divider,
     TableBody,
     Container,
-    IconButton,
     TableContainer,
+    Tooltip,
+    IconButton,
 } from "@mui/material";
 // routes
 import { PATH_DASHBOARD } from "@/routes/paths";
 // components
 import Label from "@/Components/label";
-import Iconify from "@/Components/iconify";
 import Scrollbar from "@/Components/scrollbar";
 import CustomBreadcrumbs from "@/Components/custom-breadcrumbs";
 import { useSettingsContext } from "@/Components/settings";
@@ -40,6 +39,7 @@ import {
     EmployeeTableRow,
     EmployeeTableToolbar,
 } from "@/sections/@dashboard/inspection/inspectors";
+import Iconify from "@/Components/iconify";
 
 // ----------------------------------------------------------------------
 
@@ -56,10 +56,12 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 export default function EmployeeListPage({
-    employees,
+    employees = [],
     isLoading,
     registeredPositions,
     openPDF,
+    filterDate,
+    setFilterDate,
 }) {
     const theme = useTheme();
     const { themeStretch } = useSettingsContext();
@@ -91,9 +93,13 @@ export default function EmployeeListPage({
 
     const [filterStatus, setFilterStatus] = useState("all");
 
-    const [filterEndDate, setFilterEndDate] = useState(null);
-
     const [filterPosition, setFilterPosition] = useState("all");
+
+    useEffect(() => {
+        if (employees && !isLoading) {
+            setTableData(employees);
+        }
+    }, [employees, isLoading]);
 
     const dataFiltered = applyFilter({
         inputData: tableData,
@@ -101,33 +107,20 @@ export default function EmployeeListPage({
         filterName,
         filterPosition,
         filterStatus,
-        filterEndDate,
     });
-    useEffect(() => {
-        if (!!employees) {
-            const data = employees
-                ?.filter((e) => e.inspections_count !== 0)
-                ?.map((employee) => ({
-                    ...employee,
-                    id: employee.employee_id,
-                    status: employee.is_active === 0 ? "active" : "inactive",
-                    phone_no:
-                        employee.phone_no == 0 ? "N/A" : employee.phone_no,
-                }));
-            setTableData(data || []);
-        }
-    }, [employees]);
 
     const denseHeight = dense ? 56 : 76;
 
     const isFiltered =
-        filterStatus !== "all" || filterName !== "" || filterPosition !== "all";
+        filterStatus !== "all" ||
+        filterName !== "" ||
+        filterPosition !== "all" ||
+        filterDate !== null;
 
     const isNotFound =
         (!dataFiltered.length && !!filterName) ||
         (!dataFiltered.length && !!filterStatus) ||
-        (!dataFiltered.length && !!filterPosition) ||
-        (!dataFiltered.length && !!filterEndDate);
+        (!dataFiltered.length && !!filterPosition);
 
     const getLengthByStatus = (status) =>
         tableData.filter((item) => item.status === status).length;
@@ -177,11 +170,19 @@ export default function EmployeeListPage({
         setFilterPosition(event.target.value);
     };
 
+    const handleDateChange = (date) => {
+        setPage(0);
+        setFilterDate(date);
+    };
+
     const handleResetFilter = () => {
         setFilterName("");
         setFilterStatus("all");
         setFilterPosition("all");
-        setFilterEndDate(null);
+        if (filterDate !== null) {
+            setFilterDate(null);
+        }
+        setPage(0);
     };
 
     return (
@@ -210,12 +211,7 @@ export default function EmployeeListPage({
                     },
                 ]}
                 action={
-                    <Button
-                        variant="contained"
-                        onClick={() => {
-                            openPDF(dataFiltered);
-                        }}
-                    >
+                    <Button variant="contained" onClick={openPDF}>
                         View as PDF
                     </Button>
                 }
@@ -299,11 +295,13 @@ export default function EmployeeListPage({
                     filterName={filterName}
                     isFiltered={isFiltered}
                     filterPosition={filterPosition}
-                    filterEndDate={filterEndDate}
                     onFilterName={handleFilterName}
                     optionsPositions={registeredPositions}
                     onResetFilter={handleResetFilter}
                     onFilterPosition={handleFilterPosition}
+                    filterDate={filterDate}
+                    setFilterDate={setFilterDate}
+                    onFilterDate={handleDateChange}
                 />
 
                 <TableContainer
@@ -324,7 +322,10 @@ export default function EmployeeListPage({
                                 <Tooltip title="Print">
                                     <IconButton
                                         onClick={() => {
-                                            openPDF(dataFiltered);
+                                            const data = tableData.filter((d) =>
+                                                selected.includes(d.id)
+                                            );
+                                            openPDF({ data });
                                         }}
                                         color="primary"
                                     >

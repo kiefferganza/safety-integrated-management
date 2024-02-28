@@ -6,12 +6,13 @@ import {
     MenuItem,
     Button,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers";
 // components
 import Iconify from "@/Components/iconify";
 
 // ----------------------------------------------------------------------
 
-const INPUT_WIDTH = 240;
+const INPUT_WIDTH = 190;
 
 EmployeeTableToolbar.propTypes = {
     isFiltered: PropTypes.bool,
@@ -21,6 +22,7 @@ EmployeeTableToolbar.propTypes = {
     filterPosition: PropTypes.string,
     optionsPositions: PropTypes.arrayOf(PropTypes.object),
     onFilterPosition: PropTypes.func,
+    onFilterDate: PropTypes.func,
 };
 
 export default function EmployeeTableToolbar({
@@ -31,6 +33,8 @@ export default function EmployeeTableToolbar({
     optionsPositions,
     filterPosition,
     onFilterPosition,
+    filterDate,
+    onFilterDate,
 }) {
     return (
         <Stack
@@ -42,6 +46,24 @@ export default function EmployeeTableToolbar({
             }}
             sx={{ px: 2.5, py: 3 }}
         >
+            <DatePicker
+                label="Start Date"
+                value={filterDate || new Date()}
+                onChange={onFilterDate}
+                inputFormat="MMMM yyyy"
+                openTo="month"
+                disableFuture
+                views={["year", "month"]}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        fullWidth
+                        sx={{
+                            maxWidth: { md: INPUT_WIDTH },
+                        }}
+                    />
+                )}
+            />
             <TextField
                 fullWidth
                 select
