@@ -196,13 +196,13 @@ const InspectionListPage = ({ user, inspections, isLoading }) => {
     ];
 
     const getActiveDays = dataFiltered.filter(
-        (item) => item.dueStatus.classType === "success"
+        (item) => item?.dueStatus?.classType === "success"
     ).length;
     const getDueDays = dataFiltered.filter(
-        (item) => item.dueStatus.classType === "error"
+        (item) => item?.dueStatus?.classType === "error"
     ).length;
     const getStatusLength = (status) =>
-        dataFiltered.filter((item) => item.status.text === status).length;
+        dataFiltered.filter((item) => item?.status?.text === status).length;
 
     const STATUS_TABS = [
         {

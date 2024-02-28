@@ -35,7 +35,7 @@ const POSITIONS = {
     "Planner Engineer": "#e6ee9c",
 };
 
-const PER_PAGE = 40;
+const PER_PAGE = 70;
 const FIRST_AND_LAST_PAGE = PER_PAGE - 10;
 
 function generateDateRanges(startDate, endDate) {
@@ -236,8 +236,6 @@ export default function MatrixPDF({ years, titles, from, to }) {
         }
     }
 
-    console.log(total);
-
     return (
         <Document title={"Training Matrix"}>
             {pages.map((page) =>
@@ -245,7 +243,7 @@ export default function MatrixPDF({ years, titles, from, to }) {
                     const y = year.split("_")[0];
                     return (
                         <Page
-                            size="A3"
+                            size="A2"
                             style={styles.page}
                             key={year + pageIdx}
                         >

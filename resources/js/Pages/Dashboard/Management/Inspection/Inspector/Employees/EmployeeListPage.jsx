@@ -59,6 +59,7 @@ export default function EmployeeListPage({
     employees,
     isLoading,
     registeredPositions,
+    openPDF,
 }) {
     const theme = useTheme();
     const { themeStretch } = useSettingsContext();
@@ -208,7 +209,16 @@ export default function EmployeeListPage({
                         name: "List",
                     },
                 ]}
-                action={<Button variant="contained">View as PDF</Button>}
+                action={
+                    <Button
+                        variant="contained"
+                        onClick={() => {
+                            openPDF(dataFiltered);
+                        }}
+                    >
+                        View as PDF
+                    </Button>
+                }
             />
 
             <Card sx={{ mb: 5 }}>
@@ -312,7 +322,12 @@ export default function EmployeeListPage({
                         action={
                             <Stack direction="row" gap={1}>
                                 <Tooltip title="Print">
-                                    <IconButton color="primary">
+                                    <IconButton
+                                        onClick={() => {
+                                            openPDF(dataFiltered);
+                                        }}
+                                        color="primary"
+                                    >
                                         <Iconify icon="eva:printer-fill" />
                                     </IconButton>
                                 </Tooltip>
