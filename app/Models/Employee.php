@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Employee extends Model
 {
@@ -102,5 +103,13 @@ class Employee extends Model
 			return trim($this->attributes['firstname']) . ' ' . trim($this->attributes['lastname']);
 		}
 		return null;
+    }
+
+
+    public function profile(): Media|null {
+        if($this->user_id) {
+            return Media::where("model_type", User::class)->where("model_id", $this->user_id)->whereJsonContains("custom_properties", ["primary" => true])->first();
+        }
+        return null;
     }
 }

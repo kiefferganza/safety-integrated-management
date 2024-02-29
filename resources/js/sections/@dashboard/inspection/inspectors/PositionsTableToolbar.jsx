@@ -35,7 +35,7 @@ export default function PositionsTableToolbar({
                 fullWidth
                 value={filterName}
                 onChange={onFilterName}
-                placeholder="Search course name"
+                placeholder="Search Position"
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">

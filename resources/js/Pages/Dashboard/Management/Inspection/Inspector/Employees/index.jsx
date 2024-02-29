@@ -4,62 +4,38 @@ import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axios";
 import { Head } from "@inertiajs/inertia-react";
-import Iconify from "@/Components/iconify";
-import { useRenderPDF } from "@/hooks/useRenderPDF";
 // MUI
-import Box from "@mui/material/Box";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import CircularProgress from "@mui/material/CircularProgress";
 import PDFRenderer from "./PDFRenderer";
 
 const EmployeeListPage = lazy(() => import("./EmployeeListPage"));
 
-const fetchInspectors = (filterDate, positions) =>
+const fetchInspectors = (filterDate) =>
     axiosInstance
-        .get(
-            route("api.inspections.inspectors.employees", {
-                filterDate,
-                positions,
-            })
-        )
+        .get(route("api.inspections.inspectors.employees", { filterDate }))
         .then((res) => res.data);
 
-const index = ({ auth: { user }, registeredPositions = [] }) => {
+const index = ({ auth: { user } }) => {
     const [filterDate, setFilterDate] = useState(null);
-    const [customDataPDF, setCustomDataPDF] = useState(null);
+    const [customDataPDF, setCustomDataPDF] = useState([]);
     const [dataPDF, setDataPDF] = useState([]);
     const [open, setOpen] = useState(false);
 
-    const positionStrings = registeredPositions
-        .map((p) => p.position_id)
-        .join(",");
+    const dateString = filterDate ? filterDate.join(",") : "";
 
     const { isLoading, data } = useQuery({
-        queryKey: [
-            "inspectors",
-            user.subscriber_id,
-            filterDate,
-            positionStrings,
-        ],
-        queryFn: () =>
-            fetchInspectors(filterDate || new Date(), positionStrings),
+        queryKey: ["inspectors", user.subscriber_id, dateString],
+        queryFn: () => fetchInspectors(dateString),
         refetchOnWindowFocus: false,
     });
 
     useEffect(() => {
         if (!isLoading && data) {
-            const d = data
-                ?.filter((e) => e.inspections_count !== 0)
-                ?.map((employee) => ({
-                    ...employee,
-                    id: employee.employee_id,
-                    status: employee.is_active === 0 ? "active" : "inactive",
-                    phone_no:
-                        employee.phone_no == 0 ? "N/A" : employee.phone_no,
-                }));
+            const d = data?.map((employee) => ({
+                ...employee,
+                id: employee.employee_id,
+                status: employee.is_active === 0 ? "active" : "inactive",
+                phone_no: employee.phone_no == 0 ? "N/A" : employee.phone_no,
+            }));
             setDataPDF(d || []);
         }
     }, [data, isLoading]);
@@ -67,6 +43,8 @@ const index = ({ auth: { user }, registeredPositions = [] }) => {
     const openPDF = ({ data = null }) => {
         if (data !== null) {
             setCustomDataPDF(data);
+        } else {
+            setCustomDataPDF(dataPDF);
         }
         setOpen(true);
     };
@@ -84,16 +62,15 @@ const index = ({ auth: { user }, registeredPositions = [] }) => {
                     <EmployeeListPage
                         employees={dataPDF}
                         isLoading={isLoading}
-                        registeredPositions={registeredPositions}
-                        openPDF={openPDF}
                         filterDate={filterDate}
                         setFilterDate={setFilterDate}
+                        openPDF={openPDF}
                     />
                 </DashboardLayout>
             </Suspense>
             {!isLoading && (
                 <PDFRenderer
-                    dataPDF={customDataPDF || dataPDF}
+                    dataPDF={customDataPDF}
                     open={open}
                     onClose={closePDF}
                     filterDate={filterDate}

@@ -307,9 +307,7 @@ class InspectionController extends Controller
 
 	// INSPECTOR
 	public function emplooyes() {
-		$registeredPositions = InspectionRegisteredPosition::all();
-		
-		return Inertia::render("Dashboard/Management/Inspection/Inspector/Employees/index", compact("registeredPositions"));
+		return Inertia::render("Dashboard/Management/Inspection/Inspector/Employees/index");
 	}
 
 	public function authorizedPositionList() {

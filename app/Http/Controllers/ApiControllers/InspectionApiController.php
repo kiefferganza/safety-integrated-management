@@ -15,7 +15,7 @@ class InspectionApiController extends Controller
 	}
 
 	public function employeeWithInspectionCount(Request $request) {
-		$positions = $request->positions ? explode(",", $request->positions) : "";
-		return response()->json((new InspectionService)->employees($request->filterDate, $positions));
+		$filterDate = $request->filterDate ? explode(",", $request->filterDate) : null;
+		return response()->json((new InspectionService)->employees($filterDate));
 	}
 }

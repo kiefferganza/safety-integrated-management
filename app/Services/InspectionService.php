@@ -299,9 +299,8 @@ class InspectionService
 		return InspectionRegisteredPosition::all();
 	}
 
-	public function employees($filterDate, $positions)
+	public function employees($filterDate)
 	{
-		$date = Carbon::parse($filterDate);
 		return Employee::select(DB::raw("
 		tbl_employees.user_id,
 		tbl_employees.employee_id,
@@ -316,21 +315,26 @@ class InspectionService
 		tbl_employees.is_deleted,
 		tbl_employees.is_active,
 		tbl_employees.country"))
-			->whereIn("tbl_employees.position", $positions)
 			->where("tbl_employees.is_deleted", 0)
 			->leftJoin("tbl_department", "tbl_employees.department", "tbl_department.department_id")
 			->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
-			->with(["user" => fn ($q) => $q->select("user_id")])
-			->withCount(["inspections" => function($q) use($date){
-				$q->where("is_deleted", 0)->whereMonth("date_issued", $date->month)->whereYear("date_issued", $date->year);
+			->withCount(["inspections" => function($q) use($filterDate){
+				if($filterDate) {
+					$start = Carbon::parse($filterDate[0]);
+					$end = Carbon::parse($filterDate[1]);
+					$q->where("is_deleted", 0)->whereBetween("date_issued", [$start, $end]);
+				} else {
+					$q->where("is_deleted", 0);
+				}
 			}])
 			->get()
 			->transform(function ($employee)
 			{
+				/** @var Employee $employee */
 				$employee->profile = null;
-				if ($employee->user)
+				if ($employee->user_id)
 				{
-					$profile = $employee->user->getFirstMedia("profile", ["primary" => true]);
+					$profile = $employee->profile(["primary" => true]);
 					if ($profile)
 					{
 						$path = "user/" . md5($profile->id . config('app.key')) . "/" . $profile->file_name;

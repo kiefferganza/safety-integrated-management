@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 // @mui
 import { useTheme } from "@mui/material/styles";
 import {
@@ -40,6 +40,7 @@ import {
     EmployeeTableToolbar,
 } from "@/sections/@dashboard/inspection/inspectors";
 import Iconify from "@/Components/iconify";
+import { format } from "date-fns";
 
 // ----------------------------------------------------------------------
 
@@ -58,9 +59,7 @@ const TABLE_HEAD = [
 export default function EmployeeListPage({
     employees = [],
     isLoading,
-    registeredPositions,
     openPDF,
-    filterDate,
     setFilterDate,
 }) {
     const theme = useTheme();
@@ -83,7 +82,7 @@ export default function EmployeeListPage({
         onChangePage,
         onChangeRowsPerPage,
     } = useTable({
-        defaultOrderBy: "date_created",
+        defaultOrderBy: "inspections_count",
         defaultOrder: "desc",
     });
 
@@ -93,7 +92,13 @@ export default function EmployeeListPage({
 
     const [filterStatus, setFilterStatus] = useState("all");
 
-    const [filterPosition, setFilterPosition] = useState("all");
+    const [filterPosition, setFilterPosition] = useState([]);
+
+    const [filterDepartment, setFilterDepartment] = useState("all");
+
+    const [filterStartDate, setFilterStartDate] = useState(null);
+
+    const [filterEndDate, setFilterEndDate] = useState(null);
 
     useEffect(() => {
         if (employees && !isLoading) {
@@ -106,6 +111,7 @@ export default function EmployeeListPage({
         comparator: getComparator(order, orderBy),
         filterName,
         filterPosition,
+        filterDepartment,
         filterStatus,
     });
 
@@ -114,16 +120,21 @@ export default function EmployeeListPage({
     const isFiltered =
         filterStatus !== "all" ||
         filterName !== "" ||
-        filterPosition !== "all" ||
-        filterDate !== null;
+        filterPosition.length !== 0 ||
+        filterDepartment !== "all" ||
+        filterStartDate !== null ||
+        filterEndDate !== null;
 
     const isNotFound =
         (!dataFiltered.length && !!filterName) ||
         (!dataFiltered.length && !!filterStatus) ||
-        (!dataFiltered.length && !!filterPosition);
+        (!dataFiltered.length && !!filterPosition.length) ||
+        (!dataFiltered.length && !!filterDepartment) ||
+        (!dataFiltered.length && !!filterStartDate) ||
+        (!dataFiltered.length && !!filterEndDate);
 
     const getLengthByStatus = (status) =>
-        tableData.filter((item) => item.status === status).length;
+        dataFiltered.filter((item) => item.status === status).length;
 
     const getPercentByStatus = (status) =>
         (getLengthByStatus(status) / dataFiltered.length) * 100;
@@ -166,24 +177,74 @@ export default function EmployeeListPage({
     };
 
     const handleFilterPosition = (event) => {
+        const {
+            target: { value },
+        } = event;
         setPage(0);
-        setFilterPosition(event.target.value);
+        setFilterPosition(typeof value === "string" ? value.split(",") : value);
     };
 
-    const handleDateChange = (date) => {
+    const handleFilterDepartment = (event) => {
         setPage(0);
-        setFilterDate(date);
+        setFilterDepartment(event.target.value);
+    };
+
+    const handleStartDateChange = (date) => {
+        setPage(0);
+        setFilterStartDate(date);
+        if (filterEndDate) {
+            setFilterEndDate(null);
+        }
+    };
+
+    const handleEndDateChange = (date) => {
+        if (filterStartDate) {
+            setPage(0);
+            setFilterEndDate(date);
+            setFilterDate([
+                format(filterStartDate, "yyyy-MM-dd"),
+                format(date, "yyyy-MM-dd"),
+            ]);
+        }
     };
 
     const handleResetFilter = () => {
         setFilterName("");
         setFilterStatus("all");
-        setFilterPosition("all");
-        if (filterDate !== null) {
+        setFilterPosition([]);
+        setFilterStartDate(null);
+        setFilterEndDate(null);
+        setPage(0);
+        if (filterStartDate && filterEndDate) {
             setFilterDate(null);
         }
-        setPage(0);
     };
+    const [DEPARTMENT_OPTIONS, POSITION_OPTIONS] = useMemo(() => {
+        if (employees) {
+            return [
+                [
+                    "all",
+                    ...new Set(
+                        employees
+                            .filter(
+                                (emp) => emp.department && emp.department.trim()
+                            )
+                            .map((emp) => emp.department.trim())
+                    ),
+                ],
+                [
+                    ...new Set(
+                        employees
+                            .filter(
+                                (emp) => emp.position && emp.position.trim()
+                            )
+                            .map((emp) => emp.position.trim())
+                    ),
+                ],
+            ];
+        }
+        return [[], ["all"]];
+    }, [employees]);
 
     return (
         <Container maxWidth={themeStretch ? false : "lg"}>
@@ -211,7 +272,13 @@ export default function EmployeeListPage({
                     },
                 ]}
                 action={
-                    <Button variant="contained" onClick={openPDF}>
+                    <Button
+                        variant="contained"
+                        onClick={() => {
+                            openPDF({ data: dataFiltered });
+                        }}
+                        disabled={isLoading || !employees}
+                    >
                         View as PDF
                     </Button>
                 }
@@ -294,14 +361,18 @@ export default function EmployeeListPage({
                 <EmployeeTableToolbar
                     filterName={filterName}
                     isFiltered={isFiltered}
-                    filterPosition={filterPosition}
                     onFilterName={handleFilterName}
-                    optionsPositions={registeredPositions}
-                    onResetFilter={handleResetFilter}
+                    filterPosition={filterPosition}
                     onFilterPosition={handleFilterPosition}
-                    filterDate={filterDate}
-                    setFilterDate={setFilterDate}
-                    onFilterDate={handleDateChange}
+                    optionsPositions={POSITION_OPTIONS}
+                    filterDepartment={filterDepartment}
+                    onFilterDepartment={handleFilterDepartment}
+                    optionsDepartment={DEPARTMENT_OPTIONS}
+                    onResetFilter={handleResetFilter}
+                    filterStartDate={filterStartDate}
+                    filterEndDate={filterEndDate}
+                    onFilterStartDate={handleStartDateChange}
+                    onFilterEndDate={handleEndDateChange}
                 />
 
                 <TableContainer
@@ -391,16 +462,19 @@ export default function EmployeeListPage({
                                               />
                                           ))}
 
-                                <TableEmptyRows
-                                    height={denseHeight}
-                                    emptyRows={emptyRows(
-                                        page,
-                                        rowsPerPage,
-                                        tableData.length
-                                    )}
-                                />
-
-                                <TableNoData isNotFound={isNotFound} />
+                                {(!isLoading || !employees) && (
+                                    <>
+                                        <TableEmptyRows
+                                            height={denseHeight}
+                                            emptyRows={emptyRows(
+                                                page,
+                                                rowsPerPage,
+                                                tableData.length
+                                            )}
+                                        />
+                                        <TableNoData isNotFound={isNotFound} />
+                                    </>
+                                )}
                             </TableBody>
                         </Table>
                     </Scrollbar>
@@ -429,6 +503,7 @@ function applyFilter({
     filterName,
     filterStatus,
     filterPosition,
+    filterDepartment,
 }) {
     const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -456,9 +531,15 @@ function applyFilter({
         }
     }
 
-    if (filterPosition !== "all") {
+    if (filterPosition.length > 0) {
+        inputData = inputData.filter((employee) =>
+            filterPosition.includes(employee.position.trim())
+        );
+    }
+
+    if (filterDepartment !== "all") {
         inputData = inputData.filter(
-            (employee) => employee.position.trim() === filterPosition.trim()
+            (employee) => employee.department.trim() === filterDepartment
         );
     }
 

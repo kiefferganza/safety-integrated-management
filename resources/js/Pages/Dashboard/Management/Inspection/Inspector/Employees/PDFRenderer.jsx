@@ -4,9 +4,10 @@ import Iconify from "@/Components/iconify";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
+import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
 
 export default function ({ dataPDF, filterDate, open, onClose }) {
     const { url, loading, error } = useRenderPDF(
@@ -14,6 +15,7 @@ export default function ({ dataPDF, filterDate, open, onClose }) {
             pdf_type: "inspectors_view",
             data: dataPDF,
             filterDate,
+            logo: route("image", { path: "media/logo/Fiafi-logo.png" }),
         },
         [dataPDF, filterDate]
     );
@@ -53,9 +55,25 @@ export default function ({ dataPDF, filterDate, open, onClose }) {
 
                 <Box sx={{ flexGrow: 1, height: "100%", overflow: "hidden" }}>
                     {loading ? (
-                        <IconButton>
-                            <CircularProgress size={18} color="inherit" />
-                        </IconButton>
+                        <Box
+                            sx={{
+                                width: "100%",
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <CircularProgress size={40} color="primary" />
+                            <Typography
+                                variant="subtitle2"
+                                mt={1}
+                                color="GrayText"
+                            >
+                                Loading...
+                            </Typography>
+                        </Box>
                     ) : (
                         <iframe
                             src={src}
