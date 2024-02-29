@@ -9,12 +9,17 @@ import PDFRenderer from "./PDFRenderer";
 
 const EmployeeListPage = lazy(() => import("./EmployeeListPage"));
 
-const fetchInspectors = (filterDate) =>
+const fetchInspectors = (filterDate, authorizedPositions) =>
     axiosInstance
-        .get(route("api.inspections.inspectors.employees", { filterDate }))
+        .get(
+            route("api.inspections.inspectors.employees", {
+                filterDate,
+                authorizedPositions,
+            })
+        )
         .then((res) => res.data);
 
-const index = ({ auth: { user } }) => {
+const index = ({ auth: { user }, authorizedPositions }) => {
     const [filterDate, setFilterDate] = useState(null);
     const [customDataPDF, setCustomDataPDF] = useState([]);
     const [dataPDF, setDataPDF] = useState([]);
@@ -24,7 +29,11 @@ const index = ({ auth: { user } }) => {
 
     const { isLoading, data } = useQuery({
         queryKey: ["inspectors", user.subscriber_id, dateString],
-        queryFn: () => fetchInspectors(dateString),
+        queryFn: () =>
+            fetchInspectors(
+                dateString,
+                (authorizedPositions || []).map((a) => a.position_id).join(",")
+            ),
         refetchOnWindowFocus: false,
     });
 

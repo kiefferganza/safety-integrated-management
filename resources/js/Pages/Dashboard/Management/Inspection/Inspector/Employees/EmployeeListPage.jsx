@@ -151,7 +151,12 @@ export default function EmployeeListPage({
         ((getTotalInspections() || 1) / totalInspections) * 100;
 
     const TABS = [
-        { value: "all", label: "All", color: "info", count: tableData.length },
+        {
+            value: "all",
+            label: "All",
+            color: "info",
+            count: dataFiltered.length,
+        },
         {
             value: "active",
             label: "Active",

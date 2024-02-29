@@ -16,6 +16,7 @@ class InspectionApiController extends Controller
 
 	public function employeeWithInspectionCount(Request $request) {
 		$filterDate = $request->filterDate ? explode(",", $request->filterDate) : null;
-		return response()->json((new InspectionService)->employees($filterDate));
+		$authorizedPositions = $request->authorizedPositions ? explode(",", $request->authorizedPositions) : [];
+		return response()->json((new InspectionService)->employees($filterDate, $authorizedPositions));
 	}
 }

@@ -732,6 +732,17 @@ export function PDF({ data = [], filterDate, logo }) {
                                             {startIndices[breakPointIndex] ===
                                             data.length ? (
                                                 <>
+                                                    {data.length /
+                                                        total.length +
+                                                        3 >=
+                                                        MAX_ITEM && (
+                                                        <View
+                                                            style={{
+                                                                display: "none",
+                                                            }}
+                                                            break
+                                                        />
+                                                    )}
                                                     <View
                                                         style={[
                                                             styles.mt8,
@@ -977,7 +988,9 @@ export function PDF({ data = [], filterDate, logo }) {
                                                 </>
                                             ) : (
                                                 <View
-                                                    style={{ display: "none" }}
+                                                    style={{
+                                                        display: "none",
+                                                    }}
                                                     break
                                                 />
                                             )}
