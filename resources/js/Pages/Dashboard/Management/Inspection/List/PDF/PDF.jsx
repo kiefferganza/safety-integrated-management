@@ -584,7 +584,7 @@ const PDF = (props) => (
                                         flexGrow: 0,
                                         paddingTop: 2,
                                         paddingBottom: 2,
-                                        flexBasis: 165,
+                                        flexBasis: 125,
                                     },
                                 ]}
                             >
@@ -626,7 +626,7 @@ const PDF = (props) => (
                                         flexGrow: 0,
                                         paddingTop: 2,
                                         paddingBottom: 2,
-                                        flexBasis: 165,
+                                        flexBasis: 125,
                                     },
                                 ]}
                             >
@@ -658,6 +658,27 @@ const PDF = (props) => (
                                     ]}
                                 >
                                     Verify
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 2,
+                                        paddingBottom: 2,
+                                        flexBasis: 80,
+                                    },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        { color: "#363636", lineHeight: 1 },
+                                    ]}
+                                >
+                                    Accompanied By
                                 </Text>
                             </View>
                             <View
@@ -777,6 +798,7 @@ const PDF = (props) => (
                             <View
                                 style={[
                                     styles.pl4,
+                                    styles.pr4,
                                     styles.br,
                                     {
                                         flexGrow: 0,
@@ -792,6 +814,7 @@ const PDF = (props) => (
                             <View
                                 style={[
                                     styles.pl4,
+                                    styles.pr4,
                                     styles.br,
                                     {
                                         flexGrow: 0,
@@ -807,7 +830,7 @@ const PDF = (props) => (
                                     styles.br,
                                     {
                                         flexGrow: 0,
-                                        flexBasis: 165,
+                                        flexBasis: 125,
                                     },
                                 ]}
                             >
@@ -817,6 +840,7 @@ const PDF = (props) => (
                                             key={idx}
                                             style={[
                                                 styles.pl4,
+                                                styles.pr4,
                                                 styles.pt4,
                                                 idx !==
                                                     inspection.report_list
@@ -846,6 +870,7 @@ const PDF = (props) => (
                             <View
                                 style={[
                                     styles.pl4,
+                                    styles.pr4,
                                     styles.br,
                                     {
                                         flexGrow: 0,
@@ -861,7 +886,7 @@ const PDF = (props) => (
                                     styles.br,
                                     {
                                         flexGrow: 0,
-                                        flexBasis: 165,
+                                        flexBasis: 125,
                                     },
                                 ]}
                             >
@@ -871,6 +896,7 @@ const PDF = (props) => (
                                             key={idx}
                                             style={[
                                                 styles.pl4,
+                                                styles.pr4,
                                                 styles.pt4,
                                                 idx !==
                                                     inspection.report_list
@@ -898,6 +924,7 @@ const PDF = (props) => (
                             <View
                                 style={[
                                     styles.pl4,
+                                    styles.pr4,
                                     styles.br,
                                     {
                                         flexGrow: 0,
@@ -907,6 +934,20 @@ const PDF = (props) => (
                                 ]}
                             >
                                 <Text>{inspection?.verifier}</Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.pl4,
+                                    styles.pr4,
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingTop: 4,
+                                        flexBasis: 80,
+                                    },
+                                ]}
+                            >
+                                <Text>{inspection?.accompanied_by}</Text>
                             </View>
                             <View
                                 style={[
