@@ -81,13 +81,10 @@ class EmployeeController extends Controller
 	{
 		$user = auth()->user();
 
-		$positions = cache()->rememberForever("positions:" . $user->subscriber_id, fn () => Position::where("user_id", $user->subscriber_id)->get());
-
 		return Inertia::render("Dashboard/Management/Employee/Create/index", [
 			"companies" => DB::table("tbl_company")->where([["sub_id", $user->subscriber_id], ["is_deleted", 0]])->get(),
 			"departments" => DB::table("tbl_department")->where("is_deleted", 0)->get(),
-			// "nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
-			"positions" => $positions->filter(fn ($pos) => $pos->is_deleted === 0)->values(),
+			"positions" => Position::where("user_id", $user->subscriber_id)->where("is_deleted", 0)->get(),
 			"users" => User::select("firstname", "lastname", "email", "position")
 				->where([
 					["deleted", 0],
@@ -148,14 +145,11 @@ class EmployeeController extends Controller
 			abort(403);
 		}
 
-		$positions = cache()->rememberForever("positions:" . $user->subscriber_id, fn () => Position::where("user_id", $user->subscriber_id)->get());
-
 		return Inertia::render("Dashboard/Management/Employee/Edit/index", [
 			"currentEmployee" => $employee,
 			"companies" => CompanyModel::where("sub_id", $user->subscriber_id)->get(),
 			"departments" => Department::where("sub_id", $user->subscriber_id)->get(),
-			// "nationalities" => DB::table("tbl_nationalities")->orderBy("name")->get(),
-			"positions" => $positions->filter(fn ($pos) => $pos->is_deleted === 0)->values(),
+			"positions" => Position::where("user_id", $user->subscriber_id)->where("is_deleted", 0)->get(),
 		]);
 	}
 
