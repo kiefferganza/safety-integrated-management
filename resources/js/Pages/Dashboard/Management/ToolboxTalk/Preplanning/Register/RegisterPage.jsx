@@ -42,7 +42,7 @@ const TABLE_HEAD = [
     { id: "fullname", label: "Created By", align: "left" },
     { id: "position", label: "Position", align: "left" },
     { id: "created_at", label: "Date Created", align: "left" },
-    { id: "employees", label: "Number of Assigned Employees", align: "left" },
+    { id: "employees", label: "Assigned Employees", align: "left" },
     { id: "date_issued", label: "Date" },
     { id: "" },
 ];

@@ -8,11 +8,11 @@ const RegisterPage = lazy(() => import("./RegisterPage"));
 
 const index = ({ auth: { user } }) => {
     const { isLoading, data } = useQuery({
-        queryKey: ["toolboxtalks.preplanning", user.subscriber_id],
+        queryKey: ["toolboxtalks.preplanning.register", user.subscriber_id],
         queryFn: fetchPreplanning,
         refetchOnWindowFocus: false,
     });
-    console.log({ isLoading, data });
+
     return (
         <>
             <Head>
