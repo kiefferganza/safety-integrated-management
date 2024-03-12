@@ -8,6 +8,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FilePageController;
 use App\Http\Controllers\HSE\InhouseTrainingController;
+use App\Http\Controllers\HSE\TbtPreplanningController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\InspectionController;
@@ -296,6 +297,11 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/statistic/new', [ToolboxTalkController::class, "storeStatistic"])->name('store_statistic');
 		Route::post('/statistic/{statistic}/edit', [ToolboxTalkController::class, "updateStatistic"]);
 		Route::delete('/statistic/{statistic}/delete', [ToolboxTalkController::class, "destroyStatistic"]);
+
+		Route::prefix('preplanning')->as('preplanning.')->group(function() {
+			Route::get("/assign-employee", [TbtPreplanningController::class, "registerList"])->name('registerList');
+			Route::post("/assign-employee", [TbtPreplanningController::class, "assignEmployee"])->name("assignEmployee");
+		});
 	});
 
 	/**

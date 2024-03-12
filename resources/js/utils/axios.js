@@ -44,4 +44,9 @@ export const getExternalMatrix = ({ from, to }) =>
 export const fetchPositions = () =>
     axiosInstance.get(route("api.positions")).then((res) => res.data);
 
+export const fetchPreplanning = () =>
+    axiosInstance
+        .get(route("api.tbt.preplanning.register"))
+        .then((res) => res.data);
+
 export default axiosInstance;

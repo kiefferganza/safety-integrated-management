@@ -43,6 +43,9 @@ Route::middleware('auth')->as('api.')->group(function ()
 	{
 		Route::get('/all', [ToolboxTalkController::class, 'index'])->name('index');
 		Route::get('/type', [ToolboxTalkController::class, 'byType'])->name('type');
+
+		// Preplanning
+		Route::get('/assigned-employees', [ToolboxTalkController::class, 'preplanningRegister'])->name('preplanning.register');
 	});
 
 	Route::prefix('training')->as('training.')->group(function ()
