@@ -145,6 +145,8 @@ export const PATH_DASHBOARD = {
             path(ROOTS_DASHBOARD, `/toolbox-talks/statistic/${id}/edit`),
         deleteStatistic: (id) =>
             path(ROOTS_DASHBOARD, `/toolbox-talks/statistic/${id}/delete`),
+        registerList: route("toolboxtalk.management.preplanning.registerList"),
+        dailyList: "",
     },
 
     // Incident

@@ -78,7 +78,7 @@ const navConfig = [
         ],
     },
 
-    // MANAGEMENT
+    // HSE
     // ----------------------------------------------------------------------
     {
         subheader: "hse",
@@ -448,8 +448,30 @@ const navConfig = [
                     "toolboxtalk.management.edit",
                     "toolboxtalk.management.report",
                     "toolboxtalk.management.statistic",
+                    // preplanning
+                    "toolboxtalk.management.preplanning.registerList",
                 ],
                 children: [
+                    {
+                        title: "Pre-planning",
+                        routeNames: [
+                            "toolboxtalk.management.preplanning.registerList",
+                        ],
+                        children: [
+                            {
+                                title: "Assign Employee",
+                                path: PATH_DASHBOARD.toolboxTalks.registerList,
+                                routeNames: [
+                                    "toolboxtalk.management.preplanning.registerList",
+                                ],
+                            },
+                            {
+                                title: "Daily Submitted",
+                                path: PATH_DASHBOARD.toolboxTalks.dailyList,
+                                routeNames: ["toolboxtalk.management.all"],
+                            },
+                        ],
+                    },
                     {
                         title: "create",
                         gate: "talk_toolbox_create",
