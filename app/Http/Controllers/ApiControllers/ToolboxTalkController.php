@@ -56,6 +56,16 @@ class ToolboxTalkController extends Controller
 			->transform(function ($pre) use ($employees)
 			{
 				$employeeList = [];
+				$selfEmp = $employees->first(function ($employee) use ($pre)
+				{
+					return $employee->emp_id === $pre->created_by;
+				});
+				if($selfEmp) {
+					$pre->fullname = $selfEmp->fullname;
+					$pre->profile = $selfEmp->profile;
+					$pre->position = $selfEmp->position;
+				}
+
 				foreach ($pre->assigned as $emp)
 				{
 					$foundEmp = $employees->first(function ($employee) use ($emp)

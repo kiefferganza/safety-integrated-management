@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\HSE;
 
 use App\Http\Controllers\Controller;
-use App\Models\Employee;
 use App\Models\TbtPrePlanning;
 use App\Models\TbtPrePlanningAssigned;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 
 class TbtPreplanningController extends Controller
@@ -43,6 +41,29 @@ class TbtPreplanningController extends Controller
 
         return redirect()->back()
             ->with("message", "Save successfully")
+            ->with("type", "success");
+    }
+
+    public function editAssignedEmployee(Request $request, TbtPrePlanning $tbtPrePlanning) {
+        $request->validate([
+            "employees" => ["required", "array", "min:1"]
+        ]);
+        
+        TbtPrePlanningAssigned::where("preplanning", $tbtPrePlanning->id)->delete();
+        $tbtPrePlanning->assigned()->createMany($request->employees);
+        return redirect()->back()
+            ->with("message", "Save successfully")
+            ->with("type", "success");
+    }
+
+    public function deleteAssignEmployee(Request $request) {
+        $request->validate([
+            "ids" => ["required", "array", "min:1"]
+        ]);
+        TbtPrePlanning::whereIn("id", $request->ids)->delete();
+
+        return redirect()->back()
+            ->with("message", "Delete successfully")
             ->with("type", "success");
     }
 }
