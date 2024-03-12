@@ -140,7 +140,7 @@ const RegisterEmployeePortal = ({
                     stop();
                     queryClient.invalidateQueries({
                         queryKey: [
-                            "toolboxtalks.preplanning",
+                            "toolboxtalks.preplanning.register",
                             user.subscriber_id,
                         ],
                     });
@@ -169,7 +169,7 @@ const RegisterEmployeePortal = ({
                         stop();
                         queryClient.invalidateQueries({
                             queryKey: [
-                                "toolboxtalks.preplanning",
+                                "toolboxtalks.preplanning.register",
                                 user.subscriber_id,
                             ],
                         });

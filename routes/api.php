@@ -45,7 +45,10 @@ Route::middleware('auth')->as('api.')->group(function ()
 		Route::get('/type', [ToolboxTalkController::class, 'byType'])->name('type');
 
 		// Preplanning
-		Route::get('/assigned-employees', [ToolboxTalkController::class, 'preplanningRegister'])->name('preplanning.register');
+		Route::prefix('preplanning')->as('preplanning.')->group(function() {
+			Route::get('/assigned-employees', [ToolboxTalkController::class, 'preplanningRegister'])->name('register');
+			Route::get('/daily-submitted', [ToolboxTalkController::class, 'dailySubmitted'])->name('dailySubmitted');
+		});
 	});
 
 	Route::prefix('training')->as('training.')->group(function ()

@@ -136,7 +136,7 @@ export default function RegisterPage({
                 onFinish() {
                     queryClient.invalidateQueries({
                         queryKey: [
-                            "toolboxtalks.preplanning",
+                            "toolboxtalks.preplanning.register",
                             user.subscriber_id,
                         ],
                     });
@@ -157,7 +157,7 @@ export default function RegisterPage({
                 onFinish() {
                     queryClient.invalidateQueries({
                         queryKey: [
-                            "toolboxtalks.preplanning",
+                            "toolboxtalks.preplanning.register",
                             user.subscriber_id,
                         ],
                     });

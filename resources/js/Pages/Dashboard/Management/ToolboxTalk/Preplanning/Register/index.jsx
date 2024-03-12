@@ -12,7 +12,7 @@ const index = ({ auth: { user } }) => {
         queryFn: fetchPreplanning,
         refetchOnWindowFocus: false,
     });
-
+    console.log(data);
     return (
         <>
             <Head>
