@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('tbt_pre_planning_assigneds', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("preplanning");
-            $table->foreign("preplanning")->references("id")->on("tbt_pre_plannings");
+            $table->foreign("preplanning")->references("id")->on("tbt_pre_plannings")->cascadeOnDelete();
             $table->unsignedInteger('emp_id');
 			$table->foreign('emp_id')->references('employee_id')->on('tbl_employees');
             $table->timestamps();
