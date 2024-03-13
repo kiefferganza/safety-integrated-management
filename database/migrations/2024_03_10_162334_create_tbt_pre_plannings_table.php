@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('created_by');
 			$table->foreign('created_by')->references('employee_id')->on('tbl_employees');
+            $table->string("location");
             $table->date("date_issued");
             $table->timestamps();
         });
