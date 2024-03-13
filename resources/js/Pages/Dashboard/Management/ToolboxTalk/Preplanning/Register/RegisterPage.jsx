@@ -109,7 +109,6 @@ export default function RegisterPage({
     };
 
     const handleOpenEdit = (data) => {
-        console.log(data);
         setSelectedEdit(data);
         setOpenEdit(true);
     };
