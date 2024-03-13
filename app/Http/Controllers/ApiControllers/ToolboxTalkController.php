@@ -3,10 +3,16 @@
 namespace App\Http\Controllers\ApiControllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\DocumentProjectDetail;
 use App\Models\Employee;
 use App\Models\TbtPrePlanning;
+use App\Models\TbtPrePlanningAssigned;
+use App\Models\ToolboxTalk;
+use App\Services\API\ToolboxTalkApiService;
 use App\Services\ToolboxTalkService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 
 class ToolboxTalkController extends Controller
@@ -25,62 +31,19 @@ class ToolboxTalkController extends Controller
 	}
 
 
-	public function preplanningRegister()
+	public function tbtDailies()
 	{
-		$employees = Employee::select("employee_id as emp_id", "firstname", "lastname", "tbl_position.position", "tbl_employees.user_id")
-			->whereHas("user")
-			->where([
-				["tbl_employees.is_deleted", 0],
-				["tbl_employees.is_active", 0],
-			])
-			->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
-			->get()
-			->transform(function ($employee)
-			{
-				/** @var Employee $employee */
-				$employee->profile = null;
-				if ($employee->user_id)
-				{
-					$profile = $employee->profile(["primary" => true]);
-					if ($profile)
-					{
-						$path = "user/" . md5($profile->id . config('app.key')) . "/" . $profile->file_name;
-						$employee->profile = [
-							"thumbnail" => URL::route("image", ["path" => $path, "w" => 40, "h" => 40, "fit" => "crop"])
-						];
-					}
-				}
-				return $employee;
-			});
-		$preplanning = TbtPrePlanning::with("assigned")->get()
-			->transform(function ($pre) use ($employees)
-			{
-				$employeeList = [];
-				$selfEmp = $employees->first(function ($employee) use ($pre)
-				{
-					return $employee->emp_id === $pre->created_by;
-				});
-				if($selfEmp) {
-					$pre->fullname = $selfEmp->fullname;
-					$pre->profile = $selfEmp->profile;
-					$pre->position = $selfEmp->position;
-				}
+		$user = auth()->user();
+		
+		$tbtService = new ToolboxTalkApiService();
+		
+		[$employees, $preplanning] = $tbtService->getAssignedEmployees();
 
-				foreach ($pre->assigned as $emp)
-				{
-					$foundEmp = $employees->first(function ($employee) use ($emp)
-					{
-						return $employee->emp_id === $emp->emp_id;
-					});
-					if ($foundEmp)
-					{
-						$employeeList[] = $foundEmp->toArray();
-					}
-				}
-				$pre->employees = $employeeList;
-				return $pre;
-			});
 
-			return response()->json(["employees" => $employees, "preplanning" => $preplanning]);
+		$locations = DocumentProjectDetail::select("value", "id")->where("sub_id", $user->subscriber_id)->where("title", "Location")->get();
+
+			return response()->json(compact("employees", "preplanning", "locations"));
 	}
+
+	
 }

@@ -46,7 +46,7 @@ export const fetchPositions = () =>
 
 export const fetchPreplanning = () =>
     axiosInstance
-        .get(route("api.tbt.preplanning.register"))
+        .get(route("api.tbt.preplanning.tbtDailies"))
         .then((res) => res.data);
 
 export default axiosInstance;

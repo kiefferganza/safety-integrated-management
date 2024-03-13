@@ -36,14 +36,14 @@ import { PreplanningRegisterTableRow } from "@/sections/@dashboard/toolboxtalks/
 import RegisterEmployeePortal from "@/sections/@dashboard/toolboxtalks/preplanning/register/portal/RegisterEmployeePortal";
 import { Inertia } from "@inertiajs/inertia";
 import { useQueryClient } from "@tanstack/react-query";
-import { isFuture } from "date-fns";
 
 const TABLE_HEAD = [
     { id: "fullname", label: "Created By", align: "left" },
     { id: "position", label: "Position", align: "left" },
-    { id: "created_at", label: "Date Created", align: "left" },
-    { id: "employees", label: "Assigned Employees", align: "left" },
+    { id: "location", label: "Location", align: "left" },
     { id: "date_issued", label: "Date" },
+    { id: "status", label: "TBT Status", align: "left" },
+    { id: "employees", label: "Total Attnd.", align: "left" },
     { id: "" },
 ];
 
@@ -53,6 +53,7 @@ export default function RegisterPage({
     isLoading,
     employees,
     preplanning,
+    locations,
     user,
 }) {
     const queryClient = useQueryClient();
@@ -65,7 +66,7 @@ export default function RegisterPage({
         order,
         orderBy,
         rowsPerPage,
-        setPage,
+        // setPage,
         //
         selected,
         setSelected,
@@ -108,6 +109,7 @@ export default function RegisterPage({
     };
 
     const handleOpenEdit = (data) => {
+        console.log(data);
         setSelectedEdit(data);
         setOpenEdit(true);
     };
@@ -136,7 +138,7 @@ export default function RegisterPage({
                 onFinish() {
                     queryClient.invalidateQueries({
                         queryKey: [
-                            "toolboxtalks.preplanning.register",
+                            "toolboxtalks.preplanning.tbtDailies",
                             user.subscriber_id,
                         ],
                     });
@@ -157,7 +159,7 @@ export default function RegisterPage({
                 onFinish() {
                     queryClient.invalidateQueries({
                         queryKey: [
-                            "toolboxtalks.preplanning.register",
+                            "toolboxtalks.preplanning.tbtDailies",
                             user.subscriber_id,
                         ],
                     });
@@ -168,15 +170,11 @@ export default function RegisterPage({
         );
     };
 
-    const haveFuture = preplanning.some((p) =>
-        isFuture(new Date(p.date_issued))
-    );
-
     return (
         <>
             <Container maxWidth={themeStretch ? false : "lg"}>
                 <CustomBreadcrumbs
-                    heading="TBT Pre-planning - Assign Employee"
+                    heading="Daily TBT"
                     links={[
                         {
                             name: "Dashboard",
@@ -187,14 +185,23 @@ export default function RegisterPage({
                         },
                     ]}
                     action={
-                        <Button
-                            onClick={handleOpenRegister}
-                            variant="contained"
-                            startIcon={<Iconify icon="eva:plus-fill" />}
-                            disabled={haveFuture || isLoading}
-                        >
-                            Set Employee
-                        </Button>
+                        <Stack direction="row" flexWrap="wrap" gap={1.5}>
+                            <Button
+                                onClick={handleOpenRegister}
+                                variant="contained"
+                                startIcon={<Iconify icon="eva:plus-fill" />}
+                                disabled={isLoading}
+                            >
+                                Assign Employee's
+                            </Button>
+                            <Button
+                                variant="contained"
+                                startIcon={<Iconify icon="eva:eye-fill" />}
+                                disabled={isLoading}
+                            >
+                                View PDF
+                            </Button>
+                        </Stack>
                     }
                 />
                 <Card>
@@ -212,13 +219,18 @@ export default function RegisterPage({
                                 )
                             }
                             action={
-                                <Stack direction="row">
+                                <Stack direction="row" gap={1}>
                                     <Tooltip title="Delete">
                                         <IconButton
                                             color="primary"
                                             onClick={handleOpenConfirm}
                                         >
                                             <Iconify icon="eva:trash-2-outline" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="View PDF">
+                                        <IconButton color="primary">
+                                            <Iconify icon="eva:eye-fill" />
                                         </IconButton>
                                     </Tooltip>
                                 </Stack>
@@ -320,6 +332,7 @@ export default function RegisterPage({
                 open={openRegister}
                 onClose={handleCloseRegister}
                 employeeList={employees}
+                locationList={locations}
             />
 
             <RegisterEmployeePortal
@@ -327,6 +340,7 @@ export default function RegisterPage({
                 open={openEdit}
                 onClose={handleCloseEdit}
                 employeeList={employees}
+                locationList={locations}
                 currentRegistered={selectedEdit}
                 isEdit
             />

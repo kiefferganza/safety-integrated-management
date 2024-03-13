@@ -8,7 +8,7 @@ const RegisterPage = lazy(() => import("./RegisterPage"));
 
 const index = ({ auth: { user } }) => {
     const { isLoading, data } = useQuery({
-        queryKey: ["toolboxtalks.preplanning.register", user.subscriber_id],
+        queryKey: ["toolboxtalks.preplanning.tbtDailies", user.subscriber_id],
         queryFn: fetchPreplanning,
         refetchOnWindowFocus: false,
     });
@@ -16,7 +16,7 @@ const index = ({ auth: { user } }) => {
     return (
         <>
             <Head>
-                <title>Toolbox Talks Pre-planning: Register</title>
+                <title>TBT Pre-planning: Dailies</title>
             </Head>
             <Suspense fallback={<LoadingScreen />}>
                 <DashboardLayout>
@@ -24,6 +24,7 @@ const index = ({ auth: { user } }) => {
                         isLoading={isLoading}
                         employees={data?.employees ?? []}
                         preplanning={data?.preplanning ?? []}
+                        locations={data?.locations ?? []}
                         user={user}
                     />
                 </DashboardLayout>

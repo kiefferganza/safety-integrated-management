@@ -22,19 +22,21 @@ function renderRow(props) {
     };
 
     return (
-        <Box component="li" {...dataSet[0]} style={inlineStyle}>
+        <Box
+            component="li"
+            {...dataSet[0]}
+            style={inlineStyle}
+            sx={{ borderRadius: 0 }}
+        >
             <Avatar
-                sx={{ mr: 2, flexShrink: 0 }}
                 alt={dataSet[1].fullname ?? ""}
-                src={
-                    dataSet[1]?.profile?.thumbnail ??
-                    route("image", {
-                        path: "assets/images/default-profile.jpg",
-                        w: 128,
-                        h: 128,
-                        fit: "crop",
-                    })
-                }
+                src={dataSet[1]?.img}
+                sx={{
+                    mr: 2,
+                    flexShrink: 0,
+                    width: 32,
+                    height: 32,
+                }}
             />
             <Typography variant="subtitle2" noWrap>
                 {dataSet[1].fullname ?? ""}{" "}
@@ -78,7 +80,7 @@ const EmployeeListboxComponent = forwardRef(function EmployeeListboxComponent(
     });
 
     const itemCount = itemData.length;
-    const itemSize = 52;
+    const itemSize = 48;
 
     const getChildSize = () => {
         return itemSize;

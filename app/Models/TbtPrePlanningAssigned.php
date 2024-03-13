@@ -14,4 +14,8 @@ class TbtPrePlanningAssigned extends Model
     public function preplanning() {
         return $this->belongsTo(TbtPrePlanning::class, "preplanning", "id");
     }
+
+    public function employee() {
+        return $this->belongsTo(Employee::class, "emp_id", "employee_id");
+    }
 }

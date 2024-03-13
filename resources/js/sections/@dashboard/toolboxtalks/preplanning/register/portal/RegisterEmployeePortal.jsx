@@ -33,9 +33,11 @@ import { sleep } from "@/lib/utils";
 import { Inertia } from "@inertiajs/inertia";
 import Avatar from "@mui/material/Avatar";
 import { addDays, format } from "date-fns";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePage } from "@inertiajs/inertia-react";
+import { RHFMuiSelect } from "@/Components/hook-form";
+import FormProvider from "@/Components/hook-form/FormProvider";
 
 const StyledPopper = styled(Popper)({
     [`& .${autocompleteClasses.listbox}`]: {
@@ -44,15 +46,27 @@ const StyledPopper = styled(Popper)({
             padding: 0,
             margin: 0,
         },
+        "& ul>li": { borderRadius: 0 },
     },
 });
 
+const Box1 = styled(Box)(({ theme }) => ({
+    flex: 0.6,
+}));
+
+const Box2 = styled(Box)(({ theme }) => ({
+    flex: 0.4,
+}));
+
 const RegisterEmployeeSchema = Yup.object().shape({
+    location: Yup.string().required("Please add a location."),
     employees: Yup.array()
         .min(1, "Add at least one employee")
         .of(
             Yup.object().shape({
-                emp_id: Yup.string().required("Please select a valid employee"),
+                emp_id: Yup.string().required(
+                    "Please select a valid employee."
+                ),
                 position: Yup.string(),
             })
         ),
@@ -63,6 +77,7 @@ const RegisterEmployeePortal = ({
     open,
     onClose,
     isEdit = false,
+    locationList = [],
     //
     currentRegistered = null,
     employeeList = [],
@@ -73,11 +88,13 @@ const RegisterEmployeePortal = ({
     } = usePage().props;
     const queryClient = useQueryClient();
     const scrollbarRef = useRef(null);
+    const [autoCompleteInputVal, setAutoCompleteInputVal] = useState("");
     const { load, stop } = useSwal();
     const methods = useForm({
         resolver: yupResolver(RegisterEmployeeSchema),
         defaultValues: {
-            employees: currentRegistered?.employees ?? {},
+            employees: [],
+            location: "",
         },
     });
 
@@ -96,7 +113,8 @@ const RegisterEmployeePortal = ({
 
     useEffect(() => {
         if (isEdit && currentRegistered) {
-            setValue("employees", currentRegistered?.employees ?? []);
+            setValue("employees", currentRegistered?.assigned ?? []);
+            setValue("location", currentRegistered?.location);
         }
     }, [isEdit, currentRegistered]);
 
@@ -119,6 +137,15 @@ const RegisterEmployeePortal = ({
 
     const handleAutocompleteName = (_, val) => {
         replace(val);
+        if (autoCompleteInputVal) {
+            setAutoCompleteInputVal("");
+        }
+    };
+
+    const handleAutoCompleteInputChange = (e, val) => {
+        if (e?.type === "change") {
+            setAutoCompleteInputVal(val ?? "");
+        }
     };
 
     const handleClose = () => {
@@ -130,7 +157,7 @@ const RegisterEmployeePortal = ({
         const employees = data.employees.map((emp) => ({ emp_id: emp.emp_id }));
         Inertia.post(
             route("toolboxtalk.management.preplanning.assignEmployee"),
-            { employees },
+            { employees, location: data.location },
             {
                 onStart() {
                     handleClose();
@@ -140,7 +167,7 @@ const RegisterEmployeePortal = ({
                     stop();
                     queryClient.invalidateQueries({
                         queryKey: [
-                            "toolboxtalks.preplanning.register",
+                            "toolboxtalks.preplanning.tbtDailies",
                             user.subscriber_id,
                         ],
                     });
@@ -159,7 +186,7 @@ const RegisterEmployeePortal = ({
                     "toolboxtalk.management.preplanning.editAssignedEmployee",
                     currentRegistered.id
                 ),
-                { employees },
+                { employees, location: data.location },
                 {
                     onStart() {
                         handleClose();
@@ -169,7 +196,7 @@ const RegisterEmployeePortal = ({
                         stop();
                         queryClient.invalidateQueries({
                             queryKey: [
-                                "toolboxtalks.preplanning.register",
+                                "toolboxtalks.preplanning.tbtDailies",
                                 user.subscriber_id,
                             ],
                         });
@@ -211,39 +238,72 @@ const RegisterEmployeePortal = ({
                         maxHeight: 348,
                     }}
                 >
-                    <Stack spacing={1.5}>
-                        <Autocomplete
-                            sx={{ px: 1.25 }}
-                            id="virtualize-employee-list"
-                            value={fields}
-                            options={employeeList}
-                            onChange={handleAutocompleteName}
-                            inputValue=""
-                            multiple
-                            fullWidth
-                            disableListWrap
-                            PopperComponent={StyledPopper}
-                            ListboxComponent={ListboxComponent}
-                            getOptionLabel={(opt) => opt.fullname}
-                            isOptionEqualToValue={(opt, val) =>
-                                opt.emp_id === val.emp_id
-                            }
-                            renderOption={(props, option, state) => [
-                                props,
-                                option,
-                                state.index,
-                            ]}
-                            renderInput={(params) => {
-                                params.InputProps.startAdornment = undefined;
-                                return (
-                                    <TextField
-                                        label="Choose employee"
-                                        {...params}
-                                        size="small"
+                    <Stack spacing={2}>
+                        <FormProvider methods={methods}>
+                            <Stack
+                                direction="row"
+                                flexWrap="wrap"
+                                spacing={1.5}
+                            >
+                                <Box1>
+                                    <Autocomplete
+                                        sx={{ px: 1.25 }}
+                                        id="virtualize-employee-list"
+                                        value={fields}
+                                        options={employeeList}
+                                        onChange={handleAutocompleteName}
+                                        inputValue={autoCompleteInputVal}
+                                        onInputChange={
+                                            handleAutoCompleteInputChange
+                                        }
+                                        multiple
+                                        fullWidth
+                                        disableListWrap
+                                        PopperComponent={StyledPopper}
+                                        ListboxComponent={ListboxComponent}
+                                        getOptionLabel={(opt) => opt.fullname}
+                                        isOptionEqualToValue={(opt, val) =>
+                                            opt.emp_id === val.emp_id
+                                        }
+                                        renderOption={(
+                                            props,
+                                            option,
+                                            state
+                                        ) => [props, option, state.index]}
+                                        renderInput={(params) => {
+                                            params.InputProps.startAdornment =
+                                                undefined;
+                                            return (
+                                                <TextField
+                                                    label="Choose employee"
+                                                    {...params}
+                                                    size="small"
+                                                />
+                                            );
+                                        }}
                                     />
-                                );
-                            }}
-                        />
+                                </Box1>
+                                <Box2>
+                                    <RHFMuiSelect
+                                        label="Station/Location."
+                                        name="location"
+                                        fullWidth
+                                        size="small"
+                                        options={[
+                                            { label: "", value: "" },
+                                            ...locationList.map((d) => ({
+                                                label:
+                                                    d.value +
+                                                    (d.name
+                                                        ? ` (${d.name})`
+                                                        : ""),
+                                                value: d.value,
+                                            })),
+                                        ]}
+                                    />
+                                </Box2>
+                            </Stack>
+                        </FormProvider>
                         <TableContainer component={Paper}>
                             <Scrollbar
                                 sx={{ maxHeight: 281 }}
@@ -288,16 +348,7 @@ const RegisterEmployeePortal = ({
                                                     >
                                                         <Avatar
                                                             alt={row.fullname}
-                                                            src={
-                                                                row?.profile
-                                                                    ?.thumbnail ||
-                                                                route("image", {
-                                                                    path: "assets/images/default-profile.jpg",
-                                                                    w: 32,
-                                                                    h: 32,
-                                                                    fit: "crop",
-                                                                })
-                                                            }
+                                                            src={row.img}
                                                             sx={{
                                                                 width: 32,
                                                                 height: 32,
@@ -383,6 +434,7 @@ RegisterEmployeePortal.propTypes = {
     isEdit: PropTypes.bool,
     currentRegistered: PropTypes.object,
     employeeList: PropTypes.array,
+    locationList: PropTypes.array,
 };
 
 export default RegisterEmployeePortal;

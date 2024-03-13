@@ -449,26 +449,21 @@ const navConfig = [
                     "toolboxtalk.management.report",
                     "toolboxtalk.management.statistic",
                     // preplanning
-                    "toolboxtalk.management.preplanning.registerList",
+                    "toolboxtalk.management.preplanning.tbtDailies",
                 ],
                 children: [
                     {
                         title: "Pre-planning",
                         routeNames: [
-                            "toolboxtalk.management.preplanning.registerList",
+                            "toolboxtalk.management.preplanning.tbtDailies",
                         ],
                         children: [
                             {
-                                title: "Assign Employee",
-                                path: PATH_DASHBOARD.toolboxTalks.registerList,
+                                title: "TBT Dailies",
+                                path: PATH_DASHBOARD.toolboxTalks.tbtDailies,
                                 routeNames: [
-                                    "toolboxtalk.management.preplanning.registerList",
+                                    "toolboxtalk.management.preplanning.tbtDailies",
                                 ],
-                            },
-                            {
-                                title: "Daily Submitted",
-                                path: PATH_DASHBOARD.toolboxTalks.dailyList,
-                                routeNames: ["toolboxtalk.management.all"],
                             },
                         ],
                     },

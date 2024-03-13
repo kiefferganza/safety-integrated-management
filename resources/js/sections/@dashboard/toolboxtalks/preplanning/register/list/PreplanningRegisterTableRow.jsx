@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 // @mui
 const {
     Button,
@@ -17,6 +17,8 @@ const {
     Table,
     TableHead,
     TableBody,
+    TableContainer,
+    Paper,
 } = await import("@mui/material");
 // utils
 import { fDate } from "@/utils/formatTime";
@@ -66,9 +68,9 @@ export function PreplanningRegisterTableRow({
         setOpenPopover(null);
     };
 
-    const handleTriggerCollapse = () => {
+    const handleTriggerCollapse = useCallback(() => {
         setOpenCollapse((currState) => !currState);
-    };
+    });
 
     const DateStatus = isSameDay(TODAY, new Date(row.date_issued)) ? (
         <Label color="success">Today</Label>
@@ -85,20 +87,9 @@ export function PreplanningRegisterTableRow({
                     <Checkbox checked={selected} onClick={onSelectRow} />
                 </TableCell>
 
-                <TableCell>
+                <TableCell onClick={handleTriggerCollapse}>
                     <Stack direction="row" alignItems="center" spacing={2}>
-                        <Avatar
-                            alt={row.fullname}
-                            src={
-                                row?.profile?.thumbnail ||
-                                route("image", {
-                                    path: "assets/images/default-profile.jpg",
-                                    w: 128,
-                                    h: 128,
-                                    fit: "crop",
-                                })
-                            }
-                        />
+                        <Avatar alt={row.fullname} src={row.img} />
 
                         <Typography variant="subtitle2" noWrap>
                             {row.fullname}
@@ -119,15 +110,7 @@ export function PreplanningRegisterTableRow({
                     align="left"
                     sx={{ whiteSpace: "nowrap" }}
                 >
-                    {fDate(row.created_at)}
-                </TableCell>
-
-                <TableCell
-                    onClick={handleTriggerCollapse}
-                    align="left"
-                    sx={{ whiteSpace: "nowrap" }}
-                >
-                    {row.employees?.length ?? 0}
+                    {row.location}
                 </TableCell>
 
                 <TableCell
@@ -136,6 +119,26 @@ export function PreplanningRegisterTableRow({
                     sx={{ whiteSpace: "nowrap" }}
                 >
                     {DateStatus}
+                </TableCell>
+
+                <TableCell
+                    onClick={handleTriggerCollapse}
+                    align="left"
+                    sx={{ whiteSpace: "nowrap" }}
+                >
+                    {row?.status ? (
+                        <Label color="success">Submitted</Label>
+                    ) : (
+                        <Label color="warning">Not Submitted</Label>
+                    )}
+                </TableCell>
+
+                <TableCell
+                    onClick={handleTriggerCollapse}
+                    align="left"
+                    sx={{ whiteSpace: "nowrap" }}
+                >
+                    {row.assigned?.length ?? 0}
                 </TableCell>
 
                 <TableCell align="right">
@@ -166,62 +169,80 @@ export function PreplanningRegisterTableRow({
             <TableRow>
                 <TableCell
                     style={{ paddingBottom: 0, paddingTop: 0 }}
-                    colSpan={7}
+                    colSpan={8}
                 >
                     <Collapse in={openCollapse} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
-                            <Table size="small">
-                                <caption>Assigned Employees</caption>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>#</TableCell>
-                                        <TableCell>Name</TableCell>
-                                        <TableCell>Position</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {(row.employees ?? []).map(
-                                        (subrow, idx) => (
-                                            <TableRow key={idx}>
-                                                <TableCell>{idx + 1}</TableCell>
-                                                <TableCell>
-                                                    <Stack
-                                                        direction="row"
-                                                        alignItems="center"
-                                                        spacing={2}
-                                                    >
-                                                        <Avatar
-                                                            alt={
-                                                                subrow.fullname
-                                                            }
-                                                            src={
-                                                                subrow?.profile
-                                                                    ?.thumbnail ||
-                                                                route("image", {
-                                                                    path: "assets/images/default-profile.jpg",
-                                                                    w: 128,
-                                                                    h: 128,
-                                                                    fit: "crop",
-                                                                })
-                                                            }
-                                                        />
-
-                                                        <Typography
-                                                            variant="subtitle2"
-                                                            noWrap
+                            <TableContainer component={Paper}>
+                                <Table size="small">
+                                    <caption>
+                                        Assigned Employees for{" "}
+                                        <Typography
+                                            component="span"
+                                            variant="subtitle2"
+                                            fontStyle="italic"
+                                        >
+                                            -{fDate(row.date_issued)}-
+                                        </Typography>
+                                    </caption>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>#</TableCell>
+                                            <TableCell>Name</TableCell>
+                                            <TableCell>Position</TableCell>
+                                            <TableCell>Submitted TBT</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {(row.assigned ?? []).map(
+                                            (subrow, idx) => (
+                                                <TableRow
+                                                    sx={{
+                                                        "& td, & th": {
+                                                            borderBottom: 1,
+                                                        },
+                                                    }}
+                                                    key={idx}
+                                                >
+                                                    <TableCell>
+                                                        {idx + 1}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Stack
+                                                            direction="row"
+                                                            alignItems="center"
+                                                            spacing={2}
                                                         >
-                                                            {subrow.fullname}
-                                                        </Typography>
-                                                    </Stack>
-                                                </TableCell>
-                                                <TableCell>
-                                                    {subrow.position}
-                                                </TableCell>
-                                            </TableRow>
-                                        )
-                                    )}
-                                </TableBody>
-                            </Table>
+                                                            <Avatar
+                                                                alt={
+                                                                    subrow.fullname
+                                                                }
+                                                                src={subrow.img}
+                                                            />
+
+                                                            <Typography
+                                                                variant="subtitle2"
+                                                                noWrap
+                                                            >
+                                                                {
+                                                                    subrow.fullname
+                                                                }
+                                                            </Typography>
+                                                        </Stack>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {subrow.position}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {subrow.submittedTbt}
+                                                    </TableCell>
+                                                </TableRow>
+                                            )
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
                         </Box>
                     </Collapse>
                 </TableCell>

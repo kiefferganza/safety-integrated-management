@@ -11,7 +11,7 @@ use Inertia\Inertia;
 
 class TbtPreplanningController extends Controller
 {
-    public function registerList()
+    public function tbtDailies()
     {
         return Inertia::render("Dashboard/Management/ToolboxTalk/Preplanning/Register/index");
     }
@@ -20,12 +20,14 @@ class TbtPreplanningController extends Controller
     public function assignEmployee(Request $request)
     {
         $request->validate([
+            "location" => ["required", "string"],
             "employees" => ["required", "array", "min:1"]
         ]);
 
         $user = auth()->user();
         $preplanning = new TbtPrePlanning();
         $preplanning->created_by = $user->user_id;
+        $preplanning->location = $request->location;
         $preplanning->date_issued = Carbon::tomorrow();
 
         if ($preplanning->save())
@@ -46,9 +48,14 @@ class TbtPreplanningController extends Controller
 
     public function editAssignedEmployee(Request $request, TbtPrePlanning $tbtPrePlanning) {
         $request->validate([
+            "location" => ["required", "string"],
             "employees" => ["required", "array", "min:1"]
         ]);
-        
+        if($tbtPrePlanning->location !== $request->location) {
+            $tbtPrePlanning->location = $request->location;
+            $tbtPrePlanning->save();
+        }
+
         TbtPrePlanningAssigned::where("preplanning", $tbtPrePlanning->id)->delete();
         $tbtPrePlanning->assigned()->createMany($request->employees);
         return redirect()->back()
