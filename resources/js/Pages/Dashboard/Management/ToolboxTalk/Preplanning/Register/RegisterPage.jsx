@@ -30,8 +30,6 @@ import {
     TableSelectedAction,
     TableSkeleton,
     emptyRows,
-    getComparator,
-    useTable,
 } from "@/Components/table";
 // sections
 import { useSwal } from "@/hooks/useSwal";
@@ -62,10 +60,21 @@ export default function RegisterPage({
     preplanning,
     locations,
     user,
+    dataFiltered = [],
+    handleFilterName,
+    handleFilterStatus,
+    handleFilterStartDate,
+    handleFilterEndDate,
+    handleResetFilter,
+    filters,
+    table,
 }) {
     const queryClient = useQueryClient();
     const { load, stop } = useSwal();
     const { themeStretch } = useSettingsContext();
+
+    const { filterName, filterStatus, filterStartDate, filterEndDate } =
+        filters;
 
     const {
         dense,
@@ -84,28 +93,12 @@ export default function RegisterPage({
         onChangeDense,
         onChangePage,
         onChangeRowsPerPage,
-    } = useTable();
-
-    // const [tableData, setTableData] = useState([]);
-
-    const [filterName, setFilterName] = useState("");
-    const [filterStatus, setFilterStatus] = useState("all");
-    const [filterStartDate, setFilterStartDate] = useState(null);
-    const [filterEndDate, setFilterEndDate] = useState(null);
+    } = table;
 
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openRegister, setOpenRegister] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState(null);
-
-    const dataFiltered = applyFilter({
-        inputData: preplanning,
-        comparator: getComparator(order, orderBy),
-        filterName,
-        filterStatus,
-        filterStartDate,
-        filterEndDate,
-    });
 
     const denseHeight = dense ? 56 : 76;
 
@@ -115,11 +108,7 @@ export default function RegisterPage({
         !!filterEndDate ||
         filterStatus !== "all";
 
-    const isNotFound =
-        (!dataFiltered.length && !!filterName) ||
-        (!dataFiltered.length && !!filterStartDate) ||
-        (!dataFiltered.length && !!filterEndDate) ||
-        (!dataFiltered.length && !!filterStatus !== "all");
+    const isNotFound = !dataFiltered.length && !!isFiltered;
 
     const getLengthByStatus = (status) =>
         dataFiltered.filter((item) => item.status === status).length;
@@ -171,34 +160,6 @@ export default function RegisterPage({
         setOpenConfirm(false);
     };
 
-    const handleFilterName = (event) => {
-        setPage(0);
-        setFilterName(event.target.value);
-    };
-
-    const handleFilterStatus = (_, newValue) => {
-        setPage(0);
-        setFilterStatus(newValue);
-    };
-
-    const handleFilterStartDate = (value) => {
-        setPage(0);
-        setFilterStartDate(value.setHours(0, 0, 0, 0));
-    };
-
-    const handleFilterEndDate = (value) => {
-        setPage(0);
-        setFilterEndDate(value.setHours(11, 59, 59, 59));
-    };
-
-    const handleResetFilter = () => {
-        setFilterName("");
-        setFilterStartDate(null);
-        setFilterEndDate(null);
-        setFilterStatus("all");
-        setPage(0);
-    };
-
     const handleDeleteRow = (id) => () => {
         Inertia.post(
             route("toolboxtalk.management.preplanning.deleteAssignEmployee"),
@@ -214,6 +175,7 @@ export default function RegisterPage({
                             user.subscriber_id,
                         ],
                     });
+                    setPage(0);
                     stop();
                 },
             }
@@ -235,6 +197,7 @@ export default function RegisterPage({
                             user.subscriber_id,
                         ],
                     });
+                    setPage(0);
                     setSelected([]);
                     stop();
                 },
@@ -306,11 +269,11 @@ export default function RegisterPage({
                     <Divider />
 
                     <PreplanningRegisterToolbar
-                        filterName={filterName}
                         isFiltered={isFiltered}
-                        onFilterName={handleFilterName}
+                        filterName={filterName}
                         filterStartDate={filterStartDate}
                         filterEndDate={filterEndDate}
+                        onFilterName={handleFilterName}
                         onFilterStartDate={handleFilterStartDate}
                         onFilterEndDate={handleFilterEndDate}
                         onResetFilter={handleResetFilter}
@@ -480,49 +443,4 @@ export default function RegisterPage({
             />
         </>
     );
-}
-
-function applyFilter({
-    inputData,
-    comparator,
-    filterName,
-    filterStatus,
-    filterStartDate,
-    filterEndDate,
-}) {
-    const stabilizedThis = inputData.map((el, index) => [el, index]);
-
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) return order;
-        return a[1] - b[1];
-    });
-
-    inputData = stabilizedThis.map((el) => el[0]);
-
-    if (filterName) {
-        inputData = inputData.filter(({ fullname }) =>
-            fullname.toLowerCase().includes(filterName.toLowerCase())
-        );
-    }
-
-    if (filterStatus !== "all") {
-        const status = filterStatus === "submitted";
-        inputData = inputData.filter((pre) => pre.status === status);
-    }
-
-    if (filterStartDate && !filterEndDate) {
-        inputData = inputData.filter(
-            (pre) => new Date(pre.date_issued) >= filterStartDate
-        );
-    }
-
-    if (filterStartDate && filterEndDate) {
-        inputData = inputData.filter((pre) => {
-            const date = new Date(pre.date_issued);
-            return date >= filterStartDate && date <= filterEndDate;
-        });
-    }
-
-    return inputData;
 }
