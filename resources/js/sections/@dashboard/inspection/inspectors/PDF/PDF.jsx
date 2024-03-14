@@ -81,12 +81,16 @@ export function PDF({ data = [], filterDate, logo }) {
 
             return { total, summary, startIndices };
         }
-        return { total, startIndices };
+        return { total, startIndices, summary };
     }, [data]);
 
     const checkBreakPoint = (index) => startIndices.indexOf(index);
     return (
-        <Document>
+        <Document
+            title={`Safety Officer & PA's DOR${
+                filterDate ? ` - ${shortLabelDate(filterDate)}` : ""
+            }`}
+        >
             <Page size="A4" style={styles.page}>
                 <View style={styles.mb8} fixed>
                     <View style={[styles.gridContainer, styles.mb8]}>
