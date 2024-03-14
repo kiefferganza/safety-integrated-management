@@ -68,6 +68,7 @@ export default function RegisterPage({
     handleResetFilter,
     filters,
     table,
+    openPDF,
 }) {
     const queryClient = useQueryClient();
     const { load, stop } = useSwal();
@@ -237,6 +238,7 @@ export default function RegisterPage({
                                 variant="contained"
                                 startIcon={<Iconify icon="eva:eye-fill" />}
                                 disabled={isLoading}
+                                onClick={openPDF}
                             >
                                 View PDF
                             </Button>
@@ -302,7 +304,10 @@ export default function RegisterPage({
                                         </IconButton>
                                     </Tooltip>
                                     <Tooltip title="View PDF">
-                                        <IconButton color="primary">
+                                        <IconButton
+                                            color="primary"
+                                            onClick={openPDF}
+                                        >
                                             <Iconify icon="eva:eye-fill" />
                                         </IconButton>
                                     </Tooltip>

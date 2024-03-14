@@ -5,6 +5,7 @@ import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPreplanning } from "@/utils/axios";
 import { getComparator, useTable } from "@/Components/table";
+import PDFRenderer from "../PDF/PDFRenderer";
 const RegisterPage = lazy(() => import("./RegisterPage"));
 
 const index = ({ auth: { user } }) => {
@@ -13,6 +14,8 @@ const index = ({ auth: { user } }) => {
         queryFn: fetchPreplanning,
         refetchOnWindowFocus: false,
     });
+
+    const [openPDF, setOpenPDF] = useState(false);
 
     const [filterName, setFilterName] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
@@ -58,6 +61,18 @@ const index = ({ auth: { user } }) => {
         table.setPage(0);
     };
 
+    const handleOpenPDF = () => {
+        setOpenPDF(true);
+    };
+
+    const handleClosePDF = () => {
+        setOpenPDF(false);
+    };
+
+    const PDFData =
+        table.selected.length > 0
+            ? dataFiltered.filter((d) => table.selected.includes(d.id))
+            : dataFiltered;
     return (
         <>
             <Head>
@@ -84,9 +99,17 @@ const index = ({ auth: { user } }) => {
                         handleFilterStartDate={handleFilterStartDate}
                         handleFilterEndDate={handleFilterEndDate}
                         handleResetFilter={handleResetFilter}
+                        openPDF={handleOpenPDF}
                     />
                 </DashboardLayout>
             </Suspense>
+            {!isLoading && (
+                <PDFRenderer
+                    dataPDF={PDFData}
+                    open={openPDF}
+                    onClose={handleClosePDF}
+                />
+            )}
         </>
     );
 };
