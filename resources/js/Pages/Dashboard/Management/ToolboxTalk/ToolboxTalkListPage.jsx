@@ -592,7 +592,7 @@ function applyFilter({
 
     if (filterStartDate && filterEndDate) {
         const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
-        const endDateTimestamp = filterEndDate.setHours(0, 0, 0, 0);
+        const endDateTimestamp = filterEndDate.setHours(11, 59, 59, 59);
         inputData = inputData.filter((toolbox) => {
             const dateConducted = new Date(toolbox.date_conducted).setHours(
                 0,

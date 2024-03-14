@@ -4,6 +4,9 @@ const {
     Card,
     Table,
     Button,
+    Divider,
+    Tabs,
+    Tab,
     TableBody,
     Container,
     TableContainer,
@@ -32,10 +35,14 @@ import {
 } from "@/Components/table";
 // sections
 import { useSwal } from "@/hooks/useSwal";
-import { PreplanningRegisterTableRow } from "@/sections/@dashboard/toolboxtalks/preplanning/register";
+import {
+    PreplanningRegisterTableRow,
+    PreplanningRegisterToolbar,
+} from "@/sections/@dashboard/toolboxtalks/preplanning/register";
 import RegisterEmployeePortal from "@/sections/@dashboard/toolboxtalks/preplanning/register/portal/RegisterEmployeePortal";
 import { Inertia } from "@inertiajs/inertia";
 import { useQueryClient } from "@tanstack/react-query";
+import Label from "@/Components/label/Label";
 
 const TABLE_HEAD = [
     { id: "fullname", label: "Created By", align: "left" },
@@ -66,7 +73,7 @@ export default function RegisterPage({
         order,
         orderBy,
         rowsPerPage,
-        // setPage,
+        setPage,
         //
         selected,
         setSelected,
@@ -81,6 +88,11 @@ export default function RegisterPage({
 
     // const [tableData, setTableData] = useState([]);
 
+    const [filterName, setFilterName] = useState("");
+    const [filterStatus, setFilterStatus] = useState("all");
+    const [filterStartDate, setFilterStartDate] = useState(null);
+    const [filterEndDate, setFilterEndDate] = useState(null);
+
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openRegister, setOpenRegister] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
@@ -89,16 +101,49 @@ export default function RegisterPage({
     const dataFiltered = applyFilter({
         inputData: preplanning,
         comparator: getComparator(order, orderBy),
+        filterName,
+        filterStatus,
+        filterStartDate,
+        filterEndDate,
     });
 
     const denseHeight = dense ? 56 : 76;
 
-    // const isFiltered = filterName !== '' || !!filterDate;
+    const isFiltered =
+        filterName !== "" ||
+        !!filterStartDate ||
+        !!filterEndDate ||
+        filterStatus !== "all";
 
-    // const isNotFound = (!dataFiltered.length && !!filterName) || (!dataFiltered.length && !!filterDate);
+    const isNotFound =
+        (!dataFiltered.length && !!filterName) ||
+        (!dataFiltered.length && !!filterStartDate) ||
+        (!dataFiltered.length && !!filterEndDate) ||
+        (!dataFiltered.length && !!filterStatus !== "all");
 
-    // const isFiltered = false;
-    const isNotFound = false;
+    const getLengthByStatus = (status) =>
+        dataFiltered.filter((item) => item.status === status).length;
+
+    const TABS = [
+        {
+            value: "all",
+            label: "All",
+            color: "info",
+            count: dataFiltered.length,
+        },
+        {
+            value: "submitted",
+            label: "Submitted",
+            color: "success",
+            count: getLengthByStatus(true),
+        },
+        {
+            value: "not-submitted",
+            label: "Not Submitted",
+            color: "warning",
+            count: getLengthByStatus(false),
+        },
+    ];
 
     const handleOpenRegister = () => {
         setOpenRegister(true);
@@ -124,6 +169,34 @@ export default function RegisterPage({
 
     const handleCloseConfirm = () => {
         setOpenConfirm(false);
+    };
+
+    const handleFilterName = (event) => {
+        setPage(0);
+        setFilterName(event.target.value);
+    };
+
+    const handleFilterStatus = (_, newValue) => {
+        setPage(0);
+        setFilterStatus(newValue);
+    };
+
+    const handleFilterStartDate = (value) => {
+        setPage(0);
+        setFilterStartDate(value.setHours(0, 0, 0, 0));
+    };
+
+    const handleFilterEndDate = (value) => {
+        setPage(0);
+        setFilterEndDate(value.setHours(11, 59, 59, 59));
+    };
+
+    const handleResetFilter = () => {
+        setFilterName("");
+        setFilterStartDate(null);
+        setFilterEndDate(null);
+        setFilterStatus("all");
+        setPage(0);
     };
 
     const handleDeleteRow = (id) => () => {
@@ -180,6 +253,10 @@ export default function RegisterPage({
                             href: PATH_DASHBOARD.root,
                         },
                         {
+                            name: "All TBT",
+                            href: route("toolboxtalk.management.all"),
+                        },
+                        {
                             name: "List",
                         },
                     ]}
@@ -204,6 +281,40 @@ export default function RegisterPage({
                     }
                 />
                 <Card>
+                    <Tabs
+                        value={filterStatus}
+                        onChange={handleFilterStatus}
+                        sx={{
+                            px: 2,
+                            bgcolor: "background.neutral",
+                        }}
+                    >
+                        {TABS.map((tab) => (
+                            <Tab
+                                key={tab.value}
+                                value={tab.value}
+                                label={tab.label}
+                                icon={
+                                    <Label color={tab.color} sx={{ mr: 1 }}>
+                                        {tab.count}
+                                    </Label>
+                                }
+                            />
+                        ))}
+                    </Tabs>
+
+                    <Divider />
+
+                    <PreplanningRegisterToolbar
+                        filterName={filterName}
+                        isFiltered={isFiltered}
+                        onFilterName={handleFilterName}
+                        filterStartDate={filterStartDate}
+                        filterEndDate={filterEndDate}
+                        onFilterStartDate={handleFilterStartDate}
+                        onFilterEndDate={handleFilterEndDate}
+                        onResetFilter={handleResetFilter}
+                    />
                     <TableContainer
                         sx={{ position: "relative", overflow: "unset" }}
                     >
@@ -371,7 +482,14 @@ export default function RegisterPage({
     );
 }
 
-function applyFilter({ inputData, comparator }) {
+function applyFilter({
+    inputData,
+    comparator,
+    filterName,
+    filterStatus,
+    filterStartDate,
+    filterEndDate,
+}) {
     const stabilizedThis = inputData.map((el, index) => [el, index]);
 
     stabilizedThis.sort((a, b) => {
@@ -382,9 +500,29 @@ function applyFilter({ inputData, comparator }) {
 
     inputData = stabilizedThis.map((el) => el[0]);
 
-    // if (filterName) {
-    // 	inputData = inputData.filter(({ position }) => position.toLowerCase().includes(filterName.toLowerCase()));
-    // }
+    if (filterName) {
+        inputData = inputData.filter(({ fullname }) =>
+            fullname.toLowerCase().includes(filterName.toLowerCase())
+        );
+    }
+
+    if (filterStatus !== "all") {
+        const status = filterStatus === "submitted";
+        inputData = inputData.filter((pre) => pre.status === status);
+    }
+
+    if (filterStartDate && !filterEndDate) {
+        inputData = inputData.filter(
+            (pre) => new Date(pre.date_issued) >= filterStartDate
+        );
+    }
+
+    if (filterStartDate && filterEndDate) {
+        inputData = inputData.filter((pre) => {
+            const date = new Date(pre.date_issued);
+            return date >= filterStartDate && date <= filterEndDate;
+        });
+    }
 
     return inputData;
 }
