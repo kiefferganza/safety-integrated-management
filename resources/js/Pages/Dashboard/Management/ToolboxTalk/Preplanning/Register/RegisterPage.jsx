@@ -43,11 +43,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import Label from "@/Components/label/Label";
 
 const TABLE_HEAD = [
-    { id: "fullname", label: "Created By", align: "left" },
+    { id: "form_number", label: "CMS Number", align: "left" },
+    { id: "fullname", label: "Originator", align: "left" },
     { id: "position", label: "Position", align: "left" },
     { id: "location", label: "Location", align: "left" },
     { id: "date_issued", label: "Date" },
-    { id: "status", label: "TBT Status", align: "left" },
+    { id: "status", label: "Status", align: "left" },
     { id: "employees", label: "Total Attnd.", align: "left" },
     { id: "" },
 ];
@@ -58,7 +59,8 @@ export default function RegisterPage({
     isLoading,
     employees,
     preplanning,
-    locations,
+    projectDetails,
+    sequenceNo,
     user,
     dataFiltered = [],
     handleFilterName,
@@ -210,7 +212,14 @@ export default function RegisterPage({
         <>
             <Container maxWidth={themeStretch ? false : "lg"}>
                 <CustomBreadcrumbs
-                    heading="Daily TBT"
+                    sx={{
+                        "&>div": {
+                            display: "flex",
+                            justifyContent: "space-between",
+                            flexWrap: "wrap",
+                        },
+                    }}
+                    heading="TBT Tracker"
                     links={[
                         {
                             name: "Dashboard",
@@ -232,7 +241,7 @@ export default function RegisterPage({
                                 startIcon={<Iconify icon="eva:plus-fill" />}
                                 disabled={isLoading}
                             >
-                                Assign Employee's
+                                Create
                             </Button>
                             <Button
                                 variant="contained"
@@ -410,7 +419,8 @@ export default function RegisterPage({
                 open={openRegister}
                 onClose={handleCloseRegister}
                 employeeList={employees}
-                locationList={locations}
+                projectDetails={projectDetails}
+                sequenceNo={sequenceNo}
             />
 
             <RegisterEmployeePortal
@@ -418,7 +428,7 @@ export default function RegisterPage({
                 open={openEdit}
                 onClose={handleCloseEdit}
                 employeeList={employees}
-                locationList={locations}
+                projectDetails={projectDetails}
                 currentRegistered={selectedEdit}
                 isEdit
             />

@@ -17,9 +17,16 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('created_by');
 			$table->foreign('created_by')->references('employee_id')->on('tbl_employees');
+            $table->string("project_code");
+            $table->string("originator");
+            $table->string("discipline");
+            $table->string("document_type");
+            $table->string("sequence_no");
             $table->string("location");
+            $table->string("exact_location");
             $table->date("date_issued");
             $table->timestamps();
+
         });
     }
 

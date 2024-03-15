@@ -46,7 +46,7 @@ Route::middleware('auth')->as('api.')->group(function ()
 
 		// Preplanning
 		Route::prefix('preplanning')->as('preplanning.')->group(function() {
-			Route::get('/tbt-dailies', [ToolboxTalkController::class, 'tbtDailies'])->name('tbtDailies');
+			Route::get('/tracker', [ToolboxTalkController::class, 'tracker'])->name('tracker');
 		});
 	});
 

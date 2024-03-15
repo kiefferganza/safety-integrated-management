@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useMemo, useState } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
 import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
@@ -69,14 +69,23 @@ const index = ({ auth: { user } }) => {
         setOpenPDF(false);
     };
 
+    // const PDFData = useMemo(() => {
+    //     const data = (
+    //         table.selected.length > 0
+    //             ? dataFiltered.filter((d) => table.selected.includes(d.id))
+    //             : dataFiltered
+    //     ).map((d) => d.assigned);
+    //     return data.flat();
+    // }, [dataFiltered, table.selected]);
     const PDFData =
         table.selected.length > 0
             ? dataFiltered.filter((d) => table.selected.includes(d.id))
             : dataFiltered;
+    console.log({ PDFData, data });
     return (
         <>
             <Head>
-                <title>TBT Pre-planning: Dailies</title>
+                <title>TBT Tracker</title>
             </Head>
             <Suspense fallback={<LoadingScreen />}>
                 <DashboardLayout>
@@ -84,7 +93,8 @@ const index = ({ auth: { user } }) => {
                         isLoading={isLoading}
                         employees={data?.employees ?? []}
                         preplanning={data?.preplanning ?? []}
-                        locations={data?.locations ?? []}
+                        projectDetails={data?.projectDetails ?? []}
+                        sequenceNo={data?.sequenceNo ?? "000001"}
                         user={user}
                         table={table}
                         filters={{

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreign("preplanning")->references("id")->on("tbt_pre_plannings")->cascadeOnDelete();
             $table->unsignedInteger('emp_id');
 			$table->foreign('emp_id')->references('employee_id')->on('tbl_employees');
+            $table->string("trainer");
+            $table->string("witness");
             $table->timestamps();
         });
     }

@@ -32,7 +32,7 @@ function renderRow(props) {
                 alt={dataSet[1].fullname ?? ""}
                 src={dataSet[1]?.img}
                 sx={{
-                    mr: 2,
+                    mr: 1,
                     flexShrink: 0,
                     width: 32,
                     height: 32,

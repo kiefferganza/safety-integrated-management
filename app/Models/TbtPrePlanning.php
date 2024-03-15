@@ -10,6 +10,25 @@ class TbtPrePlanning extends Model
     use HasFactory;
 
     protected $guarded = [];
+    protected $appends = ['form_number'];
+
+    protected static function boot() {
+		parent::boot();
+		
+		static::creating(function(TbtPrePlanning $tbtPrePlanning) {
+			$sequence = TbtPrePlanning::count() + 1;
+			$tbtPrePlanning->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
+		});
+	}
+
+    public function getFormNumberAttribute()
+    {
+        if($this->project_code && $this->document_type && $this->discipline && $this->originator && $this->sequence_no) {
+            return sprintf("%s-%s-%s-%s-%s", $this->project_code, $this->originator,$this->discipline,$this->document_type, $this->sequence_no);
+        }
+        return "";
+    }
+
 
     public function assigned() {
         return $this->hasMany(TbtPrePlanningAssigned::class, "preplanning", "id");

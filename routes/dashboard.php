@@ -299,7 +299,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::delete('/statistic/{statistic}/delete', [ToolboxTalkController::class, "destroyStatistic"]);
 
 		Route::prefix('preplanning')->as('preplanning.')->group(function() {
-			Route::get("/tbt-dalies", [TbtPreplanningController::class, "tbtDailies"])->name('tbtDailies');
+			Route::get("/tbt-tracker", [TbtPreplanningController::class, "tracker"])->name('tracker');
 			Route::post("/assign-employee", [TbtPreplanningController::class, "assignEmployee"])->name("assignEmployee");
 			Route::post("/edit-assign-employee/{tbtPrePlanning}", [TbtPreplanningController::class, "editAssignedEmployee"])->name("editAssignedEmployee");
 			Route::post("/delete-assign-employees", [TbtPreplanningController::class, "deleteAssignEmployee"])->name("deleteAssignEmployee");

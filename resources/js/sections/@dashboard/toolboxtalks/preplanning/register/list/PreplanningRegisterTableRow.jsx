@@ -26,7 +26,7 @@ import { fDate } from "@/utils/formatTime";
 import ConfirmDialog from "@/Components/confirm-dialog";
 import Iconify from "@/Components/iconify";
 import MenuPopover from "@/Components/menu-popover";
-import { isFuture, isSameDay } from "date-fns";
+import { isFuture, isPast, isSameDay } from "date-fns";
 import Label from "@/Components/label";
 
 // ----------------------------------------------------------------------
@@ -72,19 +72,21 @@ export function PreplanningRegisterTableRow({
         setOpenCollapse((currState) => !currState);
     });
 
-    const DateStatus = isSameDay(TODAY, new Date(row.date_issued)) ? (
-        <Label color="success">Today</Label>
-    ) : isFuture(new Date(row.date_issued)) ? (
-        <Label color="success">Tomorrow</Label>
-    ) : (
-        <Label>{fDate(row.date_issued)}</Label>
-    );
+    const isExpired = isPast(new Date(row.date_issued).setHours(11, 59, 59));
 
     return (
         <>
             <TableRow hover selected={selected} sx={{ width: 1 }}>
                 <TableCell onClick={handleTriggerCollapse} padding="checkbox">
                     <Checkbox checked={selected} onClick={onSelectRow} />
+                </TableCell>
+
+                <TableCell
+                    onClick={handleTriggerCollapse}
+                    align="left"
+                    sx={{ whiteSpace: "nowrap" }}
+                >
+                    {row.form_number}
                 </TableCell>
 
                 <TableCell onClick={handleTriggerCollapse}>
@@ -118,7 +120,7 @@ export function PreplanningRegisterTableRow({
                     align="left"
                     sx={{ whiteSpace: "nowrap" }}
                 >
-                    {DateStatus}
+                    {fDate(row.date_issued)}
                 </TableCell>
 
                 <TableCell
@@ -126,10 +128,12 @@ export function PreplanningRegisterTableRow({
                     align="left"
                     sx={{ whiteSpace: "nowrap" }}
                 >
-                    {row?.status ? (
-                        <Label color="success">Submitted</Label>
+                    {isExpired ? (
+                        <Label color="error">Expired</Label>
+                    ) : row?.status ? (
+                        <Label color="success">Completed</Label>
                     ) : (
-                        <Label color="warning">Not Submitted</Label>
+                        <Label color="warning">Pending</Label>
                     )}
                 </TableCell>
 
@@ -218,6 +222,10 @@ export function PreplanningRegisterTableRow({
                                                                     subrow.fullname
                                                                 }
                                                                 src={subrow.img}
+                                                                sx={{
+                                                                    width: 32,
+                                                                    height: 32,
+                                                                }}
                                                             />
 
                                                             <Typography

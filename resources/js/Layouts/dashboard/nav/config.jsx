@@ -449,22 +449,14 @@ const navConfig = [
                     "toolboxtalk.management.report",
                     "toolboxtalk.management.statistic",
                     // preplanning
-                    "toolboxtalk.management.preplanning.tbtDailies",
+                    "toolboxtalk.management.preplanning.tracker",
                 ],
                 children: [
                     {
-                        title: "Pre-planning",
+                        title: "TBT Tracker",
+                        path: PATH_DASHBOARD.toolboxTalks.tracker,
                         routeNames: [
-                            "toolboxtalk.management.preplanning.tbtDailies",
-                        ],
-                        children: [
-                            {
-                                title: "TBT Dailies",
-                                path: PATH_DASHBOARD.toolboxTalks.tbtDailies,
-                                routeNames: [
-                                    "toolboxtalk.management.preplanning.tbtDailies",
-                                ],
-                            },
+                            "toolboxtalk.management.preplanning.tracker",
                         ],
                     },
                     {
