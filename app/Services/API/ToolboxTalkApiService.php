@@ -87,6 +87,8 @@ class ToolboxTalkApiService
         ->whereDate("tbl_toolbox_talks.date_conducted", $pre->date_issued)
         ->count();
 
+      $ass->status = $ass->submittedTbt > 0;
+
       if($ass->submittedTbt === 0 && $this->trackDailyStatus) {
         $this->trackDailyStatus = false;
       }
@@ -101,10 +103,7 @@ class ToolboxTalkApiService
  }
 
  public function preplanningLatestSequenceNumber() {
-  $sequenceNo = TbtPrePlanning::select("sequence_no")->orderBy("created_at", "desc")->first()?->pluck("sequence_no");
-  if(!$sequenceNo) {
-    return "000001";
-  }
-  return $sequenceNo;
+  $sequence = TbtPrePlanning::count() + 1;
+  return str_pad($sequence, 6, '0', STR_PAD_LEFT);
  }
 }

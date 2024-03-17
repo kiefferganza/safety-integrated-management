@@ -60,7 +60,7 @@ const RegisterEmployeePortal = ({
     open,
     onClose,
     isEdit = false,
-    projectDetails = [],
+    projectDetails = {},
     sequenceNo,
     //
     currentRegistered = null,
@@ -74,11 +74,9 @@ const RegisterEmployeePortal = ({
     const scrollbarRef = useRef(null);
     const { load, stop } = useSwal();
 
-    const [trainerVal, setTrainerVal] = useState("");
     const [witnessVal, setWitnessVal] = useState("");
     const [autoCompleteErr, setAutoCompleteErr] = useState({
         employee: null,
-        trainer: null,
         witness: null,
     });
     const [autoCompleteVal, setAutoCompleteVal] = useState({
@@ -112,7 +110,6 @@ const RegisterEmployeePortal = ({
                         "Please select a valid employee."
                     ),
                     position: Yup.string(),
-                    trainer: Yup.string().required("Please add trainer"),
                     witness: Yup.string().required("Please add witness"),
                 })
             ),
@@ -203,16 +200,6 @@ const RegisterEmployeePortal = ({
         }
     };
 
-    const handleTrainerChange = (e) => {
-        setTrainerVal(e.target.value);
-        if (autoCompleteErr.trainer) {
-            setAutoCompleteErr((c) => ({
-                ...c,
-                trainer: null,
-            }));
-        }
-    };
-
     const handleWitnessChange = (e) => {
         setWitnessVal(e.target.value);
         if (autoCompleteErr.witness) {
@@ -226,11 +213,9 @@ const RegisterEmployeePortal = ({
     const handleClose = () => {
         onClose();
         reset();
-        setTrainerVal("");
         setWitnessVal("");
         setAutoCompleteErr({
             employee: null,
-            trainer: null,
             witness: null,
         });
         setAutoCompleteVal({
@@ -244,17 +229,12 @@ const RegisterEmployeePortal = ({
 
     const handleAdd = () => {
         const errorMessages = {
-            trainer: null,
             witness: null,
             employee: null,
         };
         let hasError = false;
         if (!witnessVal) {
             errorMessages.witness = "Please add a witness";
-            hasError = true;
-        }
-        if (!trainerVal) {
-            errorMessages.trainer = "Please add a trainer";
             hasError = true;
         }
         if (!autoCompleteVal.emp_id) {
@@ -276,7 +256,6 @@ const RegisterEmployeePortal = ({
                 position: autoCompleteVal.position,
                 fullname: autoCompleteVal.fullname,
                 img: autoCompleteVal.img,
-                trainer: trainerVal,
                 witness: witnessVal,
             });
         }
@@ -285,7 +264,6 @@ const RegisterEmployeePortal = ({
     const onSubmit = (data) => {
         const employees = data.employees.map((emp) => ({
             emp_id: emp.emp_id,
-            trainer: emp.trainer,
             witness: emp.witness,
         }));
         Inertia.post(
@@ -317,7 +295,6 @@ const RegisterEmployeePortal = ({
         if (isEdit && currentRegistered) {
             const employees = data.employees.map((emp) => ({
                 emp_id: emp.emp_id,
-                trainer: emp.trainer,
                 witness: emp.witness,
             }));
             Inertia.post(
@@ -371,7 +348,6 @@ const RegisterEmployeePortal = ({
                         border: "none",
                         minHeight: 600,
                         maxHeight: 600,
-                        mt: !!errors.date?.message ? 2.5 : 0,
                     }}
                 >
                     <Stack spacing={2}>
@@ -520,8 +496,8 @@ const RegisterEmployeePortal = ({
                                                 label="Sequence No."
                                                 value={
                                                     isEdit &&
-                                                    currentRegistered?.sequenceNo
-                                                        ? currentRegistered.sequenceNo
+                                                    currentRegistered?.sequence_no
+                                                        ? currentRegistered.sequence_no
                                                         : sequenceNo
                                                 }
                                             />
@@ -614,7 +590,7 @@ const RegisterEmployeePortal = ({
                                         spacing={1.5}
                                         sx={{ width: 1 }}
                                     >
-                                        <Stack width={1} sx={{ flex: 0.5 }}>
+                                        <Stack width={1} sx={{ flex: 0.6 }}>
                                             <Autocomplete
                                                 id="virtualize-employee-list"
                                                 value={autoCompleteVal}
@@ -698,29 +674,7 @@ const RegisterEmployeePortal = ({
                                             )}
                                         </Stack>
 
-                                        <Stack sx={{ flex: 0.25 }}>
-                                            <TextField
-                                                size="small"
-                                                name="trainer"
-                                                label="Trainer"
-                                                value={trainerVal}
-                                                onChange={handleTrainerChange}
-                                                fullWidth
-                                                error={
-                                                    !!autoCompleteErr.trainer
-                                                }
-                                            />
-                                            {!!autoCompleteErr.trainer && (
-                                                <FormHelperText
-                                                    error
-                                                    sx={{ paddingLeft: 1.5 }}
-                                                >
-                                                    {autoCompleteErr.trainer}
-                                                </FormHelperText>
-                                            )}
-                                        </Stack>
-
-                                        <Stack sx={{ flex: 0.25 }}>
+                                        <Stack sx={{ flex: 0.4 }}>
                                             <TextField
                                                 size="small"
                                                 name="witness"

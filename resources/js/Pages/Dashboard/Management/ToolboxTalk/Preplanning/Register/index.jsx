@@ -93,7 +93,7 @@ const index = ({ auth: { user } }) => {
                         isLoading={isLoading}
                         employees={data?.employees ?? []}
                         preplanning={data?.preplanning ?? []}
-                        projectDetails={data?.projectDetails ?? []}
+                        projectDetails={data?.projectDetails ?? {}}
                         sequenceNo={data?.sequenceNo ?? "000001"}
                         user={user}
                         table={table}

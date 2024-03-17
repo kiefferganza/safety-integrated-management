@@ -1,4 +1,5 @@
 import { useRenderPDF } from "@/hooks/useRenderPDF";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import Iconify from "@/Components/iconify";
 // MUI
 import Box from "@mui/material/Box";
@@ -8,6 +9,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
 
 export default function ({ dataPDF, open, onClose }) {
     const { url, loading, error } = useRenderPDF(
@@ -18,7 +20,7 @@ export default function ({ dataPDF, open, onClose }) {
         },
         [dataPDF]
     );
-    const src = url ? `${url}#toolbar=1` : null;
+    const src = url ? `${url}#toolbar=0&zoom=150` : null;
 
     if (error) {
         console.log({ error });
@@ -29,6 +31,7 @@ export default function ({ dataPDF, open, onClose }) {
             </div>
         );
     }
+
     return (
         <Dialog fullScreen open={open}>
             <Box
@@ -45,11 +48,43 @@ export default function ({ dataPDF, open, onClose }) {
                         boxShadow: (theme) => theme.customShadows.z8,
                     }}
                 >
-                    <Tooltip title="Close">
-                        <IconButton color="inherit" onClick={onClose}>
-                            <Iconify icon="eva:close-fill" />
-                        </IconButton>
-                    </Tooltip>
+                    <Stack direction="row" gap={1.5}>
+                        {loading && !src ? (
+                            <Box
+                                p={1}
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                            >
+                                <CircularProgress size={18} color="inherit" />
+                            </Box>
+                        ) : (
+                            <PDFDownloadLink
+                                document={
+                                    <iframe
+                                        src={src}
+                                        style={{
+                                            height: "100%",
+                                            width: "100%",
+                                        }}
+                                    />
+                                }
+                                fileName={"Toolbox Talk Tracker"}
+                                style={{ color: "inherit" }}
+                            >
+                                <Tooltip title="Download PDF">
+                                    <IconButton color="inherit">
+                                        <Iconify icon="eva:download-fill" />
+                                    </IconButton>
+                                </Tooltip>
+                            </PDFDownloadLink>
+                        )}
+                        <Tooltip title="Close">
+                            <IconButton color="inherit" onClick={onClose}>
+                                <Iconify icon="eva:close-fill" />
+                            </IconButton>
+                        </Tooltip>
+                    </Stack>
                 </DialogActions>
 
                 <Box sx={{ flexGrow: 1, height: "100%", overflow: "hidden" }}>
