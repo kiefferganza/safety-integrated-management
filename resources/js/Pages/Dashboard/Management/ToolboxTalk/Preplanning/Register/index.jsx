@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
 import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
@@ -69,19 +69,11 @@ const index = ({ auth: { user } }) => {
         setOpenPDF(false);
     };
 
-    // const PDFData = useMemo(() => {
-    //     const data = (
-    //         table.selected.length > 0
-    //             ? dataFiltered.filter((d) => table.selected.includes(d.id))
-    //             : dataFiltered
-    //     ).map((d) => d.assigned);
-    //     return data.flat();
-    // }, [dataFiltered, table.selected]);
     const PDFData =
         table.selected.length > 0
             ? dataFiltered.filter((d) => table.selected.includes(d.id))
             : dataFiltered;
-    console.log({ PDFData, data });
+
     return (
         <>
             <Head>
