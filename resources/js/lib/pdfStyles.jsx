@@ -1,38 +1,5 @@
 import { StyleSheet, Font } from "@react-pdf/renderer";
 
-Font.register({
-    family: "Open Sans",
-    src: "http://fonts.gstatic.com/s/opensans/v13/IgZJs4-7SA1XX_edsoXWog.ttf",
-    fontStyle: "normal",
-    fonts: [
-        {
-            src: "http://fonts.gstatic.com/s/opensans/v13/DXI1ORHCpsQm3Vp6mXoaTS3USBnSvpkopQaUR-2r7iU.ttf",
-            fontWeight: 300,
-        },
-        {
-            src: "http://fonts.gstatic.com/s/opensans/v13/PRmiXeptR36kaC0GEAetxi9-WlPSxbfiI49GsXo3q0g.ttf",
-            fontStyle: "italic",
-            fontWeight: 400,
-        },
-        {
-            src: "http://fonts.gstatic.com/s/opensans/v13/IgZJs4-7SA1XX_edsoXWog.ttf",
-            fontWeight: 400,
-        },
-        {
-            src: "http://fonts.gstatic.com/s/opensans/v13/MTP_ySUJH_bn48VBG8sNSi3USBnSvpkopQaUR-2r7iU.ttf",
-            fontWeight: 600,
-        },
-        {
-            src: "http://fonts.gstatic.com/s/opensans/v13/k3k702ZOKiLJc3WVjuplzC3USBnSvpkopQaUR-2r7iU.ttf",
-            fontWeight: 700,
-        },
-        {
-            src: "http://fonts.gstatic.com/s/opensans/v13/EInbV5DfGHOiMmvb1Xr-hi3USBnSvpkopQaUR-2r7iU.ttf",
-            fontWeight: 900,
-        },
-    ],
-});
-
 const spacing = {
     m8: { marginLeft: 8, marginRight: 8, marginTop: 8, marginBottom: 8 },
     m16: { marginLeft: 16, marginRight: 16, marginTop: 16, marginBottom: 16 },
@@ -133,6 +100,31 @@ const colorStyles = {
     bgOffPrimary: { backgroundColor: colors.offPrimary, color: "#0a0a0a" },
 };
 
+Font.register({
+    family: "Open Sans",
+    src: "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-300-normal.ttf",
+    fontWeight: 400,
+    fonts: [
+        {
+            src: "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-300-italic.ttf",
+            fontWeight: 400,
+            fontStyle: "italic",
+        },
+        {
+            src: "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-500-normal.ttf",
+            fontWeight: 500,
+        },
+        {
+            src: "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-600-normal.ttf",
+            fontWeight: 600,
+        },
+        {
+            src: "https://cdn.jsdelivr.net/fontsource/fonts/open-sans@latest/latin-700-normal.ttf",
+            fontWeight: 700,
+        },
+    ],
+});
+
 const styles = StyleSheet.create({
     ...spacing,
     ...colorStyles,
@@ -141,7 +133,7 @@ const styles = StyleSheet.create({
         fontSize: 9,
         lineHeight: 1.4,
         fontFamily: "Open Sans",
-        fontWeight: 500,
+        fontWeight: 400,
         backgroundColor: "#fff",
         color: "#0a0a0a",
     },
@@ -254,7 +246,9 @@ const styles = StyleSheet.create({
         paddingLeft: 4,
         fontSize: 6.5,
         lineHeight: 1,
+        fontWeight: 500,
         color: "#000000",
+        fontFamily: "Open Sans",
     },
     labelOutline: {
         border: "1px solid inherit",

@@ -14,7 +14,7 @@ export const renderPDF = async (props) => {
                 "@/sections/@dashboard/inspection/inspectors/PDF/PDF"
             );
             break;
-        case "daily_tbt_view":
+        case "tbt_tracker":
             PDF_IMPORT = await import(
                 "@/Pages/Dashboard/Management/ToolboxTalk/Preplanning/PDF/PDF"
             );

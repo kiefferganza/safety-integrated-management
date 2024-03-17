@@ -105,6 +105,7 @@ export function PDF({ data = [], logo }) {
                         style={{
                             fontSize: 8,
                             fontWeight: 600,
+                            fontFamily: "Open Sans",
                         }}
                     >
                         {dateFormattedString}
@@ -120,7 +121,7 @@ export function PDF({ data = [], logo }) {
                     const isCutOff = maxItem && nextId === row.id;
                     const cut = total[idx - 1] && summary[idx - 1];
                     return (
-                        <View key={row.ass_id} break={cut}>
+                        <View key={idx} break={cut}>
                             <View wrap={false}>
                                 <View style={styles.tableBody}>
                                     <View style={styles.tableRow}>

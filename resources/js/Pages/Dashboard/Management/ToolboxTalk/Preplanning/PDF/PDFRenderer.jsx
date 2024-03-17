@@ -14,13 +14,13 @@ import Stack from "@mui/material/Stack";
 export default function ({ dataPDF, open, onClose }) {
     const { url, loading, error } = useRenderPDF(
         {
-            pdf_type: "daily_tbt_view",
+            pdf_type: "tbt_tracker",
             data: dataPDF,
             logo: route("image", { path: "media/logo/Fiafi-logo.png" }),
         },
         [dataPDF]
     );
-    const src = url ? `${url}#toolbar=0&zoom=150` : null;
+    const src = url ? `${url}#toolbar=1&zoom=150` : null;
 
     if (error) {
         console.log({ error });
