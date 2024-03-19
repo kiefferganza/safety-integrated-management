@@ -22,8 +22,6 @@ return new class extends Migration
             $table->string("discipline");
             $table->string("document_type");
             $table->string("sequence_no");
-            $table->string("location");
-            $table->string("exact_location");
             $table->date("date_issued");
             $table->timestamps();
 

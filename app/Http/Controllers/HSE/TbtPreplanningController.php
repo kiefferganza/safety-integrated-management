@@ -20,14 +20,12 @@ class TbtPreplanningController extends Controller
     public function assignEmployee(Request $request)
     {
         $request->validate([
-            "location" => ["required", "string"],
             "employees" => ["required", "array", "min:1"],
             "dateIssued" => ["required", "date", "date_format:Y-m-d"],
             "project_code" => ["required", "string"],
             "document_type" => ["required", "string"],
             "discipline" => ["required", "string"],
-            "originator" => ["required", "string"],
-            "exact_location" => ["required", "string"],
+            "originator" => ["required", "string"]
         ]);
 
         $user = auth()->user();
@@ -36,9 +34,7 @@ class TbtPreplanningController extends Controller
         $preplanning->document_type = $request->document_type;
         $preplanning->discipline = $request->discipline;
         $preplanning->originator = $request->originator;
-        $preplanning->exact_location = $request->exact_location;
         $preplanning->created_by = $user->user_id;
-        $preplanning->location = $request->location;
         $preplanning->date_issued = $request->dateIssued;
 
         if ($preplanning->save())
@@ -59,22 +55,18 @@ class TbtPreplanningController extends Controller
 
     public function editAssignedEmployee(Request $request, TbtPrePlanning $tbtPrePlanning) {
         $request->validate([
-            "location" => ["required", "string"],
             "employees" => ["required", "array", "min:1"],
             "dateIssued" => ["required", "date", "date_format:Y-m-d"],
             "project_code" => ["required", "string"],
             "document_type" => ["required", "string"],
             "discipline" => ["required", "string"],
             "originator" => ["required", "string"],
-            "exact_location" => ["required", "string"],
         ]);
         $tbtPrePlanning->date_issued = $request->dateIssued;
-        $tbtPrePlanning->location = $request->location;
         $tbtPrePlanning->project_code = $request->project_code;
         $tbtPrePlanning->document_type = $request->document_type;
         $tbtPrePlanning->discipline = $request->discipline;
         $tbtPrePlanning->originator = $request->originator;
-        $tbtPrePlanning->exact_location = $request->exact_location;
 
         if($tbtPrePlanning->isDirty()) {
             $tbtPrePlanning->save();

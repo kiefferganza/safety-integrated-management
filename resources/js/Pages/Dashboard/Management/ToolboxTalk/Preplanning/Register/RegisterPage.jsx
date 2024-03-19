@@ -46,10 +46,9 @@ const TABLE_HEAD = [
     { id: "form_number", label: "CMS Number", align: "left" },
     { id: "fullname", label: "Originator", align: "left" },
     { id: "position", label: "Position", align: "left" },
-    { id: "location", label: "Location", align: "left" },
     { id: "date_issued", label: "Date" },
     { id: "status", label: "Status", align: "left" },
-    { id: "employees", label: "Total Attnd.", align: "left" },
+    { id: "employees", label: "Created", align: "left" },
     { id: "" },
 ];
 
@@ -124,14 +123,14 @@ export default function RegisterPage({
             count: dataFiltered.length,
         },
         {
-            value: "submitted",
-            label: "Submitted",
+            value: "completed",
+            label: "Completed",
             color: "success",
             count: getLengthByStatus(true),
         },
         {
-            value: "not-submitted",
-            label: "Not Submitted",
+            value: "pending",
+            label: "Pending",
             color: "warning",
             count: getLengthByStatus(false),
         },

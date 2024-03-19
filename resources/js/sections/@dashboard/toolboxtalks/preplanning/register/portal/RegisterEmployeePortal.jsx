@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { ListboxComponent } from "@/Components/auto-complete";
 import Iconify from "@/Components/iconify";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Autocomplete, { autocompleteClasses } from "@mui/material/Autocomplete";
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -25,6 +24,10 @@ import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/material/styles";
 import { DatePicker } from "@mui/x-date-pickers";
 import PropTypes from "prop-types";
@@ -39,7 +42,7 @@ import Avatar from "@mui/material/Avatar";
 import { addDays, format } from "date-fns";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePage } from "@inertiajs/inertia-react";
-import { RHFMuiSelect, RHFTextField } from "@/Components/hook-form";
+import { RHFMuiSelect } from "@/Components/hook-form";
 import FormProvider from "@/Components/hook-form/FormProvider";
 
 const StyledPopper = styled(Popper)({
@@ -54,6 +57,14 @@ const StyledPopper = styled(Popper)({
 });
 
 const TOMORROW = addDays(new Date(), 1);
+
+const TYPES = {
+    1: "Civil",
+    2: "Electrical",
+    3: "Mechanical",
+    4: "Workshop",
+    5: "Office",
+};
 
 const RegisterEmployeePortal = ({
     title = "Assign Employee's",
@@ -74,10 +85,14 @@ const RegisterEmployeePortal = ({
     const scrollbarRef = useRef(null);
     const { load, stop } = useSwal();
 
-    const [witnessVal, setWitnessVal] = useState("");
+    const [exactLocationVal, setExactLocationVal] = useState("");
+    const [locationVal, setLocationVal] = useState("");
+    const [tbtTypeVal, setTbtTypeVal] = useState("");
     const [autoCompleteErr, setAutoCompleteErr] = useState({
         employee: null,
-        witness: null,
+        location: null,
+        tbtTypeVal: null,
+        exactLocation: null,
     });
     const [autoCompleteVal, setAutoCompleteVal] = useState({
         fullname: "",
@@ -88,8 +103,6 @@ const RegisterEmployeePortal = ({
     const [autoCompleteInputVal, setAutoCompleteInputVal] = useState("");
 
     const RegisterEmployeeSchema = Yup.object().shape({
-        location: Yup.string().required("Please add a location."),
-        exact_location: Yup.string().required("Please add exact location."),
         originator: Yup.string().required("Please add originator."),
         project_code: Yup.string().required("Please add project_code."),
         discipline: Yup.string().required("Please add discipline."),
@@ -110,7 +123,11 @@ const RegisterEmployeePortal = ({
                         "Please select a valid employee."
                     ),
                     position: Yup.string(),
-                    witness: Yup.string().required("Please add witness"),
+                    location: Yup.string(),
+                    tbt_type: Yup.mixed().oneOf(
+                        ["2", "3", "4", "5"],
+                        "Please select tbt_type"
+                    ),
                 })
             ),
     });
@@ -120,8 +137,6 @@ const RegisterEmployeePortal = ({
         dateIssued: currentRegistered?.date_issued
             ? new Date(currentRegistered.date_issued)
             : TOMORROW,
-        location: currentRegistered?.location ?? "",
-        exact_location: currentRegistered?.exact_location ?? "",
         originator: currentRegistered?.originator ?? "",
         project_code: currentRegistered?.project_code ?? "",
         discipline: currentRegistered?.discipline ?? "",
@@ -200,23 +215,42 @@ const RegisterEmployeePortal = ({
         }
     };
 
-    const handleWitnessChange = (e) => {
-        setWitnessVal(e.target.value);
-        if (autoCompleteErr.witness) {
-            setAutoCompleteErr((c) => ({
-                ...c,
-                witness: null,
-            }));
+    const handleTbtTypeChange = (e) => {
+        const value = e.target.value;
+        if (value) {
+            setTbtTypeVal(value);
+            if (autoCompleteErr.tbtType) {
+                setAutoCompleteErr((c) => ({
+                    ...c,
+                    tbtType: null,
+                }));
+            }
+        }
+    };
+
+    const handleLocationChange = (e) => {
+        const value = e.target.value;
+        if (value) {
+            setLocationVal(value);
+            if (autoCompleteErr.location) {
+                setAutoCompleteErr((c) => ({
+                    ...c,
+                    location: null,
+                }));
+            }
         }
     };
 
     const handleClose = () => {
         onClose();
-        reset();
-        setWitnessVal("");
+        setLocationVal("");
+        setTbtTypeVal("");
+        setExactLocationVal("");
         setAutoCompleteErr({
+            tbtType: null,
             employee: null,
-            witness: null,
+            location: null,
+            exactLocation: null,
         });
         setAutoCompleteVal({
             fullname: "",
@@ -225,46 +259,66 @@ const RegisterEmployeePortal = ({
             img: "",
         });
         setAutoCompleteInputVal("");
+        reset();
     };
 
     const handleAdd = () => {
         const errorMessages = {
-            witness: null,
+            tbtType: null,
             employee: null,
+            location: null,
+            exactLocation: null,
         };
         let hasError = false;
-        if (!witnessVal) {
-            errorMessages.witness = "Please add a witness";
+        if (!tbtTypeVal) {
+            errorMessages.tbtType = "Please add a tbt type";
             hasError = true;
         }
         if (!autoCompleteVal.emp_id) {
             errorMessages.employee = "Please add an employee";
             hasError = true;
         }
+        if (!locationVal) {
+            errorMessages.location = "Please add a location";
+            hasError = true;
+        }
+
+        if (!exactLocationVal) {
+            errorMessages.exactLocation = "Please add an exact location";
+            hasError = true;
+        }
+
         if (hasError) {
             setAutoCompleteErr(errorMessages);
         } else {
+            append({
+                emp_id: autoCompleteVal.emp_id,
+                position: autoCompleteVal.position,
+                fullname: autoCompleteVal.fullname,
+                img: autoCompleteVal.img,
+                location: locationVal,
+                tbt_type: tbtTypeVal,
+                exact_location: exactLocationVal,
+            });
             setAutoCompleteVal({
                 emp_id: "",
                 position: "",
                 fullname: "",
                 img: "",
             });
+            setLocationVal("");
+            setTbtTypeVal("");
+            setExactLocationVal("");
             setAutoCompleteInputVal("");
-            append({
-                emp_id: autoCompleteVal.emp_id,
-                position: autoCompleteVal.position,
-                fullname: autoCompleteVal.fullname,
-                img: autoCompleteVal.img,
-                witness: witnessVal,
-            });
         }
     };
 
     const onSubmit = (data) => {
         const employees = data.employees.map((emp) => ({
             emp_id: emp.emp_id,
-            witness: emp.witness,
+            location: emp.location,
+            tbt_type: emp.tbt_type,
+            exact_location: emp.exact_location,
         }));
         Inertia.post(
             route("toolboxtalk.management.preplanning.assignEmployee"),
@@ -295,7 +349,9 @@ const RegisterEmployeePortal = ({
         if (isEdit && currentRegistered) {
             const employees = data.employees.map((emp) => ({
                 emp_id: emp.emp_id,
-                witness: emp.witness,
+                location: emp.location,
+                tbt_type: emp.tbt_type,
+                exact_location: emp.exact_location,
             }));
             Inertia.post(
                 route(
@@ -501,86 +557,49 @@ const RegisterEmployeePortal = ({
                                                         : sequenceNo
                                                 }
                                             />
-                                            <Box width={1} />
-                                        </Stack>
-                                    </Stack>
-                                </Stack>
-
-                                <Stack mb={1.5} spacing={1.5}>
-                                    <Stack
-                                        direction={{ xs: "column", md: "row" }}
-                                        spacing={1.5}
-                                        sx={{ width: 1 }}
-                                    >
-                                        <RHFMuiSelect
-                                            size="small"
-                                            label="Location"
-                                            name="location"
-                                            fullWidth
-                                            options={
-                                                projectDetails["Location"]
-                                                    ? [
-                                                          {
-                                                              label: "",
-                                                              value: "",
-                                                          },
-                                                          ...projectDetails[
-                                                              "Location"
-                                                          ].map((d) => ({
-                                                              label:
-                                                                  d.value +
-                                                                  (d.name
-                                                                      ? ` (${d.name})`
-                                                                      : ""),
-                                                              value: d.value,
-                                                          })),
-                                                      ]
-                                                    : []
-                                            }
-                                        />
-
-                                        <RHFTextField
-                                            size="small"
-                                            name="exact_location"
-                                            label="Exact Location"
-                                            fullWidth
-                                        />
-
-                                        <Stack width={1}>
-                                            <DatePicker
-                                                label="TBT Date"
-                                                value={date}
-                                                onChange={(val) =>
-                                                    setValue("dateIssued", val)
-                                                }
-                                                minDate={
-                                                    isEdit &&
-                                                    currentRegistered?.date_issued
-                                                        ? new Date(
-                                                              currentRegistered.date_issued
-                                                          )
-                                                        : TOMORROW
-                                                }
-                                                inputFormat="M/d/yyyy"
-                                                disableMaskedInput
-                                                renderInput={(params) => (
-                                                    <TextField
-                                                        {...params}
-                                                        size="small"
-                                                        fullWidth
-                                                    />
+                                            <Stack width={1}>
+                                                <DatePicker
+                                                    label="TBT Date"
+                                                    value={date}
+                                                    onChange={(val) =>
+                                                        setValue(
+                                                            "dateIssued",
+                                                            val
+                                                        )
+                                                    }
+                                                    minDate={
+                                                        isEdit &&
+                                                        currentRegistered?.date_issued
+                                                            ? new Date(
+                                                                  currentRegistered.date_issued
+                                                              )
+                                                            : TOMORROW
+                                                    }
+                                                    inputFormat="M/d/yyyy"
+                                                    disableMaskedInput
+                                                    renderInput={(params) => (
+                                                        <TextField
+                                                            {...params}
+                                                            size="small"
+                                                            fullWidth
+                                                        />
+                                                    )}
+                                                />
+                                                {!!errors.dateIssued
+                                                    ?.message && (
+                                                    <FormHelperText
+                                                        error
+                                                        sx={{
+                                                            paddingLeft: 1.5,
+                                                        }}
+                                                    >
+                                                        {
+                                                            errors.dateIssued
+                                                                .message
+                                                        }
+                                                    </FormHelperText>
                                                 )}
-                                            />
-                                            {!!errors.dateIssued?.message && (
-                                                <FormHelperText
-                                                    error
-                                                    sx={{
-                                                        paddingLeft: 1.5,
-                                                    }}
-                                                >
-                                                    {errors.dateIssued.message}
-                                                </FormHelperText>
-                                            )}
+                                            </Stack>
                                         </Stack>
                                     </Stack>
                                 </Stack>
@@ -590,7 +609,7 @@ const RegisterEmployeePortal = ({
                                         spacing={1.5}
                                         sx={{ width: 1 }}
                                     >
-                                        <Stack width={1} sx={{ flex: 0.6 }}>
+                                        <Stack width={1}>
                                             <Autocomplete
                                                 id="virtualize-employee-list"
                                                 value={autoCompleteVal}
@@ -673,34 +692,205 @@ const RegisterEmployeePortal = ({
                                                 </FormHelperText>
                                             )}
                                         </Stack>
-
-                                        <Stack sx={{ flex: 0.4 }}>
-                                            <TextField
-                                                size="small"
-                                                name="witness"
-                                                label="Witness"
-                                                value={witnessVal}
-                                                onChange={handleWitnessChange}
-                                                fullWidth
+                                    </Stack>
+                                    <Stack
+                                        direction={{ xs: "column", md: "row" }}
+                                        spacing={1.5}
+                                        sx={{ width: 1 }}
+                                    >
+                                        <Stack sx={{ width: 1 }}>
+                                            <FormControl
                                                 error={
-                                                    !!autoCompleteErr.witness
+                                                    !!autoCompleteErr.location
                                                 }
-                                            />
-                                            {!!autoCompleteErr.witness && (
+                                                size="small"
+                                            >
+                                                <InputLabel
+                                                    id={"select-location"}
+                                                >
+                                                    Location
+                                                </InputLabel>
+                                                <Select
+                                                    labelId={"select-location"}
+                                                    id={"select-location"}
+                                                    value={locationVal}
+                                                    label="Location"
+                                                    onChange={
+                                                        handleLocationChange
+                                                    }
+                                                    size="small"
+                                                >
+                                                    {(projectDetails["Location"]
+                                                        ? [
+                                                              {
+                                                                  label: "",
+                                                                  value: "",
+                                                              },
+                                                              ...projectDetails[
+                                                                  "Location"
+                                                              ].map((d) => ({
+                                                                  label:
+                                                                      d.value +
+                                                                      (d.name
+                                                                          ? ` (${d.name})`
+                                                                          : ""),
+                                                                  value: d.value,
+                                                              })),
+                                                          ]
+                                                        : []
+                                                    ).map((opt, idx) => (
+                                                        <MenuItem
+                                                            disabled={
+                                                                !!opt?.disabled
+                                                            }
+                                                            sx={{
+                                                                height: 36,
+                                                            }}
+                                                            key={idx}
+                                                            value={
+                                                                opt.value || ""
+                                                            }
+                                                        >
+                                                            {opt?.label || ""}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                            {!!autoCompleteErr.location && (
                                                 <FormHelperText
                                                     error
                                                     sx={{ paddingLeft: 1.5 }}
                                                 >
-                                                    {autoCompleteErr.witness}
+                                                    {autoCompleteErr.location}
                                                 </FormHelperText>
                                             )}
                                         </Stack>
+
+                                        <Stack sx={{ width: 1 }}>
+                                            <TextField
+                                                size="small"
+                                                label="Exact Location"
+                                                value={exactLocationVal}
+                                                onChange={(e) => {
+                                                    setExactLocationVal(
+                                                        e.target.value
+                                                    );
+                                                    if (
+                                                        autoCompleteErr.exactLocation
+                                                    ) {
+                                                        setAutoCompleteErr(
+                                                            (c) => ({
+                                                                ...c,
+                                                                exactLocation:
+                                                                    null,
+                                                            })
+                                                        );
+                                                    }
+                                                }}
+                                                error={
+                                                    !!autoCompleteErr.exactLocation
+                                                }
+                                                fullWidth
+                                            />
+                                            {!!autoCompleteErr.exactLocation && (
+                                                <FormHelperText
+                                                    error
+                                                    sx={{ paddingLeft: 1.5 }}
+                                                >
+                                                    {
+                                                        autoCompleteErr.exactLocation
+                                                    }
+                                                </FormHelperText>
+                                            )}
+                                        </Stack>
+
+                                        <Stack sx={{ width: 1 }}>
+                                            <FormControl
+                                                error={
+                                                    !!autoCompleteErr.tbtType
+                                                }
+                                                size="small"
+                                            >
+                                                <InputLabel
+                                                    id={"select-tbt-type"}
+                                                >
+                                                    TBT Type
+                                                </InputLabel>
+                                                <Select
+                                                    labelId={"select-tbt-type"}
+                                                    id={"select-tbt-type"}
+                                                    value={tbtTypeVal}
+                                                    label="TBT Type"
+                                                    onChange={
+                                                        handleTbtTypeChange
+                                                    }
+                                                    size="small"
+                                                >
+                                                    <MenuItem
+                                                        sx={{
+                                                            height: 36,
+                                                        }}
+                                                        value="1"
+                                                    >
+                                                        {TYPES["1"]}
+                                                    </MenuItem>
+                                                    <MenuItem
+                                                        sx={{
+                                                            height: 36,
+                                                        }}
+                                                        value="2"
+                                                    >
+                                                        {TYPES["2"]}
+                                                    </MenuItem>
+                                                    <MenuItem
+                                                        sx={{
+                                                            height: 36,
+                                                        }}
+                                                        value="3"
+                                                    >
+                                                        {TYPES["3"]}
+                                                    </MenuItem>
+                                                    <MenuItem
+                                                        sx={{
+                                                            height: 36,
+                                                        }}
+                                                        value="4"
+                                                    >
+                                                        {TYPES["4"]}
+                                                    </MenuItem>
+                                                    <MenuItem
+                                                        sx={{
+                                                            height: 36,
+                                                        }}
+                                                        value="5"
+                                                    >
+                                                        {TYPES["5"]}
+                                                    </MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                            {!!autoCompleteErr.tbtType && (
+                                                <FormHelperText
+                                                    error
+                                                    sx={{ paddingLeft: 1.5 }}
+                                                >
+                                                    {autoCompleteErr.tbtType}
+                                                </FormHelperText>
+                                            )}
+                                        </Stack>
+                                    </Stack>
+                                    <Stack
+                                        direction={{ xs: "column", md: "row" }}
+                                        spacing={1.5}
+                                        sx={{ width: 1 }}
+                                    >
                                         <Button
                                             color="success"
                                             sx={{
                                                 flexShrink: 0,
                                                 alignSelf: "flex-start",
                                             }}
+                                            variant="contained"
+                                            fullWidth
                                             onClick={handleAdd}
                                         >
                                             Add
@@ -726,8 +916,8 @@ const RegisterEmployeePortal = ({
                                             <TableCell>#</TableCell>
                                             <TableCell>Employee Name</TableCell>
                                             <TableCell>Position</TableCell>
-                                            <TableCell>Trainer</TableCell>
-                                            <TableCell>Witness</TableCell>
+                                            <TableCell>Location</TableCell>
+                                            <TableCell>TBT Type</TableCell>
                                             <TableCell></TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -777,10 +967,10 @@ const RegisterEmployeePortal = ({
                                                     {row.position}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {row.trainer}
+                                                    {row.location}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {row.witness}
+                                                    {TYPES[row.tbt_type]}
                                                 </TableCell>
                                                 <TableCell>
                                                     <Tooltip title="Remove">
@@ -851,4 +1041,4 @@ RegisterEmployeePortal.propTypes = {
     sequenceNo: PropTypes.string,
 };
 
-export default RegisterEmployeePortal;
+export default memo(RegisterEmployeePortal);

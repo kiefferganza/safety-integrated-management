@@ -141,7 +141,7 @@ function applyFilter({
     }
 
     if (filterStatus !== "all") {
-        const status = filterStatus === "submitted";
+        const status = filterStatus === "completed";
         inputData = inputData.filter((pre) => pre.status === status);
     }
 

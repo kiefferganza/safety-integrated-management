@@ -36,7 +36,7 @@ class ToolboxTalkController extends Controller
 
 		$projectDetails = DocumentProjectDetail::where("sub_id", $user->subscriber_id)->get()->groupBy("title");
 
-		return response()->json(compact("employees", "preplanning", "projectDetails", "sequenceNo"));
+		return response()->json(compact("preplanning", "employees", "projectDetails", "sequenceNo"));
 	}
 
 	

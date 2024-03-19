@@ -81,7 +81,7 @@ export function PreplanningRegisterToolbar({
                 fullWidth
                 value={filterName}
                 onChange={onFilterName}
-                placeholder="Search toolboxtalks"
+                placeholder="Search..."
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">

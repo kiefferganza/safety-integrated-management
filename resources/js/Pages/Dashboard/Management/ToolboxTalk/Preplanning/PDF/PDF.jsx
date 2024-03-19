@@ -10,6 +10,14 @@ const YEAR = TODAY.getFullYear();
 
 const MAX_ITEM = 25;
 
+const TYPES = {
+    1: "Civil",
+    2: "Electrical",
+    3: "Mechanical",
+    4: "Workshop",
+    5: "Office",
+};
+
 export function PDF({ data = [], logo }) {
     const { total, summary, dateTupple, pdfData } = useMemo(() => {
         const total = {};
@@ -286,8 +294,8 @@ export function PDF({ data = [], logo }) {
                                             style={[
                                                 styles.br,
                                                 {
-                                                    maxWidth: 65,
-                                                    minWidth: 65,
+                                                    maxWidth: 82,
+                                                    minWidth: 82,
                                                 },
                                             ]}
                                         >
@@ -323,8 +331,8 @@ export function PDF({ data = [], logo }) {
                                             style={[
                                                 styles.br,
                                                 {
-                                                    maxWidth: 63,
-                                                    minWidth: 63,
+                                                    maxWidth: 82,
+                                                    minWidth: 82,
                                                 },
                                             ]}
                                         >
@@ -397,8 +405,8 @@ export function PDF({ data = [], logo }) {
                                             style={[
                                                 styles.br,
                                                 {
-                                                    maxWidth: 84,
-                                                    minWidth: 84,
+                                                    maxWidth: 48,
+                                                    minWidth: 48,
                                                 },
                                             ]}
                                         >
@@ -412,7 +420,7 @@ export function PDF({ data = [], logo }) {
                                                     <Text
                                                         style={styles.semibold}
                                                     >
-                                                        Witness
+                                                        TBT Type
                                                     </Text>
                                                 </View>
                                             )}
@@ -423,9 +431,12 @@ export function PDF({ data = [], logo }) {
                                                 ]}
                                             >
                                                 <Text
-                                                    style={styles.tableCellText}
+                                                    style={[
+                                                        styles.tableCellText,
+                                                    ]}
                                                 >
-                                                    {row.witness}
+                                                    {TYPES?.[row.tbt_type] ??
+                                                        ""}
                                                 </Text>
                                             </View>
                                         </View>

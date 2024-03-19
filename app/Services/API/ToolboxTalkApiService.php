@@ -82,14 +82,17 @@ class ToolboxTalkApiService
       $ass->date_issued = $pre->date_issued;
 
       $ass->submittedTbt = ToolboxTalk::query()
+        ->select("tbt_id")
         ->where("tbl_toolbox_talks.is_deleted", 0)
         ->where("tbl_toolbox_talks.employee_id", $ass->emp_id)
-        ->whereDate("tbl_toolbox_talks.date_conducted", $pre->date_issued)
-        ->count();
+        ->where("tbl_toolbox_talks.location", $ass->location)
+        ->where("tbl_toolbox_talks.tbt_type", $ass->tbt_type)
+        ->whereDate("tbl_toolbox_talks.date_created", $pre->date_issued)
+        ->first();
 
-      $ass->status = $ass->submittedTbt > 0;
+      $ass->status = $ass->submittedTbt !== null;
 
-      if($ass->submittedTbt === 0 && $this->trackDailyStatus) {
+      if($ass->submittedTbt && $this->trackDailyStatus) {
         $this->trackDailyStatus = false;
       }
       return $ass;

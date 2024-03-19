@@ -19,6 +19,7 @@ const {
     TableBody,
     TableContainer,
     Paper,
+    Link,
 } = await import("@mui/material");
 // utils
 import { fDate } from "@/utils/formatTime";
@@ -26,8 +27,9 @@ import { fDate } from "@/utils/formatTime";
 import ConfirmDialog from "@/Components/confirm-dialog";
 import Iconify from "@/Components/iconify";
 import MenuPopover from "@/Components/menu-popover";
-import { isFuture, isPast, isSameDay } from "date-fns";
+import { isPast } from "date-fns";
 import Label from "@/Components/label";
+import { Link as InertiaLink } from "@inertiajs/inertia-react";
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +41,13 @@ PreplanningRegisterTableRow.propTypes = {
     onEdit: PropTypes.func,
 };
 
-const TODAY = new Date();
+const TYPES = {
+    1: "Civil",
+    2: "Electrical",
+    3: "Mechanical",
+    4: "Workshop",
+    5: "Office",
+};
 
 export function PreplanningRegisterTableRow({
     row,
@@ -105,14 +113,6 @@ export function PreplanningRegisterTableRow({
                     sx={{ whiteSpace: "nowrap" }}
                 >
                     {row.position}
-                </TableCell>
-
-                <TableCell
-                    onClick={handleTriggerCollapse}
-                    align="left"
-                    sx={{ whiteSpace: "nowrap" }}
-                >
-                    {row.location}
                 </TableCell>
 
                 <TableCell
@@ -194,7 +194,13 @@ export function PreplanningRegisterTableRow({
                                             <TableCell>#</TableCell>
                                             <TableCell>Name</TableCell>
                                             <TableCell>Position</TableCell>
-                                            <TableCell>Submitted TBT</TableCell>
+                                            <TableCell>Location</TableCell>
+                                            <TableCell>
+                                                Exact Location
+                                            </TableCell>
+                                            <TableCell>TBT Type</TableCell>
+                                            <TableCell>Submitted</TableCell>
+                                            <TableCell></TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -243,7 +249,66 @@ export function PreplanningRegisterTableRow({
                                                     </TableCell>
 
                                                     <TableCell>
-                                                        {subrow.submittedTbt}
+                                                        {subrow.location}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {subrow.exact_location}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {TYPES?.[
+                                                            subrow.tbt_type
+                                                        ] ?? ""}
+                                                    </TableCell>
+
+                                                    <TableCell align="center">
+                                                        {subrow.status ? (
+                                                            <Label color="success">
+                                                                Yes
+                                                            </Label>
+                                                        ) : (
+                                                            <Label color="error">
+                                                                No
+                                                            </Label>
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {subrow?.submittedTbt
+                                                            ?.tbt_id ? (
+                                                            <Link
+                                                                component={
+                                                                    InertiaLink
+                                                                }
+                                                                href={route(
+                                                                    "toolboxtalk.management.show",
+                                                                    subrow
+                                                                        .submittedTbt
+                                                                        .tbt_id
+                                                                )}
+                                                                variant="subtitle2"
+                                                                size="small"
+                                                                sx={{
+                                                                    display:
+                                                                        "flex",
+                                                                    alignItems:
+                                                                        "center",
+                                                                    justifyContent:
+                                                                        "center",
+                                                                }}
+                                                            >
+                                                                View
+                                                            </Link>
+                                                        ) : (
+                                                            <Button
+                                                                disabled
+                                                                variant="text"
+                                                                size="small"
+                                                                fullWidth
+                                                            >
+                                                                View
+                                                            </Button>
+                                                        )}
                                                     </TableCell>
                                                 </TableRow>
                                             )
