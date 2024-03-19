@@ -4,10 +4,8 @@ namespace App\Services\API;
 
 use App\Models\Employee;
 use App\Models\TbtPrePlanning;
-use App\Models\TbtPrePlanningAssigned;
 use App\Models\ToolboxTalk;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -74,6 +72,9 @@ class ToolboxTalkApiService
       $pre->img = $employee->img;
       $pre->position = $employee->position;
     }
+    // $date = Carbon::parse($pre->date_issued);
+    // $startDay = $date->startOfDay();
+    // $endDay = $date->endOfDay();
     $pre->assigned->transform(function($ass) use($employees, $pre) {
       $emp = $employees->find($ass->emp_id);
       $ass->fullname = $emp->fullname;
@@ -82,7 +83,7 @@ class ToolboxTalkApiService
       $ass->date_issued = $pre->date_issued;
 
       $ass->submittedTbt = ToolboxTalk::query()
-        ->select("tbt_id")
+        ->select("tbt_id", "date_created")
         ->where("tbl_toolbox_talks.is_deleted", 0)
         ->where("tbl_toolbox_talks.employee_id", $ass->emp_id)
         ->where("tbl_toolbox_talks.location", $ass->location)
@@ -92,7 +93,7 @@ class ToolboxTalkApiService
 
       $ass->status = $ass->submittedTbt !== null;
 
-      if($ass->submittedTbt && $this->trackDailyStatus) {
+      if(!$ass->submittedTbt && $this->trackDailyStatus) {
         $this->trackDailyStatus = false;
       }
       return $ass;
