@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { ListboxComponent } from "@/Components/auto-complete";
 import Iconify from "@/Components/iconify";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -88,8 +88,10 @@ const RegisterEmployeePortal = ({
     const [exactLocationVal, setExactLocationVal] = useState("");
     const [locationVal, setLocationVal] = useState("");
     const [tbtTypeVal, setTbtTypeVal] = useState("");
+    const [witnessVal, setWitnessVal] = useState("");
     const [autoCompleteErr, setAutoCompleteErr] = useState({
         employee: null,
+        witness: null,
         location: null,
         tbtTypeVal: null,
         exactLocation: null,
@@ -102,36 +104,6 @@ const RegisterEmployeePortal = ({
     });
     const [autoCompleteInputVal, setAutoCompleteInputVal] = useState("");
 
-    const RegisterEmployeeSchema = Yup.object().shape({
-        originator: Yup.string().required("Please add originator."),
-        project_code: Yup.string().required("Please add project_code."),
-        discipline: Yup.string().required("Please add discipline."),
-        document_type: Yup.string().required("Please add document type."),
-        dateIssued: Yup.date()
-            .min(
-                isEdit && currentRegistered?.date_issued
-                    ? new Date(currentRegistered.date_issued)
-                    : TOMORROW,
-                "Date is too early"
-            )
-            .required("Please enter a valid date"),
-        employees: Yup.array()
-            .min(1, "Add at least one employee")
-            .of(
-                Yup.object().shape({
-                    emp_id: Yup.string().required(
-                        "Please select a valid employee."
-                    ),
-                    position: Yup.string(),
-                    location: Yup.string(),
-                    tbt_type: Yup.mixed().oneOf(
-                        ["2", "3", "4", "5"],
-                        "Please select tbt_type"
-                    ),
-                })
-            ),
-    });
-
     const defaultValues = {
         employees: currentRegistered?.assigned ?? [],
         dateIssued: currentRegistered?.date_issued
@@ -143,8 +115,45 @@ const RegisterEmployeePortal = ({
         document_type: currentRegistered?.document_type ?? "",
     };
 
+    const schema = useMemo(
+        () =>
+            Yup.object().shape({
+                originator: Yup.string().required("Please add originator."),
+                project_code: Yup.string().required("Please add project_code."),
+                discipline: Yup.string().required("Please add discipline."),
+                document_type: Yup.string().required(
+                    "Please add document type."
+                ),
+                dateIssued: Yup.date()
+                    .min(
+                        isEdit && currentRegistered?.date_issued
+                            ? new Date(currentRegistered.date_issued)
+                            : TOMORROW,
+                        "Date is too early"
+                    )
+                    .required("Please enter a valid date"),
+                employees: Yup.array()
+                    .min(1, "Add at least one employee")
+                    .of(
+                        Yup.object().shape({
+                            emp_id: Yup.string().required(
+                                "Please select a valid employee."
+                            ),
+                            position: Yup.string(),
+                            witness: Yup.string(),
+                            location: Yup.string(),
+                            tbt_type: Yup.mixed().oneOf(
+                                ["1", "2", "3", "4", "5"],
+                                "Please select tbt_type"
+                            ),
+                        })
+                    ),
+            }),
+        [currentRegistered?.date_issued, isEdit]
+    );
+
     const methods = useForm({
-        resolver: yupResolver(RegisterEmployeeSchema),
+        resolver: yupResolver(schema),
         defaultValues,
     });
 
@@ -215,6 +224,20 @@ const RegisterEmployeePortal = ({
         }
     };
 
+    const handleWitnessChange = (e, val) => {
+        const valid = e?.type === "change" || e?.type === "click";
+        const value = val?.fullname ? val.fullname : val ?? "";
+        if (valid) {
+            setWitnessVal(value);
+            if (autoCompleteErr.witness) {
+                setAutoCompleteErr((c) => ({
+                    ...c,
+                    witness: null,
+                }));
+            }
+        }
+    };
+
     const handleTbtTypeChange = (e) => {
         const value = e.target.value;
         if (value) {
@@ -243,6 +266,7 @@ const RegisterEmployeePortal = ({
 
     const handleClose = () => {
         onClose();
+        setWitnessVal("");
         setLocationVal("");
         setTbtTypeVal("");
         setExactLocationVal("");
@@ -264,12 +288,21 @@ const RegisterEmployeePortal = ({
 
     const handleAdd = () => {
         const errorMessages = {
-            tbtType: null,
             employee: null,
+            witness: null,
+            tbtType: null,
             location: null,
             exactLocation: null,
         };
         let hasError = false;
+
+        if (
+            !witnessVal ||
+            !employeeList?.some((e) => e.fullname === witnessVal)
+        ) {
+            errorMessages.witness = "Please add a witness";
+        }
+
         if (!tbtTypeVal) {
             errorMessages.tbtType = "Please add a tbt type";
             hasError = true;
@@ -296,6 +329,7 @@ const RegisterEmployeePortal = ({
                 position: autoCompleteVal.position,
                 fullname: autoCompleteVal.fullname,
                 img: autoCompleteVal.img,
+                witness: witnessVal,
                 location: locationVal,
                 tbt_type: tbtTypeVal,
                 exact_location: exactLocationVal,
@@ -306,6 +340,7 @@ const RegisterEmployeePortal = ({
                 fullname: "",
                 img: "",
             });
+            setWitnessVal("");
             setLocationVal("");
             setTbtTypeVal("");
             setExactLocationVal("");
@@ -319,6 +354,7 @@ const RegisterEmployeePortal = ({
             location: emp.location,
             tbt_type: emp.tbt_type,
             exact_location: emp.exact_location,
+            witness: emp.witness,
         }));
         Inertia.post(
             route("toolboxtalk.management.preplanning.assignEmployee"),
@@ -352,6 +388,7 @@ const RegisterEmployeePortal = ({
                 location: emp.location,
                 tbt_type: emp.tbt_type,
                 exact_location: emp.exact_location,
+                witness: emp.witness,
             }));
             Inertia.post(
                 route(
@@ -637,7 +674,7 @@ const RegisterEmployeePortal = ({
                                                     ListboxComponent
                                                 }
                                                 getOptionLabel={(opt) =>
-                                                    opt.fullname
+                                                    opt.fullname ?? ""
                                                 }
                                                 isOptionEqualToValue={(
                                                     opt,
@@ -689,6 +726,60 @@ const RegisterEmployeePortal = ({
                                                     sx={{ paddingLeft: 1.5 }}
                                                 >
                                                     {autoCompleteErr.employee}
+                                                </FormHelperText>
+                                            )}
+                                        </Stack>
+                                        <Stack width={1}>
+                                            <Autocomplete
+                                                id="witness-list"
+                                                fullWidth
+                                                disableListWrap
+                                                value={witnessVal}
+                                                onChange={handleWitnessChange}
+                                                inputValue={witnessVal}
+                                                onInputChange={
+                                                    handleWitnessChange
+                                                }
+                                                options={employeeList}
+                                                renderOption={(
+                                                    props,
+                                                    option,
+                                                    state
+                                                ) => [
+                                                    props,
+                                                    option,
+                                                    state.index,
+                                                ]}
+                                                isOptionEqualToValue={(
+                                                    opt,
+                                                    val
+                                                ) => opt.fullname === val}
+                                                PopperComponent={StyledPopper}
+                                                ListboxComponent={
+                                                    ListboxComponent
+                                                }
+                                                getOptionLabel={(opt) =>
+                                                    opt?.fullname ?? ""
+                                                }
+                                                renderInput={(params) => {
+                                                    return (
+                                                        <TextField
+                                                            error={
+                                                                !!autoCompleteErr.witness
+                                                            }
+                                                            label="Choose witness"
+                                                            {...params}
+                                                            size="small"
+                                                        />
+                                                    );
+                                                }}
+                                            />
+                                            {!!autoCompleteErr.witness && (
+                                                <FormHelperText
+                                                    error
+                                                    sx={{ paddingLeft: 1.5 }}
+                                                >
+                                                    {autoCompleteErr.witness}
                                                 </FormHelperText>
                                             )}
                                         </Stack>
@@ -917,6 +1008,7 @@ const RegisterEmployeePortal = ({
                                             <TableCell>Employee Name</TableCell>
                                             <TableCell>Position</TableCell>
                                             <TableCell>Location</TableCell>
+                                            <TableCell>Witness</TableCell>
                                             <TableCell>TBT Type</TableCell>
                                             <TableCell></TableCell>
                                         </TableRow>
@@ -968,6 +1060,9 @@ const RegisterEmployeePortal = ({
                                                 </TableCell>
                                                 <TableCell>
                                                     {row.location}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {row.witness}
                                                 </TableCell>
                                                 <TableCell>
                                                     {TYPES[row.tbt_type]}

@@ -128,10 +128,10 @@ export function PreplanningRegisterTableRow({
                     align="left"
                     sx={{ whiteSpace: "nowrap" }}
                 >
-                    {isExpired ? (
-                        <Label color="error">Expired</Label>
-                    ) : row?.status ? (
+                    {row?.status ? (
                         <Label color="success">Completed</Label>
+                    ) : isExpired ? (
+                        <Label color="error">Expired</Label>
                     ) : (
                         <Label color="warning">Pending</Label>
                     )}
@@ -198,6 +198,7 @@ export function PreplanningRegisterTableRow({
                                             <TableCell>
                                                 Exact Location
                                             </TableCell>
+                                            <TableCell>Witness</TableCell>
                                             <TableCell>TBT Type</TableCell>
                                             <TableCell>Submitted</TableCell>
                                             <TableCell></TableCell>
@@ -254,6 +255,10 @@ export function PreplanningRegisterTableRow({
 
                                                     <TableCell>
                                                         {subrow.exact_location}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {subrow?.witness}
                                                     </TableCell>
 
                                                     <TableCell>

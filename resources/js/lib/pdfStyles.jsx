@@ -236,15 +236,15 @@ const styles = StyleSheet.create({
     tableCell: {
         borderBottom: "1px solid #0a0a0a",
         flexGrow: 0,
-        minHeight: 16,
-        fontSize: 6.5,
+        minHeight: 18,
+        fontSize: 6,
         lineHeight: 1,
     },
     tableCellText: {
         textOverflow: "ellipsis",
         paddingRight: 4,
         paddingLeft: 4,
-        fontSize: 6.5,
+        fontSize: 6,
         lineHeight: 1,
         fontWeight: 500,
         color: "#000000",

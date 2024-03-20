@@ -139,7 +139,7 @@ export function PDF({ data = [], logo }) {
                                                     style={[
                                                         styles.br,
                                                         {
-                                                            width: 96,
+                                                            width: 80,
                                                         },
                                                     ]}
                                                 >
@@ -171,8 +171,8 @@ export function PDF({ data = [], logo }) {
                                                     style={[
                                                         styles.br,
                                                         {
-                                                            maxWidth: 84,
-                                                            minWidth: 84,
+                                                            maxWidth: 80,
+                                                            minWidth: 80,
                                                         },
                                                     ]}
                                                 >
@@ -212,7 +212,7 @@ export function PDF({ data = [], logo }) {
                                                     style={[
                                                         styles.br,
                                                         {
-                                                            width: 96,
+                                                            width: 80,
                                                         },
                                                     ]}
                                                 >
@@ -231,8 +231,8 @@ export function PDF({ data = [], logo }) {
                                                     style={[
                                                         styles.br,
                                                         {
-                                                            maxWidth: 84,
-                                                            minWidth: 84,
+                                                            maxWidth: 80,
+                                                            minWidth: 80,
                                                         },
                                                     ]}
                                                 >
@@ -254,8 +254,8 @@ export function PDF({ data = [], logo }) {
                                             style={[
                                                 styles.br,
                                                 {
-                                                    maxWidth: 42,
-                                                    minWidth: 42,
+                                                    maxWidth: 38,
+                                                    minWidth: 38,
                                                 },
                                             ]}
                                         >
@@ -294,8 +294,8 @@ export function PDF({ data = [], logo }) {
                                             style={[
                                                 styles.br,
                                                 {
-                                                    maxWidth: 82,
-                                                    minWidth: 82,
+                                                    maxWidth: 65,
+                                                    minWidth: 65,
                                                 },
                                             ]}
                                         >
@@ -331,8 +331,8 @@ export function PDF({ data = [], logo }) {
                                             style={[
                                                 styles.br,
                                                 {
-                                                    maxWidth: 82,
-                                                    minWidth: 82,
+                                                    maxWidth: 65,
+                                                    minWidth: 65,
                                                 },
                                             ]}
                                         >
@@ -368,8 +368,8 @@ export function PDF({ data = [], logo }) {
                                             style={[
                                                 styles.br,
                                                 {
-                                                    maxWidth: 84,
-                                                    minWidth: 84,
+                                                    maxWidth: 75,
+                                                    minWidth: 75,
                                                 },
                                             ]}
                                         >
@@ -405,8 +405,47 @@ export function PDF({ data = [], logo }) {
                                             style={[
                                                 styles.br,
                                                 {
-                                                    maxWidth: 48,
-                                                    minWidth: 48,
+                                                    maxWidth: 75,
+                                                    minWidth: 75,
+                                                },
+                                            ]}
+                                        >
+                                            {isFirst && (
+                                                <View
+                                                    style={[
+                                                        styles.flexCenter,
+                                                        styles.tableCell,
+                                                    ]}
+                                                >
+                                                    <Text
+                                                        style={
+                                                            styles.tableCellText
+                                                        }
+                                                    >
+                                                        Witness
+                                                    </Text>
+                                                </View>
+                                            )}
+                                            <View
+                                                style={[
+                                                    styles.flexCenter,
+                                                    styles.tableCell,
+                                                ]}
+                                            >
+                                                <Text
+                                                    style={styles.tableCellText}
+                                                >
+                                                    {row?.witness}
+                                                </Text>
+                                            </View>
+                                        </View>
+
+                                        <View
+                                            style={[
+                                                styles.br,
+                                                {
+                                                    maxWidth: 42,
+                                                    minWidth: 42,
                                                 },
                                             ]}
                                         >
@@ -435,8 +474,11 @@ export function PDF({ data = [], logo }) {
                                                         styles.tableCellText,
                                                     ]}
                                                 >
-                                                    {TYPES?.[row.tbt_type] ??
-                                                        ""}
+                                                    {idx == 1
+                                                        ? "Mechanical"
+                                                        : "Workshop"}
+                                                    {/* {TYPES?.[row.tbt_type] ??
+                                                        ""} */}
                                                 </Text>
                                             </View>
                                         </View>
@@ -445,8 +487,8 @@ export function PDF({ data = [], logo }) {
                                             style={[
                                                 styles.br,
                                                 {
-                                                    maxWidth: 52,
-                                                    minWidth: 52,
+                                                    maxWidth: 51,
+                                                    minWidth: 51,
                                                 },
                                             ]}
                                         >
@@ -481,8 +523,6 @@ export function PDF({ data = [], logo }) {
                                                         styles.tableCellText,
                                                         styles.semibold,
                                                         {
-                                                            paddingRight: 2,
-                                                            paddingLeft: 2,
                                                             color: "#ffffff",
                                                         },
                                                     ]}
@@ -684,6 +724,7 @@ function SummaryTotal({ submitted = 0, notSubmitted = 0 }) {
                     style={[
                         styles.h6,
                         {
+                            fontSize: 8,
                             color: "#0a0a0a",
                             lineHeight: 1,
                         },

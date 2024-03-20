@@ -66,6 +66,7 @@ class ToolboxTalkApiService
   ->get()
   ->transform(function ($pre) use($employees)
   {
+    $this->trackDailyStatus = true;
     $employee = $employees->find($pre->created_by);
     if($employee) {
       $pre->fullname = $employee->fullname;
@@ -93,7 +94,7 @@ class ToolboxTalkApiService
 
       $ass->status = $ass->submittedTbt !== null;
 
-      if(!$ass->submittedTbt && $this->trackDailyStatus) {
+      if(!$ass->status && $this->trackDailyStatus) {
         $this->trackDailyStatus = false;
       }
       return $ass;
