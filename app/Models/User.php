@@ -6,10 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\URL;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -54,14 +56,17 @@ class User extends Authenticatable implements HasMedia
 		'remember_token',
 	];
 
+	protected $appends = ['profile'];
+
 	/**
 	 * The attributes that should be cast.
 	 *
 	 * @var array<string, string>
 	 */
 	protected $casts = [
-		'email_verified_at' => 'datetime',
+		'email_verified_at' => 'datetime'
 	];
+
 
 	protected static function boot() {
 		parent::boot();
@@ -161,6 +166,30 @@ class User extends Authenticatable implements HasMedia
 
 	public function following() {
 		// return $this->hasMany(Follower::class, 'user_id', 'user_id');
+	}
+	
+
+	public function getProfileMedia(): Media|null {
+        if($this->user_id) {
+            return Media::where("model_type", User::class)->where("model_id", $this->user_id)->whereJsonContains("custom_properties", ["primary" => true])->first();
+        }
+        return null;
+    }
+
+
+	public function getProfileAttribute() {
+		if(!$this->user_id) return null;
+
+		$profile = $this->getProfileMedia();
+		if($profile) {
+			$path = "user/" . md5($profile->id . config('app.key')) . "/" . $profile->file_name;
+			return [
+				"url" => URL::route("image", ["path" => $path]),
+				"thumbnail" => URL::route("image", ["path" => $path, "w" => 40, "h" => 40, "fit" => "crop"]),
+				"small" => URL::route("image", ["path" => $path, "w" => 128, "h" => 128, "fit" => "crop"])
+			];
+		}
+		return null;
 	}
 
 	// public function getFullnameAttribute() {
