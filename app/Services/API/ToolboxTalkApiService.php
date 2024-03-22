@@ -63,7 +63,7 @@ class ToolboxTalkApiService
   $employees = $this->getEmployees();
   $preplanning = TbtTracker::query()
   ->select("tbt_trackers.*")
-  ->with("tracker_employees")
+  ->with("trackerEmployees")
   ->orderBy("date_assigned", "desc")
   ->get()
   ->transform(function ($pre) use($employees)
@@ -78,12 +78,22 @@ class ToolboxTalkApiService
     // $date = Carbon::parse($pre->date_assigned);
     // $startDay = $date->startOfDay();
     // $endDay = $date->endOfDay();
-    $pre->tracker_employees->transform(function($trackerEmployee) use($employees, $pre) {
+    $pre->trackerEmployees->transform(function($trackerEmployee) use($employees, $pre) {
       $emp = $employees->find($trackerEmployee->emp_id);
       $trackerEmployee->fullname = $emp->fullname;
       $trackerEmployee->img = $emp->img;
       $trackerEmployee->position = $emp->position;
       $trackerEmployee->date_assigned = $pre->date_assigned;
+
+      $witnessEmp = $employees->first(function($emp) use($trackerEmployee) {
+        return $emp->fullname === $trackerEmployee->witness;
+      });
+
+      if($witnessEmp) {
+        $trackerEmployee->witnessImg = $witnessEmp->img;
+      } else {
+        $trackerEmployee->witnessImg = URL::route("image", ["path" => "assets/images/default-profile.jpg", "w" => 40, "h" => 40, "fit" => "crop"]);
+      }
 
       $trackerEmployee->submittedTbt = ToolboxTalk::query()
         ->select("tbt_id", "date_created")
@@ -109,7 +119,7 @@ class ToolboxTalkApiService
   return [$employees, $preplanning];
  }
 
- public function preplanningLatestSequenceNumber() {
+ public function tbtTrackerLatestSequenceNumber() {
   $sequence = TbtTracker::count() + 1;
   return str_pad($sequence, 6, '0', STR_PAD_LEFT);
  }

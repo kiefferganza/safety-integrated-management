@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useMemo, useState } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
 import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
@@ -7,6 +7,8 @@ import { fetchPreplanning } from "@/utils/axios";
 import { getComparator, useTable } from "@/Components/table";
 import PDFRenderer from "../PDF/PDFRenderer";
 const RegisterPage = lazy(() => import("./RegisterPage"));
+
+const MAX_ITEM = 38;
 
 const index = ({ auth: { user } }) => {
     const { isLoading, data } = useQuery({
@@ -69,10 +71,80 @@ const index = ({ auth: { user } }) => {
         setOpenPDF(false);
     };
 
-    const PDFData =
-        table.selected.length > 0
-            ? dataFiltered.filter((d) => table.selected.includes(d.id))
-            : dataFiltered;
+    const PDFData = useMemo(() => {
+        const data =
+            table.selected.length > 0
+                ? dataFiltered.filter((d) => table.selected.includes(d.id))
+                : dataFiltered;
+
+        const total = {};
+        const summary = {};
+        const dateTupple = [0, 0];
+        const pdfData = [];
+        if (data.length > 0) {
+            let submitted = 0;
+            let notSubmitted = 0;
+            let summarySubmitted = 0;
+            let summaryNotSubmitted = 0;
+
+            dateTupple[0] = new Date(data[0].date_assigned).getTime();
+            dateTupple[1] = new Date(data[0].date_assigned).getTime();
+
+            for (let i = 0; i < data.length; i++) {
+                const timestamps = new Date(data[i].date_assigned).getTime();
+
+                if (timestamps < dateTupple[0]) {
+                    dateTupple[0] = timestamps;
+                }
+
+                if (timestamps > dateTupple[1]) {
+                    dateTupple[1] = timestamps;
+                }
+                for (let j = 0; j < data[i].tracker_employees.length; j++) {
+                    const ass_id = data[i].tracker_employees[j].id;
+                    const ass = data[i].tracker_employees[j];
+                    const originator = data[i].fullname;
+                    const originatorImg = data[i]?.img;
+                    delete ass.id;
+                    const newPdfData = {
+                        ...data[i],
+                        originatorImg,
+                        ass_id,
+                        originator,
+                        ...ass,
+                    };
+                    delete newPdfData.tracker_employees;
+                    pdfData.push(newPdfData);
+                }
+            }
+
+            pdfData.forEach((dt, i) => {
+                if (dt.status) {
+                    submitted++;
+                } else {
+                    notSubmitted++;
+                }
+                if ((i + 1) % MAX_ITEM === 0 || i === pdfData.length - 1) {
+                    total[i] = {
+                        submitted,
+                        notSubmitted,
+                    };
+                    summarySubmitted += submitted;
+                    summaryNotSubmitted += notSubmitted;
+                    summary[i] = {
+                        submitted: summarySubmitted,
+                        notSubmitted: summaryNotSubmitted,
+                    };
+                    submitted = 0;
+                    notSubmitted = 0;
+                }
+            });
+
+            return { total, summary, dateTupple, pdfData };
+        }
+
+        return { total, summary, dateTupple: [], pdfData: [] };
+    }, [dataFiltered]);
 
     return (
         <>
@@ -147,13 +219,13 @@ function applyFilter({
 
     if (filterStartDate && !filterEndDate) {
         inputData = inputData.filter(
-            (pre) => new Date(pre.date_issued) >= filterStartDate
+            (pre) => new Date(pre.date_assigned) >= filterStartDate
         );
     }
 
     if (filterStartDate && filterEndDate) {
         inputData = inputData.filter((pre) => {
-            const date = new Date(pre.date_issued);
+            const date = new Date(pre.date_assigned);
             return date >= filterStartDate && date <= filterEndDate;
         });
     }

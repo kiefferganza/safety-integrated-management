@@ -20,7 +20,7 @@ export default function ({ dataPDF, open, onClose }) {
         },
         [dataPDF]
     );
-    const src = url ? `${url}#toolbar=1&zoom=150` : null;
+    const src = url ? `${url}#toolbar=0&zoom=150` : null;
 
     if (error) {
         console.log({ error });

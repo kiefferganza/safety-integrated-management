@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TbtPrePlanningAssigned extends Model
+class TbtTrackerEmployee extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
 
-    public function preplanning() {
-        return $this->belongsTo(TbtPrePlanning::class, "preplanning", "id");
+    public function tracker() {
+        return $this->belongsTo(TbtTracker::class, "tracker", "id");
     }
 
     public function employee() {

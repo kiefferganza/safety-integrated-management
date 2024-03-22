@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\HSE;
 
 use App\Http\Controllers\Controller;
-use App\Models\TbtPrePlanning;
-use App\Models\TbtPrePlanningAssigned;
-use Carbon\Carbon;
+use App\Models\TbtTracker;
+use App\Models\TbtTrackerEmployee;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class TbtPreplanningController extends Controller
+class TbtTrackerController extends Controller
 {
     public function tracker()
     {
@@ -21,7 +20,7 @@ class TbtPreplanningController extends Controller
     {
         $request->validate([
             "employees" => ["required", "array", "min:1"],
-            "dateIssued" => ["required", "date", "date_format:Y-m-d"],
+            "dateAssigned" => ["required", "date", "date_format:Y-m-d"],
             "project_code" => ["required", "string"],
             "document_type" => ["required", "string"],
             "discipline" => ["required", "string"],
@@ -29,17 +28,18 @@ class TbtPreplanningController extends Controller
         ]);
 
         $user = auth()->user();
-        $preplanning = new TbtPrePlanning();
-        $preplanning->project_code = $request->project_code;
-        $preplanning->document_type = $request->document_type;
-        $preplanning->discipline = $request->discipline;
-        $preplanning->originator = $request->originator;
-        $preplanning->created_by = $user->user_id;
-        $preplanning->date_issued = $request->dateIssued;
+        $tbtTracker = new TbtTracker();
+        $tbtTracker->project_code = $request->project_code;
+        $tbtTracker->document_type = $request->document_type;
+        $tbtTracker->discipline = $request->discipline;
+        $tbtTracker->originator = $request->originator;
+        $tbtTracker->created_by = $user->id;
+        $tbtTracker->emp_id = $user->emp_id;
+        $tbtTracker->date_assigned = $request->dateAssigned;
 
-        if ($preplanning->save())
+        if ($tbtTracker->save())
         {
-            $preplanning->assigned()->createMany($request->employees);
+            $tbtTracker->trackerEmployees()->createMany($request->employees);
         }
         else
         {
@@ -53,37 +53,45 @@ class TbtPreplanningController extends Controller
             ->with("type", "success");
     }
 
-    public function editAssignedEmployee(Request $request, TbtPrePlanning $tbtPrePlanning) {
+
+    /**
+     * Edit Tracker
+     */
+    public function editAssignedEmployee(Request $request, TbtTracker $tbtTracker) {
         $request->validate([
             "employees" => ["required", "array", "min:1"],
-            "dateIssued" => ["required", "date", "date_format:Y-m-d"],
+            "dateAssigned" => ["required", "date", "date_format:Y-m-d"],
             "project_code" => ["required", "string"],
             "document_type" => ["required", "string"],
             "discipline" => ["required", "string"],
             "originator" => ["required", "string"],
         ]);
-        $tbtPrePlanning->date_issued = $request->dateIssued;
-        $tbtPrePlanning->project_code = $request->project_code;
-        $tbtPrePlanning->document_type = $request->document_type;
-        $tbtPrePlanning->discipline = $request->discipline;
-        $tbtPrePlanning->originator = $request->originator;
+        $tbtTracker->date_assigned = $request->dateAssigned;
+        $tbtTracker->project_code = $request->project_code;
+        $tbtTracker->document_type = $request->document_type;
+        $tbtTracker->discipline = $request->discipline;
+        $tbtTracker->originator = $request->originator;
 
-        if($tbtPrePlanning->isDirty()) {
-            $tbtPrePlanning->save();
+        if($tbtTracker->isDirty()) {
+            $tbtTracker->save();
         }
 
-        TbtPrePlanningAssigned::where("preplanning", $tbtPrePlanning->id)->delete();
-        $tbtPrePlanning->assigned()->createMany($request->employees);
+        TbtTrackerEmployee::where("tracker", $tbtTracker->id)->delete();
+        $tbtTracker->trackerEmployees()->createMany($request->employees);
         return redirect()->back()
             ->with("message", "Save successfully")
             ->with("type", "success");
     }
 
+
+    /**
+     * Delete Tracker
+     */
     public function deleteAssignEmployee(Request $request) {
         $request->validate([
             "ids" => ["required", "array", "min:1"]
         ]);
-        TbtPrePlanning::whereIn("id", $request->ids)->delete();
+        TbtTracker::whereIn("id", $request->ids)->delete();
 
         return redirect()->back()
             ->with("message", "Delete successfully")

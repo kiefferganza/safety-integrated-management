@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TbtPrePlanning extends Model
+class TbtTracker extends Model
 {
     use HasFactory;
 
@@ -15,9 +15,9 @@ class TbtPrePlanning extends Model
     protected static function boot() {
 		parent::boot();
 		
-		static::creating(function(TbtPrePlanning $tbtPrePlanning) {
-			$sequence = TbtPrePlanning::count() + 1;
-			$tbtPrePlanning->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
+		static::creating(function(TbtTracker $tbtTracker) {
+			$sequence = TbtTracker::count() + 1;
+			$tbtTracker->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
 		});
 	}
 
@@ -30,7 +30,7 @@ class TbtPrePlanning extends Model
     }
 
 
-    public function assigned() {
-        return $this->hasMany(TbtPrePlanningAssigned::class, "preplanning", "id");
+    public function trackerEmployees() {
+        return $this->hasMany(TbtTrackerEmployee::class, "tracker", "id");
     }
 }

@@ -1,5 +1,4 @@
-import { useMemo } from "react";
-import styles, { colors } from "@/lib/pdfStyles";
+import styles from "./pdfStyles";
 import { Page, View, Text, Image, Document } from "@react-pdf/renderer";
 import { format, isSameDay, isSameMonth } from "date-fns";
 import { fDate } from "@/utils/formatTime";
@@ -8,7 +7,7 @@ const TODAY = new Date();
 const FORMATTED_DATE = format(TODAY, "MM/dd/yy");
 const YEAR = TODAY.getFullYear();
 
-const MAX_ITEM = 25;
+const MAX_ITEM = 38;
 
 const TYPES = {
     1: "Civil",
@@ -18,75 +17,10 @@ const TYPES = {
     5: "Office",
 };
 
-export function PDF({ data = [], logo }) {
-    const { total, summary, dateTupple, pdfData } = useMemo(() => {
-        const total = {};
-        const summary = {};
-        const dateTupple = [0, 0];
-        const pdfData = [];
-        if (data.length > 0) {
-            let submitted = 0;
-            let notSubmitted = 0;
-            let summarySubmitted = 0;
-            let summaryNotSubmitted = 0;
-
-            dateTupple[0] = new Date(data[0].date_issued).getTime();
-            dateTupple[1] = new Date(data[0].date_issued).getTime();
-
-            for (let i = 0; i < data.length; i++) {
-                const timestamps = new Date(data[i].date_issued).getTime();
-
-                if (timestamps < dateTupple[0]) {
-                    dateTupple[0] = timestamps;
-                }
-
-                if (timestamps > dateTupple[1]) {
-                    dateTupple[1] = timestamps;
-                }
-                for (let j = 0; j < data[i].assigned.length; j++) {
-                    const ass_id = data[i].assigned[j].id;
-                    const ass = data[i].assigned[j];
-                    const originator = data[i].fullname;
-                    delete ass.id;
-                    const newPdfData = {
-                        ...data[i],
-                        ass_id,
-                        originator,
-                        ...ass,
-                    };
-                    delete newPdfData.assigned;
-                    pdfData.push(newPdfData);
-                }
-            }
-
-            pdfData.forEach((dt, i) => {
-                if (dt.status) {
-                    submitted++;
-                } else {
-                    notSubmitted++;
-                }
-                if ((i + 1) % MAX_ITEM === 0 || i === pdfData.length - 1) {
-                    total[i] = {
-                        submitted,
-                        notSubmitted,
-                    };
-                    summarySubmitted += submitted;
-                    summaryNotSubmitted += notSubmitted;
-                    summary[i] = {
-                        submitted: summarySubmitted,
-                        notSubmitted: summaryNotSubmitted,
-                    };
-                    submitted = 0;
-                    notSubmitted = 0;
-                }
-            });
-
-            return { total, summary, dateTupple, pdfData };
-        }
-
-        return { total, summary, dateTupple: [], pdfData: [] };
-    }, [data]);
-
+export function PDF({
+    logo,
+    data: { total, summary, dateTupple = [], pdfData = [] },
+}) {
     const dateFormattedString = dateLabel(dateTupple[0], dateTupple[1]);
     return (
         <Document title="Toolbox Talk Tracker">
@@ -108,7 +42,7 @@ export function PDF({ data = [], logo }) {
                     </View>
                 </View>
 
-                <View fixed style={styles.bm}>
+                <View fixed>
                     <Text
                         style={{
                             fontSize: 8,
@@ -125,8 +59,6 @@ export function PDF({ data = [], logo }) {
                     const nextId = pdfData[idx + 1]?.id;
                     const isFirst = row.id !== prevId;
                     const isLast = row.id !== nextId;
-                    const maxItem = (idx + 1) % MAX_ITEM === 0;
-                    const isCutOff = maxItem && nextId === row.id;
                     const cut = total[idx - 1] && summary[idx - 1];
                     return (
                         <View key={idx} break={cut}>
@@ -136,114 +68,138 @@ export function PDF({ data = [], logo }) {
                                         {isFirst ? (
                                             <>
                                                 <View
-                                                    style={[
-                                                        styles.br,
-                                                        {
-                                                            width: 80,
-                                                        },
-                                                    ]}
+                                                    style={{
+                                                        maxWidth: 83,
+                                                        minWidth: 83,
+                                                        width: "100%",
+                                                    }}
                                                 >
                                                     <View
                                                         style={[
-                                                            styles.flexCenter,
                                                             styles.tableCell,
+                                                            styles.bgPrimary,
                                                         ]}
                                                     >
-                                                        <Text
-                                                            style={
-                                                                styles.semibold
-                                                            }
+                                                        <View
+                                                            style={[
+                                                                styles.textCenter,
+                                                                styles.justifyCenter,
+                                                                styles.w1,
+                                                                styles.tableCell,
+                                                            ]}
                                                         >
-                                                            {row.form_number}
-                                                        </Text>
+                                                            <Text
+                                                                style={[
+                                                                    styles.semibold,
+                                                                    styles.textWhite,
+                                                                ]}
+                                                            >
+                                                                {
+                                                                    row.form_number
+                                                                }
+                                                            </Text>
+                                                        </View>
                                                     </View>
                                                     <View
-                                                        style={[
-                                                            styles.flexCenter,
-                                                            styles.tableCell,
-                                                            styles.bm0,
-                                                            nextId !== row.id &&
-                                                                styles.bm,
-                                                        ]}
+                                                        style={styles.tableCell}
                                                     />
                                                 </View>
                                                 <View
-                                                    style={[
-                                                        styles.br,
-                                                        {
-                                                            maxWidth: 80,
-                                                            minWidth: 80,
-                                                        },
-                                                    ]}
+                                                    style={{
+                                                        maxWidth: 80,
+                                                        minWidth: 80,
+                                                        width: "100%",
+                                                    }}
                                                 >
                                                     <View
                                                         style={[
-                                                            styles.flexCenter,
                                                             styles.tableCell,
+                                                            styles.bgPrimary,
                                                         ]}
                                                     >
-                                                        <Text
-                                                            style={
-                                                                styles.semibold
-                                                            }
+                                                        <View
+                                                            style={[
+                                                                styles.textCenter,
+                                                                styles.justifyCenter,
+                                                                styles.w1,
+                                                                styles.tableCell,
+                                                            ]}
                                                         >
-                                                            Originator
-                                                        </Text>
+                                                            <Text
+                                                                style={[
+                                                                    styles.semibold,
+                                                                    styles.textWhite,
+                                                                ]}
+                                                            >
+                                                                Originator
+                                                            </Text>
+                                                        </View>
                                                     </View>
                                                     <View
-                                                        style={[
-                                                            styles.flexCenter,
-                                                            styles.tableCell,
-                                                        ]}
+                                                        style={styles.tableCell}
                                                     >
-                                                        <Text
-                                                            style={
-                                                                styles.tableCellText
-                                                            }
+                                                        <View
+                                                            style={[
+                                                                styles.textCenter,
+                                                                styles.justifyCenter,
+                                                                styles.itemsCenter,
+                                                                styles.flexRow,
+                                                                styles.w1,
+                                                                styles.tableCell,
+                                                            ]}
                                                         >
-                                                            {row.originator}
-                                                        </Text>
+                                                            {row?.originatorImg && (
+                                                                <View
+                                                                    style={
+                                                                        styles.avatar
+                                                                    }
+                                                                >
+                                                                    <Image
+                                                                        style={
+                                                                            styles.avatarImg
+                                                                        }
+                                                                        src={
+                                                                            row.originatorImg
+                                                                        }
+                                                                    />
+                                                                </View>
+                                                            )}
+                                                            <Text
+                                                                style={
+                                                                    styles.tableCellText
+                                                                }
+                                                            >
+                                                                {row.originator}
+                                                            </Text>
+                                                        </View>
                                                     </View>
                                                 </View>
                                             </>
                                         ) : (
                                             <>
                                                 <View
-                                                    style={[
-                                                        styles.br,
-                                                        {
-                                                            width: 80,
-                                                        },
-                                                    ]}
+                                                    style={{
+                                                        maxWidth: 83,
+                                                        minWidth: 83,
+                                                        width: "100%",
+                                                    }}
                                                 >
                                                     <View
                                                         style={[
-                                                            styles.flexCenter,
                                                             styles.tableCell,
-                                                            styles.bm0,
-                                                            (isCutOff ||
-                                                                isLast) &&
-                                                                styles.bm,
                                                         ]}
                                                     />
                                                 </View>
                                                 <View
-                                                    style={[
-                                                        styles.br,
-                                                        {
-                                                            maxWidth: 80,
-                                                            minWidth: 80,
-                                                        },
-                                                    ]}
+                                                    style={{
+                                                        maxWidth: 80,
+                                                        minWidth: 80,
+                                                        width: "100%",
+                                                    }}
                                                 >
                                                     <View
                                                         style={[
-                                                            styles.flexCenter,
                                                             styles.tableCell,
-                                                            styles.bm0,
-                                                            (isCutOff ||
-                                                                isLast) &&
-                                                                styles.bm,
                                                         ]}
                                                     />
                                                 </View>
@@ -251,169 +207,44 @@ export function PDF({ data = [], logo }) {
                                         )}
 
                                         <View
-                                            style={[
-                                                styles.br,
-                                                {
-                                                    maxWidth: 38,
-                                                    minWidth: 38,
-                                                },
-                                            ]}
+                                            style={{
+                                                maxWidth: 38,
+                                                minWidth: 38,
+                                                width: "100%",
+                                            }}
                                         >
                                             {isFirst && (
                                                 <View
                                                     style={[
-                                                        styles.flexCenter,
                                                         styles.tableCell,
+                                                        styles.bgPrimary,
                                                     ]}
                                                 >
-                                                    <Text
-                                                        style={styles.semibold}
+                                                    <View
+                                                        style={[
+                                                            styles.textCenter,
+                                                            styles.justifyCenter,
+                                                            styles.w1,
+                                                            styles.tableCell,
+                                                        ]}
                                                     >
-                                                        Date
-                                                    </Text>
+                                                        <Text
+                                                            style={[
+                                                                styles.semibold,
+                                                                styles.textWhite,
+                                                            ]}
+                                                        >
+                                                            Date
+                                                        </Text>
+                                                    </View>
                                                 </View>
                                             )}
-                                            <View
-                                                style={[
-                                                    styles.flexCenter,
-                                                    styles.tableCell,
-                                                ]}
-                                            >
-                                                <Text
-                                                    style={styles.tableCellText}
-                                                >
-                                                    {fDate(
-                                                        row.date_issued,
-                                                        "M/d/yyyy"
-                                                    )}
-                                                </Text>
-                                            </View>
-                                        </View>
-
-                                        <View
-                                            style={[
-                                                styles.br,
-                                                {
-                                                    maxWidth: 65,
-                                                    minWidth: 65,
-                                                },
-                                            ]}
-                                        >
-                                            {isFirst && (
+                                            <View style={styles.tableCell}>
                                                 <View
                                                     style={[
-                                                        styles.flexCenter,
-                                                        styles.tableCell,
-                                                    ]}
-                                                >
-                                                    <Text
-                                                        style={styles.semibold}
-                                                    >
-                                                        Location
-                                                    </Text>
-                                                </View>
-                                            )}
-                                            <View
-                                                style={[
-                                                    styles.flexCenter,
-                                                    styles.tableCell,
-                                                ]}
-                                            >
-                                                <Text
-                                                    style={styles.tableCellText}
-                                                >
-                                                    {row.location}
-                                                </Text>
-                                            </View>
-                                        </View>
-
-                                        <View
-                                            style={[
-                                                styles.br,
-                                                {
-                                                    maxWidth: 65,
-                                                    minWidth: 65,
-                                                },
-                                            ]}
-                                        >
-                                            {isFirst && (
-                                                <View
-                                                    style={[
-                                                        styles.flexCenter,
-                                                        styles.tableCell,
-                                                    ]}
-                                                >
-                                                    <Text
-                                                        style={styles.semibold}
-                                                    >
-                                                        Exact Location
-                                                    </Text>
-                                                </View>
-                                            )}
-                                            <View
-                                                style={[
-                                                    styles.flexCenter,
-                                                    styles.tableCell,
-                                                ]}
-                                            >
-                                                <Text
-                                                    style={styles.tableCellText}
-                                                >
-                                                    {row.exact_location}
-                                                </Text>
-                                            </View>
-                                        </View>
-
-                                        <View
-                                            style={[
-                                                styles.br,
-                                                {
-                                                    maxWidth: 75,
-                                                    minWidth: 75,
-                                                },
-                                            ]}
-                                        >
-                                            {isFirst && (
-                                                <View
-                                                    style={[
-                                                        styles.flexCenter,
-                                                        styles.tableCell,
-                                                    ]}
-                                                >
-                                                    <Text
-                                                        style={styles.semibold}
-                                                    >
-                                                        PA
-                                                    </Text>
-                                                </View>
-                                            )}
-                                            <View
-                                                style={[
-                                                    styles.flexCenter,
-                                                    styles.tableCell,
-                                                ]}
-                                            >
-                                                <Text
-                                                    style={styles.tableCellText}
-                                                >
-                                                    {row.fullname}
-                                                </Text>
-                                            </View>
-                                        </View>
-
-                                        <View
-                                            style={[
-                                                styles.br,
-                                                {
-                                                    maxWidth: 75,
-                                                    minWidth: 75,
-                                                },
-                                            ]}
-                                        >
-                                            {isFirst && (
-                                                <View
-                                                    style={[
-                                                        styles.flexCenter,
+                                                        styles.textCenter,
+                                                        styles.justifyCenter,
+                                                        styles.w1,
                                                         styles.tableCell,
                                                     ]}
                                                 >
@@ -422,115 +253,370 @@ export function PDF({ data = [], logo }) {
                                                             styles.tableCellText
                                                         }
                                                     >
-                                                        Witness
+                                                        {fDate(
+                                                            row.date_assigned,
+                                                            "M/d/yyyy"
+                                                        )}
                                                     </Text>
                                                 </View>
-                                            )}
-                                            <View
-                                                style={[
-                                                    styles.flexCenter,
-                                                    styles.tableCell,
-                                                ]}
-                                            >
-                                                <Text
-                                                    style={styles.tableCellText}
-                                                >
-                                                    {row?.witness}
-                                                </Text>
                                             </View>
                                         </View>
 
                                         <View
-                                            style={[
-                                                styles.br,
-                                                {
-                                                    maxWidth: 42,
-                                                    minWidth: 42,
-                                                },
-                                            ]}
+                                            style={{
+                                                maxWidth: 65,
+                                                minWidth: 65,
+                                                width: "100%",
+                                            }}
                                         >
                                             {isFirst && (
                                                 <View
                                                     style={[
-                                                        styles.flexCenter,
+                                                        styles.tableCell,
+                                                        styles.bgPrimary,
+                                                    ]}
+                                                >
+                                                    <View
+                                                        style={[
+                                                            styles.textCenter,
+                                                            styles.justifyCenter,
+                                                            styles.w1,
+                                                            styles.tableCell,
+                                                        ]}
+                                                    >
+                                                        <Text
+                                                            style={[
+                                                                styles.semibold,
+                                                                styles.textWhite,
+                                                            ]}
+                                                        >
+                                                            Location
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            )}
+                                            <View style={styles.tableCell}>
+                                                <View
+                                                    style={[
+                                                        styles.textCenter,
+                                                        styles.justifyCenter,
+                                                        styles.w1,
                                                         styles.tableCell,
                                                     ]}
                                                 >
                                                     <Text
-                                                        style={styles.semibold}
+                                                        style={
+                                                            styles.tableCellText
+                                                        }
                                                     >
-                                                        TBT Type
+                                                        {row.location}
                                                     </Text>
                                                 </View>
-                                            )}
-                                            <View
-                                                style={[
-                                                    styles.flexCenter,
-                                                    styles.tableCell,
-                                                ]}
-                                            >
-                                                <Text
-                                                    style={[
-                                                        styles.tableCellText,
-                                                    ]}
-                                                >
-                                                    {idx == 1
-                                                        ? "Mechanical"
-                                                        : "Workshop"}
-                                                    {/* {TYPES?.[row.tbt_type] ??
-                                                        ""} */}
-                                                </Text>
                                             </View>
                                         </View>
 
                                         <View
-                                            style={[
-                                                styles.br,
-                                                {
-                                                    maxWidth: 51,
-                                                    minWidth: 51,
-                                                },
-                                            ]}
+                                            style={{
+                                                maxWidth: 65,
+                                                minWidth: 65,
+                                                width: "100%",
+                                            }}
                                         >
                                             {isFirst && (
                                                 <View
                                                     style={[
-                                                        styles.flexCenter,
+                                                        styles.tableCell,
+                                                        styles.bgPrimary,
+                                                    ]}
+                                                >
+                                                    <View
+                                                        style={[
+                                                            styles.textCenter,
+                                                            styles.justifyCenter,
+                                                            styles.w1,
+                                                            styles.tableCell,
+                                                        ]}
+                                                    >
+                                                        <Text
+                                                            style={[
+                                                                styles.semibold,
+                                                                styles.textWhite,
+                                                            ]}
+                                                        >
+                                                            Exact Location
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            )}
+                                            <View style={styles.tableCell}>
+                                                <View
+                                                    style={[
+                                                        styles.textCenter,
+                                                        styles.justifyCenter,
+                                                        styles.w1,
                                                         styles.tableCell,
                                                     ]}
                                                 >
                                                     <Text
-                                                        style={styles.semibold}
+                                                        style={
+                                                            styles.tableCellText
+                                                        }
                                                     >
-                                                        TBT Status
+                                                        {row.exact_location}
                                                     </Text>
                                                 </View>
-                                            )}
-                                            <View
-                                                style={[
-                                                    styles.flexCenter,
-                                                    styles.tableCell,
-                                                    {
-                                                        backgroundColor:
-                                                            row.status
-                                                                ? colors.successMain
-                                                                : colors.errorMain,
-                                                    },
-                                                ]}
-                                            >
-                                                <Text
+                                            </View>
+                                        </View>
+
+                                        <View
+                                            style={{
+                                                maxWidth: 75,
+                                                minWidth: 75,
+                                                width: "100%",
+                                            }}
+                                        >
+                                            {isFirst && (
+                                                <View
                                                     style={[
-                                                        styles.tableCellText,
-                                                        styles.semibold,
-                                                        {
-                                                            color: "#ffffff",
-                                                        },
+                                                        styles.tableCell,
+                                                        styles.bgPrimary,
                                                     ]}
                                                 >
-                                                    {row.status
-                                                        ? "Submitted"
-                                                        : "Not Submitted"}
-                                                </Text>
+                                                    <View
+                                                        style={[
+                                                            styles.textCenter,
+                                                            styles.justifyCenter,
+                                                            styles.w1,
+                                                            styles.tableCell,
+                                                        ]}
+                                                    >
+                                                        <Text
+                                                            style={[
+                                                                styles.semibold,
+                                                                styles.textWhite,
+                                                            ]}
+                                                        >
+                                                            PA
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            )}
+                                            <View style={styles.tableCell}>
+                                                <View
+                                                    style={[
+                                                        styles.w1,
+                                                        styles.tableCell,
+                                                        styles.itemsCenter,
+                                                        styles.flexRow,
+                                                        styles.mr4,
+                                                        styles.ml4,
+                                                    ]}
+                                                >
+                                                    {row?.img && (
+                                                        <View
+                                                            style={
+                                                                styles.avatar
+                                                            }
+                                                        >
+                                                            <Image
+                                                                style={
+                                                                    styles.avatarImg
+                                                                }
+                                                                src={row.img}
+                                                            />
+                                                        </View>
+                                                    )}
+                                                    <Text
+                                                        style={[
+                                                            styles.tableCellText,
+                                                            styles.textCenter,
+                                                        ]}
+                                                    >
+                                                        {row.fullname}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+
+                                        <View
+                                            style={{
+                                                maxWidth: 75,
+                                                minWidth: 75,
+                                                width: "100%",
+                                            }}
+                                        >
+                                            {isFirst && (
+                                                <View
+                                                    style={[
+                                                        styles.tableCell,
+                                                        styles.bgPrimary,
+                                                    ]}
+                                                >
+                                                    <View
+                                                        style={[
+                                                            styles.textCenter,
+                                                            styles.justifyCenter,
+                                                            styles.w1,
+                                                            styles.tableCell,
+                                                        ]}
+                                                    >
+                                                        <Text
+                                                            style={[
+                                                                styles.semibold,
+                                                                styles.textWhite,
+                                                            ]}
+                                                        >
+                                                            Witness
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            )}
+                                            <View style={styles.tableCell}>
+                                                <View
+                                                    style={[
+                                                        styles.w1,
+                                                        styles.tableCell,
+                                                        styles.itemsCenter,
+                                                        styles.flexRow,
+                                                        styles.mr4,
+                                                        styles.ml4,
+                                                    ]}
+                                                >
+                                                    {row?.witnessImg && (
+                                                        <View
+                                                            style={
+                                                                styles.avatar
+                                                            }
+                                                        >
+                                                            <Image
+                                                                style={
+                                                                    styles.avatarImg
+                                                                }
+                                                                src={
+                                                                    row.witnessImg
+                                                                }
+                                                            />
+                                                        </View>
+                                                    )}
+                                                    <Text
+                                                        style={[
+                                                            styles.tableCellText,
+                                                            styles.textCenter,
+                                                        ]}
+                                                    >
+                                                        {row?.witness}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+
+                                        <View
+                                            style={{
+                                                maxWidth: 40,
+                                                minWidth: 40,
+                                                width: "100%",
+                                            }}
+                                        >
+                                            {isFirst && (
+                                                <View
+                                                    style={[
+                                                        styles.tableCell,
+                                                        styles.bgPrimary,
+                                                    ]}
+                                                >
+                                                    <View
+                                                        style={[
+                                                            styles.textCenter,
+                                                            styles.justifyCenter,
+                                                            styles.w1,
+                                                            styles.tableCell,
+                                                        ]}
+                                                    >
+                                                        <Text
+                                                            style={[
+                                                                styles.semibold,
+                                                                styles.textWhite,
+                                                            ]}
+                                                        >
+                                                            TBT Type
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            )}
+                                            <View style={styles.tableCell}>
+                                                <View
+                                                    style={[
+                                                        styles.textCenter,
+                                                        styles.justifyCenter,
+                                                        styles.w1,
+                                                        styles.tableCell,
+                                                    ]}
+                                                >
+                                                    <Text
+                                                        style={
+                                                            styles.tableCellText
+                                                        }
+                                                    >
+                                                        {TYPES?.[
+                                                            row.tbt_type
+                                                        ] ?? ""}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+
+                                        <View
+                                            style={{
+                                                maxWidth: 50,
+                                                minWidth: 50,
+                                                width: "100%",
+                                            }}
+                                        >
+                                            {isFirst && (
+                                                <View
+                                                    style={[
+                                                        styles.tableCell,
+                                                        styles.bgPrimary,
+                                                    ]}
+                                                >
+                                                    <View
+                                                        style={[
+                                                            styles.textCenter,
+                                                            styles.justifyCenter,
+                                                            styles.w1,
+                                                            styles.tableCell,
+                                                        ]}
+                                                    >
+                                                        <Text
+                                                            style={[
+                                                                styles.semibold,
+                                                                styles.textWhite,
+                                                            ]}
+                                                        >
+                                                            TBT Status
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            )}
+                                            <View style={styles.tableCell}>
+                                                <View
+                                                    style={[
+                                                        styles.textCenter,
+                                                        styles.justifyCenter,
+                                                        styles.w1,
+                                                        styles.tableCell,
+                                                    ]}
+                                                >
+                                                    <Text
+                                                        style={
+                                                            styles.tableCellText
+                                                        }
+                                                    >
+                                                        {row.status
+                                                            ? "Submitted"
+                                                            : "Not Submitted"}
+                                                    </Text>
+                                                </View>
                                             </View>
                                         </View>
                                     </View>
@@ -541,12 +627,9 @@ export function PDF({ data = [], logo }) {
                                             <View
                                                 style={[
                                                     styles.bgGray,
-                                                    styles.bl,
-                                                    styles.br,
-                                                    styles.bm,
                                                     styles.w1,
                                                     {
-                                                        minHeight: 12,
+                                                        minHeight: 6,
                                                     },
                                                 ]}
                                             />
@@ -621,7 +704,7 @@ function TableTotalFooter({ dataLength, i, total, summary }) {
 
     if (dataLength <= MAX_ITEM) {
         return (
-            <View style={{ marginTop: 32, marginBottom: 40 }}>
+            <View style={{ marginTop: 32, marginBottom: 8 }}>
                 <SummaryTotal
                     submitted={summary[i].submitted}
                     notSubmitted={summary[i].notSubmitted}
@@ -631,7 +714,7 @@ function TableTotalFooter({ dataLength, i, total, summary }) {
     }
 
     return (
-        <View style={{ marginTop: 32, marginBottom: 40 }}>
+        <View style={{ marginTop: 32, marginBottom: 8 }}>
             <Total
                 submitted={total[i].submitted}
                 notSubmitted={total[i].notSubmitted}
@@ -659,6 +742,7 @@ function Total({ submitted = 0, notSubmitted = 0 }) {
                     style={{
                         minWidth: 518,
                         maxWidth: 518,
+                        width: "100%",
                         borderRight: 0,
                     }}
                 >
@@ -670,6 +754,7 @@ function Total({ submitted = 0, notSubmitted = 0 }) {
                     style={{
                         minWidth: 52,
                         maxWidth: 52,
+                        width: "100%",
                     }}
                 >
                     <Text
@@ -687,6 +772,7 @@ function Total({ submitted = 0, notSubmitted = 0 }) {
                             {
                                 minWidth: 518,
                                 maxWidth: 518,
+                                width: "100%",
                                 borderRight: 0,
                             },
                         ]}
@@ -699,6 +785,7 @@ function Total({ submitted = 0, notSubmitted = 0 }) {
                         style={{
                             minWidth: 52,
                             maxWidth: 52,
+                            width: "100%",
                         }}
                     >
                         <Text
@@ -744,6 +831,7 @@ function SummaryTotal({ submitted = 0, notSubmitted = 0 }) {
                     style={{
                         minWidth: 518,
                         maxWidth: 518,
+                        width: "100%",
                         borderRight: 0,
                     }}
                 >
@@ -755,6 +843,7 @@ function SummaryTotal({ submitted = 0, notSubmitted = 0 }) {
                     style={{
                         minWidth: 52,
                         maxWidth: 52,
+                        width: "100%",
                     }}
                 >
                     <Text
@@ -770,6 +859,7 @@ function SummaryTotal({ submitted = 0, notSubmitted = 0 }) {
                     style={{
                         minWidth: 518,
                         maxWidth: 518,
+                        width: "100%",
                         borderRight: 0,
                     }}
                 >
@@ -781,6 +871,7 @@ function SummaryTotal({ submitted = 0, notSubmitted = 0 }) {
                     style={{
                         minWidth: 52,
                         maxWidth: 52,
+                        width: "100%",
                     }}
                 >
                     <Text

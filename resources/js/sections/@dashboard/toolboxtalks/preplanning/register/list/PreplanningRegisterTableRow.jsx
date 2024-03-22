@@ -80,7 +80,7 @@ export function PreplanningRegisterTableRow({
         setOpenCollapse((currState) => !currState);
     });
 
-    const isExpired = isPast(new Date(row.date_issued).setHours(11, 59, 59));
+    const isExpired = isPast(new Date(row.date_assigned).setHours(11, 59, 59));
 
     return (
         <>
@@ -120,7 +120,7 @@ export function PreplanningRegisterTableRow({
                     align="left"
                     sx={{ whiteSpace: "nowrap" }}
                 >
-                    {fDate(row.date_issued)}
+                    {fDate(row.date_assigned)}
                 </TableCell>
 
                 <TableCell
@@ -142,7 +142,7 @@ export function PreplanningRegisterTableRow({
                     align="left"
                     sx={{ whiteSpace: "nowrap" }}
                 >
-                    {row.assigned?.length ?? 0}
+                    {row?.tracker_employees?.length ?? 0}
                 </TableCell>
 
                 <TableCell align="right">
@@ -186,7 +186,7 @@ export function PreplanningRegisterTableRow({
                                             variant="subtitle2"
                                             fontStyle="italic"
                                         >
-                                            -{fDate(row.date_issued)}-
+                                            -{fDate(row.date_assigned)}-
                                         </Typography>
                                     </caption>
                                     <TableHead>
@@ -205,7 +205,7 @@ export function PreplanningRegisterTableRow({
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {(row.assigned ?? []).map(
+                                        {(row.tracker_employees ?? []).map(
                                             (subrow, idx) => (
                                                 <TableRow
                                                     sx={{

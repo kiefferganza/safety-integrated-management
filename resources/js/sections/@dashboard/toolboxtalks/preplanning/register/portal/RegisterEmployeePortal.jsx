@@ -105,9 +105,9 @@ const RegisterEmployeePortal = ({
     const [autoCompleteInputVal, setAutoCompleteInputVal] = useState("");
 
     const defaultValues = {
-        employees: currentRegistered?.assigned ?? [],
-        dateIssued: currentRegistered?.date_issued
-            ? new Date(currentRegistered.date_issued)
+        employees: currentRegistered?.tracker_employees ?? [],
+        dateAssigned: currentRegistered?.date_assigned
+            ? new Date(currentRegistered.date_assigned)
             : TOMORROW,
         originator: currentRegistered?.originator ?? "",
         project_code: currentRegistered?.project_code ?? "",
@@ -124,10 +124,10 @@ const RegisterEmployeePortal = ({
                 document_type: Yup.string().required(
                     "Please add document type."
                 ),
-                dateIssued: Yup.date()
+                dateAssigned: Yup.date()
                     .min(
-                        isEdit && currentRegistered?.date_issued
-                            ? new Date(currentRegistered.date_issued)
+                        isEdit && currentRegistered?.date_assigned
+                            ? new Date(currentRegistered.date_assigned)
                             : TOMORROW,
                         "Date is too early"
                     )
@@ -149,7 +149,7 @@ const RegisterEmployeePortal = ({
                         })
                     ),
             }),
-        [currentRegistered?.date_issued, isEdit]
+        [currentRegistered?.date_assigned, isEdit]
     );
 
     const methods = useForm({
@@ -167,7 +167,7 @@ const RegisterEmployeePortal = ({
         clearErrors,
     } = methods;
 
-    const date = watch("dateIssued");
+    const date = watch("dateAssigned");
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -361,7 +361,7 @@ const RegisterEmployeePortal = ({
             {
                 ...data,
                 employees,
-                dateIssued: format(data.dateIssued, "yyyy-MM-dd"),
+                dateAssigned: format(data.dateAssigned, "yyyy-MM-dd"),
             },
             {
                 onStart() {
@@ -398,7 +398,7 @@ const RegisterEmployeePortal = ({
                 {
                     ...data,
                     employees,
-                    dateIssued: format(data.dateIssued, "yyyy-MM-dd"),
+                    dateAssigned: format(data.dateAssigned, "yyyy-MM-dd"),
                 },
                 {
                     onStart() {
@@ -600,15 +600,15 @@ const RegisterEmployeePortal = ({
                                                     value={date}
                                                     onChange={(val) =>
                                                         setValue(
-                                                            "dateIssued",
+                                                            "dateAssigned",
                                                             val
                                                         )
                                                     }
                                                     minDate={
                                                         isEdit &&
-                                                        currentRegistered?.date_issued
+                                                        currentRegistered?.date_assigned
                                                             ? new Date(
-                                                                  currentRegistered.date_issued
+                                                                  currentRegistered.date_assigned
                                                               )
                                                             : TOMORROW
                                                     }
@@ -622,7 +622,7 @@ const RegisterEmployeePortal = ({
                                                         />
                                                     )}
                                                 />
-                                                {!!errors.dateIssued
+                                                {!!errors.dateAssigned
                                                     ?.message && (
                                                     <FormHelperText
                                                         error
@@ -631,7 +631,7 @@ const RegisterEmployeePortal = ({
                                                         }}
                                                     >
                                                         {
-                                                            errors.dateIssued
+                                                            errors.dateAssigned
                                                                 .message
                                                         }
                                                     </FormHelperText>

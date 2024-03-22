@@ -31,7 +31,7 @@ class ToolboxTalkController extends Controller
 
 		[$employees, $preplanning] = $tbtService->getAssignedEmployees();
 
-		$sequenceNo = $tbtService->preplanningLatestSequenceNumber();
+		$sequenceNo = $tbtService->tbtTrackerLatestSequenceNumber();
 
 
 		$projectDetails = DocumentProjectDetail::where("sub_id", $user->subscriber_id)->get()->groupBy("title");

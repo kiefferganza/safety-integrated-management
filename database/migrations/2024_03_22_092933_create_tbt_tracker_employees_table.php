@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tbt_pre_planning_assigneds', function (Blueprint $table) {
+        Schema::create('tbt_tracker_employees', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger("preplanning");
-            $table->foreign("preplanning")->references("id")->on("tbt_pre_plannings")->cascadeOnDelete();
+            $table->unsignedBigInteger("tracker");
+            $table->foreign("tracker")->references("id")->on("tbt_trackers")->cascadeOnDelete();
             $table->unsignedInteger('emp_id');
 			$table->foreign('emp_id')->references('employee_id')->on('tbl_employees');
             $table->string("witness");
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tbt_pre_planning_assigneds');
+        Schema::dropIfExists('tbt_tracker_employees');
     }
 };
