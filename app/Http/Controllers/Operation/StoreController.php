@@ -59,7 +59,7 @@ class StoreController extends Controller
         ]);
 
 		$store = Store::create(array_merge($request->except('images'), [
-			'user_id' => $user->user_id,
+			'user_id' => $user->id,
 			'employee_id' => $user->emp_id,
 			'subscriber_id' => $user->subscriber_id
 		]));

@@ -26,7 +26,7 @@ class DepartmentController extends Controller
 		Department::create([
 			"department" => $request->department,
 			"sub_id" => $user->subscriber_id,
-			"user_id" => $user->user_id,
+			"user_id" => $user->id,
 			"is_deleted" => 0
 		]);
 		return redirect()->back()

@@ -70,7 +70,7 @@ class InventoryController extends Controller
 		$inventory->try = $request->type;
 		$inventory->item_currency = $request->item_currency;
 		$inventory->item_price = $request->item_price;
-		$inventory->user_id = $user->user_id;
+		$inventory->user_id = $user->id;
 		$inventory->is_removed = 0;
 		
 		if($request->hasFile("img_src")) {

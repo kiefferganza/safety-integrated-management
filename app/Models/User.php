@@ -19,8 +19,6 @@ class User extends Authenticatable implements HasMedia
 
 	protected $table = 'users';
 
-	protected $primaryKey = 'user_id';
-
 	const CREATED_AT = 'date_created';
 
 	public $timestamps = false;
@@ -56,7 +54,7 @@ class User extends Authenticatable implements HasMedia
 		'remember_token',
 	];
 
-	protected $appends = ['profile'];
+	protected $appends = ['profile', 'user_id'];
 
 	/**
 	 * The attributes that should be cast.
@@ -73,10 +71,10 @@ class User extends Authenticatable implements HasMedia
 		
 		static::updated(function(User $user) {
 			$authUser = auth()->user();
-			if($authUser->user_id === $user->user_id) {
-				cache()->forget("authUser:" . $user->user_id);
+			if($authUser->id === $user->id) {
+				cache()->forget("authUser:" . $user->id);
 
-				cache()->rememberForever("authUser:".$user->user_id, function() use($user) {
+				cache()->rememberForever("authUser:".$user->id, function() use($user) {
 					$user->load([
 						"employee" => function($query) {
 							$query->leftJoin("tbl_company", "tbl_employees.company", "tbl_company.company_id")
@@ -87,7 +85,7 @@ class User extends Authenticatable implements HasMedia
 					
 					return [
 						"user" => [
-							"user_id" => $user->user_id,
+							"id" => $user->id,
 							"firstname" => $user->firstname,
 							"lastname" => $user->lastname,
 							"username" => $user->username,
@@ -129,7 +127,7 @@ class User extends Authenticatable implements HasMedia
 	}
 
 	public function createdEmployees() {
-		return $this->hasMany(Employee::class, "created_by", "user_id");
+		return $this->hasMany(Employee::class, "created_by", "id");
 	}
 
 	public function position() {
@@ -138,12 +136,12 @@ class User extends Authenticatable implements HasMedia
 
 	public function documents()
 	{
-		return $this->hasMany(Document::class, "user_id");
+		return $this->hasMany(Document::class, "id", "user_id");
 	}
 
 	public function files()
 	{
-		return $this->hasMany(FileModel::class, "user_id");
+		return $this->hasMany(FileModel::class, "id", "user_id");
 	}
 
 	public function document_review()
@@ -161,7 +159,7 @@ class User extends Authenticatable implements HasMedia
 	}
 
 	public function social_accounts() {
-		return $this->hasMany(SocialAccount::class, 'user_id', 'user_id');
+		return $this->hasMany(SocialAccount::class, 'user_id', 'id');
 	}
 
 	public function following() {
@@ -170,8 +168,8 @@ class User extends Authenticatable implements HasMedia
 	
 
 	public function getProfileMedia(): Media|null {
-        if($this->user_id) {
-            return Media::where("model_type", User::class)->where("model_id", $this->user_id)->whereJsonContains("custom_properties", ["primary" => true])->first();
+        if($this->id) {
+            return Media::where("model_type", User::class)->where("model_id", $this->id)->whereJsonContains("custom_properties", ["primary" => true])->first();
         }
         return null;
     }
@@ -190,6 +188,11 @@ class User extends Authenticatable implements HasMedia
 			];
 		}
 		return null;
+	}
+
+
+	public function getUserIdAttribute() {
+		return $this?->id;
 	}
 
 	// public function getFullnameAttribute() {

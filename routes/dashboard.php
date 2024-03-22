@@ -8,7 +8,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FilePageController;
 use App\Http\Controllers\HSE\InhouseTrainingController;
-use App\Http\Controllers\HSE\TbtPreplanningController;
+use App\Http\Controllers\HSE\TbtTrackerController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\InspectionController;
@@ -299,10 +299,10 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::delete('/statistic/{statistic}/delete', [ToolboxTalkController::class, "destroyStatistic"]);
 
 		Route::prefix('preplanning')->as('preplanning.')->group(function() {
-			Route::get("/tbt-tracker", [TbtPreplanningController::class, "tracker"])->name('tracker');
-			Route::post("/assign-employee", [TbtPreplanningController::class, "assignEmployee"])->name("assignEmployee");
-			Route::post("/edit-assign-employee/{tbtPrePlanning}", [TbtPreplanningController::class, "editAssignedEmployee"])->name("editAssignedEmployee");
-			Route::post("/delete-assign-employees", [TbtPreplanningController::class, "deleteAssignEmployee"])->name("deleteAssignEmployee");
+			Route::get("/tbt-tracker", [TbtTrackerController::class, "tracker"])->name('tracker');
+			Route::post("/assign-employee", [TbtTrackerController::class, "assignEmployee"])->name("assignEmployee");
+			Route::post("/edit-assign-employee/{tbtPrePlanning}", [TbtTrackerController::class, "editAssignedEmployee"])->name("editAssignedEmployee");
+			Route::post("/delete-assign-employees", [TbtTrackerController::class, "deleteAssignEmployee"])->name("deleteAssignEmployee");
 		});
 	});
 

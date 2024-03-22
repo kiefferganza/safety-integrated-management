@@ -201,7 +201,7 @@ class Document extends Model
 
 	public function user()
 	{
-		return $this->belongsTo(User::class, "user_id");
+		return $this->belongsTo(User::class, "user_id", "emp_id");
 	}
 
 	public function external_history() {

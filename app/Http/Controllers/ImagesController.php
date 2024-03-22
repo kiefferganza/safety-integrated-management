@@ -44,7 +44,7 @@ class ImagesController extends Controller
 		foreach ($request->images as $image) {
 			Images::create([
 				"type" => "slider",
-				"user_id" => auth()->user()->user_id
+				"user_id" => auth()->user()->id
 			])->addMedia($image)->toMediaCollection("slider");
 		}
 		return redirect()->back()

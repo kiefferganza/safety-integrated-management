@@ -159,7 +159,7 @@ class ToolboxTalkController extends Controller
 
 		$statistic = TbtStatistic::create([
 			"year" => (string)$request->year,
-			"user_id" => $user->user_id,
+			"user_id" => $user->id,
 			"employee_id" => $user->emp_id,
 			// "file_src" => $file->getClientOriginalName()
 		]);

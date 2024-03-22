@@ -60,6 +60,9 @@ class NewTrainingNotification extends Notification
 		$user = auth()->user();
 		$userName = $user->firstname . ' ' . $user->lastname;
 
+		/**
+		 * @var App\Models\User $user
+		 */
 		$profile = $user->getFirstMedia("profile", ["primary" => true]);
 		if($profile) {
 			$path = "user/" . md5($profile->id . config('app.key')). "/" .$profile->file_name;
@@ -126,7 +129,7 @@ class NewTrainingNotification extends Notification
 			'category' => 'Training - '. $moduleType['name'],
 			'message' => '<p>CMS: <strong>'. strtoupper($form_number). '</strong></p>',
 			'creator' => [
-				'user_id' => $user->user_id,
+				'user_id' => $user->id,
 				'name' => $userName,
 				'profile' => $profile
 			],

@@ -113,38 +113,3 @@ Route::middleware('auth')->as('api.')->group(function ()
 		Route::post('/generate-url/{document}', [FolderApiController::class, 'generateUrl'])->name('generate-url');
 	});
 });
-
-// Route::get("/update", function() {
-// 	$emp = Employee::where("is_deleted", 1)->get();
-// 	foreach ($emp as $e) {
-// 		$e->toolboxTalks()->delete();
-// 		$e->delete();
-// 	}
-// 	dd($emp);
-// });
-
-// Route::get("/update", function() {
-// 	$users = User::where("emp_id", "!=", null)->get();
-// 	foreach ($users as $user) {
-// 		if($user->employee) {
-// 			$emp = $user->employee;
-// 			if(!$emp->user_id) {
-// 				$emp->user_id = $user->user_id;
-// 				$emp->save();
-// 			}
-// 		}
-// 	}
-// });
-
-// Route::get("delete/user", function() {
-// 	$users = User::where("deleted", 1)->get();
-// 	foreach ($users as $user) {
-// 		if($user->profile_pic) {
-// 			if(Storage::exists("public/media/docs/" . $user->profile_pic)) {
-// 				Storage::delete("public/media/docs/" . $user->profile_pic);
-// 			}
-// 		}
-// 		$user->delete();
-// 	}
-// 	dd($users);
-// });

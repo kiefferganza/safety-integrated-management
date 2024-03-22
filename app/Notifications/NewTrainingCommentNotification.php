@@ -60,6 +60,10 @@ class NewTrainingCommentNotification extends Notification
 		$training = $this->training;
 		$type = $this->type;
 		$user = auth()->user();
+        /**
+         * @var App\Models\User $user
+         */
+
 		$userName = $user->firstname . ' ' . $user->lastname;
 
 		$profile = $user->getFirstMedia("profile", ["primary" => true]);
@@ -97,7 +101,7 @@ class NewTrainingCommentNotification extends Notification
 			'params' => $training->training_id,
 			'category' => 'Training',
 			'creator' => [
-				'user_id' => $user->user_id,
+				'user_id' => $user->id,
 				'name' => $userName,
 				'profile' => $profile
 			],

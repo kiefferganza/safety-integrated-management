@@ -22,7 +22,7 @@ class ImageApiController extends Controller
 		$media = Media::findOrFail($request->mediaId);
 		$media->setCustomProperty('primary', true);
 		$media->save();
-		cache()->forget("authUser:".$user->user_id);
+		cache()->forget("authUser:".$user->id);
 
 		return redirect()->back()
 		->with("message", Str::ucfirst($request->collectionName) . " changed successfully!")
@@ -36,11 +36,12 @@ class ImageApiController extends Controller
 		if($collectionName && $hasPrimaryProperty) {
 			$isPrimary = $media->getCustomProperty('primary');
 		}
+		$id = $media->model_id;
 		$media->delete();
 
 		// IF PROFILE PIC
 		if($isPrimary) {
-			cache()->forget("authUser:".$media->model_id);
+			cache()->forget("authUser:".$id);
 		}
 
 		return redirect()->back()

@@ -22,7 +22,7 @@ class UserApiController extends Controller
 			$userApiService
 				->unsetUserImage($user)
 				->addImageToUserByCollectionName($user, "cover");
-			cache()->forget("authUser:".$user->user_id);
+			cache()->forget("authUser:".$user->id);
 		}
 		
 		return redirect()->back()
@@ -85,7 +85,7 @@ class UserApiController extends Controller
 			$userApiService
 				->unsetUserImage($user)
 				->addImageToUserByCollectionName($user, "profile_pic");
-			cache()->forget("authUser:".$user->user_id);
+			cache()->forget("authUser:".$user->id);
 		}
 		
 		return redirect()->back()
@@ -98,6 +98,9 @@ class UserApiController extends Controller
 		$user = auth()->user();
 		$notifications = [];
 		if($user) {
+			/**
+			 * @var App\Models\User $user
+			 */
 			try {
 				$notifications = $user->notifications()->get();
 			} catch (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e) {
@@ -114,6 +117,9 @@ class UserApiController extends Controller
 	public function readNotifications(Request $request) {
 		$request->validate(['ids' => ['array', 'required']]);
 		$user = auth()->user();
+		/**
+		 * @var App\Models\User $user
+		 */
 		$user->notifications()->whereIn('id', $request->ids)->where('read_at', null)->update(['read_at' => new DateTime()]);
 		return response()->json([]);
 	}
@@ -122,15 +128,15 @@ class UserApiController extends Controller
 	public function getEmails() {
 		$user = auth()->user();
 		$data = [];
-		$users = User::select('email', 'user_id')->where('subscriber_id', $user->subscriber_id)->where('deleted', 0)->get();
+		$users = User::select('email', 'id')->where('subscriber_id', $user->subscriber_id)->where('deleted', 0)->get();
 		foreach ($users as $u) {
 			$data[] = [
 				'email' => $u->email,
-				'user_id' => $u->user_id,
+				'id' => $u->id,
 				'type' => 'Users'
 			];
 		}
-		$employees = Employee::select('email', 'employee_id')->where('user_id', null)->where('sub_id', $user->subscriber_id)->where('is_deleted', 0)->get();
+		$employees = Employee::select('email', 'employee_id')->where('id', null)->where('sub_id', $user->subscriber_id)->where('is_deleted', 0)->get();
 		foreach ($employees as $emp) {
 			$data[] = [
 				'email' => $emp->email,

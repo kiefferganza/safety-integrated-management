@@ -330,7 +330,7 @@ export default function UserListPage ({ users }) {
 							onSelectAllRows={(checked) =>
 								onSelectAllRows(
 									checked,
-									dataFiltered.map((row) => row.user_id)
+									dataFiltered.map((row) => row.id)
 								)
 							}
 							action={
@@ -354,7 +354,7 @@ export default function UserListPage ({ users }) {
 									onSelectAllRows={(checked) =>
 										onSelectAllRows(
 											checked,
-											dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.user_id)
+											dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.id)
 										)
 									}
 								/>
@@ -362,11 +362,11 @@ export default function UserListPage ({ users }) {
 								<TableBody>
 									{dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
 										<UserTableRow
-											key={row.user_id}
+											key={row.id}
 											row={row}
-											selected={selected.includes(row.user_id)}
-											onSelectRow={() => onSelectRow(row.user_id)}
-											onDeleteRow={() => handleDeleteRow(row.user_id)}
+											selected={selected.includes(row.id)}
+											onSelectRow={() => onSelectRow(row.id)}
+											onDeleteRow={() => handleDeleteRow(row.id)}
 										/>
 									))}
 

@@ -58,7 +58,7 @@ class InventoryReportController extends Controller
 				->where("is_active", 0)
 				->where("sub_id", $user->subscriber_id)
 				->where("user_id", "!=", null)
-				->where("user_id", "!=", $user->user_id)
+				->where("user_id", "!=", $user->id)
 				->get(),
 			"projectDetails" => ProjectDetailService::getProjectDetails($user)
 		]);

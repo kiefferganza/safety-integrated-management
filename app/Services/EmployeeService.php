@@ -48,7 +48,6 @@ class EmployeeService {
 		$com = CompanyModel::firstOrFail($request->company);
 
 		$employee = new Employee;
-		// $employee->user_id = $user->user_id;
 		$employee->sub_id = $user->subscriber_id;
 		$employee->firstname = $request->firstname;
 		$employee->middlename = $request->middlename ? $request->middlename : " ";
@@ -63,7 +62,6 @@ class EmployeeService {
 		$employee->raw_company = $com->company_name;
 		$employee->company = $com->company_id;
 		$employee->company_type = $request->company_type;
-		// $employee->nationality = (int)$request->nationality;
 		$employee->country = $request->country;
 		$employee->birth_date = $request->birth_date;
 		$employee->is_active = 0;

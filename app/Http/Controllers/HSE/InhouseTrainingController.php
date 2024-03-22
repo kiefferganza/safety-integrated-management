@@ -114,7 +114,7 @@ class InhouseTrainingController extends Controller
 		$user = auth()->user();
 		$training = new Training;
 
-		$training->user_id = $user->user_id;
+		$training->user_id = $user->id;
 		$training->employee_id = $user->emp_id;
 		$training->originator = $request->originator;
 		$training->project_code = $request->project_code;
@@ -298,7 +298,7 @@ class InhouseTrainingController extends Controller
 		$course = new TrainingCourses();
 		$course->course_name = $request->course_name;
 		$course->type = 'in-house';
-		$course->user_id = $user->user_id;
+		$course->user_id = $user->id;
 		$course->sub_id = $user->subscriber_id;
 		$course->save();
 

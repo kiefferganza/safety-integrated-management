@@ -3,7 +3,7 @@
 namespace App\Services\API;
 
 use App\Models\Employee;
-use App\Models\TbtPrePlanning;
+use App\Models\TbtTracker;
 use App\Models\ToolboxTalk;
 use App\Models\User;
 use Illuminate\Support\Facades\URL;
@@ -61,43 +61,45 @@ class ToolboxTalkApiService
 
  public function getAssignedEmployees() {
   $employees = $this->getEmployees();
-  $preplanning = TbtPrePlanning::with("assigned")
-  ->orderBy("date_issued", "desc")
+  $preplanning = TbtTracker::query()
+  ->select("tbt_trackers.*")
+  ->with("tracker_employees")
+  ->orderBy("date_assigned", "desc")
   ->get()
   ->transform(function ($pre) use($employees)
   {
     $this->trackDailyStatus = true;
-    $employee = $employees->find($pre->created_by);
+    $employee = $employees->find($pre->emp_id);
     if($employee) {
       $pre->fullname = $employee->fullname;
       $pre->img = $employee->img;
       $pre->position = $employee->position;
     }
-    // $date = Carbon::parse($pre->date_issued);
+    // $date = Carbon::parse($pre->date_assigned);
     // $startDay = $date->startOfDay();
     // $endDay = $date->endOfDay();
-    $pre->assigned->transform(function($ass) use($employees, $pre) {
-      $emp = $employees->find($ass->emp_id);
-      $ass->fullname = $emp->fullname;
-      $ass->img = $emp->img;
-      $ass->position = $emp->position;
-      $ass->date_issued = $pre->date_issued;
+    $pre->tracker_employees->transform(function($trackerEmployee) use($employees, $pre) {
+      $emp = $employees->find($trackerEmployee->emp_id);
+      $trackerEmployee->fullname = $emp->fullname;
+      $trackerEmployee->img = $emp->img;
+      $trackerEmployee->position = $emp->position;
+      $trackerEmployee->date_assigned = $pre->date_assigned;
 
-      $ass->submittedTbt = ToolboxTalk::query()
+      $trackerEmployee->submittedTbt = ToolboxTalk::query()
         ->select("tbt_id", "date_created")
         ->where("tbl_toolbox_talks.is_deleted", 0)
-        ->where("tbl_toolbox_talks.employee_id", $ass->emp_id)
-        ->where("tbl_toolbox_talks.location", $ass->location)
-        ->where("tbl_toolbox_talks.tbt_type", $ass->tbt_type)
-        ->whereDate("tbl_toolbox_talks.date_created", $pre->date_issued)
+        ->where("tbl_toolbox_talks.employee_id", $trackerEmployee->emp_id)
+        ->where("tbl_toolbox_talks.location", $trackerEmployee->location)
+        ->where("tbl_toolbox_talks.tbt_type", $trackerEmployee->tbt_type)
+        ->whereDate("tbl_toolbox_talks.date_created", $pre->date_assigned)
         ->first();
 
-      $ass->status = $ass->submittedTbt !== null;
+      $trackerEmployee->status = $trackerEmployee->submittedTbt !== null;
 
-      if(!$ass->status && $this->trackDailyStatus) {
+      if(!$trackerEmployee->status && $this->trackDailyStatus) {
         $this->trackDailyStatus = false;
       }
-      return $ass;
+      return $trackerEmployee;
     });
     $pre->status = $this->trackDailyStatus;
     $this->trackDailyStatus = false;
@@ -108,7 +110,7 @@ class ToolboxTalkApiService
  }
 
  public function preplanningLatestSequenceNumber() {
-  $sequence = TbtPrePlanning::count() + 1;
+  $sequence = TbtTracker::count() + 1;
   return str_pad($sequence, 6, '0', STR_PAD_LEFT);
  }
 }

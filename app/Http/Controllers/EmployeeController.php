@@ -47,32 +47,29 @@ class EmployeeController extends Controller
 				["tbl_employees.sub_id", $user->subscriber_id],
 				["tbl_employees.is_deleted", 0]
 			])
-			->with([
-				"user" => fn ($q) => $q->select("user_id")
-			])
 			->get()
 			->transform(function ($employee)
 			{
+				/**
+				 * @var App\Models\Employee $employee
+				 */
 				$employee->profile = null;
-				if ($employee->user)
+				$profile = $employee->profile();
+				if ($profile)
 				{
-					$profile = $employee->user->getFirstMedia("profile", ["primary" => true]);
-					if ($profile)
-					{
-						$path = "user/" . md5($profile->id . config('app.key')) . "/" . $profile->file_name;
-						$employee->profile = [
-							"url" => URL::route("image", ["path" => $path]),
-							"thumbnail" => URL::route("image", ["path" => $path, "w" => 40, "h" => 40, "fit" => "crop"]),
-							"small" => URL::route("image", ["path" => $path, "w" => 128, "h" => 128, "fit" => "crop"])
-						];
-					}
+					$path = "user/" . md5($profile->id . config('app.key')) . "/" . $profile->file_name;
+					$employee->profile = [
+						"url" => URL::route("image", ["path" => $path]),
+						"thumbnail" => URL::route("image", ["path" => $path, "w" => 40, "h" => 40, "fit" => "crop"]),
+						"small" => URL::route("image", ["path" => $path, "w" => 128, "h" => 128, "fit" => "crop"])
+					];
 				}
 				return $employee;
 			});
 
 		return Inertia::render("Dashboard/Management/Employee/List/index", [
 			"employees" => $employees,
-			"unassignedUsers" => User::select("username", "user_id")->where("emp_id", null)->get()
+			"unassignedUsers" => User::select("username", "id")->where("emp_id", null)->get()
 		]);
 	}
 
@@ -140,6 +137,9 @@ class EmployeeController extends Controller
 	{
 		$user = auth()->user();
 
+		/**
+		 * @var App\Models\User $user
+		 */
 		if ($user->cannot("employee_edit") && $employee->employee_id !== $user->emp_id)
 		{
 			abort(403);
@@ -157,6 +157,9 @@ class EmployeeController extends Controller
 	public function edit(EmployeeRequest $request, Employee $employee)
 	{
 		$user = auth()->user();
+		/**
+		 * @var App\Models\User $user
+		 */
 		if ($user->cannot("employee_edit") && $employee->employee_id !== $user->emp_id)
 		{
 			abort(403);
@@ -174,6 +177,9 @@ class EmployeeController extends Controller
 	{
 		$user = auth()->user();
 
+		/**
+		 * @var App\Models\User $user
+		 */
 		if ($user->cannot("employee_show") && $employee->employee_id !== $user->emp_id)
 		{
 			abort(403);
@@ -230,6 +236,10 @@ class EmployeeController extends Controller
 	public function profileGallery(Employee $employee)
 	{
 		$user = auth()->user();
+
+		/**
+		 * @var App\Models\User $user
+		 */
 		if ($user->cannot("employee_show") && $employee->employee_id !== $user->emp_id)
 		{
 			abort(403);
@@ -328,7 +338,7 @@ class EmployeeController extends Controller
 		if ($user)
 		{
 			$user->emp_id = $employee->employee_id;
-			$employee->user_id = $user->user_id;
+			$employee->user_id = $user->id;
 			// $employee->firstname = $user->firstname;
 			$employee->save();
 			$user->save();

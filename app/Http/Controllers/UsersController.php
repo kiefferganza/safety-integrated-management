@@ -26,7 +26,7 @@ class UsersController extends Controller
 	{
 		$user = auth()->user();
 
-		$userslist = User::select(DB::raw("users.user_id, users.username, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id"))
+		$userslist = User::select(DB::raw("users.id, users.username, tbl_employees.firstname, tbl_employees.lastname, tbl_employees.email, users.user_type, users.status, users.date_created, tbl_employees.lastname, tbl_employees.firstname, users.emp_id"))
 		->with("social_accounts")
 		->join("tbl_employees", "users.emp_id", "tbl_employees.employee_id")
 		->where([
@@ -83,7 +83,7 @@ class UsersController extends Controller
 		$user->lastname = $request->lastname;
 		$user->email = $request->email;
 		$user->user_type = $request->user_type;
-		$user->subscriber_id = auth()->user()->user_id;
+		$user->subscriber_id = auth()->user()->subscriber_id;
 		$user->status = 1;
 		$user->deleted = 0;
 		$user->date_updated = Carbon::now();
@@ -143,7 +143,7 @@ class UsersController extends Controller
 		$emp = Employee::find($request->emp_id);
 
 		if($emp && $user) {
-			$emp->user_id = $user->user_id;
+			$emp->user_id = $user->id;
 			$emp->email = $user->email;
 			$emp->save();
 		}
@@ -160,10 +160,10 @@ class UsersController extends Controller
 		]);
 
 		foreach ($request->ids as $id) {
-			$user = User::where("user_id", $id)->first();
+			$user = User::where("id", $id)->first();
 			$user->deleted = 1;
 			$user->save();
-			Employee::where("user_id", $id)->update(["user_id" => null]);
+			Employee::where("id", $id)->update(["user_id" => null]);
 		}
 		
 		return redirect()->back()
@@ -196,7 +196,7 @@ class UsersController extends Controller
 
 
 	public function show(User $user) {
-		if(auth()->user()->user_id === $user->user_id) {
+		if(auth()->user()->id === $user->id) {
 			return redirect()->route('management.user.profile');
 		}
 
@@ -297,7 +297,7 @@ class UsersController extends Controller
 
 		$user->save();
 
-		cache()->forget("authUser:".$user->user_id);
+		cache()->forget("authUser:".$user->id);
 
 		if($request->about && $user->emp_id) {
 			Employee::find($user->emp_id)->update(["about" => $request->about]);
@@ -338,7 +338,7 @@ class UsersController extends Controller
 	public function cards()
 	{
 
-			$users = User::select("user_id", "user_type", "status", "firstname", "lastname", "date_created", "emp_id")
+			$users = User::select("id", "user_type", "status", "firstname", "lastname", "date_created", "emp_id")
 			->where("deleted", 0)
 			->with([
 				"employee" => fn($query) => $query->withCount("trainings"),
@@ -365,28 +365,28 @@ class UsersController extends Controller
 
 		if($request->facebook) {
 			SocialAccount::firstOrCreate(
-				[ "user_id" => $user->user_id, "type" => "facebook" ],
+				[ "user_id" => $user->id, "type" => "facebook" ],
 				[ "social_link" => $request->facebook ]
 			);
 		}
 
 		if($request->instagram) {
 			SocialAccount::firstOrCreate(
-				[ "user_id" => $user->user_id, "type" => "instagram" ],
+				[ "user_id" => $user->id, "type" => "instagram" ],
 				[ "social_link" => $request->instagram ]
 			);
 		}
 
 		if($request->linkedin) {
 			SocialAccount::firstOrCreate(
-				[ "user_id" => $user->user_id, "type" => "linkedin" ],
+				[ "user_id" => $user->id, "type" => "linkedin" ],
 				[ "social_link" => $request->linkedin ]
 			);
 		}
 
 		if($request->twitter) {
 			SocialAccount::firstOrCreate(
-				[ "user_id" => $user->user_id, "type" => "twitter" ],
+				[ "user_id" => $user->id, "type" => "twitter" ],
 				[ "social_link" => $request->twitter ]
 			);
 		}
@@ -400,7 +400,7 @@ class UsersController extends Controller
 	// public function followUser($user_id) {
 	// 	$user = auth()->user();
 	// 	Follower::firstOrCreate([
-	// 		"user_id" => $user->user_id,
+	// 		"user_id" => $user->id,
 	// 		"following_id" => $user_id,
 	// 	]);
 	// 	return redirect()->back();
@@ -416,6 +416,9 @@ class UsersController extends Controller
 		$user = auth()->user();
 
 		if(Hash::check($request->oldPassword, $user->password)) {
+			/**
+			 * @var App\Models\User $user
+			 */
 			$user->password = Hash::make($request->newPassword);
 			$user->save();
 
@@ -429,7 +432,11 @@ class UsersController extends Controller
 
 
 	public function settings() {
-		$images = auth()->user()->can("image_upload_slider") ?
+		$user = auth()->user();
+		/**
+		 * @var App\Models\User $user
+		 */
+		$images = $user->can("image_upload_slider") ?
 			Images::where("type", "slider")->get()->transform(function ($img) {
 				$image = $img->getFirstMedia("slider");
 				$path = "images/" . md5($image->id . config('app.key')). "/" .$image->file_name;

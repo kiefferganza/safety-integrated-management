@@ -42,7 +42,7 @@ class HandleInertiaRequests extends Middleware
 		$authData = [];
 		if ($user)
 		{
-			$authData = cache()->rememberForever("authUser:" . $user->user_id, function () use($user)
+			$authData = cache()->rememberForever("authUser:" . $user->id, function () use($user)
 			{
 				/**
 				 * @var App\Models\User $user
@@ -56,7 +56,7 @@ class HandleInertiaRequests extends Middleware
 					}
 				]);
 				$userData = [
-					"user_id" => $user->user_id,
+					"id" => $user->id,
 					"firstname" => $user->firstname,
 					"lastname" => $user->lastname,
 					"username" => $user->username,

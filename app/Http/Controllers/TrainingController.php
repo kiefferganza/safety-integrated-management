@@ -113,7 +113,7 @@ class TrainingController extends Controller
 		$user = Auth::user();
 		$training = new Training;
 
-		$training->user_id = $user->user_id;
+		$training->user_id = $user->id;
 		$training->employee_id = $user->emp_id;
 		$training->originator = $request->originator;
 		$training->project_code = $request->project_code;
@@ -824,7 +824,7 @@ class TrainingController extends Controller
 			$courses[] = [
 				'course_name' => $course['course_name'],
         'type' => null,
-				'user_id' => $user->user_id,
+				'user_id' => $user->id,
 				'sub_id' => $user->subscriber_id,
         'last_used' => null,
 				'created_at' => now()

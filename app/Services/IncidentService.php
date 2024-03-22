@@ -187,7 +187,7 @@ class IncidentService {
 			"mechanism_other" => $request->mechanism_other,
 			"nature_other" => $request->nature_other,
 			"employee_id" => $user->emp_id,
-			"user_id" => $user->user_id,
+			"user_id" => $user->id,
 		]);
 
 		if($request->hasFile("employee_signiture")) {
