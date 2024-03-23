@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 // @mui
 const {
     Card,
@@ -70,6 +70,8 @@ export default function RegisterPage({
     filters,
     table,
     openPDF,
+    setTableData,
+    tableData,
 }) {
     const queryClient = useQueryClient();
     const { load, stop } = useSwal();
@@ -162,43 +164,43 @@ export default function RegisterPage({
         setOpenConfirm(false);
     };
 
-    const handleDeleteRow = (id) => () => {
+    const handleDeleteRow = useCallback((id) => () => {
+        const tmpData = [...tableData];
         Inertia.post(
             route("toolboxtalk.management.preplanning.deleteAssignEmployee"),
             { ids: [id] },
             {
                 onStart() {
                     load("Deleting assigned employee's", "Please wait...");
+                    setTableData((data) => data.filter((d) => d.id !== id));
+                },
+                onError() {
+                    setTableData(tmpData);
                 },
                 onFinish() {
-                    queryClient.invalidateQueries({
-                        queryKey: [
-                            "toolboxtalks.preplanning.tbtDailies",
-                            user.subscriber_id,
-                        ],
-                    });
                     setPage(0);
                     stop();
                 },
             }
         );
-    };
+    });
 
-    const handleDeleteRows = (ids) => {
+    const handleDeleteRows = (ids = []) => {
+        const tmpData = [...tableData];
         Inertia.post(
             route("toolboxtalk.management.preplanning.deleteAssignEmployee"),
             { ids },
             {
                 onStart() {
                     load("Deleting assigned employee's", "Please wait...");
+                    setTableData((data) =>
+                        data.filter((d) => !ids.includes(d.id))
+                    );
+                },
+                onError() {
+                    setTableData(tmpData);
                 },
                 onFinish() {
-                    queryClient.invalidateQueries({
-                        queryKey: [
-                            "toolboxtalks.preplanning.tbtDailies",
-                            user.subscriber_id,
-                        ],
-                    });
                     setPage(0);
                     setSelected([]);
                     stop();

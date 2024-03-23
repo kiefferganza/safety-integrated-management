@@ -1,6 +1,4 @@
-import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { ListboxComponent } from "@/Components/auto-complete";
-import Iconify from "@/Components/iconify";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Autocomplete, { autocompleteClasses } from "@mui/material/Autocomplete";
 import Button from "@mui/material/Button";
@@ -9,41 +7,33 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
+import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
-import Paper from "@mui/material/Paper";
+import IconButton from "@mui/material/IconButton";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
 import Popper from "@mui/material/Popper";
 import Portal from "@mui/material/Portal";
-import Stack from "@mui/material/Stack";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TextField from "@mui/material/TextField";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
+import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
+import TextField from "@mui/material/TextField";
 import { DatePicker } from "@mui/x-date-pickers";
 import PropTypes from "prop-types";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as Yup from "yup";
 
-import Scrollbar from "@/Components/scrollbar";
+import { RHFMuiSelect } from "@/Components/hook-form";
+import FormProvider from "@/Components/hook-form/FormProvider";
+import Iconify from "@/Components/iconify";
 import { useSwal } from "@/hooks/useSwal";
 import { sleep } from "@/lib/utils";
 import { Inertia } from "@inertiajs/inertia";
-import Avatar from "@mui/material/Avatar";
-import { addDays, format } from "date-fns";
-import { useQueryClient } from "@tanstack/react-query";
 import { usePage } from "@inertiajs/inertia-react";
-import { RHFMuiSelect } from "@/Components/hook-form";
-import FormProvider from "@/Components/hook-form/FormProvider";
+import { useQueryClient } from "@tanstack/react-query";
+import { addDays, format } from "date-fns";
+import EmployeeTableList from "./EmployeeTableList";
 
 const StyledPopper = styled(Popper)({
     [`& .${autocompleteClasses.listbox}`]: {
@@ -191,10 +181,6 @@ const RegisterEmployeePortal = ({
         }
     }, [fields]);
 
-    const handleRemove = (index) => () => {
-        remove(index);
-    };
-
     const handleAutocompleteName = (_, val) => {
         if (val) {
             setAutoCompleteVal(val);
@@ -264,28 +250,6 @@ const RegisterEmployeePortal = ({
         }
     };
 
-    const handleClose = () => {
-        onClose();
-        setWitnessVal("");
-        setLocationVal("");
-        setTbtTypeVal("");
-        setExactLocationVal("");
-        setAutoCompleteErr({
-            tbtType: null,
-            employee: null,
-            location: null,
-            exactLocation: null,
-        });
-        setAutoCompleteVal({
-            fullname: "",
-            emp_id: "",
-            position: "",
-            img: "",
-        });
-        setAutoCompleteInputVal("");
-        reset();
-    };
-
     const handleAdd = () => {
         const errorMessages = {
             employee: null,
@@ -341,12 +305,31 @@ const RegisterEmployeePortal = ({
                 img: "",
             });
             setWitnessVal("");
-            setLocationVal("");
-            setTbtTypeVal("");
-            setExactLocationVal("");
             setAutoCompleteInputVal("");
         }
     };
+
+    const handleRemove = useCallback((index) => () => {
+        remove(index);
+    });
+
+    const handleUpdateRow = useCallback((index) => () => {
+        const selectedRow = fields?.[index];
+        if (selectedRow) {
+            setAutoCompleteVal({
+                emp_id: selectedRow?.emp_id || "",
+                position: selectedRow?.position || "",
+                fullname: selectedRow?.fullname || "",
+                img: selectedRow?.img || "",
+            });
+            setWitnessVal(selectedRow?.witness || "");
+            setLocationVal(selectedRow?.location);
+            setTbtTypeVal(selectedRow?.tbt_type);
+            setExactLocationVal(selectedRow?.exact_location);
+            setAutoCompleteInputVal(selectedRow?.fullname);
+            remove(index);
+        }
+    });
 
     const onSubmit = (data) => {
         const employees = data.employees.map((emp) => ({
@@ -365,6 +348,7 @@ const RegisterEmployeePortal = ({
             },
             {
                 onStart() {
+                    resetForm();
                     handleClose();
                     load("Assigning employee", "Please wait...");
                 },
@@ -402,6 +386,7 @@ const RegisterEmployeePortal = ({
                 },
                 {
                     onStart() {
+                        resetForm();
                         handleClose();
                         load("Assigning employee", "Please wait...");
                     },
@@ -419,6 +404,33 @@ const RegisterEmployeePortal = ({
         }
     };
 
+    const handleClose = (_event, reason) => {
+        if (reason && reason === "backdropClick") return;
+        onClose();
+        resetForm();
+    };
+
+    const resetForm = () => {
+        reset();
+        setWitnessVal("");
+        setLocationVal("");
+        setTbtTypeVal("");
+        setExactLocationVal("");
+        setAutoCompleteErr({
+            tbtType: null,
+            employee: null,
+            location: null,
+            exactLocation: null,
+        });
+        setAutoCompleteVal({
+            fullname: "",
+            emp_id: "",
+            position: "",
+            img: "",
+        });
+        setAutoCompleteInputVal("");
+    };
+
     return (
         <Portal>
             <Dialog
@@ -432,6 +444,19 @@ const RegisterEmployeePortal = ({
                 <DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>
                     {title}
                 </DialogTitle>
+
+                <IconButton
+                    aria-label="close"
+                    onClick={handleClose}
+                    sx={{
+                        position: "absolute",
+                        right: 8,
+                        top: 8,
+                        color: (theme) => theme.palette.grey[500],
+                    }}
+                >
+                    <Iconify icon="ic:baseline-close" />
+                </IconButton>
 
                 <DialogContent
                     dividers
@@ -990,116 +1015,13 @@ const RegisterEmployeePortal = ({
                                 </Stack>
                             </Stack>
                         </FormProvider>
-                        <TableContainer component={Paper}>
-                            <Scrollbar
-                                sx={{ maxHeight: 281 }}
-                                forceVisible="y"
-                                autoHide={false}
-                                ref={scrollbarRef}
-                            >
-                                <Table
-                                    stickyHeader
-                                    size="small"
-                                    sx={{ px: 1.25 }}
-                                >
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>#</TableCell>
-                                            <TableCell>Employee Name</TableCell>
-                                            <TableCell>Position</TableCell>
-                                            <TableCell>Location</TableCell>
-                                            <TableCell>Witness</TableCell>
-                                            <TableCell>TBT Type</TableCell>
-                                            <TableCell></TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {fields.map((row, index) => (
-                                            <TableRow
-                                                key={row.id}
-                                                hover
-                                                sx={{
-                                                    "& td, & th": {
-                                                        borderBottom: 1,
-                                                    },
-                                                    cursor: "pointer",
-                                                }}
-                                                onClick={handleRemove(index)}
-                                            >
-                                                <TableCell>
-                                                    {index + 1}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Stack
-                                                        direction="row"
-                                                        alignItems="center"
-                                                        spacing={1}
-                                                    >
-                                                        <Avatar
-                                                            alt={row.fullname}
-                                                            src={row.img}
-                                                            sx={{
-                                                                width: 32,
-                                                                height: 32,
-                                                            }}
-                                                        />
 
-                                                        <Typography
-                                                            variant="subtitle2"
-                                                            noWrap
-                                                            sx={{
-                                                                marginLeft: 1,
-                                                            }}
-                                                        >
-                                                            {row.fullname}
-                                                        </Typography>
-                                                    </Stack>
-                                                </TableCell>
-                                                <TableCell>
-                                                    {row.position}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {row.location}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {row.witness}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {TYPES[row.tbt_type]}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Tooltip title="Remove">
-                                                        <IconButton color="error">
-                                                            <Iconify icon="material-symbols:close-small" />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                        {!fields.length && (
-                                            <TableRow>
-                                                <TableCell
-                                                    colSpan={12}
-                                                    sx={{ p: 0 }}
-                                                >
-                                                    <Typography
-                                                        variant="subtitle1"
-                                                        gutterBottom
-                                                        sx={{
-                                                            color: "text.disabled",
-                                                        }}
-                                                        align="center"
-                                                        pt={1}
-                                                    >
-                                                        Add an employee.
-                                                    </Typography>
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </Scrollbar>
-                        </TableContainer>
+                        <EmployeeTableList
+                            list={fields}
+                            onRemove={handleRemove}
+                            onUpdate={handleUpdateRow}
+                            ref={scrollbarRef}
+                        />
                     </Stack>
                 </DialogContent>
 

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
 import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
@@ -26,14 +26,22 @@ const index = ({ auth: { user } }) => {
 
     const table = useTable();
 
+    const [tableData, setTableData] = useState([]);
+
     const dataFiltered = applyFilter({
-        inputData: data?.preplanning || [],
+        inputData: tableData,
         comparator: getComparator(table.order, table.orderBy),
         filterName,
         filterStatus,
         filterStartDate,
         filterEndDate,
     });
+
+    useEffect(() => {
+        if (!isLoading && data) {
+            setTableData(data?.preplanning ?? []);
+        }
+    }, [isLoading, data]);
 
     const handleFilterName = (event) => {
         table.setPage(0);
@@ -174,6 +182,8 @@ const index = ({ auth: { user } }) => {
                         handleFilterEndDate={handleFilterEndDate}
                         handleResetFilter={handleResetFilter}
                         openPDF={handleOpenPDF}
+                        tableData={tableData}
+                        setTableData={setTableData}
                     />
                 </DashboardLayout>
             </Suspense>

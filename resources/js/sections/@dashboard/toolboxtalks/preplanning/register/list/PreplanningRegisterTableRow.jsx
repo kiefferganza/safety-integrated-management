@@ -85,7 +85,7 @@ export function PreplanningRegisterTableRow({
     return (
         <>
             <TableRow hover selected={selected} sx={{ width: 1 }}>
-                <TableCell onClick={handleTriggerCollapse} padding="checkbox">
+                <TableCell padding="checkbox">
                     <Checkbox checked={selected} onClick={onSelectRow} />
                 </TableCell>
 

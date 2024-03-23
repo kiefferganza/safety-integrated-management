@@ -301,7 +301,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::prefix('preplanning')->as('preplanning.')->group(function() {
 			Route::get("/tbt-tracker", [TbtTrackerController::class, "tracker"])->name('tracker');
 			Route::post("/assign-employee", [TbtTrackerController::class, "assignEmployee"])->name("assignEmployee");
-			Route::post("/edit-assign-employee/{tbtPrePlanning}", [TbtTrackerController::class, "editAssignedEmployee"])->name("editAssignedEmployee");
+			Route::post("/edit-assign-employee/{tbtTracker}", [TbtTrackerController::class, "editAssignedEmployee"])->name("editAssignedEmployee");
 			Route::post("/delete-assign-employees", [TbtTrackerController::class, "deleteAssignEmployee"])->name("deleteAssignEmployee");
 		});
 	});

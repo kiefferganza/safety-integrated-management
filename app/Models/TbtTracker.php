@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TbtTracker extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $guarded = [];
     protected $appends = ['form_number'];
@@ -16,7 +17,7 @@ class TbtTracker extends Model
 		parent::boot();
 		
 		static::creating(function(TbtTracker $tbtTracker) {
-			$sequence = TbtTracker::count() + 1;
+			$sequence = TbtTracker::withTrashed()->count() + 1;
 			$tbtTracker->sequence_no = str_pad($sequence, 6, '0', STR_PAD_LEFT);
 		});
 	}

@@ -120,7 +120,7 @@ class ToolboxTalkApiService
  }
 
  public function tbtTrackerLatestSequenceNumber() {
-  $sequence = TbtTracker::count() + 1;
+  $sequence = TbtTracker::withTrashed()->count() + 1;
   return str_pad($sequence, 6, '0', STR_PAD_LEFT);
  }
 }

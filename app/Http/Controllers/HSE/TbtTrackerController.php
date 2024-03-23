@@ -64,7 +64,7 @@ class TbtTrackerController extends Controller
             "project_code" => ["required", "string"],
             "document_type" => ["required", "string"],
             "discipline" => ["required", "string"],
-            "originator" => ["required", "string"],
+            "originator" => ["required", "string"], 
         ]);
         $tbtTracker->date_assigned = $request->dateAssigned;
         $tbtTracker->project_code = $request->project_code;
@@ -91,10 +91,11 @@ class TbtTrackerController extends Controller
         $request->validate([
             "ids" => ["required", "array", "min:1"]
         ]);
-        TbtTracker::whereIn("id", $request->ids)->delete();
+
+        TbtTracker::whereIn("id", $request->ids)->update(["deleted_at" => now()]);
 
         return redirect()->back()
-            ->with("message", "Delete successfully")
-            ->with("type", "success");
+        ->with("message", "Delete successfully")
+        ->with("type", "success");
     }
 }
