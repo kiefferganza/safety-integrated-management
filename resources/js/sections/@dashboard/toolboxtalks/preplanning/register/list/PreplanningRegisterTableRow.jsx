@@ -27,7 +27,7 @@ import { fDate } from "@/utils/formatTime";
 import ConfirmDialog from "@/Components/confirm-dialog";
 import Iconify from "@/Components/iconify";
 import MenuPopover from "@/Components/menu-popover";
-import { isPast } from "date-fns";
+import { addDays, isPast } from "date-fns";
 import Label from "@/Components/label";
 import { Link as InertiaLink } from "@inertiajs/inertia-react";
 
@@ -80,7 +80,7 @@ export function PreplanningRegisterTableRow({
         setOpenCollapse((currState) => !currState);
     });
 
-    const isExpired = isPast(new Date(row.date_assigned).setHours(11, 59, 59));
+    const isExpired = isPast(addDays(new Date(row.date_assigned), 1));
 
     return (
         <>
