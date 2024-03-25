@@ -192,7 +192,7 @@ export function PreplanningRegisterTableRow({
                                     <TableHead>
                                         <TableRow>
                                             <TableCell>#</TableCell>
-                                            <TableCell>Name</TableCell>
+                                            <TableCell>Conducted By</TableCell>
                                             <TableCell>Position</TableCell>
                                             <TableCell>Location</TableCell>
                                             <TableCell>
@@ -200,7 +200,7 @@ export function PreplanningRegisterTableRow({
                                             </TableCell>
                                             <TableCell>Witness</TableCell>
                                             <TableCell>TBT Type</TableCell>
-                                            <TableCell>Submitted</TableCell>
+                                            <TableCell>TBT Status</TableCell>
                                             <TableCell></TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -270,11 +270,11 @@ export function PreplanningRegisterTableRow({
                                                     <TableCell align="center">
                                                         {subrow.status ? (
                                                             <Label color="success">
-                                                                Yes
+                                                                Submitted
                                                             </Label>
                                                         ) : (
                                                             <Label color="error">
-                                                                No
+                                                                Not Submitted
                                                             </Label>
                                                         )}
                                                     </TableCell>

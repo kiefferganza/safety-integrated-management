@@ -39,7 +39,7 @@ const EmployeeTableList = forwardRef(
                         <TableHead>
                             <TableRow>
                                 <TableCell>#</TableCell>
-                                <TableCell>Employee Name</TableCell>
+                                <TableCell>Condcuted By</TableCell>
                                 <TableCell>Position</TableCell>
                                 <TableCell>Location</TableCell>
                                 <TableCell>Witness</TableCell>

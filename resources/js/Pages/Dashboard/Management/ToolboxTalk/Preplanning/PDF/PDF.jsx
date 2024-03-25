@@ -1,4 +1,4 @@
-import styles from "./pdfStyles";
+import styles, { colors } from "./pdfStyles";
 import { Page, View, Text, Image, Document } from "@react-pdf/renderer";
 import { format, isSameDay, isSameMonth } from "date-fns";
 import { fDate } from "@/utils/formatTime";
@@ -396,7 +396,7 @@ export function PDF({
                                                                 styles.textWhite,
                                                             ]}
                                                         >
-                                                            PA
+                                                            Conducted By
                                                         </Text>
                                                     </View>
                                                 </View>
@@ -608,9 +608,20 @@ export function PDF({
                                                     ]}
                                                 >
                                                     <Text
-                                                        style={
-                                                            styles.tableCellText
-                                                        }
+                                                        style={[
+                                                            styles.tableCellText,
+                                                            styles.semibold,
+                                                            styles.badge,
+                                                            {
+                                                                paddingTop: 1,
+                                                                paddingBottom: 1,
+                                                                backgroundColor:
+                                                                    row.status
+                                                                        ? colors.successMain
+                                                                        : colors.errorMain,
+                                                                fontSize: 6,
+                                                            },
+                                                        ]}
                                                     >
                                                         {row.status
                                                             ? "Submitted"

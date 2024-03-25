@@ -227,6 +227,11 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     flexRow: { flexDirection: "row" },
+    badge: {
+        borderRadius: 99,
+        backgroundColor: colors.successMain,
+        ...colorStyles.textWhite,
+    },
     table: { display: "flex", width: "100%" },
     tableHeader: {
         width: "100%",
