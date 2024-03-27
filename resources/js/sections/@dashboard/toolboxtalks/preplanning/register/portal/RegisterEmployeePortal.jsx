@@ -433,7 +433,7 @@ const RegisterEmployeePortal = ({
 
     const empWithUsers = useMemo(
         () => employeeList.filter((emp) => emp.user_id),
-        []
+        [employeeList]
     );
 
     return (
