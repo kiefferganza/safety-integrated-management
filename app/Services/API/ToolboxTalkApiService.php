@@ -25,6 +25,8 @@ class ToolboxTalkApiService
 
  public function getProfile(int|null $user_id)
  {
+  if(!$user_id) return $this->userIds->get("default");
+
   $cachedProfile = $this->userIds->get($user_id);
   if($cachedProfile) {
    return $cachedProfile;
@@ -40,12 +42,10 @@ class ToolboxTalkApiService
      return $this->userIds->get("default");
     }
   }
-  return $this->userIds->get("default");
  }
 
  public function getEmployees() {
   return Employee::select("employee_id", "tbl_employees.employee_id as emp_id", "firstname", "lastname", "tbl_position.position", "tbl_employees.user_id")
-  ->whereHas("user")
   ->where([
     ["tbl_employees.is_deleted", 0],
     ["tbl_employees.is_active", 0],

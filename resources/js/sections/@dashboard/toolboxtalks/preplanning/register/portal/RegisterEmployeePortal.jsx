@@ -431,6 +431,11 @@ const RegisterEmployeePortal = ({
         setAutoCompleteInputVal("");
     };
 
+    const empWithUsers = useMemo(
+        () => employeeList.filter((emp) => emp.user_id),
+        []
+    );
+
     return (
         <Portal>
             <Dialog
@@ -675,7 +680,7 @@ const RegisterEmployeePortal = ({
                                             <Autocomplete
                                                 id="virtualize-employee-list"
                                                 value={autoCompleteVal}
-                                                options={employeeList.filter(
+                                                options={empWithUsers.filter(
                                                     (emp) =>
                                                         !fields.some(
                                                             (f) =>
