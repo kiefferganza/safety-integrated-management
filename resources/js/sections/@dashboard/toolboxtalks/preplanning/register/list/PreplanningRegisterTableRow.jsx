@@ -81,7 +81,9 @@ export function PreplanningRegisterTableRow({
     });
 
     const isExpired = isPast(addDays(new Date(row.date_assigned), 1));
-
+    const submittedCount = (row?.tracker_employees || []).filter(
+        (tr) => tr.status
+    ).length;
     return (
         <>
             <TableRow hover selected={selected} sx={{ width: 1 }}>
@@ -142,7 +144,7 @@ export function PreplanningRegisterTableRow({
                     align="left"
                     sx={{ whiteSpace: "nowrap" }}
                 >
-                    {row?.tracker_employees?.length ?? 0}
+                    {submittedCount}/{row?.tracker_employees?.length ?? 0}
                 </TableCell>
 
                 <TableCell align="right">
