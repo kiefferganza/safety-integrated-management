@@ -101,7 +101,10 @@ class ToolboxTalkApiService
         ->where("tbl_toolbox_talks.employee_id", $trackerEmployee->emp_id)
         ->where("tbl_toolbox_talks.location", $trackerEmployee->location)
         ->where("tbl_toolbox_talks.tbt_type", $trackerEmployee->tbt_type)
-        ->whereDate("tbl_toolbox_talks.date_created", $pre->date_assigned)
+        ->where(function($q) use($pre) {
+          $q->whereDate("tbl_toolbox_talks.date_conducted", $pre->date_assigned)
+          ->orWhereDate("tbl_toolbox_talks.date_created", $pre->date_assigned);
+        })
         ->first();
 
       $trackerEmployee->status = $trackerEmployee->submittedTbt !== null;
