@@ -832,7 +832,7 @@ function SummaryTotal({ submitted = 0, notSubmitted = 0 }) {
                         },
                     ]}
                 >
-                    Summary Total:
+                    Total TBT:
                 </Text>
             </View>
             {/* SUMMARY TOTAL SUBMITTED */}
