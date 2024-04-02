@@ -21,6 +21,7 @@ export function PDF({
     logo,
     data: { total, summary, dateTupple = [], pdfData = [] },
 }) {
+    // const dateFormattedString = dateTupple.length > 0 ? dateLabel(dateTupple[0], dateTupple[1]) : format("MMMM dd, yyyy");
     const dateFormattedString = dateLabel(dateTupple[0], dateTupple[1]);
     return (
         <Document title="Toolbox Talk Tracker">
@@ -59,9 +60,8 @@ export function PDF({
                     const nextId = pdfData[idx + 1]?.id;
                     const isFirst = row.id !== prevId;
                     const isLast = row.id !== nextId;
-                    const cut = total[idx - 1] && summary[idx - 1];
                     return (
-                        <View key={idx} break={cut}>
+                        <View key={idx}>
                             <View wrap={false}>
                                 <View style={styles.tableBody}>
                                     <View style={styles.tableRow}>
@@ -724,16 +724,20 @@ function TableTotalFooter({ dataLength, i, total, summary }) {
         );
     }
 
+    const isLast = dataLength - 1 === i;
+
     return (
-        <View style={{ marginTop: 32, marginBottom: 8 }}>
+        <View style={{ marginTop: 32, marginBottom: isLast ? 16 : 8 }}>
             <Total
                 submitted={total[i].submitted}
                 notSubmitted={total[i].notSubmitted}
             />
-            <SummaryTotal
-                submitted={summary[i].submitted}
-                notSubmitted={summary[i].notSubmitted}
-            />
+            {dataLength - 1 === i && (
+                <SummaryTotal
+                    submitted={summary.submitted}
+                    notSubmitted={summary.notSubmitted}
+                />
+            )}
             <View style={{ height: 30 }} />
         </View>
     );
@@ -913,7 +917,10 @@ const dateLabel = (startDate, endDate) => {
                 ? isSameDays
                     ? format(end, "MMMM dd, yyyy")
                     : `${format(start, "MMMM dd")}-${format(end, "dd, yyyy")}`
-                : `${format(start, "MMMM dd")} - ${format("MMMM dd, yyyy")}`;
+                : `${format(start, "MMMM dd")} - ${format(
+                      end,
+                      "MMMM dd, yyyy"
+                  )}`;
         } else {
             return `${format(start, "MMMM dd, yyyy")}-${format(
                 end,

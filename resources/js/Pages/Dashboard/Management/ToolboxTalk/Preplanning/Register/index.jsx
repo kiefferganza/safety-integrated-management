@@ -8,7 +8,7 @@ import { getComparator, useTable } from "@/Components/table";
 import PDFRenderer from "../PDF/PDFRenderer";
 const RegisterPage = lazy(() => import("./RegisterPage"));
 
-const MAX_ITEM = 38;
+const MAX_ITEM = 40;
 
 const index = ({ auth: { user } }) => {
     const { isLoading, data } = useQuery({
@@ -86,7 +86,6 @@ const index = ({ auth: { user } }) => {
                 : dataFiltered;
 
         const total = {};
-        const summary = {};
         const dateTupple = [0, 0];
         const pdfData = [];
         if (data.length > 0) {
@@ -139,20 +138,23 @@ const index = ({ auth: { user } }) => {
                     };
                     summarySubmitted += submitted;
                     summaryNotSubmitted += notSubmitted;
-                    summary[i] = {
-                        submitted: summarySubmitted,
-                        notSubmitted: summaryNotSubmitted,
-                    };
                     submitted = 0;
                     notSubmitted = 0;
                 }
             });
 
+            const summary = {
+                submitted: summarySubmitted,
+                notSubmitted: summaryNotSubmitted,
+            };
+
             return { total, summary, dateTupple, pdfData };
         }
 
-        return { total, summary, dateTupple: [], pdfData: [] };
+        return { total, summary: {}, dateTupple: [], pdfData: [] };
     }, [dataFiltered]);
+
+    console.log(PDFData);
 
     return (
         <>
