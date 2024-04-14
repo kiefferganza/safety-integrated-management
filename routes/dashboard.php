@@ -8,6 +8,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FilePageController;
 use App\Http\Controllers\HSE\InhouseTrainingController;
+use App\Http\Controllers\HSE\InspectionTrackerController;
 use App\Http\Controllers\HSE\TbtTrackerController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\IncidentController;
@@ -157,8 +158,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 * Management - Training
 	 */
 	Route::prefix('training')->as('training.management.')->group(function() {
-    // Lists
-		Route::middleware("permission:training_show")->group(function() {
+    	// Lists
+	  Route::middleware("permission:training_show")->group(function() {
       Route::get('/matrix', [TrainingController::class, 'matrix'])->name('matrix');
       Route::get('/external/matrix', [TrainingController::class, 'externalMatrix'])->name('external_matrix');
 			Route::get('/registered-courses', [TrainingController::class, 'courses'])->name('courses');
@@ -228,6 +229,13 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 * Management - Inspection
 	 */
 	Route::prefix('inspection')->as('inspection.management.')->group(function() {
+		Route::prefix('tracker')->group(function() {
+			Route::get('/', [InspectionTrackerController::class, "index"])->name('tracker');
+			Route::post("/assign-employee", [InspectionTrackerController::class, "store"])->name("tracker.store");
+			Route::post("/edit-assign-employee/{inspectionTracker}", [InspectionTrackerController::class, "update"])->name("tracker.update");
+			Route::post("/delete-assign-employees", [InspectionTrackerController::class, "destroy"])->name("tracker.destroy");
+		});
+
 		Route::get('/site/report', [InspectionController::class, "reportList"])->name('report');
 		// CRUD
 		Route::middleware("permission:inspection_create")->group(function() {

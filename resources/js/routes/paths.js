@@ -159,6 +159,7 @@ export const PATH_DASHBOARD = {
 
     inspection: {
         root: path(ROOTS_DASHBOARD, "/inspection"),
+        tracker: route("inspection.management.tracker"),
         new: path(ROOTS_DASHBOARD, "/inspection/new"),
         safetyObservation: path(ROOTS_DASHBOARD, "/inspection/site"),
         list: path(ROOTS_DASHBOARD, "/inspection/site/list"),

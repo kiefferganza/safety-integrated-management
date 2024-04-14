@@ -6,6 +6,8 @@ use App\Models\Employee;
 use App\Models\Inspection;
 use App\Models\InspectionRegisteredPosition;
 use App\Models\InspectionReportList;
+use App\Models\InspectionTracker;
+use App\Models\TbtTracker;
 use App\Models\User;
 use App\Notifications\ModuleBasicNotification;
 use Carbon\Carbon;
@@ -14,9 +16,43 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class InspectionService
 {
+
+	private $userIds;
+
+	private $trackDailyStatus = true;
+   
+   
+	public function __construct() {
+	 $this->userIds = collect([
+	  "default" => URL::route("image", ["path" => "assets/images/default-profile.jpg", "w" => 40, "h" => 40, "fit" => "crop"])
+	 ]);
+	}
+	
+   
+	public function getProfile(int|null $user_id)
+	{
+	 if(!$user_id) return $this->userIds->get("default");
+   
+	 $cachedProfile = $this->userIds->get($user_id);
+	 if($cachedProfile) {
+	  return $cachedProfile;
+	 } else if($user_id) {
+	  $profile = Media::where("model_type", User::class)->where("model_id", $user_id)->whereJsonContains("custom_properties", ["primary" => true])->first();
+	   if ($profile) {
+		$path = "user/" . md5($profile->id . config('app.key')) . "/" . $profile->file_name;
+		$url = URL::route("image", ["path" => $path, "w" => 40, "h" => 40, "fit" => "crop"]);
+		$this->userIds->put($user_id, $url);
+		return $url;
+	   }
+	   else {
+		return $this->userIds->get("default");
+	   }
+	 }
+	}
 
 	public function insertInspection(Request $request)
 	{
@@ -345,5 +381,92 @@ class InspectionService
 				}
 				return $employee;
 			});
+	}
+
+
+	public function getEmployees() {
+		return Employee::select("employee_id", "tbl_employees.employee_id as emp_id", "firstname", "lastname", "tbl_position.position", "tbl_employees.user_id")
+		->where([
+		  ["tbl_employees.is_deleted", 0],
+		  ["tbl_employees.is_active", 0],
+		])
+		->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+		->get()
+		->transform(function ($employee)
+		{
+		  $employee->img = $this->getProfile($employee->user_id);
+		  return $employee;
+		});
+	}
+	  
+	public function getAssignedEmployees() {
+		$employees = $this->getEmployees();
+		$tracker = InspectionTracker::query()
+		->select("inspection_trackers.*")
+		->with("trackerEmployees")
+		->orderBy("date_assigned", "desc")
+		->get()
+		->transform(function ($tracker) use($employees) {
+			$this->trackDailyStatus = true;
+			$employee = $employees->find($tracker->emp_id);
+			if($employee) {
+				$tracker->fullname = $employee->fullname;
+				$tracker->img = $employee->img;
+				$tracker->position = $employee->position;
+			}
+			$tracker->trackerEmployees->transform(function($trackerEmployee) use($employees, $tracker) {
+				$date = Carbon::parse($tracker->date_assigned);
+				$inspectedDate = $date->format("d-M-Y");
+				$emp = $employees->find($trackerEmployee->emp_id);
+				$trackerEmployee->fullname = $emp->fullname;
+				$trackerEmployee->img = $emp->img;
+				$trackerEmployee->position = $emp->position;
+				$trackerEmployee->date_assigned = $tracker->date_assigned;
+				$reviewer = $employees->find($trackerEmployee->action_id);
+				if($reviewer) {
+					$trackerEmployee->reviewer = [
+						"fullname" => $reviewer->fullname,
+						"img" => $reviewer->img,
+						"position" => $reviewer->position,
+					];
+				}
+				$verifier = $employees->find($trackerEmployee->verifier_id);
+				if($verifier) {
+					$trackerEmployee->verifier = [
+						"fullname" => $verifier->fullname,
+						"img" => $verifier->img,
+						"position" => $verifier->position,
+					];
+				}
+				$submittedInspection = Inspection::select("inspection_id")
+				->where("employee_id", $trackerEmployee->emp_id)
+				->where("reviewer_id", $trackerEmployee->action_id)
+				->where("verifier_id", $trackerEmployee->verifier_id)
+				->where("location", $trackerEmployee->location)
+				->where("inspected_date", $inspectedDate)
+				->first();
+
+				$trackerEmployee->status = $submittedInspection !== null;
+
+				if(!$trackerEmployee->status) {
+					$this->trackDailyStatus = false;
+					$trackerEmployee->link = null;
+				} else {
+					$trackerEmployee->link = URL::route("inspection.management.view", [$submittedInspection->inspection_id]);
+				}
+
+				return $trackerEmployee;
+			});
+			$tracker->status = $this->trackDailyStatus;
+			$this->trackDailyStatus = false;
+			return $tracker;
+		});
+		
+		return [$employees, $tracker];
+	}
+	  
+	public function tbtTrackerLatestSequenceNumber() {
+		$sequence = InspectionTracker::withTrashed()->count() + 1;
+		return str_pad($sequence, 6, '0', STR_PAD_LEFT);
 	}
 }

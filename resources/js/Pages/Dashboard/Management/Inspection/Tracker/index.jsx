@@ -1,22 +1,21 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import DashboardLayout from "@/Layouts/dashboard/DashboardLayout";
 import { Head } from "@inertiajs/inertia-react";
 import LoadingScreen from "@/Components/loading-screen/LoadingScreen";
 import { useQuery } from "@tanstack/react-query";
-import { fetchPreplanning } from "@/utils/axios";
+import InspectionTrackerPage from "./InspectionTrackerPage";
+import { fetchInspectionTracker } from "@/utils/axios";
 import { getComparator, useTable } from "@/Components/table";
-import PDFRenderer from "../PDF/PDFRenderer";
-const RegisterPage = lazy(() => import("./RegisterPage"));
+import PDFRenderer from "./PDF/PDFRenderer";
 
 const MAX_ITEM = 40;
 
 const index = ({ auth: { user } }) => {
     const { isLoading, data } = useQuery({
-        queryKey: ["toolboxtalks.preplanning.tbtDailies", user.subscriber_id],
-        queryFn: fetchPreplanning,
+        queryKey: ["inspections.tracker", user.subscriber_id],
+        queryFn: fetchInspectionTracker,
         refetchOnWindowFocus: false,
     });
-
     const [openPDF, setOpenPDF] = useState(false);
 
     const [filterName, setFilterName] = useState("");
@@ -39,7 +38,7 @@ const index = ({ auth: { user } }) => {
 
     useEffect(() => {
         if (!isLoading && data) {
-            setTableData(data?.preplanning ?? []);
+            setTableData(data?.tracker ?? []);
         }
     }, [isLoading, data]);
 
@@ -154,19 +153,21 @@ const index = ({ auth: { user } }) => {
         return { total, summary: {}, dateTupple: [], pdfData: [] };
     }, [dataFiltered]);
 
+    console.log(PDFData);
+
     return (
         <>
             <Head>
-                <title>TBT Tracker</title>
+                <title>Inspection Tracker</title>
             </Head>
             <Suspense fallback={<LoadingScreen />}>
                 <DashboardLayout>
-                    <RegisterPage
-                        isLoading={isLoading}
+                    <InspectionTrackerPage
                         employees={data?.employees ?? []}
-                        preplanning={data?.preplanning ?? []}
+                        data={data?.tracker}
                         projectDetails={data?.projectDetails ?? {}}
                         sequenceNo={data?.sequenceNo ?? "000001"}
+                        isLoading={isLoading}
                         table={table}
                         filters={{
                             filterName,

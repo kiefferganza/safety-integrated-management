@@ -30,17 +30,19 @@ import {
     TableSelectedAction,
     TableSkeleton,
     emptyRows,
+    getComparator,
+    useTable,
 } from "@/Components/table";
 // sections
 import { useSwal } from "@/hooks/useSwal";
-import {
-    PreplanningRegisterTableRow,
-    PreplanningRegisterToolbar,
-} from "@/sections/@dashboard/toolboxtalks/preplanning/register";
-import RegisterEmployeePortal from "@/sections/@dashboard/toolboxtalks/preplanning/register/portal/RegisterEmployeePortal";
 import { Inertia } from "@inertiajs/inertia";
 import { useQueryClient } from "@tanstack/react-query";
 import Label from "@/Components/label/Label";
+import {
+    InspectionTrackerRow,
+    InspectionTrackerToolbar,
+} from "@/sections/@dashboard/inspection/tracker";
+import RegisterEmployeePortal from "@/sections/@dashboard/inspection/tracker/portal/RegisterEmployeePortal";
 
 const TABLE_HEAD = [
     { id: "form_number", label: "CMS Number", align: "left" },
@@ -54,10 +56,10 @@ const TABLE_HEAD = [
 
 // --------------------------------
 
-export default function RegisterPage({
+export default function InspectionTrackerPage({
     isLoading,
     employees,
-    preplanning,
+    data = [],
     projectDetails,
     sequenceNo,
     dataFiltered = [],
@@ -75,6 +77,11 @@ export default function RegisterPage({
     const { load, stop } = useSwal();
     const { themeStretch } = useSettingsContext();
 
+    const [openConfirm, setOpenConfirm] = useState(false);
+    const [openRegister, setOpenRegister] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
+    const [selectedEdit, setSelectedEdit] = useState(null);
+
     const { filterName, filterStatus, filterStartDate, filterEndDate } =
         filters;
 
@@ -84,10 +91,8 @@ export default function RegisterPage({
         order,
         orderBy,
         rowsPerPage,
-        setPage,
         //
         selected,
-        setSelected,
         onSelectRow,
         onSelectAllRows,
         //
@@ -96,11 +101,6 @@ export default function RegisterPage({
         onChangePage,
         onChangeRowsPerPage,
     } = table;
-
-    const [openConfirm, setOpenConfirm] = useState(false);
-    const [openRegister, setOpenRegister] = useState(false);
-    const [openEdit, setOpenEdit] = useState(false);
-    const [selectedEdit, setSelectedEdit] = useState(null);
 
     const denseHeight = dense ? 56 : 76;
 
@@ -164,47 +164,47 @@ export default function RegisterPage({
 
     const handleDeleteRow = useCallback((id) => () => {
         const tmpData = [...tableData];
-        Inertia.post(
-            route("toolboxtalk.management.preplanning.deleteAssignEmployee"),
-            { ids: [id] },
-            {
-                onStart() {
-                    load("Deleting assigned employee's", "Please wait...");
-                    setTableData((data) => data.filter((d) => d.id !== id));
-                },
-                onError() {
-                    setTableData(tmpData);
-                },
-                onFinish() {
-                    setPage(0);
-                    stop();
-                },
-            }
-        );
+        // Inertia.post(
+        //     route("toolboxtalk.management.preplanning.deleteAssignEmployee"),
+        //     { ids: [id] },
+        //     {
+        //         onStart() {
+        //             load("Deleting assigned employee's", "Please wait...");
+        //             setTableData((data) => data.filter((d) => d.id !== id));
+        //         },
+        //         onError() {
+        //             setTableData(tmpData);
+        //         },
+        //         onFinish() {
+        //             setPage(0);
+        //             stop();
+        //         },
+        //     }
+        // );
     });
 
     const handleDeleteRows = (ids = []) => {
         const tmpData = [...tableData];
-        Inertia.post(
-            route("toolboxtalk.management.preplanning.deleteAssignEmployee"),
-            { ids },
-            {
-                onStart() {
-                    load("Deleting assigned employee's", "Please wait...");
-                    setTableData((data) =>
-                        data.filter((d) => !ids.includes(d.id))
-                    );
-                },
-                onError() {
-                    setTableData(tmpData);
-                },
-                onFinish() {
-                    setPage(0);
-                    setSelected([]);
-                    stop();
-                },
-            }
-        );
+        // Inertia.post(
+        //     route("toolboxtalk.management.preplanning.deleteAssignEmployee"),
+        //     { ids },
+        //     {
+        //         onStart() {
+        //             load("Deleting assigned employee's", "Please wait...");
+        //             setTableData((data) =>
+        //                 data.filter((d) => !ids.includes(d.id))
+        //             );
+        //         },
+        //         onError() {
+        //             setTableData(tmpData);
+        //         },
+        //         onFinish() {
+        //             setPage(0);
+        //             setSelected([]);
+        //             stop();
+        //         },
+        //     }
+        // );
     };
 
     return (
@@ -218,15 +218,15 @@ export default function RegisterPage({
                             flexWrap: "wrap",
                         },
                     }}
-                    heading="TBT Tracker"
+                    heading="Inspection Tracker"
                     links={[
                         {
                             name: "Dashboard",
                             href: PATH_DASHBOARD.root,
                         },
                         {
-                            name: "All TBT",
-                            href: route("toolboxtalk.management.all"),
+                            name: "Inspections List",
+                            href: PATH_DASHBOARD.inspection.list,
                         },
                         {
                             name: "List",
@@ -278,7 +278,7 @@ export default function RegisterPage({
 
                     <Divider />
 
-                    <PreplanningRegisterToolbar
+                    <InspectionTrackerToolbar
                         isFiltered={isFiltered}
                         filterName={filterName}
                         filterStartDate={filterStartDate}
@@ -288,6 +288,7 @@ export default function RegisterPage({
                         onFilterEndDate={handleFilterEndDate}
                         onResetFilter={handleResetFilter}
                     />
+
                     <TableContainer
                         sx={{ position: "relative", overflow: "unset" }}
                     >
@@ -331,7 +332,7 @@ export default function RegisterPage({
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={preplanning.length}
+                                    rowCount={tableData.length}
                                     numSelected={selected.length}
                                     onSort={onSort}
                                     onSelectAllRows={(checked) =>
@@ -361,31 +362,30 @@ export default function RegisterPage({
                                                 />
                                             )
                                         )
+                                    ) : tableData.length > 0 ? (
+                                        dataFiltered
+                                            .slice(
+                                                page * rowsPerPage,
+                                                page * rowsPerPage + rowsPerPage
+                                            )
+                                            .map((row) => (
+                                                <InspectionTrackerRow
+                                                    key={row.id}
+                                                    row={row}
+                                                    selected={selected.includes(
+                                                        row.id
+                                                    )}
+                                                    onSelectRow={() =>
+                                                        onSelectRow(row.id)
+                                                    }
+                                                    onDeleteRow={handleDeleteRow(
+                                                        row.id
+                                                    )}
+                                                    onEdit={handleOpenEdit}
+                                                />
+                                            ))
                                     ) : (
-                                        <>
-                                            {dataFiltered
-                                                .slice(
-                                                    page * rowsPerPage,
-                                                    page * rowsPerPage +
-                                                        rowsPerPage
-                                                )
-                                                .map((row) => (
-                                                    <PreplanningRegisterTableRow
-                                                        key={row.id}
-                                                        row={row}
-                                                        selected={selected.includes(
-                                                            row.id
-                                                        )}
-                                                        onSelectRow={() =>
-                                                            onSelectRow(row.id)
-                                                        }
-                                                        onDeleteRow={handleDeleteRow(
-                                                            row.id
-                                                        )}
-                                                        onEdit={handleOpenEdit}
-                                                    />
-                                                ))}
-                                        </>
+                                        <TableNoData isNotFound={true} />
                                     )}
 
                                     <TableEmptyRows
@@ -393,7 +393,7 @@ export default function RegisterPage({
                                         emptyRows={emptyRows(
                                             page,
                                             rowsPerPage,
-                                            preplanning.length
+                                            tableData.length
                                         )}
                                     />
 
@@ -414,23 +414,6 @@ export default function RegisterPage({
                     />
                 </Card>
             </Container>
-            <RegisterEmployeePortal
-                open={openRegister}
-                onClose={handleCloseRegister}
-                employeeList={employees}
-                projectDetails={projectDetails}
-                sequenceNo={sequenceNo}
-            />
-
-            <RegisterEmployeePortal
-                title="Edit Assigned Employee"
-                open={openEdit}
-                onClose={handleCloseEdit}
-                employeeList={employees}
-                projectDetails={projectDetails}
-                currentRegistered={selectedEdit}
-                isEdit
-            />
 
             <ConfirmDialog
                 open={openConfirm}
@@ -454,6 +437,24 @@ export default function RegisterPage({
                         Delete
                     </Button>
                 }
+            />
+
+            <RegisterEmployeePortal
+                open={openRegister}
+                onClose={handleCloseRegister}
+                employeeList={employees}
+                projectDetails={projectDetails}
+                sequenceNo={sequenceNo}
+            />
+
+            <RegisterEmployeePortal
+                title="Edit Assigned Employee"
+                open={openEdit}
+                onClose={handleCloseEdit}
+                employeeList={employees}
+                projectDetails={projectDetails}
+                currentRegistered={selectedEdit}
+                isEdit
             />
         </>
     );

@@ -7,14 +7,6 @@ const TODAY = new Date();
 const FORMATTED_DATE = format(TODAY, "MM/dd/yy");
 const YEAR = TODAY.getFullYear();
 
-const TYPES = {
-    1: "Civil",
-    2: "Electrical",
-    3: "Mechanical",
-    4: "Workshop",
-    5: "Office",
-};
-
 export function PDF({
     logo,
     data: { total, summary, dateTupple = [], pdfData = [] },
@@ -35,7 +27,7 @@ export function PDF({
                         }}
                     >
                         <Text style={[styles.h4, { color: "#616161" }]}>
-                            Toolbox Talk Tracker
+                            Inspection Tracker
                         </Text>
                     </View>
                 </View>
@@ -66,8 +58,8 @@ export function PDF({
                                             <>
                                                 <View
                                                     style={{
-                                                        maxWidth: 83,
-                                                        minWidth: 83,
+                                                        maxWidth: 94,
+                                                        minWidth: 94,
                                                         width: "100%",
                                                     }}
                                                 >
@@ -103,8 +95,8 @@ export function PDF({
                                                 </View>
                                                 <View
                                                     style={{
-                                                        maxWidth: 80,
-                                                        minWidth: 80,
+                                                        maxWidth: 85,
+                                                        minWidth: 85,
                                                         width: "100%",
                                                     }}
                                                 >
@@ -176,8 +168,8 @@ export function PDF({
                                             <>
                                                 <View
                                                     style={{
-                                                        maxWidth: 83,
-                                                        minWidth: 83,
+                                                        maxWidth: 94,
+                                                        minWidth: 94,
                                                         width: "100%",
                                                     }}
                                                 >
@@ -189,8 +181,8 @@ export function PDF({
                                                 </View>
                                                 <View
                                                     style={{
-                                                        maxWidth: 80,
-                                                        minWidth: 80,
+                                                        maxWidth: 85,
+                                                        minWidth: 85,
                                                         width: "100%",
                                                     }}
                                                 >
@@ -314,8 +306,8 @@ export function PDF({
 
                                         <View
                                             style={{
-                                                maxWidth: 65,
-                                                minWidth: 65,
+                                                maxWidth: 78,
+                                                minWidth: 78,
                                                 width: "100%",
                                             }}
                                         >
@@ -340,7 +332,7 @@ export function PDF({
                                                                 styles.textWhite,
                                                             ]}
                                                         >
-                                                            Exact Location
+                                                            Submitted By
                                                         </Text>
                                                     </View>
                                                 </View>
@@ -354,62 +346,14 @@ export function PDF({
                                                         styles.tableCell,
                                                     ]}
                                                 >
-                                                    <Text
-                                                        style={
-                                                            styles.tableCellText
-                                                        }
-                                                    >
-                                                        {row.exact_location}
-                                                    </Text>
-                                                </View>
-                                            </View>
-                                        </View>
-
-                                        <View
-                                            style={{
-                                                maxWidth: 75,
-                                                minWidth: 75,
-                                                width: "100%",
-                                            }}
-                                        >
-                                            {isFirst && (
-                                                <View
-                                                    style={[
-                                                        styles.tableCell,
-                                                        styles.bgPrimary,
-                                                    ]}
-                                                >
                                                     <View
                                                         style={[
-                                                            styles.textCenter,
-                                                            styles.justifyCenter,
                                                             styles.w1,
                                                             styles.tableCell,
+                                                            styles.itemsCenter,
+                                                            styles.flexRow,
                                                         ]}
                                                     >
-                                                        <Text
-                                                            style={[
-                                                                styles.semibold,
-                                                                styles.textWhite,
-                                                            ]}
-                                                        >
-                                                            Conducted By
-                                                        </Text>
-                                                    </View>
-                                                </View>
-                                            )}
-                                            <View style={styles.tableCell}>
-                                                <View
-                                                    style={[
-                                                        styles.w1,
-                                                        styles.tableCell,
-                                                        styles.itemsCenter,
-                                                        styles.flexRow,
-                                                        styles.mr4,
-                                                        styles.ml4,
-                                                    ]}
-                                                >
-                                                    {row?.img && (
                                                         <View
                                                             style={
                                                                 styles.avatar
@@ -422,23 +366,30 @@ export function PDF({
                                                                 src={row.img}
                                                             />
                                                         </View>
-                                                    )}
-                                                    <Text
-                                                        style={[
-                                                            styles.tableCellText,
-                                                            styles.textCenter,
-                                                        ]}
-                                                    >
-                                                        {row.fullname}
-                                                    </Text>
+                                                        <View
+                                                            style={{
+                                                                paddingLeft: 1,
+                                                                paddingRight: 1,
+                                                            }}
+                                                        >
+                                                            <Text
+                                                                style={[
+                                                                    styles.tableCellText,
+                                                                    styles.textCenter,
+                                                                ]}
+                                                            >
+                                                                {row.fullname}
+                                                            </Text>
+                                                        </View>
+                                                    </View>
                                                 </View>
                                             </View>
                                         </View>
 
                                         <View
                                             style={{
-                                                maxWidth: 75,
-                                                minWidth: 75,
+                                                maxWidth: 78,
+                                                minWidth: 78,
                                                 width: "100%",
                                             }}
                                         >
@@ -455,6 +406,10 @@ export function PDF({
                                                             styles.justifyCenter,
                                                             styles.w1,
                                                             styles.tableCell,
+                                                            {
+                                                                maxWidth: 78,
+                                                                minWidth: 78,
+                                                            },
                                                         ]}
                                                     >
                                                         <Text
@@ -463,7 +418,7 @@ export function PDF({
                                                                 styles.textWhite,
                                                             ]}
                                                         >
-                                                            Witness
+                                                            Actioned By
                                                         </Text>
                                                     </View>
                                                 </View>
@@ -475,42 +430,55 @@ export function PDF({
                                                         styles.tableCell,
                                                         styles.itemsCenter,
                                                         styles.flexRow,
-                                                        styles.mr4,
-                                                        styles.ml4,
                                                     ]}
                                                 >
-                                                    {row?.witnessImg && (
-                                                        <View
-                                                            style={
-                                                                styles.avatar
-                                                            }
-                                                        >
-                                                            <Image
+                                                    {row?.reviewer && (
+                                                        <>
+                                                            <View
                                                                 style={
-                                                                    styles.avatarImg
+                                                                    styles.avatar
                                                                 }
-                                                                src={
-                                                                    row.witnessImg
-                                                                }
-                                                            />
-                                                        </View>
+                                                            >
+                                                                <Image
+                                                                    style={
+                                                                        styles.avatarImg
+                                                                    }
+                                                                    src={
+                                                                        row
+                                                                            .reviewer
+                                                                            .img
+                                                                    }
+                                                                />
+                                                            </View>
+                                                            <View
+                                                                style={{
+                                                                    paddingLeft: 1,
+                                                                    paddingRight: 1,
+                                                                }}
+                                                            >
+                                                                <Text
+                                                                    style={[
+                                                                        styles.tableCellText,
+                                                                        styles.textCenter,
+                                                                    ]}
+                                                                >
+                                                                    {
+                                                                        row
+                                                                            .reviewer
+                                                                            .fullname
+                                                                    }
+                                                                </Text>
+                                                            </View>
+                                                        </>
                                                     )}
-                                                    <Text
-                                                        style={[
-                                                            styles.tableCellText,
-                                                            styles.textCenter,
-                                                        ]}
-                                                    >
-                                                        {row?.witness}
-                                                    </Text>
                                                 </View>
                                             </View>
                                         </View>
 
                                         <View
                                             style={{
-                                                maxWidth: 40,
-                                                minWidth: 40,
+                                                maxWidth: 78,
+                                                minWidth: 78,
                                                 width: "100%",
                                             }}
                                         >
@@ -535,7 +503,7 @@ export function PDF({
                                                                 styles.textWhite,
                                                             ]}
                                                         >
-                                                            TBT Type
+                                                            Verified By
                                                         </Text>
                                                     </View>
                                                 </View>
@@ -543,29 +511,59 @@ export function PDF({
                                             <View style={styles.tableCell}>
                                                 <View
                                                     style={[
-                                                        styles.textCenter,
-                                                        styles.justifyCenter,
                                                         styles.w1,
                                                         styles.tableCell,
+                                                        styles.itemsCenter,
+                                                        styles.flexRow,
                                                     ]}
                                                 >
-                                                    <Text
-                                                        style={
-                                                            styles.tableCellText
-                                                        }
-                                                    >
-                                                        {TYPES?.[
-                                                            row.tbt_type
-                                                        ] ?? ""}
-                                                    </Text>
+                                                    {row?.verifier && (
+                                                        <>
+                                                            <View
+                                                                style={
+                                                                    styles.avatar
+                                                                }
+                                                            >
+                                                                <Image
+                                                                    style={
+                                                                        styles.avatarImg
+                                                                    }
+                                                                    src={
+                                                                        row
+                                                                            .verifier
+                                                                            .img
+                                                                    }
+                                                                />
+                                                            </View>
+                                                            <View
+                                                                style={{
+                                                                    paddingLeft: 1,
+                                                                    paddingRight: 1,
+                                                                }}
+                                                            >
+                                                                <Text
+                                                                    style={[
+                                                                        styles.tableCellText,
+                                                                        styles.textCenter,
+                                                                    ]}
+                                                                >
+                                                                    {
+                                                                        row
+                                                                            .verifier
+                                                                            .fullname
+                                                                    }
+                                                                </Text>
+                                                            </View>
+                                                        </>
+                                                    )}
                                                 </View>
                                             </View>
                                         </View>
 
                                         <View
                                             style={{
-                                                maxWidth: 50,
-                                                minWidth: 50,
+                                                maxWidth: 55,
+                                                minWidth: 55,
                                                 width: "100%",
                                             }}
                                         >
@@ -590,7 +588,7 @@ export function PDF({
                                                                 styles.textWhite,
                                                             ]}
                                                         >
-                                                            TBT Status
+                                                            Status
                                                         </Text>
                                                     </View>
                                                 </View>

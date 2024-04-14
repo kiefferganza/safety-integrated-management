@@ -64,6 +64,8 @@ Route::middleware('auth')->as('api.')->group(function ()
 		Route::prefix('inspectors')->as('inspectors.')->group(function () {
 			Route::get('/employees', [InspectionApiController::class, 'employeeWithInspectionCount'])->name("employees");
 		});
+
+		Route::get('/tracker', [InspectionApiController::class, "tracker"])->name('tracker');
 	});
 
 

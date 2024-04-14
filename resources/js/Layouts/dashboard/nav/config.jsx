@@ -358,8 +358,14 @@ const navConfig = [
                     // inspector
                     "inspection.management.inspector.list",
                     "inspection.management.inspector.positions",
+                    "inspection.management.tracker",
                 ],
                 children: [
+                    {
+                        title: "Tracker",
+                        path: PATH_DASHBOARD.inspection.tracker,
+                        routeNames: ["inspection.management.tracker"],
+                    },
                     {
                         title: "Inspector",
                         path: PATH_DASHBOARD.root,
