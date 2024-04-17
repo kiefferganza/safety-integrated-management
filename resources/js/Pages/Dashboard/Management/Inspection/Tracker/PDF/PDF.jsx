@@ -11,6 +11,7 @@ export function PDF({
     logo,
     data: { total, summary, dateTupple = [], pdfData = [] },
 }) {
+    console.log(pdfData);
     const dateFormattedString = dateLabel(dateTupple[0], dateTupple[1]);
     return (
         <Document title="Toolbox Talk Tracker">
@@ -58,8 +59,8 @@ export function PDF({
                                             <>
                                                 <View
                                                     style={{
-                                                        maxWidth: 94,
-                                                        minWidth: 94,
+                                                        maxWidth: 83,
+                                                        minWidth: 83,
                                                         width: "100%",
                                                     }}
                                                 >
@@ -95,8 +96,8 @@ export function PDF({
                                                 </View>
                                                 <View
                                                     style={{
-                                                        maxWidth: 85,
-                                                        minWidth: 85,
+                                                        maxWidth: 74,
+                                                        minWidth: 74,
                                                         width: "100%",
                                                     }}
                                                 >
@@ -168,8 +169,8 @@ export function PDF({
                                             <>
                                                 <View
                                                     style={{
-                                                        maxWidth: 94,
-                                                        minWidth: 94,
+                                                        maxWidth: 83,
+                                                        minWidth: 83,
                                                         width: "100%",
                                                     }}
                                                 >
@@ -181,8 +182,8 @@ export function PDF({
                                                 </View>
                                                 <View
                                                     style={{
-                                                        maxWidth: 85,
-                                                        minWidth: 85,
+                                                        maxWidth: 74,
+                                                        minWidth: 74,
                                                         width: "100%",
                                                     }}
                                                 >
@@ -306,6 +307,59 @@ export function PDF({
 
                                         <View
                                             style={{
+                                                maxWidth: 43,
+                                                minWidth: 43,
+                                                width: "100%",
+                                            }}
+                                        >
+                                            {isFirst && (
+                                                <View
+                                                    style={[
+                                                        styles.tableCell,
+                                                        styles.bgPrimary,
+                                                    ]}
+                                                >
+                                                    <View
+                                                        style={[
+                                                            styles.textCenter,
+                                                            styles.justifyCenter,
+                                                            styles.w1,
+                                                            styles.tableCell,
+                                                        ]}
+                                                    >
+                                                        <Text
+                                                            style={[
+                                                                styles.semibold,
+                                                                styles.textWhite,
+                                                            ]}
+                                                        >
+                                                            Exact Location
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            )}
+                                            <View style={styles.tableCell}>
+                                                <View
+                                                    style={[
+                                                        styles.textCenter,
+                                                        styles.justifyCenter,
+                                                        styles.w1,
+                                                        styles.tableCell,
+                                                    ]}
+                                                >
+                                                    <Text
+                                                        style={
+                                                            styles.tableCellText
+                                                        }
+                                                    >
+                                                        {row.exact_location}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+
+                                        <View
+                                            style={{
                                                 maxWidth: 78,
                                                 minWidth: 78,
                                                 width: "100%",
@@ -407,8 +461,8 @@ export function PDF({
                                                             styles.w1,
                                                             styles.tableCell,
                                                             {
-                                                                maxWidth: 78,
-                                                                minWidth: 78,
+                                                                maxWidth: 70,
+                                                                minWidth: 70,
                                                             },
                                                         ]}
                                                     >
@@ -477,8 +531,8 @@ export function PDF({
 
                                         <View
                                             style={{
-                                                maxWidth: 78,
-                                                minWidth: 78,
+                                                maxWidth: 70,
+                                                minWidth: 70,
                                                 width: "100%",
                                             }}
                                         >
@@ -562,8 +616,8 @@ export function PDF({
 
                                         <View
                                             style={{
-                                                maxWidth: 55,
-                                                minWidth: 55,
+                                                maxWidth: 50,
+                                                minWidth: 50,
                                                 width: "100%",
                                             }}
                                         >

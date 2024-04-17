@@ -76,6 +76,7 @@ export function InspectionTrackerRow({
     const submittedCount = (row?.tracker_employees || []).filter(
         (tr) => tr.status
     ).length;
+
     return (
         <>
             <TableRow hover selected={selected} sx={{ width: 1 }}>
@@ -188,9 +189,12 @@ export function InspectionTrackerRow({
                                             <TableCell>#</TableCell>
                                             <TableCell>Conducted By</TableCell>
                                             <TableCell>Position</TableCell>
-                                            <TableCell>Location</TableCell>
                                             <TableCell>Reviewer</TableCell>
                                             <TableCell>Verifier</TableCell>
+                                            <TableCell>Location</TableCell>
+                                            <TableCell>
+                                                Exact Location
+                                            </TableCell>
                                             <TableCell>Status</TableCell>
                                             <TableCell></TableCell>
                                         </TableRow>
@@ -241,79 +245,83 @@ export function InspectionTrackerRow({
                                                     </TableCell>
 
                                                     <TableCell>
+                                                        <Stack
+                                                            direction="row"
+                                                            alignItems="center"
+                                                            spacing={2}
+                                                        >
+                                                            <Avatar
+                                                                alt={
+                                                                    subrow
+                                                                        .reviewer
+                                                                        .fullname
+                                                                }
+                                                                src={
+                                                                    subrow
+                                                                        .reviewer
+                                                                        .img
+                                                                }
+                                                                sx={{
+                                                                    width: 32,
+                                                                    height: 32,
+                                                                }}
+                                                            />
+
+                                                            <Typography
+                                                                variant="subtitle2"
+                                                                noWrap
+                                                            >
+                                                                {
+                                                                    subrow
+                                                                        .reviewer
+                                                                        .fullname
+                                                                }
+                                                            </Typography>
+                                                        </Stack>
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        <Stack
+                                                            direction="row"
+                                                            alignItems="center"
+                                                            spacing={2}
+                                                        >
+                                                            <Avatar
+                                                                alt={
+                                                                    subrow
+                                                                        .verifier
+                                                                        .fullname
+                                                                }
+                                                                src={
+                                                                    subrow
+                                                                        .verifier
+                                                                        .img
+                                                                }
+                                                                sx={{
+                                                                    width: 32,
+                                                                    height: 32,
+                                                                }}
+                                                            />
+
+                                                            <Typography
+                                                                variant="subtitle2"
+                                                                noWrap
+                                                            >
+                                                                {
+                                                                    subrow
+                                                                        .verifier
+                                                                        .fullname
+                                                                }
+                                                            </Typography>
+                                                        </Stack>
+                                                    </TableCell>
+
+                                                    <TableCell>
                                                         {subrow.location}
                                                     </TableCell>
 
                                                     <TableCell>
-                                                        <Stack
-                                                            direction="row"
-                                                            alignItems="center"
-                                                            spacing={2}
-                                                        >
-                                                            <Avatar
-                                                                alt={
-                                                                    subrow
-                                                                        .reviewer
-                                                                        .fullname
-                                                                }
-                                                                src={
-                                                                    subrow
-                                                                        .reviewer
-                                                                        .img
-                                                                }
-                                                                sx={{
-                                                                    width: 32,
-                                                                    height: 32,
-                                                                }}
-                                                            />
-
-                                                            <Typography
-                                                                variant="subtitle2"
-                                                                noWrap
-                                                            >
-                                                                {
-                                                                    subrow
-                                                                        .reviewer
-                                                                        .fullname
-                                                                }
-                                                            </Typography>
-                                                        </Stack>
-                                                    </TableCell>
-
-                                                    <TableCell>
-                                                        <Stack
-                                                            direction="row"
-                                                            alignItems="center"
-                                                            spacing={2}
-                                                        >
-                                                            <Avatar
-                                                                alt={
-                                                                    subrow
-                                                                        .verifier
-                                                                        .fullname
-                                                                }
-                                                                src={
-                                                                    subrow
-                                                                        .verifier
-                                                                        .img
-                                                                }
-                                                                sx={{
-                                                                    width: 32,
-                                                                    height: 32,
-                                                                }}
-                                                            />
-
-                                                            <Typography
-                                                                variant="subtitle2"
-                                                                noWrap
-                                                            >
-                                                                {
-                                                                    subrow
-                                                                        .verifier
-                                                                        .fullname
-                                                                }
-                                                            </Typography>
-                                                        </Stack>
+                                                        {subrow.exact_location}
                                                     </TableCell>
 
                                                     <TableCell>

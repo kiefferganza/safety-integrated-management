@@ -68,6 +68,7 @@ const RegisterEmployeePortal = ({
     const { load, stop } = useSwal();
 
     const [locationVal, setLocationVal] = useState("");
+    const [exactLocationVal, setExactLocationVal] = useState("");
     const [autoCompleteErr, setAutoCompleteErr] = useState({
         employee: null,
         reviewer: null,
@@ -299,6 +300,7 @@ const RegisterEmployeePortal = ({
             reviewer: null,
             verifier: null,
             location: null,
+            exactLocation: null,
         };
         let hasError = false;
 
@@ -319,6 +321,11 @@ const RegisterEmployeePortal = ({
             hasError = true;
         }
 
+        if (!exactLocationVal) {
+            errorMessages.exactLocation = "Please add an exact location";
+            hasError = true;
+        }
+
         if (hasError) {
             setAutoCompleteErr(errorMessages);
         } else {
@@ -330,6 +337,7 @@ const RegisterEmployeePortal = ({
                 reviewer: autoCompleteReviewerVal,
                 verifier: autoCompleteVerifierVal,
                 location: locationVal,
+                exact_location: exactLocationVal,
             });
             setAutoCompleteVal({
                 emp_id: "",
@@ -379,6 +387,7 @@ const RegisterEmployeePortal = ({
         const employees = data.employees.map((emp) => ({
             emp_id: emp.emp_id,
             location: emp.location,
+            exact_location: emp.exact_location,
             action_id: emp.reviewer.emp_id,
             verifier_id: emp.verifier.emp_id,
         }));
@@ -410,6 +419,7 @@ const RegisterEmployeePortal = ({
             const employees = data.employees.map((emp) => ({
                 emp_id: emp.emp_id,
                 location: emp.location,
+                exact_location: emp.exact_location,
                 action_id: emp.reviewer.emp_id,
                 verifier_id: emp.verifier.emp_id,
             }));
@@ -452,6 +462,7 @@ const RegisterEmployeePortal = ({
     const resetForm = () => {
         reset();
         setLocationVal("");
+        setExactLocationVal("");
         setAutoCompleteErr({
             employee: null,
             location: null,
@@ -1047,6 +1058,44 @@ const RegisterEmployeePortal = ({
                                                     sx={{ paddingLeft: 1.5 }}
                                                 >
                                                     {autoCompleteErr.location}
+                                                </FormHelperText>
+                                            )}
+                                        </Stack>
+
+                                        <Stack sx={{ width: 1 }}>
+                                            <TextField
+                                                size="small"
+                                                label="Exact Location"
+                                                value={exactLocationVal}
+                                                onChange={(e) => {
+                                                    setExactLocationVal(
+                                                        e.target.value
+                                                    );
+                                                    if (
+                                                        autoCompleteErr.exactLocation
+                                                    ) {
+                                                        setAutoCompleteErr(
+                                                            (c) => ({
+                                                                ...c,
+                                                                exactLocation:
+                                                                    null,
+                                                            })
+                                                        );
+                                                    }
+                                                }}
+                                                error={
+                                                    !!autoCompleteErr.exactLocation
+                                                }
+                                                fullWidth
+                                            />
+                                            {!!autoCompleteErr.exactLocation && (
+                                                <FormHelperText
+                                                    error
+                                                    sx={{ paddingLeft: 1.5 }}
+                                                >
+                                                    {
+                                                        autoCompleteErr.exactLocation
+                                                    }
                                                 </FormHelperText>
                                             )}
                                         </Stack>

@@ -30,13 +30,10 @@ import {
     TableSelectedAction,
     TableSkeleton,
     emptyRows,
-    getComparator,
-    useTable,
 } from "@/Components/table";
 // sections
 import { useSwal } from "@/hooks/useSwal";
 import { Inertia } from "@inertiajs/inertia";
-import { useQueryClient } from "@tanstack/react-query";
 import Label from "@/Components/label/Label";
 import {
     InspectionTrackerRow,
@@ -59,7 +56,6 @@ const TABLE_HEAD = [
 export default function InspectionTrackerPage({
     isLoading,
     employees,
-    data = [],
     projectDetails,
     sequenceNo,
     dataFiltered = [],
@@ -93,6 +89,7 @@ export default function InspectionTrackerPage({
         rowsPerPage,
         //
         selected,
+        setSelected,
         onSelectRow,
         onSelectAllRows,
         //
@@ -164,47 +161,47 @@ export default function InspectionTrackerPage({
 
     const handleDeleteRow = useCallback((id) => () => {
         const tmpData = [...tableData];
-        // Inertia.post(
-        //     route("toolboxtalk.management.preplanning.deleteAssignEmployee"),
-        //     { ids: [id] },
-        //     {
-        //         onStart() {
-        //             load("Deleting assigned employee's", "Please wait...");
-        //             setTableData((data) => data.filter((d) => d.id !== id));
-        //         },
-        //         onError() {
-        //             setTableData(tmpData);
-        //         },
-        //         onFinish() {
-        //             setPage(0);
-        //             stop();
-        //         },
-        //     }
-        // );
+        Inertia.post(
+            route("inspection.management.tracker.destroy"),
+            { ids: [id] },
+            {
+                onStart() {
+                    load("Deleting assigned employee's", "Please wait...");
+                    setTableData((data) => data.filter((d) => d.id !== id));
+                },
+                onError() {
+                    setTableData(tmpData);
+                },
+                onFinish() {
+                    setPage(0);
+                    stop();
+                },
+            }
+        );
     });
 
     const handleDeleteRows = (ids = []) => {
         const tmpData = [...tableData];
-        // Inertia.post(
-        //     route("toolboxtalk.management.preplanning.deleteAssignEmployee"),
-        //     { ids },
-        //     {
-        //         onStart() {
-        //             load("Deleting assigned employee's", "Please wait...");
-        //             setTableData((data) =>
-        //                 data.filter((d) => !ids.includes(d.id))
-        //             );
-        //         },
-        //         onError() {
-        //             setTableData(tmpData);
-        //         },
-        //         onFinish() {
-        //             setPage(0);
-        //             setSelected([]);
-        //             stop();
-        //         },
-        //     }
-        // );
+        Inertia.post(
+            route("inspection.management.tracker.destroy"),
+            { ids },
+            {
+                onStart() {
+                    load("Deleting assigned employee's", "Please wait...");
+                    setTableData((data) =>
+                        data.filter((d) => !ids.includes(d.id))
+                    );
+                },
+                onError() {
+                    setTableData(tmpData);
+                },
+                onFinish() {
+                    setPage(0);
+                    setSelected([]);
+                    stop();
+                },
+            }
+        );
     };
 
     return (
