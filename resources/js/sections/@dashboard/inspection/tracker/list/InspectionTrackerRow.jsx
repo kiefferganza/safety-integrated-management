@@ -126,7 +126,7 @@ export function InspectionTrackerRow({
                     {row?.status ? (
                         <Label color="success">Completed</Label>
                     ) : isExpired ? (
-                        <Label color="error">Expired</Label>
+                        <Label color="error">Incomplete</Label>
                     ) : (
                         <Label color="warning">Pending</Label>
                     )}
