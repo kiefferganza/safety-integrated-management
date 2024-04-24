@@ -80,10 +80,12 @@ class ToolboxTalkApiService
     // $endDay = $date->endOfDay();
     $pre->trackerEmployees->transform(function($trackerEmployee) use($employees, $pre) {
       $emp = $employees->find($trackerEmployee->emp_id);
+     if($emp) {
       $trackerEmployee->fullname = $emp->fullname;
       $trackerEmployee->img = $emp->img;
       $trackerEmployee->position = $emp->position;
       $trackerEmployee->date_assigned = $pre->date_assigned;
+     }
 
       $witnessEmp = $employees->first(function($emp) use($trackerEmployee) {
         return $emp->fullname === $trackerEmployee->witness;
