@@ -349,7 +349,6 @@ class InspectionService
 		tbl_position.position,
 		tbl_department.department,
 		tbl_employees.is_deleted,
-		tbl_employees.is_active,
 		tbl_employees.country"))
 			->whereIn("tbl_employees.position", $authorizedPositions)	
 			->where("tbl_employees.is_deleted", 0)
@@ -388,7 +387,6 @@ class InspectionService
 		return Employee::select("employee_id", "tbl_employees.employee_id as emp_id", "firstname", "lastname", "tbl_position.position", "tbl_employees.user_id")
 		->where([
 		  ["tbl_employees.is_deleted", 0],
-		  ["tbl_employees.is_active", 0],
 		])
 		->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 		->get()
@@ -418,6 +416,9 @@ class InspectionService
 				$date = Carbon::parse($tracker->date_assigned);
 				$inspectedDate = $date->format("d-M-Y");
 				$emp = $employees->find($trackerEmployee->emp_id);
+				if(!$emp) {
+					dd($trackerEmployee, $employees->toArray());
+				}
 				$trackerEmployee->fullname = $emp->fullname;
 				$trackerEmployee->img = $emp->img;
 				$trackerEmployee->position = $emp->position;
