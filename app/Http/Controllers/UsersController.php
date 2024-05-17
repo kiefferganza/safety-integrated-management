@@ -159,11 +159,16 @@ class UsersController extends Controller
 			'ids' => 'required|array'
 		]);
 
+		$user = auth()->user();
+
 		foreach ($request->ids as $id) {
+			if($user->id == $id) return;
+			
 			$user = User::where("id", $id)->first();
 			$user->deleted = 1;
-			$user->save();
-			Employee::where("id", $id)->update(["user_id" => null]);
+			if($user->save()) {
+				Employee::where("user_id", $id)->update(["user_id" => null]);
+			}
 		}
 		
 		return redirect()->back()
