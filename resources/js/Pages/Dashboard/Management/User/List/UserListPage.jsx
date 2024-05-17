@@ -206,7 +206,7 @@ export default function UserListPage({ users }) {
                     load("Deleting user", "please wait...");
                 },
                 onSuccess: () => {
-                    const newData = tableData.filter((t) => t.id === id);
+                    const newData = tableData.filter((t) => t.id !== id);
                     setTableData(newData);
                 },
                 onFinish() {
@@ -234,8 +234,8 @@ export default function UserListPage({ users }) {
                     load("Deleting users", "please wait...");
                 },
                 onSuccess: () => {
-                    const newData = tableData.filter((t) =>
-                        selected.includes(t.id)
+                    const newData = tableData.filter(
+                        (t) => !selected.includes(t.id)
                     );
                     setTableData(newData);
                 },
