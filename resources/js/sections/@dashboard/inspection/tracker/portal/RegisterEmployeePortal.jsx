@@ -493,7 +493,7 @@ const RegisterEmployeePortal = ({
     };
 
     const empWithUsers = useMemo(
-        () => employeeList.filter((emp) => emp.user_id),
+        () => employeeList.filter((emp) => !!emp.user_id),
         [employeeList]
     );
 
@@ -741,7 +741,7 @@ const RegisterEmployeePortal = ({
                                             <Autocomplete
                                                 id="virtualize-employee-list"
                                                 value={autoCompleteVal}
-                                                options={empWithUsers.filter(
+                                                options={employeeList.filter(
                                                     (emp) =>
                                                         !fields.some(
                                                             (f) =>
