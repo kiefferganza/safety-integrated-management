@@ -310,20 +310,23 @@ class EmployeeController extends Controller
 		foreach ($fields['ids'] as $id)
 		{
 			$employee = Employee::find($id);
-			User::where("emp_id", $employee->employee_id)->update(["emp_id" => null]);
+			if($employee) {
+				User::where("emp_id", $employee->employee_id)->update(["emp_id" => null]);
 
-			// if($employee->user_id) {
-			// 	Follower::where("user_id", $employee->user_id)->orWhere("following_id", $employee->user_id)->delete();
-			// }
-			if ($employee->img_src && $employee->img_src !== "photo-camera-neon-icon-vector-35706296" || $employee->img_src !== "Picture21" || $employee->img_src !== "Crystal_personal.svg")
-			{
-				if (Storage::exists("public/media/photos/employee/" . $employee->img_src))
+				// if($employee->user_id) {
+				// 	Follower::where("user_id", $employee->user_id)->orWhere("following_id", $employee->user_id)->delete();
+				// }
+				if ($employee->img_src && $employee->img_src !== "photo-camera-neon-icon-vector-35706296" || $employee->img_src !== "Picture21" || $employee->img_src !== "Crystal_personal.svg")
 				{
-					Storage::delete("public/media/photos/employee/" . $employee->img_src);
+					if (Storage::exists("public/media/photos/employee/" . $employee->img_src))
+					{
+						Storage::delete("public/media/photos/employee/" . $employee->img_src);
+					}
 				}
-			}
 
-			$employee->delete();
+				// $employee->delete();
+				$employee->update(["is_deleted" => 1]);
+			}
 		}
 
 		return redirect()->back()

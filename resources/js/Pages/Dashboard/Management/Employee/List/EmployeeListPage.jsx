@@ -260,7 +260,7 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
             {
                 onStart: () => {
                     load(
-                        `Deleting ${selected.length} companies`,
+                        `Deleting ${selected.length} employee`,
                         "Please wait..."
                     );
                 },
