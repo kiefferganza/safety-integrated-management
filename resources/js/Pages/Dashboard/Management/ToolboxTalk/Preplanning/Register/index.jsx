@@ -24,10 +24,7 @@ const index = ({ auth: { user } }) => {
     const [filterStartDate, setFilterStartDate] = useState(null);
     const [filterEndDate, setFilterEndDate] = useState(null);
 
-    const table = useTable({
-        defaultOrderBy: "date_assigned",
-        defaultOrder: "desc",
-    });
+    const table = useTable();
 
     const [tableData, setTableData] = useState([]);
 

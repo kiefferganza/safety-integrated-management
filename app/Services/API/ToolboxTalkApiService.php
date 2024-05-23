@@ -60,11 +60,18 @@ class ToolboxTalkApiService
  }
 
  public function getAssignedEmployees() {
+  
+  // dd(TbtTracker::query()
+  // ->select("tbt_trackers.*")
+  // // ->with("trackerEmployees")
+  // ->orderBy("date_assigned", "desc")
+  // ->get()->toArray());
+
   $employees = $this->getEmployees();
   $preplanning = TbtTracker::query()
   ->select("tbt_trackers.*")
   ->with("trackerEmployees")
-  ->orderBy("date_assigned", "desc")
+  ->orderBy("created_at", "desc")
   ->get()
   ->transform(function ($pre) use($employees)
   {
@@ -80,12 +87,12 @@ class ToolboxTalkApiService
     // $endDay = $date->endOfDay();
     $pre->trackerEmployees->transform(function($trackerEmployee) use($employees, $pre) {
       $emp = $employees->find($trackerEmployee->emp_id);
-     if($emp) {
-      $trackerEmployee->fullname = $emp->fullname;
-      $trackerEmployee->img = $emp->img;
-      $trackerEmployee->position = $emp->position;
-      $trackerEmployee->date_assigned = $pre->date_assigned;
-     }
+      if($emp) {
+        $trackerEmployee->fullname = $emp->fullname;
+        $trackerEmployee->img = $emp->img;
+        $trackerEmployee->position = $emp->position;
+        $trackerEmployee->date_assigned = $pre->date_assigned;
+      }
 
       $witnessEmp = $employees->first(function($emp) use($trackerEmployee) {
         return $emp->fullname === $trackerEmployee->witness;
