@@ -120,14 +120,7 @@ const RegisterEmployeePortal = ({
                 document_type: Yup.string().required(
                     "Please add document type."
                 ),
-                dateAssigned: Yup.date()
-                    .min(
-                        isEdit && currentRegistered?.date_assigned
-                            ? new Date(currentRegistered.date_assigned)
-                            : TOMORROW,
-                        "Date is too early"
-                    )
-                    .required("Please enter a valid date"),
+                dateAssigned: Yup.date().required("Please enter a valid date"),
                 employees: Yup.array()
                     .min(1, "Add at least one employee")
                     .of(
@@ -695,14 +688,6 @@ const RegisterEmployeePortal = ({
                                                             val
                                                         )
                                                     }
-                                                    minDate={
-                                                        isEdit &&
-                                                        currentRegistered?.date_assigned
-                                                            ? new Date(
-                                                                  currentRegistered.date_assigned
-                                                              )
-                                                            : TOMORROW
-                                                    }
                                                     inputFormat="M/d/yyyy"
                                                     disableMaskedInput
                                                     renderInput={(params) => (
@@ -741,14 +726,7 @@ const RegisterEmployeePortal = ({
                                             <Autocomplete
                                                 id="virtualize-employee-list"
                                                 value={autoCompleteVal}
-                                                options={employeeList.filter(
-                                                    (emp) =>
-                                                        !fields.some(
-                                                            (f) =>
-                                                                f?.emp_id ===
-                                                                emp.emp_id
-                                                        )
-                                                )}
+                                                options={employeeList}
                                                 onChange={
                                                     handleAutocompleteName
                                                 }

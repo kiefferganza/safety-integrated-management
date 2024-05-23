@@ -402,7 +402,7 @@ class InspectionService
 		$tracker = InspectionTracker::query()
 		->select("inspection_trackers.*")
 		->with("trackerEmployees")
-		->orderBy("date_assigned", "desc")
+		->orderBy("created_at", "desc")
 		->get()
 		->transform(function ($tracker) use($employees) {
 			$this->trackDailyStatus = true;
