@@ -294,7 +294,8 @@ class EmployeeController extends Controller
 			}
 		}
 
-		$employee->delete();
+		// $employee->delete();
+		$employee->update(["is_deleted" => 1]);
 
 		return redirect()->back()
 			->with("message", "Employee deleted successfully!")
