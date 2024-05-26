@@ -115,6 +115,14 @@ export function InspectionTrackerRow({
                     align="left"
                     sx={{ whiteSpace: "nowrap" }}
                 >
+                    {row.company ?? "N/A"}
+                </TableCell>
+
+                <TableCell
+                    onClick={handleTriggerCollapse}
+                    align="left"
+                    sx={{ whiteSpace: "nowrap" }}
+                >
                     {fDate(row.date_assigned)}
                 </TableCell>
 
@@ -168,7 +176,7 @@ export function InspectionTrackerRow({
             <TableRow>
                 <TableCell
                     style={{ paddingBottom: 0, paddingTop: 0 }}
-                    colSpan={8}
+                    colSpan={9}
                 >
                     <Collapse in={openCollapse} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
@@ -189,6 +197,7 @@ export function InspectionTrackerRow({
                                             <TableCell>#</TableCell>
                                             <TableCell>Conducted By</TableCell>
                                             <TableCell>Position</TableCell>
+                                            <TableCell>Company</TableCell>
                                             <TableCell>Reviewer</TableCell>
                                             <TableCell>Verifier</TableCell>
                                             <TableCell>Location</TableCell>
@@ -242,6 +251,11 @@ export function InspectionTrackerRow({
                                                     </TableCell>
                                                     <TableCell>
                                                         {subrow.position}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {subrow.company ??
+                                                            "N/A"}
                                                     </TableCell>
 
                                                     <TableCell>

@@ -37,8 +37,17 @@ const index = ({ auth: { user } }) => {
     });
 
     useEffect(() => {
-        if (!isLoading && data) {
-            setTableData(data?.tracker ?? []);
+        if (!isLoading && data && data?.tracker) {
+            const tracker = data.tracker.map((t) => {
+                const tracker_employees = t.tracker_employees.filter(
+                    (te) => !!te
+                );
+                return {
+                    ...t,
+                    tracker_employees,
+                };
+            });
+            setTableData(tracker);
         }
     }, [isLoading, data]);
 

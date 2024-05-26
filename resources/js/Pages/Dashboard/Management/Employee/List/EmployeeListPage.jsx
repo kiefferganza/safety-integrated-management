@@ -57,6 +57,7 @@ const TABLE_HEAD = [
     { id: "date_created", label: "Create", align: "left" },
     { id: "position", label: "Position", align: "left" },
     { id: "department", label: "Department", align: "left" },
+    { id: "company_name", label: "Company", align: "left" },
     // { id: 'nationality', label: 'Nationality', align: 'left' },
     { id: "country", label: "Country", align: "left" },
     { id: "phone_no", label: "Phone No.", align: "left" },
@@ -115,6 +116,8 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
 
     const [filterPosition, setFilterPosition] = useState("all");
 
+    const [filterCompany, setFilterCompany] = useState("all");
+
     const [filterStartDate, setFilterStartDate] = useState(null);
 
     const dataFiltered = applyFilter({
@@ -126,6 +129,7 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
         filterStatus,
         filterStartDate,
         filterEndDate,
+        filterCompany,
     });
 
     useEffect(() => {
@@ -145,6 +149,7 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
         filterName !== "" ||
         filterDepartment !== "all" ||
         filterPosition !== "all" ||
+        filterCompany !== "all" ||
         !!filterStartDate;
 
     const isNotFound =
@@ -152,6 +157,7 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
         (!dataFiltered.length && !!filterStatus) ||
         (!dataFiltered.length && !!filterDepartment) ||
         (!dataFiltered.length && !!filterPosition) ||
+        (!dataFiltered.length && !!filterCompany) ||
         (!dataFiltered.length && !!filterEndDate) ||
         (!dataFiltered.length && !!filterStartDate);
 
@@ -209,6 +215,17 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                         .map((emp) => emp.position.trim())
                 ),
             ],
+            companies: [
+                "all",
+                ...new Set(
+                    employees
+                        .filter(
+                            (emp) =>
+                                emp?.company_name && emp?.company_name?.trim()
+                        )
+                        .map((emp) => emp.company_name.trim())
+                ),
+            ],
         }),
         [employees]
     );
@@ -241,6 +258,11 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
     const handleFilterPosition = (event) => {
         setPage(0);
         setFilterPosition(event.target.value);
+    };
+
+    const handleFilterCompany = (event) => {
+        setPage(0);
+        setFilterCompany(event.target.value);
     };
 
     const handleDeleteRow = (id) => {
@@ -458,14 +480,17 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                         isFiltered={isFiltered}
                         filterDepartment={filterDepartment}
                         filterPosition={filterPosition}
+                        filterCompany={filterCompany}
                         filterEndDate={filterEndDate}
                         onFilterName={handleFilterName}
                         optionsDepartments={OPTIONS.departments}
                         optionsPositions={OPTIONS.positions}
+                        optionsCompanies={OPTIONS.companies}
                         filterStartDate={filterStartDate}
                         onResetFilter={handleResetFilter}
                         onFilterDepartment={handleFilterDepartment}
                         onFilterPosition={handleFilterPosition}
+                        onFilterCompany={handleFilterCompany}
                         onFilterStartDate={(newValue) => {
                             setFilterStartDate(newValue);
                             setPage(0);
@@ -718,6 +743,7 @@ function applyFilter({
     filterStatus,
     filterDepartment,
     filterPosition,
+    filterCompany,
     filterStartDate,
 }) {
     const stabilizedThis = inputData.map((el, index) => [el, index]);
@@ -755,6 +781,12 @@ function applyFilter({
     if (filterPosition !== "all") {
         inputData = inputData.filter(
             (employee) => employee.position.trim() === filterPosition
+        );
+    }
+
+    if (filterCompany !== "all") {
+        inputData = inputData.filter(
+            (employee) => employee?.company_name?.trim() === filterCompany
         );
     }
 

@@ -45,6 +45,7 @@ const TABLE_HEAD = [
     { id: "form_number", label: "CMS Number", align: "left" },
     { id: "fullname", label: "Originator", align: "left" },
     { id: "position", label: "Position", align: "left" },
+    { id: "company", label: "Company", align: "left" },
     { id: "date_assigned", label: "Date" },
     { id: "status", label: "Status", align: "left" },
     { id: "employees", label: "Created", align: "left" },

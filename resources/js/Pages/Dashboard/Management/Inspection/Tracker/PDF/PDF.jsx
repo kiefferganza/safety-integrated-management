@@ -11,7 +11,6 @@ export function PDF({
     logo,
     data: { total, summary, dateTupple = [], pdfData = [] },
 }) {
-    console.log(pdfData);
     const dateFormattedString = dateLabel(dateTupple[0], dateTupple[1]);
     return (
         <Document title="Toolbox Talk Tracker">

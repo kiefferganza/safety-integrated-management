@@ -384,11 +384,12 @@ class InspectionService
 
 
 	public function getEmployees() {
-		return Employee::select("employee_id", "tbl_employees.employee_id as emp_id", "firstname", "lastname", "tbl_position.position", "tbl_employees.user_id")
+		return Employee::select("employee_id", "tbl_employees.employee_id as emp_id", "firstname", "lastname", "tbl_position.position", "tbl_employees.user_id", "tbl_company.company_name")
 		->where([
 		  ["tbl_employees.is_deleted", 0],
 		])
-		->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+		->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+		->leftJoin("tbl_company", "tbl_employees.company", "tbl_company.company_id")
 		->get()
 		->transform(function ($employee)
 		{
@@ -411,52 +412,53 @@ class InspectionService
 				$tracker->fullname = $employee->fullname;
 				$tracker->img = $employee->img;
 				$tracker->position = $employee->position;
+				$tracker->company = $employee->company_name;
 			}
 			$tracker->trackerEmployees->transform(function($trackerEmployee) use($employees, $tracker) {
-				$date = Carbon::parse($tracker->date_assigned);
-				$inspectedDate = $date->format("d-M-Y");
 				$emp = $employees->find($trackerEmployee->emp_id);
-				if(!$emp) {
-					dd($trackerEmployee, $employees->toArray());
-				}
-				$trackerEmployee->fullname = $emp->fullname;
-				$trackerEmployee->img = $emp->img;
-				$trackerEmployee->position = $emp->position;
-				$trackerEmployee->date_assigned = $tracker->date_assigned;
-				$reviewer = $employees->find($trackerEmployee->action_id);
-				if($reviewer) {
-					$trackerEmployee->reviewer = [
-						"fullname" => $reviewer->fullname,
-						"img" => $reviewer->img,
-						"position" => $reviewer->position,
-					];
-				}
-				$verifier = $employees->find($trackerEmployee->verifier_id);
-				if($verifier) {
-					$trackerEmployee->verifier = [
-						"fullname" => $verifier->fullname,
-						"img" => $verifier->img,
-						"position" => $verifier->position,
-					];
-				}
-				$submittedInspection = Inspection::select("inspection_id")
-				->where("employee_id", $trackerEmployee->emp_id)
-				->where("reviewer_id", $trackerEmployee->action_id)
-				->where("verifier_id", $trackerEmployee->verifier_id)
-				->where("location", $trackerEmployee->location)
-				->where("inspected_date", $inspectedDate)
-				->first();
+				if($emp) {
+					$date = Carbon::parse($tracker->date_assigned);
+					$inspectedDate = $date->format("d-M-Y");
+					$trackerEmployee->fullname = $emp->fullname;
+					$trackerEmployee->img = $emp->img;
+					$trackerEmployee->position = $emp->position;
+					$trackerEmployee->company = $emp->company_name;
+					$trackerEmployee->date_assigned = $tracker->date_assigned;
+					$reviewer = $employees->find($trackerEmployee->action_id);
+					if($reviewer) {
+						$trackerEmployee->reviewer = [
+							"fullname" => $reviewer->fullname,
+							"img" => $reviewer->img,
+							"position" => $reviewer->position,
+						];
+					}
+					$verifier = $employees->find($trackerEmployee->verifier_id);
+					if($verifier) {
+						$trackerEmployee->verifier = [
+							"fullname" => $verifier->fullname,
+							"img" => $verifier->img,
+							"position" => $verifier->position,
+						];
+					}
+					$submittedInspection = Inspection::select("inspection_id")
+					->where("employee_id", $trackerEmployee->emp_id)
+					->where("reviewer_id", $trackerEmployee->action_id)
+					->where("verifier_id", $trackerEmployee->verifier_id)
+					->where("location", $trackerEmployee->location)
+					->where("inspected_date", $inspectedDate)
+					->first();
 
-				$trackerEmployee->status = $submittedInspection !== null;
+					$trackerEmployee->status = $submittedInspection !== null;
 
-				if(!$trackerEmployee->status) {
-					$this->trackDailyStatus = false;
-					$trackerEmployee->link = null;
-				} else {
-					$trackerEmployee->link = URL::route("inspection.management.view", [$submittedInspection->inspection_id]);
+					if(!$trackerEmployee->status) {
+						$this->trackDailyStatus = false;
+						$trackerEmployee->link = null;
+					} else {
+						$trackerEmployee->link = URL::route("inspection.management.view", [$submittedInspection->inspection_id]);
+					}
+
+					return $trackerEmployee;
 				}
-
-				return $trackerEmployee;
 			});
 			$tracker->status = $this->trackDailyStatus;
 			$this->trackDailyStatus = false;
