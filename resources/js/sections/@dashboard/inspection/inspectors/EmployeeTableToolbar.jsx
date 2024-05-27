@@ -36,11 +36,14 @@ EmployeeTableToolbar.propTypes = {
     filterPosition: PropTypes.arrayOf(PropTypes.string),
     optionsPositions: PropTypes.arrayOf(PropTypes.string),
     filterDepartment: PropTypes.string,
+    filterCompany: PropTypes.string,
+    optionsCompany: PropTypes.arrayOf(PropTypes.string),
     onFilterDepartment: PropTypes.func,
     optionsDepartment: PropTypes.arrayOf(PropTypes.string),
     onFilterPosition: PropTypes.func,
     onFilterStartDate: PropTypes.func,
     onFilterEndDate: PropTypes.func,
+    onFilterCompany: PropTypes.func,
 };
 
 export default function EmployeeTableToolbar({
@@ -58,6 +61,9 @@ export default function EmployeeTableToolbar({
     filterEndDate,
     onFilterStartDate,
     onFilterEndDate,
+    filterCompany = "all",
+    optionsCompany = [],
+    onFilterCompany,
 }) {
     const endDateRef = useRef(null);
 
@@ -165,6 +171,43 @@ export default function EmployeeTableToolbar({
                     }}
                 >
                     {optionsDepartment.map((option) => (
+                        <MenuItem
+                            key={option}
+                            value={option}
+                            sx={{
+                                mx: 1,
+                                my: 0.5,
+                                borderRadius: 0.75,
+                                typography: "body2",
+                                textTransform: "capitalize",
+                                "&:first-of-type": { mt: 0 },
+                                "&:last-of-type": { mb: 0 },
+                            }}
+                        >
+                            {option}
+                        </MenuItem>
+                    ))}
+                </TextField>
+
+                <TextField
+                    fullWidth
+                    select
+                    label="Company"
+                    value={filterCompany}
+                    onChange={onFilterCompany}
+                    SelectProps={{
+                        MenuProps: {
+                            PaperProps: {
+                                sx: { maxHeight: 220 },
+                            },
+                        },
+                    }}
+                    sx={{
+                        width: "100%",
+                        textTransform: "capitalize",
+                    }}
+                >
+                    {optionsCompany.map((option) => (
                         <MenuItem
                             key={option}
                             value={option}

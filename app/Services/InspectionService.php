@@ -349,11 +349,14 @@ class InspectionService
 		tbl_position.position,
 		tbl_department.department,
 		tbl_employees.is_deleted,
-		tbl_employees.country"))
+		tbl_employees.country,
+		tbl_employees.is_active,
+		tbl_company.company_name"))
 			->whereIn("tbl_employees.position", $authorizedPositions)	
 			->where("tbl_employees.is_deleted", 0)
 			->leftJoin("tbl_department", "tbl_employees.department", "tbl_department.department_id")
 			->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+			->leftJoin("tbl_company", "tbl_employees.company", "tbl_company.company_id")
 			->withCount(["inspections" => function($q) use($filterDate){
 				if($filterDate) {
 					$start = Carbon::parse($filterDate[0]);

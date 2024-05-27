@@ -53,6 +53,8 @@ export default function EmployeeTableRow({ row, selected, onSelectRow }) {
 
                 <TableCell align="left">{row.department}</TableCell>
 
+                <TableCell align="left">{row?.company_name ?? "N/A"}</TableCell>
+
                 <TableCell align="left">{row.country || "N/A"}</TableCell>
 
                 <TableCell align="left">{row.phone_no}</TableCell>

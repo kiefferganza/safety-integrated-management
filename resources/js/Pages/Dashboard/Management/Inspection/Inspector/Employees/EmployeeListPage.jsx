@@ -48,6 +48,7 @@ const TABLE_HEAD = [
     { id: "name", label: "Name", align: "left" },
     { id: "position", label: "Position", align: "left" },
     { id: "department", label: "Department", align: "left" },
+    { id: "company_name", label: "Company", align: "left" },
     { id: "country", label: "Country", align: "left" },
     { id: "phone_no", label: "Phone No.", align: "left" },
     { id: "is_active", label: "Status", align: "left" },
@@ -96,6 +97,8 @@ export default function EmployeeListPage({
 
     const [filterDepartment, setFilterDepartment] = useState("all");
 
+    const [filterCompany, setFilterCompany] = useState("all");
+
     const [filterStartDate, setFilterStartDate] = useState(null);
 
     const [filterEndDate, setFilterEndDate] = useState(null);
@@ -113,6 +116,7 @@ export default function EmployeeListPage({
         filterPosition,
         filterDepartment,
         filterStatus,
+        filterCompany,
     });
 
     const denseHeight = dense ? 56 : 76;
@@ -122,6 +126,7 @@ export default function EmployeeListPage({
         filterName !== "" ||
         filterPosition.length !== 0 ||
         filterDepartment !== "all" ||
+        filterCompany !== "all" ||
         filterStartDate !== null ||
         filterEndDate !== null;
 
@@ -129,7 +134,8 @@ export default function EmployeeListPage({
         (!dataFiltered.length && !!filterName) ||
         (!dataFiltered.length && !!filterStatus) ||
         (!dataFiltered.length && !!filterPosition.length) ||
-        (!dataFiltered.length && !!filterDepartment) ||
+        (!dataFiltered.length && filterDepartment !== "all") ||
+        (!dataFiltered.length && filterCompany !== "all") ||
         (!dataFiltered.length && !!filterStartDate) ||
         (!dataFiltered.length && !!filterEndDate);
 
@@ -194,6 +200,11 @@ export default function EmployeeListPage({
         setFilterDepartment(event.target.value);
     };
 
+    const handleFilterCompany = (event) => {
+        setPage(0);
+        setFilterCompany(event.target.value);
+    };
+
     const handleStartDateChange = (date) => {
         setPage(0);
         setFilterStartDate(date);
@@ -219,37 +230,52 @@ export default function EmployeeListPage({
         setFilterPosition([]);
         setFilterStartDate(null);
         setFilterEndDate(null);
+        setFilterCompany("all");
         setPage(0);
         if (filterStartDate && filterEndDate) {
             setFilterDate(null);
         }
     };
-    const [DEPARTMENT_OPTIONS, POSITION_OPTIONS] = useMemo(() => {
-        if (employees) {
-            return [
-                [
-                    "all",
-                    ...new Set(
-                        employees
-                            .filter(
-                                (emp) => emp.department && emp.department.trim()
-                            )
-                            .map((emp) => emp.department.trim())
-                    ),
-                ],
-                [
-                    ...new Set(
-                        employees
-                            .filter(
-                                (emp) => emp.position && emp.position.trim()
-                            )
-                            .map((emp) => emp.position.trim())
-                    ),
-                ],
-            ];
-        }
-        return [[], ["all"]];
-    }, [employees]);
+    const [DEPARTMENT_OPTIONS, POSITION_OPTIONS, COMPANY_OPTIONS] =
+        useMemo(() => {
+            if (employees) {
+                return [
+                    [
+                        "all",
+                        ...new Set(
+                            employees
+                                .filter(
+                                    (emp) =>
+                                        emp.department && emp.department.trim()
+                                )
+                                .map((emp) => emp.department.trim())
+                        ),
+                    ],
+                    [
+                        ...new Set(
+                            employees
+                                .filter(
+                                    (emp) => emp.position && emp.position.trim()
+                                )
+                                .map((emp) => emp.position.trim())
+                        ),
+                    ],
+                    [
+                        "all",
+                        ...new Set(
+                            employees
+                                .filter(
+                                    (emp) =>
+                                        emp.company_name &&
+                                        emp.company_name?.trim()
+                                )
+                                .map((emp) => emp.company_name.trim())
+                        ),
+                    ],
+                ];
+            }
+            return [[], ["all"]];
+        }, [employees]);
 
     return (
         <Container maxWidth={themeStretch ? false : "lg"}>
@@ -378,6 +404,9 @@ export default function EmployeeListPage({
                     filterEndDate={filterEndDate}
                     onFilterStartDate={handleStartDateChange}
                     onFilterEndDate={handleEndDateChange}
+                    filterCompany={filterCompany}
+                    optionsCompany={COMPANY_OPTIONS}
+                    onFilterCompany={handleFilterCompany}
                 />
 
                 <TableContainer
@@ -509,6 +538,7 @@ function applyFilter({
     filterStatus,
     filterPosition,
     filterDepartment,
+    filterCompany,
 }) {
     const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -545,6 +575,12 @@ function applyFilter({
     if (filterDepartment !== "all") {
         inputData = inputData.filter(
             (employee) => employee.department.trim() === filterDepartment
+        );
+    }
+
+    if (filterCompany !== "all") {
+        inputData = inputData.filter(
+            (employee) => employee.company_name?.trim() === filterCompany
         );
     }
 

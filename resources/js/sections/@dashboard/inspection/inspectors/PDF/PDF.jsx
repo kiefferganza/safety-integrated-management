@@ -156,7 +156,7 @@ export function PDF({ data = [], filterDate, logo }) {
                                     flexGrow: 0,
                                     paddingTop: 2,
                                     paddingBottom: 2,
-                                    flexBasis: 120,
+                                    flexBasis: 100,
                                     height: 18,
                                     justifyContent: "center",
                                 },
@@ -179,7 +179,30 @@ export function PDF({ data = [], filterDate, logo }) {
                                     flexGrow: 0,
                                     paddingTop: 2,
                                     paddingBottom: 2,
-                                    flexBasis: 90,
+                                    flexBasis: 70,
+                                    height: 18,
+                                    justifyContent: "center",
+                                },
+                            ]}
+                        >
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    { color: "#363636", lineHeight: 1 },
+                                ]}
+                            >
+                                Company
+                            </Text>
+                        </View>
+                        <View
+                            style={[
+                                styles.pl4,
+                                styles.br,
+                                {
+                                    flexGrow: 0,
+                                    paddingTop: 2,
+                                    paddingBottom: 2,
+                                    flexBasis: 75,
                                     height: 18,
                                     justifyContent: "center",
                                 },
@@ -202,7 +225,7 @@ export function PDF({ data = [], filterDate, logo }) {
                                     flexGrow: 0,
                                     paddingTop: 2,
                                     paddingBottom: 2,
-                                    flexBasis: 90,
+                                    flexBasis: 85,
                                     height: 18,
                                     justifyContent: "center",
                                 },
@@ -225,7 +248,7 @@ export function PDF({ data = [], filterDate, logo }) {
                                     flexGrow: 0,
                                     paddingTop: 2,
                                     paddingBottom: 2,
-                                    flexBasis: 70,
+                                    flexBasis: 60,
                                     height: 18,
                                     justifyContent: "center",
                                 },
@@ -362,7 +385,7 @@ export function PDF({ data = [], filterDate, logo }) {
                                                     flexGrow: 0,
                                                     paddingTop: 2,
                                                     paddingBottom: 2,
-                                                    flexBasis: 120,
+                                                    flexBasis: 100,
                                                     justifyContent: "center",
                                                 },
                                             ]}
@@ -386,7 +409,31 @@ export function PDF({ data = [], filterDate, logo }) {
                                                     flexGrow: 0,
                                                     paddingTop: 2,
                                                     paddingBottom: 2,
-                                                    flexBasis: 90,
+                                                    flexBasis: 70,
+                                                    justifyContent: "center",
+                                                },
+                                            ]}
+                                        >
+                                            <Text
+                                                style={[
+                                                    {
+                                                        color: "#363636",
+                                                        lineHeight: 1,
+                                                    },
+                                                ]}
+                                            >
+                                                {d.company_name ?? "N/A"}
+                                            </Text>
+                                        </View>
+                                        <View
+                                            style={[
+                                                styles.pl4,
+                                                styles.br,
+                                                {
+                                                    flexGrow: 0,
+                                                    paddingTop: 2,
+                                                    paddingBottom: 2,
+                                                    flexBasis: 75,
                                                     justifyContent: "center",
                                                 },
                                             ]}
@@ -410,7 +457,7 @@ export function PDF({ data = [], filterDate, logo }) {
                                                     flexGrow: 0,
                                                     paddingTop: 2,
                                                     paddingBottom: 2,
-                                                    flexBasis: 90,
+                                                    flexBasis: 85,
                                                     justifyContent: "center",
                                                 },
                                             ]}
@@ -434,7 +481,7 @@ export function PDF({ data = [], filterDate, logo }) {
                                                     flexGrow: 0,
                                                     paddingTop: 2,
                                                     paddingBottom: 2,
-                                                    flexBasis: 70,
+                                                    flexBasis: 60,
                                                     justifyContent: "center",
                                                 },
                                             ]}
