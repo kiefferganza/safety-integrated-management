@@ -337,7 +337,7 @@ class InspectionService
 
 	public function employees($filterDate, $authorizedPositions)
 	{
-		return Employee::select(DB::raw("
+		return Employee::select(DB::raw(" 
 		tbl_employees.user_id,
 		tbl_employees.employee_id,
 		tbl_employees.firstname,
@@ -443,12 +443,14 @@ class InspectionService
 							"position" => $verifier->position,
 						];
 					}
+
 					$submittedInspection = Inspection::select("inspection_id")
 					->where("employee_id", $trackerEmployee->emp_id)
 					->where("reviewer_id", $trackerEmployee->action_id)
 					->where("verifier_id", $trackerEmployee->verifier_id)
 					->where("location", $trackerEmployee->location)
 					->where("inspected_date", $inspectedDate)
+					->orWhere("date_issued", $date->toDateString())
 					->first();
 
 					$trackerEmployee->status = $submittedInspection !== null;
