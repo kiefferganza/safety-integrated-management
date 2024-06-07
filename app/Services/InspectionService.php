@@ -446,11 +446,12 @@ class InspectionService
 
 					$submittedInspection = Inspection::select("inspection_id")
 					->where("employee_id", $trackerEmployee->emp_id)
-					->where("reviewer_id", $trackerEmployee->action_id)
+					// ->where("reviewer_id", $trackerEmployee->action_id)
 					->where("verifier_id", $trackerEmployee->verifier_id)
 					->where("location", $trackerEmployee->location)
-					->where("inspected_date", $inspectedDate)
-					->orWhere("date_issued", $date->toDateString())
+					->where(function (Builder $q) use($inspectedDate, $tracker) {
+						$q->where("date_issued", $tracker->date_assigned)->orWhere("inspected_date", ltrim($inspectedDate, "0"));
+					})
 					->first();
 
 					$trackerEmployee->status = $submittedInspection !== null;
