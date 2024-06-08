@@ -406,7 +406,7 @@ class InspectionService
 		$tracker = InspectionTracker::query()
 		->select("inspection_trackers.*")
 		->with("trackerEmployees")
-		->orderBy("created_at", "desc")
+		->orderBy("created_at", "desc") 
 		->get()
 		->transform(function ($tracker) use($employees) {
 			$this->trackDailyStatus = true;
@@ -430,6 +430,7 @@ class InspectionService
 					$reviewer = $employees->find($trackerEmployee->action_id);
 					if($reviewer) {
 						$trackerEmployee->reviewer = [
+							"emp_id" => $reviewer->employee_id,
 							"fullname" => $reviewer->fullname,
 							"img" => $reviewer->img,
 							"position" => $reviewer->position,
@@ -438,6 +439,7 @@ class InspectionService
 					$verifier = $employees->find($trackerEmployee->verifier_id);
 					if($verifier) {
 						$trackerEmployee->verifier = [
+							"emp_id" => $verifier->employee_id,
 							"fullname" => $verifier->fullname,
 							"img" => $verifier->img,
 							"position" => $verifier->position,

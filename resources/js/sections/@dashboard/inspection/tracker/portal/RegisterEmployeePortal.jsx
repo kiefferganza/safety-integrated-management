@@ -369,9 +369,29 @@ const RegisterEmployeePortal = ({
                 fullname: selectedRow?.fullname || "",
                 img: selectedRow?.img || "",
             });
-            setReviewerVal(selectedRow?.reviewer || "");
+            autoCompleteInputReviewerVal;
+
+            setAutoCompleteReviewerVal({
+                emp_id: selectedRow?.reviewer?.emp_id || "",
+                position: selectedRow?.reviewer?.position || "",
+                fullname: selectedRow?.reviewer?.fullname || "",
+                img: selectedRow?.reviewer?.img || "",
+            });
+            setAutoCompleteInputReviewerVal(selectedRow?.reviewer?.fullname);
+
+            setAutoCompleteVerifierVal({
+                emp_id: selectedRow?.verifier?.emp_id || "",
+                position: selectedRow?.verifier?.position || "",
+                fullname: selectedRow?.verifier?.fullname || "",
+                img: selectedRow?.verifier?.img || "",
+            });
+            setAutoCompleteInputVerifierVal(
+                selectedRow?.verifier?.fullname ?? ""
+            );
+
             setLocationVal(selectedRow?.location);
             setAutoCompleteInputVal(selectedRow?.fullname);
+            setExactLocationVal(selectedRow.exact_location);
             remove(index);
         }
     });
