@@ -4,8 +4,10 @@ namespace App\Services\API;
 
 use App\Models\Employee;
 use App\Models\TbtTracker;
+use App\Models\TbtTrackerEmployee;
 use App\Models\ToolboxTalk;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\URL;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -134,5 +136,27 @@ class ToolboxTalkApiService
  public function tbtTrackerLatestSequenceNumber() {
   $sequence = TbtTracker::withTrashed()->count() + 1;
   return str_pad($sequence, 6, '0', STR_PAD_LEFT);
+ }
+
+ public function getTracker() {
+  $user = auth()->user();
+  $tracker = TbtTrackerEmployee::query()->where("emp_id", $user->emp_id)->with([
+    "tracker" => fn($q) => $q->with("employee")
+  ])->get()->transform(function(TbtTrackerEmployee $trackerEmp) {
+    $tracker = $trackerEmp->getRelations()["tracker"];
+    $tracker->employee->img = $this->getProfile($tracker->employee->user_id);
+    $trackerEmp->tracker = $tracker;
+    $tbt = ToolboxTalk::query()->where("tbl_toolbox_talks.is_deleted", 0)
+    ->where("tbl_toolbox_talks.employee_id", $trackerEmp->emp_id)
+    ->where("tbl_toolbox_talks.location", $trackerEmp->location)
+    ->where("tbl_toolbox_talks.tbt_type", $trackerEmp->tbt_type)
+    ->where(function(Builder $q) use($tracker) {
+      return $q->whereDate("tbl_toolbox_talks.date_conducted", $tracker->date_assigned)
+      ->orWhereDate("tbl_toolbox_talks.date_created", $tracker->date_assigned);
+    })->count();
+    $trackerEmp->tbt = $tbt;
+    return $trackerEmp;
+  })->filter(fn($tracker) => $tracker->tbt === 0);
+  return $tracker;
  }
 }

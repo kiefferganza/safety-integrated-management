@@ -45,6 +45,7 @@ Route::middleware('auth')->as('api.')->group(function ()
 		Route::get('/type', [ToolboxTalkController::class, 'byType'])->name('type');
 
 		// Preplanning
+		Route::get('/assigned-tracker', [ToolboxTalkController::class, 'assignedTracker'])->name('tracker.assigned');
 		Route::prefix('preplanning')->as('preplanning.')->group(function() {
 			Route::get('/tracker', [ToolboxTalkController::class, 'tracker'])->name('tracker');
 		});
@@ -65,6 +66,7 @@ Route::middleware('auth')->as('api.')->group(function ()
 			Route::get('/employees', [InspectionApiController::class, 'employeeWithInspectionCount'])->name("employees");
 		});
 
+		Route::get('/assigned-tracker', [InspectionApiController::class, 'assignedTracker'])->name('tracker.assigned');
 		Route::get('/tracker', [InspectionApiController::class, "tracker"])->name('tracker');
 	});
 

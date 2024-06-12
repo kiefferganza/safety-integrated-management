@@ -26,15 +26,21 @@ class InspectionApiController extends Controller
 	{
 		$user = auth()->user();
 
-		$inspectionServer = new InspectionService();
+		$inspectionService = new InspectionService();
 
-		[$employees, $tracker] = $inspectionServer->getAssignedEmployees();
+		[$employees, $tracker] = $inspectionService->getAssignedEmployees();
 
-		$sequenceNo = $inspectionServer->tbtTrackerLatestSequenceNumber();
+		$sequenceNo = $inspectionService->tbtTrackerLatestSequenceNumber();
 
 
 		$projectDetails = DocumentProjectDetail::where("sub_id", $user->subscriber_id)->get()->groupBy("title");
 
 		return response()->json(compact("tracker", "employees", "projectDetails", "sequenceNo"));
+	}
+
+	public function assignedTracker() {
+		$inspectionService = new InspectionService();
+		$tracker = $inspectionService->getTracker();
+		return response()->json($tracker);
 	}
 }

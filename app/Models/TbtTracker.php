@@ -30,6 +30,10 @@ class TbtTracker extends Model
         return "";
     }
 
+    public function employee() {
+        return $this->belongsTo(Employee::class, "emp_id", "employee_id");
+    }
+
 
     public function trackerEmployees() {
         return $this->hasMany(TbtTrackerEmployee::class, "tracker", "id");

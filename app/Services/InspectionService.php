@@ -7,6 +7,7 @@ use App\Models\Inspection;
 use App\Models\InspectionRegisteredPosition;
 use App\Models\InspectionReportList;
 use App\Models\InspectionTracker;
+use App\Models\InspectionTrackerEmployee;
 use App\Models\TbtTracker;
 use App\Models\User;
 use App\Notifications\ModuleBasicNotification;
@@ -479,5 +480,28 @@ class InspectionService
 	public function tbtTrackerLatestSequenceNumber() {
 		$sequence = InspectionTracker::withTrashed()->count() + 1;
 		return str_pad($sequence, 6, '0', STR_PAD_LEFT);
+	}
+
+	public function getTracker() {
+		$user = auth()->user();
+		$tracker = InspectionTrackerEmployee::query()->where("emp_id", $user->emp_id)->with([
+		  "tracker" => fn($q) => $q->with("employee")
+		])->get()->transform(function(InspectionTrackerEmployee $trackerEmp) {
+		  $tracker = $trackerEmp->getRelations()["tracker"];
+		  $tracker->employee->img = $this->getProfile($tracker->employee->user_id);
+		  $trackerEmp->tracker = $tracker;
+		  dd($tracker);
+		//   $tbt = ToolboxTalk::query()->where("tbl_toolbox_talks.is_deleted", 0)
+		//   ->where("tbl_toolbox_talks.employee_id", $trackerEmp->emp_id)
+		//   ->where("tbl_toolbox_talks.location", $trackerEmp->location)
+		//   ->where("tbl_toolbox_talks.tbt_type", $trackerEmp->tbt_type)
+		//   ->where(function(Builder $q) use($tracker) {
+		// 	return $q->whereDate("tbl_toolbox_talks.date_conducted", $tracker->date_assigned)
+		// 	->orWhereDate("tbl_toolbox_talks.date_created", $tracker->date_assigned);
+		//   })->count();
+		//   $trackerEmp->tbt = $tbt;
+		  return $trackerEmp;
+		})->filter(fn($tracker) => $tracker->tbt === 0);
+		return $tracker;
 	}
 }

@@ -49,6 +49,11 @@ export const fetchPreplanning = () =>
         .get(route("api.tbt.preplanning.tracker"))
         .then((res) => res.data);
 
+export const fetchAssignedTracker = () =>
+    axiosInstance
+        .get(route("api.tbt.tracker.assigned"))
+        .then((res) => res.data);
+
 export const fetchInspectionTracker = () => axiosInstance.get(route("api.inspections.tracker")).then((res) => res.data);
 
 export default axiosInstance;
