@@ -121,7 +121,7 @@ const InspectionNewForm = ({ projectDetails, inspectionTracker }) => {
         project_code: inspectionTracker?.project_code ?? "",
         originator: inspectionTracker?.originator ?? "",
         discipline: inspectionTracker?.discipline ?? "",
-        document_type: inspectionTracker?.document_type ?? "DOR",
+        document_type: inspectionTracker?.document_type ?? "",
         document_zone: "",
         document_level: "",
         form_number: "",

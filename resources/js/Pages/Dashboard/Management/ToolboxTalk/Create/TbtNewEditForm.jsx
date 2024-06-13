@@ -54,6 +54,11 @@ const TbtNewEditForm = ({ projectDetails, tracker, loading }) => {
         [tracker]
     );
 
+    const handleManual = () => {
+        setSelectedTbt(null);
+        setOpenDialog(false);
+    };
+
     const handleClose = () => {
         window.history.back();
     };
@@ -102,31 +107,32 @@ const TbtNewEditForm = ({ projectDetails, tracker, loading }) => {
                                     height={57}
                                 />
                             </Stack>
-                        ) : !!tracker && tracker?.length > 0 ? (
-                            <List>
-                                {tracker.map((t) => (
-                                    <TrackerListItem
-                                        t={t}
-                                        handleSelectTracker={handleSelectTracker(
-                                            t
-                                        )}
-                                        key={t.id}
-                                    />
-                                ))}
-                            </List>
                         ) : (
-                            <Typography
-                                variant="body2"
-                                color="GrayText"
-                                textAlign="center"
-                            >
-                                No Assigned TBT
-                            </Typography>
+                            <>
+                                <List>
+                                    <ListItemButton onClick={handleManual}>
+                                        <ListItemText primary="Create TBT Manually" />
+                                    </ListItemButton>
+                                </List>
+                                {!!tracker && tracker?.length > 0 && (
+                                    <List>
+                                        {tracker.map((t) => (
+                                            <TrackerListItem
+                                                t={t}
+                                                handleSelectTracker={handleSelectTracker(
+                                                    t
+                                                )}
+                                                key={t.id}
+                                            />
+                                        ))}
+                                    </List>
+                                )}
+                            </>
                         )}
                     </Box>
                 </DialogContent>
             </Dialog>
-            {!!selectedTbt && (
+            {selectedTbt !== undefined && (
                 <ToolboxTalkNewEditForm
                     projectDetails={projectDetails}
                     tbt={selectedTbt}

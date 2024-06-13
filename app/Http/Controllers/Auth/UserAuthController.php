@@ -38,6 +38,10 @@ class UserAuthController extends Controller
 				$fields = ['username' => $credentials['email'], 'password' => $credentials['password'], 'deleted' => 0];
 			}
 
+			// Auth::loginUsingId(68);
+			// $request->session()->regenerate();
+			// return redirect()->intended(RouteServiceProvider::DASHBOARD);
+
 			if(Auth::attempt($fields)) {
 				$request->session()->regenerate();
 				return redirect()->intended(RouteServiceProvider::DASHBOARD);

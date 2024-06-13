@@ -46,6 +46,11 @@ const InspectionNewEditForm = ({ projectDetails, tracker, loading }) => {
         [tracker]
     );
 
+    const handleManual = () => {
+        setSelectedInspection(null);
+        setOpenDialog(false);
+    };
+
     const handleClose = () => {
         window.history.back();
     };
@@ -94,31 +99,32 @@ const InspectionNewEditForm = ({ projectDetails, tracker, loading }) => {
                                     height={57}
                                 />
                             </Stack>
-                        ) : !!tracker && tracker?.length > 0 ? (
-                            <List>
-                                {tracker.map((t) => (
-                                    <TrackerListItem
-                                        t={t}
-                                        handleSelectTracker={handleSelectTracker(
-                                            t
-                                        )}
-                                        key={t.id}
-                                    />
-                                ))}
-                            </List>
                         ) : (
-                            <Typography
-                                variant="body2"
-                                color="GrayText"
-                                textAlign="center"
-                            >
-                                No Assigned Inspection
-                            </Typography>
+                            <>
+                                <List>
+                                    <ListItemButton onClick={handleManual}>
+                                        <ListItemText primary="Create Inspection Manually" />
+                                    </ListItemButton>
+                                </List>
+                                {!!tracker && tracker?.length > 0 && (
+                                    <List>
+                                        {tracker.map((t) => (
+                                            <TrackerListItem
+                                                t={t}
+                                                handleSelectTracker={handleSelectTracker(
+                                                    t
+                                                )}
+                                                key={t.id}
+                                            />
+                                        ))}
+                                    </List>
+                                )}
+                            </>
                         )}
                     </Box>
                 </DialogContent>
             </Dialog>
-            {!!selectedInspection && (
+            {selectedInspection !== undefined && (
                 <InspectionNewForm
                     projectDetails={projectDetails}
                     inspectionTracker={selectedInspection}
