@@ -55,5 +55,9 @@ export const fetchAssignedTracker = () =>
         .then((res) => res.data);
 
 export const fetchInspectionTracker = () => axiosInstance.get(route("api.inspections.tracker")).then((res) => res.data);
+export const fetchAssignedInspectionTracker = () =>
+    axiosInstance
+        .get(route("api.inspections.tracker.assigned"))
+        .then((res) => res.data);
 
 export default axiosInstance;

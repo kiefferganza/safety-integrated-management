@@ -26,7 +26,7 @@ class ToolboxTalkController extends Controller
 	public function assignedTracker() {
 		$tbtService = new ToolboxTalkApiService();
 		$tracker = $tbtService->getTracker();
-		return response()->json(compact("tracker"));
+		return response()->json($tracker);
 	}
 
 

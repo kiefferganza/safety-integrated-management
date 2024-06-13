@@ -140,7 +140,8 @@ class ToolboxTalkApiService
 
  public function getTracker() {
   $user = auth()->user();
-  $tracker = TbtTrackerEmployee::query()->where("emp_id", $user->emp_id)->with([
+  
+  $tracker = TbtTrackerEmployee::query()->where("emp_id", $user->emp_id)->withWhereHas("tracker")->with([
     "tracker" => fn($q) => $q->with("employee")
   ])->get()->transform(function(TbtTrackerEmployee $trackerEmp) {
     $tracker = $trackerEmp->getRelations()["tracker"];
@@ -156,7 +157,8 @@ class ToolboxTalkApiService
     })->count();
     $trackerEmp->tbt = $tbt;
     return $trackerEmp;
-  })->filter(fn($tracker) => $tracker->tbt === 0);
+  })->filter(fn($tracker) => $tracker->tbt === 0)->flatten();
+
   return $tracker;
  }
 }

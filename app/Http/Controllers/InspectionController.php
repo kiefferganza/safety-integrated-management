@@ -41,8 +41,7 @@ class InspectionController extends Controller
 		return Inertia::render("Dashboard/Management/Inspection/Create/index", [
 			"personel" =>  Employee::select("employee_id", "firstname", "lastname", "user_id")->where([
 				["is_deleted", 0],
-				["is_active", 0],
-				["employee_id", "!=", auth()->user()->emp_id]
+				["is_active", 0]
 			])->get(),
 			"sequence_no" => str_pad($sequence, 6, '0', STR_PAD_LEFT),
 			"projectDetails" => $projectDetails

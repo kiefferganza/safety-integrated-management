@@ -89,7 +89,7 @@ export default function ToolboxTalkNewEditForm({ tbt = {}, projectDetails }) {
             title: tbt?.title || "",
             location: tbt?.location || "",
             contract_no: tbt?.contract_no || "",
-            tbt_type: tbt?.tbt_type || tbt_type,
+            tbt_type: tbt?.tbt_type || "",
             conducted_by: tbt?.conducted_by || "",
             moc_wo_no: tbt?.moc_wo_no || "",
             site: tbt?.site || "",
@@ -156,7 +156,6 @@ export default function ToolboxTalkNewEditForm({ tbt = {}, projectDetails }) {
         watch,
         formState: { isDirty },
     } = methods;
-    console.log(watch("date_conducted"));
 
     useEffect(() => {
         if (isEdit) {

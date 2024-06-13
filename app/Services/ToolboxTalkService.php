@@ -33,12 +33,16 @@ class ToolboxTalkService {
 			case '2':
 				$redirect_route = "electrical";
 				break;
+				break;
 			case "3":
 				$redirect_route = "mechanical";
+				break;
 			case "4":
 				$redirect_route = "camp";
+				break;
 			case "5":
 				$redirect_route = "office";
+				break;
 			default:
 				break;
 		}

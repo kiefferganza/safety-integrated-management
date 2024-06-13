@@ -24,7 +24,7 @@ const index = ({ projectDetails, auth: { user } }) => {
         queryFn: fetchAssignedTracker,
         refetchOnWindowFocus: false,
     });
-
+    console.log(data);
     return (
         <>
             <Head>
@@ -51,7 +51,7 @@ const index = ({ projectDetails, auth: { user } }) => {
                         />
                         <TbtNewEditForm
                             projectDetails={projectDetails}
-                            tracker={data?.tracker ?? []}
+                            tracker={data || []}
                             loading={isLoading}
                         />
                     </Container>

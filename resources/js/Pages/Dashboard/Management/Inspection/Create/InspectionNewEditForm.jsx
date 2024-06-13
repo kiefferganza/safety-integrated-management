@@ -1,6 +1,5 @@
 import { Suspense, useCallback, useState } from "react";
 import LoadingScreen from "@/Components/loading-screen";
-import ToolboxTalkNewEditForm from "@/sections/@dashboard/toolboxtalks/form/ToolboxTalkNewEditForm";
 import {
     Avatar,
     Box,
@@ -21,33 +20,26 @@ import {
 import { fDate } from "@/utils/formatTime";
 import { format } from "date-fns";
 import Iconify from "@/Components/iconify";
+import InspectionNewForm from "@/sections/@dashboard/inspection/form/InspectionNewForm";
 
-const TYPE_OPTIONS = {
-    1: "Civil",
-    2: "Electrical",
-    3: "Mechanical",
-    4: "Workshop",
-    5: "Office",
-};
-
-const TbtNewEditForm = ({ projectDetails, tracker, loading }) => {
+const InspectionNewEditForm = ({ projectDetails, tracker, loading }) => {
     const [openDialog, setOpenDialog] = useState(true);
-    const [selectedTbt, setSelectedTbt] = useState(undefined);
+    const [selectedInspection, setSelectedInspection] = useState(undefined);
 
     const handleSelectTracker = useCallback(
         (t) => () => {
-            setSelectedTbt({
+            setSelectedInspection({
                 location: t.location,
-                tbt_type: t.tbt_type,
-                date_conducted: format(
+                inspected_date: format(
                     new Date(t.tracker.date_assigned),
-                    "yyyy-MM-dd 00:00:00"
+                    "d-MMM-yyyy"
                 ),
-                conducted_by: t.emp_id,
                 project_code: t.tracker.project_code,
                 originator: t.tracker.originator,
                 discipline: t.tracker.discipline,
-                document_type: "TBT",
+                document_type: "DOR",
+                reviewer: t.reviewer.employee_id,
+                verifier: t.verifier.employee_id,
             });
             setOpenDialog(false);
         },
@@ -66,7 +58,7 @@ const TbtNewEditForm = ({ projectDetails, tracker, loading }) => {
                 maxWidth="sm"
                 fullWidth
             >
-                <DialogTitle>Select Assigned TBT</DialogTitle>
+                <DialogTitle>Select Assigned Inspection</DialogTitle>
                 <IconButton
                     aria-label="close"
                     onClick={handleClose}
@@ -120,16 +112,16 @@ const TbtNewEditForm = ({ projectDetails, tracker, loading }) => {
                                 color="GrayText"
                                 textAlign="center"
                             >
-                                No Assigned TBT
+                                No Assigned Inspection
                             </Typography>
                         )}
                     </Box>
                 </DialogContent>
             </Dialog>
-            {!!selectedTbt && (
-                <ToolboxTalkNewEditForm
+            {!!selectedInspection && (
+                <InspectionNewForm
                     projectDetails={projectDetails}
-                    tbt={selectedTbt}
+                    inspectionTracker={selectedInspection}
                 />
             )}
         </Suspense>
@@ -240,7 +232,7 @@ function TrackerListItem({ t, handleSelectTracker }) {
                             primary={
                                 <>
                                     <Iconify icon="mdi:dot" />
-                                    <span>TBT Type:</span>
+                                    <span>Reviewer:</span>
                                     <Typography
                                         sx={{
                                             display: "inline",
@@ -248,7 +240,32 @@ function TrackerListItem({ t, handleSelectTracker }) {
                                         color="text.secondary"
                                         component="span"
                                     >
-                                        {TYPE_OPTIONS[t.tbt_type]}
+                                        {t.reviewer.fullname}
+                                    </Typography>
+                                </>
+                            }
+                        />
+                        <ListItemText
+                            primaryTypographyProps={{
+                                sx: {
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 0.5,
+                                },
+                                component: "div",
+                            }}
+                            primary={
+                                <>
+                                    <Iconify icon="mdi:dot" />
+                                    <span>Verifier:</span>
+                                    <Typography
+                                        sx={{
+                                            display: "inline",
+                                        }}
+                                        color="text.secondary"
+                                        component="span"
+                                    >
+                                        {t.verifier.fullname}
                                     </Typography>
                                 </>
                             }
@@ -260,4 +277,4 @@ function TrackerListItem({ t, handleSelectTracker }) {
     );
 }
 
-export default TbtNewEditForm;
+export default InspectionNewEditForm;

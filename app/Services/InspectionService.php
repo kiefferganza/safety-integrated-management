@@ -484,24 +484,32 @@ class InspectionService
 
 	public function getTracker() {
 		$user = auth()->user();
-		$tracker = InspectionTrackerEmployee::query()->where("emp_id", $user->emp_id)->with([
-		  "tracker" => fn($q) => $q->with("employee")
+		$tracker = InspectionTrackerEmployee::query()->where("emp_id", $user->emp_id)->withWhereHas("tracker")->with([
+			"tracker" => fn($q) => $q->with("employee"),
+			"reviewer",
+			"verifier",
 		])->get()->transform(function(InspectionTrackerEmployee $trackerEmp) {
-		  $tracker = $trackerEmp->getRelations()["tracker"];
-		  $tracker->employee->img = $this->getProfile($tracker->employee->user_id);
-		  $trackerEmp->tracker = $tracker;
-		  dd($tracker);
-		//   $tbt = ToolboxTalk::query()->where("tbl_toolbox_talks.is_deleted", 0)
-		//   ->where("tbl_toolbox_talks.employee_id", $trackerEmp->emp_id)
-		//   ->where("tbl_toolbox_talks.location", $trackerEmp->location)
-		//   ->where("tbl_toolbox_talks.tbt_type", $trackerEmp->tbt_type)
-		//   ->where(function(Builder $q) use($tracker) {
-		// 	return $q->whereDate("tbl_toolbox_talks.date_conducted", $tracker->date_assigned)
-		// 	->orWhereDate("tbl_toolbox_talks.date_created", $tracker->date_assigned);
-		//   })->count();
-		//   $trackerEmp->tbt = $tbt;
-		  return $trackerEmp;
-		})->filter(fn($tracker) => $tracker->tbt === 0);
+			$tracker = $trackerEmp->getRelations()["tracker"];
+			$tracker->employee->img = $this->getProfile($tracker->employee->user_id);
+			$trackerEmp->tracker = $tracker;
+
+			$trackerEmp->reviewer->img = $this->getProfile($trackerEmp->reviewer->user_id);
+			$trackerEmp->verifier->img = $this->getProfile($trackerEmp->verifier->user_id);
+
+			$inspection = Inspection::select("inspection_id")
+			->where("employee_id", $tracker->emp_id)
+			// ->where("reviewer_id", $tracker->action_id)
+			->where("verifier_id", $tracker->verifier_id)
+			->where("location", $tracker->location)
+			->where(function (Builder $q) use($tracker) {
+				$date = Carbon::parse($tracker->date_assigned);
+				$inspectedDate = $date->format("d-M-Y");
+				$q->where("date_issued", $tracker->date_assigned)->orWhere("inspected_date", ltrim($inspectedDate, "0"));
+			})
+			->count();
+			$trackerEmp->inspection = $inspection;
+			return $trackerEmp;
+		})->filter(fn($tracker) => $tracker->inspection === 0)->flatten();
 		return $tracker;
 	}
 }

@@ -169,7 +169,7 @@ const ToolboxTalkDetails = ({
                         label="TBT Type"
                         sx={{ width: { xs: "100%", md: 140 } }}
                         onChange={handleTypeChange}
-                        disabled
+                        disabled={!!values.tbt_type}
                     >
                         <option value=""></option>
                         {TYPE_OPTIONS.map((option) => (
@@ -224,7 +224,6 @@ const ToolboxTalkDetails = ({
                                 label="Station/Location."
                                 name="location"
                                 fullWidth
-                                disabled
                                 options={
                                     projectDetails["Location"]
                                         ? [
@@ -251,7 +250,6 @@ const ToolboxTalkDetails = ({
                             sx={{ width: 1 }}
                         >
                             <Autocomplete
-                                disabled
                                 fullWidth
                                 value={getAutocompleteValue(
                                     values.conducted_by
@@ -299,7 +297,6 @@ const ToolboxTalkDetails = ({
 
                             {isDesktop ? (
                                 <DesktopDatePicker
-                                    disabled
                                     label="Date Conducted"
                                     inputFormat="d-MMM-yyyy"
                                     value={values?.date_conducted}

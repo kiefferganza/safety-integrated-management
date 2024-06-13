@@ -94,7 +94,7 @@ export default function InspectionTableRow({
                 </TableCell>
 
                 <TableCell align="center" sx={{ whiteSpace: "nowrap" }}>
-                    {row?.date_issued ? fDate(row.date_issued) : ""}
+                    {row?.inspected_date ? fDate(row.inspected_date) : ""}
                 </TableCell>
 
                 <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>

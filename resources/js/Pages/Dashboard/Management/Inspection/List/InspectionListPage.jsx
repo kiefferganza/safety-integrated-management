@@ -61,7 +61,7 @@ const TABLE_HEAD = [
     { id: "inspected_by", label: "Submitted", align: "center" },
     { id: "reviewer", label: "Action", align: "center" },
     { id: "verifier", label: "Verify", align: "center" },
-    { id: "date_issued", label: "Date Issued", align: "left" },
+    { id: "inspected_date", label: "Inspection Date", align: "center" },
     { id: "totalObservation", label: "O", align: "right" },
     { id: "negativeObservation", label: "N", align: "right" },
     { id: "positiveObservation", label: "P", align: "right" },
@@ -911,16 +911,16 @@ const InspectionListPage = ({ user, inspections, isLoading }) => {
 };
 
 // Convert data URI to Blob
-const dataURItoBlob = (dataURI) => {
-    const byteString = atob(dataURI.split(",")[1]);
-    const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ab], { type: mimeString });
-};
+// const dataURItoBlob = (dataURI) => {
+//     const byteString = atob(dataURI.split(",")[1]);
+//     const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+//     const ab = new ArrayBuffer(byteString.length);
+//     const ia = new Uint8Array(ab);
+//     for (let i = 0; i < byteString.length; i++) {
+//         ia[i] = byteString.charCodeAt(i);
+//     }
+//     return new Blob([ab], { type: mimeString });
+// };
 
 function applyFilter({
     inputData,
@@ -972,7 +972,7 @@ function applyFilter({
         const startDateTimestamp = filterStartDate.setHours(0, 0, 0, 0);
         inputData = inputData.filter(
             (insp) =>
-                fTimestamp(new Date(insp.date_issued)) >= startDateTimestamp
+                fTimestamp(new Date(insp.inspected_date)) >= startDateTimestamp
         );
     }
 
@@ -981,8 +981,9 @@ function applyFilter({
         const endDateTimestamp = filterEndDate.setHours(0, 0, 0, 0);
         inputData = inputData.filter(
             (insp) =>
-                fTimestamp(new Date(insp.date_issued)) >= startDateTimestamp &&
-                fTimestamp(new Date(insp.date_issued)) <= endDateTimestamp
+                fTimestamp(new Date(insp.inspected_date)) >=
+                    startDateTimestamp &&
+                fTimestamp(new Date(insp.inspected_date)) <= endDateTimestamp
         );
     }
 
