@@ -24,10 +24,13 @@ class DashboardController extends Controller
 	{
 		$from = new Carbon($request->from);
 		$to = (new Carbon($request->to));
+		$inspectionFrom = $request->inspectionFrom;
+		$inspectionTo = $request->inspectionTo;
+
 		return response()->json([
 			"analytics" => $this->analytics($from, $to),
 			"graph" => $this->incident_graph_data(),
-			"trending_observation" => (new DashboardService())->getTrendingObservation()
+			"trending_observation" => (new DashboardService())->getTrendingObservation($inspectionFrom ? new Carbon($inspectionFrom) : null, $inspectionTo ? new Carbon($inspectionTo) : null)
 		]);
 	}
 
@@ -1139,7 +1142,6 @@ class DashboardController extends Controller
 				"lost_time_incident" => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				"num_recordable_incidents" => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			]);
-		// dd($manpower_LTIR_TRIR_data);
 
 		$manpower_LTIR_TRIR = [
 			[

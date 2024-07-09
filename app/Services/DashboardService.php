@@ -130,17 +130,23 @@ class DashboardService {
 	}
 
 
-	public function getTrendingObservation() {
-		$inspections =  InspectionReportList::select("list_id", "ref_num", "table_name", "tbl_inspection_reports_list.inspection_id", "ref_score", "section_title", "tbl_inspection_reports.status")
+	public function getTrendingObservation(Carbon | null $from, Carbon | null $to) {
+		$inspections =  InspectionReportList::select("list_id", "ref_num", "table_name", "tbl_inspection_reports_list.inspection_id", "ref_score", "section_title", "tbl_inspection_reports.status", "tbl_inspection_reports.inspected_date")
 		->where("ref_score", 2)
 		->orWhere("ref_score", 3)
 		->where("section_title", "!=", null)
 		->where("tbl_inspection_reports.is_deleted", 0)
 		->join("tbl_inspection_reports", "tbl_inspection_reports.inspection_id", "tbl_inspection_reports_list.inspection_id")
 		->orderBy("ref_num")
-		->get()
-		->groupBy("section_title")
-		->reduce(function($arr, $item) {
+		->get();
+
+		if($from && $to) {
+			$inspections = $inspections->filter(function($item) use($from, $to) {
+				return Carbon::parse($item->inspected_date)->isBetween($from, $to);
+			});
+		}
+
+		$inspections = $inspections->groupBy("section_title")->reduce(function($arr, $item) {
 			$title = $item->first()?->section_title;
 			if($title){
 				$arr["categories"][] = $title;
@@ -407,7 +413,6 @@ class DashboardService {
 			$incidentReport["trcf"]["month"] = round(($incidents["trcf"]["monthTotal"] * 200000) / $incidents["trcf"]["monthTotalHours"]);
 		}
 		
-		// dd($incidentReport, $incidents);
 			
 		return $incidentReport;
 	}
