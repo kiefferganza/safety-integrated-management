@@ -57,24 +57,24 @@ const navConfig = [
                 icon: ICONS.analytics,
                 routeNames: ["dashboard"],
             },
-            {
-                title: "file",
-                path: PATH_DASHBOARD.general.file,
-                icon: ICONS.file,
-                routeNames: ["general.file"],
-            },
-            {
-                title: "employee",
-                path: PATH_DASHBOARD.general.employee,
-                icon: ICONS.employee,
-                disabled: true,
-            },
-            {
-                title: "inventory",
-                path: PATH_DASHBOARD.general.inventory,
-                icon: ICONS.ecommerce,
-                disabled: true,
-            },
+            // {
+            //     title: "file",
+            //     path: PATH_DASHBOARD.general.file,
+            //     icon: ICONS.file,
+            //     routeNames: ["general.file"],
+            // },
+            // {
+            //     title: "employee",
+            //     path: PATH_DASHBOARD.general.employee,
+            //     icon: ICONS.employee,
+            //     disabled: true,
+            // },
+            // {
+            //     title: "inventory",
+            //     path: PATH_DASHBOARD.general.inventory,
+            //     icon: ICONS.ecommerce,
+            //     disabled: true,
+            // },
         ],
     },
 
@@ -143,12 +143,12 @@ const navConfig = [
                         path: PATH_DASHBOARD.user.profile,
                         routeNames: ["management.user.profile"],
                     },
-                    {
-                        title: "cards",
-                        gate: "user_show",
-                        path: PATH_DASHBOARD.user.cards,
-                        routeNames: ["management.user.cards"],
-                    },
+                    // {
+                    //     title: "cards",
+                    //     gate: "user_show",
+                    //     path: PATH_DASHBOARD.user.cards,
+                    //     routeNames: ["management.user.cards"],
+                    // },
                     {
                         title: "list",
                         gate: "user_show",
@@ -695,23 +695,23 @@ const navConfig = [
                 icon: ICONS.mail,
                 info: <Label color="error">+32</Label>,
             },
-            {
-                title: "chat",
-                path: PATH_DASHBOARD.chat.root,
-                icon: ICONS.chat,
-                disabled: true,
-            },
+            // {
+            //     title: "chat",
+            //     path: PATH_DASHBOARD.chat.root,
+            //     icon: ICONS.chat,
+            //     disabled: true,
+            // },
             {
                 title: "calendar",
                 path: PATH_DASHBOARD.calendar,
                 icon: ICONS.calendar,
             },
-            {
-                title: "kanban",
-                path: PATH_DASHBOARD.kanban,
-                icon: ICONS.kanban,
-                disabled: true,
-            },
+            // {
+            //     title: "kanban",
+            //     path: PATH_DASHBOARD.kanban,
+            //     icon: ICONS.kanban,
+            //     disabled: true,
+            // },
         ],
     },
 ];
