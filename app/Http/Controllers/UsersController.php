@@ -441,19 +441,19 @@ class UsersController extends Controller
 		/**
 		 * @var App\Models\User $user
 		 */
-		$images = $user->can("image_upload_slider") ?
-			Images::where("type", "slider")->get()->transform(function ($img) {
-				$image = $img->getFirstMedia("slider");
-				$path = "images/" . md5($image->id . config('app.key')). "/" .$image->file_name;
-				$img->image = [
-					"name" => $image->name,
-					"url" => URL::route("image", [ "path" => $path, "w" => 400, "h" => 400 ]),
-					"urlBig" => URL::route("image", [ "path" => $path, "w" => 1280 , "h" => 720, "fit" => "crop" ])
-				];
-				return $img;
-			}) : [];
+		// $images = $user->can("image_upload_slider") ?
+		// 	Images::where("type", "slider")->get()->transform(function ($img) {
+		// 		$image = $img->getFirstMedia("slider");
+		// 		$path = "images/" . md5($image->id . config('app.key')). "/" .$image->file_name;
+		// 		$img->image = [
+		// 			"name" => $image->name,
+		// 			"url" => URL::route("image", [ "path" => $path, "w" => 400, "h" => 400 ]),
+		// 			"urlBig" => URL::route("image", [ "path" => $path, "w" => 1280 , "h" => 720, "fit" => "crop" ])
+		// 		];
+		// 		return $img;
+		// 	}) : [];
 		return Inertia::render("Dashboard/Management/User/Account/index", [
-			"images" => $images
+			"images" => []
 		]);
 	}
 

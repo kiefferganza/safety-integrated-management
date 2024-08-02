@@ -33,7 +33,11 @@ const { MobileDatePicker } = await import(
 import DateRangePicker, {
     useDateRangePicker,
 } from "@/Components/date-range-picker";
-import { RHFMuiMultiSelect, RHFMuiSelect, RHFTextField } from "@/Components/hook-form";
+import {
+    RHFMuiMultiSelect,
+    RHFMuiSelect,
+    RHFTextField,
+} from "@/Components/hook-form";
 import FormProvider from "@/Components/hook-form/FormProvider";
 import Scrollbar from "@/Components/scrollbar/Scrollbar";
 import Image from "@/Components/image/Image";
@@ -544,7 +548,7 @@ export const NewPpeReport = ({
                                                 value
                                             ) => option.label === value.label}
                                             options={options}
-                                            label="Conducted By"
+                                            label="Inventoried By"
                                             error={
                                                 errors?.conducted_by?.message
                                             }

@@ -40,9 +40,9 @@ class RouteServiceProvider extends ServiceProvider
 			Route::bind('inventory', function ($value) {
 				return \App\Models\Inventory::where('inventory_id', $value)->where("is_removed", 0)->orWhere('slug', $value)->firstOrFail();
 			});
-			Route::bind('inventoryReport', function ($value) {
-				return \App\Models\InventoryReport::where('id', $value)->orWhere('uuid', $value)->firstOrFail();
-			});
+			// Route::bind('inventoryReport', function ($value) {
+			// 	return \App\Models\InventoryReport::where('id', $value)->orWhere('uuid', $value)->firstOrFail();
+			// });
     }
 
     /**

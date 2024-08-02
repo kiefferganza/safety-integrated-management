@@ -144,7 +144,7 @@ export default function ReportTableRow({
         endOfMonth(forcastDate),
         "dd MMM yyyy"
     )}`;
-    const canEdit = user.user_type === 0 || user.emp_id == row.submitted_id;
+    // const canEdit = user.user_type === 0 || user.emp_id == row.submitted_id;
     return (
         <>
             <TableRow hover>
@@ -247,7 +247,7 @@ export default function ReportTableRow({
             >
                 <MenuItem
                     component={Link}
-                    href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
+                    href={PATH_DASHBOARD.ppe.reportView(row.id)}
                     preserveScroll
                     onClick={handleClosePopover}
                 >
@@ -270,7 +270,7 @@ export default function ReportTableRow({
                 <MenuItem
                     disabled={row.type !== "review"}
                     component={Link}
-                    href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
+                    href={PATH_DASHBOARD.ppe.reportView(row.id)}
                     preserveScroll
                     onClick={handleClosePopover}
                 >
@@ -280,7 +280,7 @@ export default function ReportTableRow({
                 <MenuItem
                     disabled={row.type !== "approve"}
                     component={Link}
-                    href={PATH_DASHBOARD.ppe.reportView(row.uuid)}
+                    href={PATH_DASHBOARD.ppe.reportView(row.id)}
                     preserveScroll
                     onClick={handleClosePopover}
                 >
