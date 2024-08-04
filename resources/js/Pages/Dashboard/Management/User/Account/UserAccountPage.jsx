@@ -36,20 +36,20 @@ export default function UserAccountPage({ auth, images }) {
             icon: <Iconify icon="ic:round-account-box" />,
             component: <AccountGeneral user={user} />,
         },
-        {
-            value: "billing",
-            label: "Billing",
-            icon: <Iconify icon="ic:round-receipt" />,
-            // component: (
-            //     <AccountBilling
-            //         cards={_userPayment}
-            //         addressBook={_userAddressBook}
-            //         invoices={_userInvoices}
-            //     />
-            // ),
-            component: null,
-            disabled: true,
-        },
+        // {
+        //     value: "billing",
+        //     label: "Billing",
+        //     icon: <Iconify icon="ic:round-receipt" />,
+        //     // component: (
+        //     //     <AccountBilling
+        //     //         cards={_userPayment}
+        //     //         addressBook={_userAddressBook}
+        //     //         invoices={_userInvoices}
+        //     //     />
+        //     // ),
+        //     component: null,
+        //     disabled: true,
+        // },
         {
             value: "notifications",
             label: "Notifications",
@@ -71,7 +71,6 @@ export default function UserAccountPage({ auth, images }) {
         },
     ];
 
-    const canUpload = false;
     // const canUpload = hasPermission("image_upload_slider");
     // if (canUpload) {
     //     TABS.push({

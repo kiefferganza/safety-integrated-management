@@ -4,20 +4,23 @@ import { Head } from "@inertiajs/inertia-react";
 import { lazy, Suspense } from "react";
 const UserProfilePage = lazy(() => import("./UserProfilePage"));
 
-const index = ({ auth, employee }) => {
+const index = ({ auth, employee, subscription }) => {
+    return (
+        <>
+            <Head>
+                <title>Profile</title>
+            </Head>
+            <Suspense fallback={<LoadingScreen />}>
+                <DashboardLayout>
+                    <UserProfilePage
+                        user={auth?.user || {}}
+                        employee={employee}
+                        subscription={subscription}
+                    />
+                </DashboardLayout>
+            </Suspense>
+        </>
+    );
+};
 
-	return (
-		<>
-			<Head>
-				<title>Profile</title>
-			</Head>
-			<Suspense fallback={<LoadingScreen />}>
-				<DashboardLayout>
-					<UserProfilePage user={auth?.user || {}} employee={employee} />
-				</DashboardLayout>
-			</Suspense>
-		</>
-	)
-}
-
-export default index
+export default index;

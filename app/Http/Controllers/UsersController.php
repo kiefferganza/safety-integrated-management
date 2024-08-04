@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Models\Billing;
 use App\Models\Employee;
 use App\Models\Images;
 // use App\Models\Follower;
@@ -17,7 +18,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class UsersController extends Controller
 {
@@ -191,11 +191,36 @@ class UsersController extends Controller
 				$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
 		])->first();
 
+        $billing = Billing::where("sub_id", $user->subscriber_id)->first();
+		$subs = [
+			"clientSecret" => null,
+			"nextInvoice" => now()
+		];
+        if($billing) {
+			try {
+				$stripe = new \Stripe\StripeClient(env("STRIPE_SECRET_KEY"));
+				$subscription = $stripe->subscriptions->retrieve($billing->stripe_subscription_id, [
+					'expand' => ['latest_invoice.payment_intent']
+				]);
+				if($subscription->status !== "active") {
+					$subs = [
+						"clientSecret" => $subscription->latest_invoice->payment_intent->client_secret, 
+						"nextInvoice" => $subscription->current_period_end
+					];
+				}else {
+					$subs["nextInvoice"] = Carbon::parse($subscription->current_period_end);
+				}
+			} catch (\Throwable $th) {
+				//throw $th;
+			}
+		}
+		
 		// $employee->profiles = $user->getMedia('profile')->transform(function($profile) {});
 
 		return Inertia::render("Dashboard/Management/User/index", [ 
 			"employee" => $employee,
-			"trainingTypes" => TrainingType::get()
+			"trainingTypes" => TrainingType::get(),
+			"subscription" => $subs,
 		]);
 	}
 

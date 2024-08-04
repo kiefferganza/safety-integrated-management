@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiControllers\BillingController;
 use App\Http\Controllers\ApiControllers\DashboardController;
 use App\Http\Controllers\ApiControllers\FolderApiController;
 use App\Http\Controllers\ApiControllers\GeneralApiController;
@@ -115,5 +116,9 @@ Route::middleware('auth')->as('api.')->group(function ()
 	{
 		Route::post('/update-order', [FolderApiController::class, 'updateOrder'])->name('update-order');
 		Route::post('/generate-url/{document}', [FolderApiController::class, 'generateUrl'])->name('generate-url');
+	});
+
+	Route::prefix("billing")->as("billing.")->group(function() {
+		Route::get("/cancel-subscription", [BillingController::class, "cancelSubscription"])->name("cancelSubscription");
 	});
 });
