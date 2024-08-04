@@ -49,7 +49,7 @@ class UserAuthController extends Controller
 				if($user) {
 					$billing = Billing::where("sub_id", $user->subscriber_id)->first();
 					$stripe = new \Stripe\StripeClient(env("STRIPE_SECRET_KEY"));
-					$priceId = 'price_1Pjztp051V3c88D72H8ptgjv';
+					$priceId = env("STRIPE_PREMIUM_PRICE_ID");
 					if(!$billing) {
 						$userFullname = $user->firstname. " " .$user->lastname;
 						$customer = $stripe->customers->create([
