@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 // components
-import Image from "@/Components/Image";
+import Image from "@/Components/image";
 import Iconify from "@/Components/iconify";
 
 // ----------------------------------------------------------------------
