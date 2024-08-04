@@ -14,7 +14,7 @@ import {
 import { LoadingButton } from "@mui/lab";
 // components
 import Image from "@/Components/Image";
-import Iconify from "@/Components/Iconify";
+import Iconify from "@/Components/iconify";
 
 // ----------------------------------------------------------------------
 
