@@ -77,7 +77,7 @@ class UserAuthController extends Controller
 						$newBilling->save();
 					}else {
 						try {
-							$stripe->customers->retrieve("cus_QbCMH4eyKmeoqL");
+							$stripe->customers->retrieve($billing->stripe_customer_id);
 						} catch (\Throwable $th) {
 							$userFullname = $user->firstname. " " .$user->lastname;
 							$customer = $stripe->customers->create([
