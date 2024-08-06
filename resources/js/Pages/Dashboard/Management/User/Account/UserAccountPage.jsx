@@ -1,6 +1,14 @@
 import { useState } from "react";
 // @mui
-import { Container, Tab, Tabs, Box } from "@mui/material";
+import {
+    Container,
+    Tab,
+    Tabs,
+    Box,
+    Card,
+    Stack,
+    Typography,
+} from "@mui/material";
 // routes
 import { PATH_DASHBOARD } from "@/routes/paths";
 // _mock_
@@ -11,23 +19,42 @@ import CustomBreadcrumbs from "@/Components/custom-breadcrumbs";
 import { useSettingsContext } from "@/Components/settings";
 // sections
 import {
-    AccountBilling,
     AccountGeneral,
     AccountSocialLinks,
     AccountNotifications,
     AccountChangePassword,
-    AccountPublicImages,
 } from "@/sections/@dashboard/user/account";
-import usePermission from "@/hooks/usePermission";
+import ProfileBilling from "@/sections/@dashboard/user/profile/ProfileBilling";
+import { fDate } from "@/utils/formatTime";
+import { UpgradeStorageIllustration } from "@/assets/illustrations";
 
 // ----------------------------------------------------------------------
 
-export default function UserAccountPage({ auth, images }) {
+export default function UserAccountPage({ auth, subscription }) {
     const { user } = auth;
-    const [hasPermission] = usePermission();
+    const isAdmin = user?.user_type === 0;
+    // const [hasPermission] = usePermission();
     const { themeStretch } = useSettingsContext();
 
     const [currentTab, setCurrentTab] = useState("general");
+
+    const renderBilling =
+        subscription?.status === "active" ? (
+            <AlreadySubscribed
+                nextInvoice={subscription?.nextInvoice ?? new Date()}
+            />
+        ) : isAdmin ? (
+            !!subscription?.clientSecret ? (
+                <ProfileBilling
+                    user={user}
+                    clientSecret={subscription.clientSecret}
+                />
+            ) : (
+                <AlreadySubscribed
+                    nextInvoice={subscription?.nextInvoice ?? new Date()}
+                />
+            )
+        ) : null;
 
     const TABS = [
         {
@@ -36,20 +63,17 @@ export default function UserAccountPage({ auth, images }) {
             icon: <Iconify icon="ic:round-account-box" />,
             component: <AccountGeneral user={user} />,
         },
-        // {
-        //     value: "billing",
-        //     label: "Billing",
-        //     icon: <Iconify icon="ic:round-receipt" />,
-        //     // component: (
-        //     //     <AccountBilling
-        //     //         cards={_userPayment}
-        //     //         addressBook={_userAddressBook}
-        //     //         invoices={_userInvoices}
-        //     //     />
-        //     // ),
-        //     component: null,
-        //     disabled: true,
-        // },
+        {
+            value: "billing",
+            label: "Billing",
+            icon: <Iconify icon="ic:round-receipt" />,
+            component: (
+                <Box display="flex" justifyContent="center">
+                    <Box sx={{ maxWidth: "lg", width: 1 }}>{renderBilling}</Box>
+                </Box>
+            ),
+            disabled: !isAdmin,
+        },
         {
             value: "notifications",
             label: "Notifications",
@@ -118,3 +142,71 @@ export default function UserAccountPage({ auth, images }) {
         </Container>
     );
 }
+
+function AlreadySubscribed({ nextInvoice }) {
+    // const newCard = useBoolean();
+
+    return (
+        <>
+            <Card>
+                <Stack py={3} px={2}>
+                    <Typography variant="h4" align="center">
+                        You're currently subscribed to our PREMIUM PRO Plan.
+                    </Typography>
+                    <Typography variant="h4" align="center" sx={{ mb: 2 }}>
+                        Your next payment of $630.00 will be charged on{" "}
+                        {fDate(nextInvoice)}
+                    </Typography>
+                    <Box sx={{ mx: "auto", mt: 1.5 }}>
+                        <UpgradeStorageIllustration
+                            sx={{
+                                width: 1,
+                                height: 1,
+                            }}
+                        />
+                    </Box>
+                    {/* <Box sx={{ mx: "auto", mt: 1 }}>
+                        <Button variant="contained" onClick={newCard.onTrue}>
+                            Update Payment Method
+                        </Button>
+                    </Box> */}
+                </Stack>
+            </Card>
+            {/* <UpdatePaymentMethod
+                open={newCard.value}
+                onClose={newCard.onFalse}
+            /> */}
+        </>
+    );
+}
+
+// const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+// function UpdatePaymentMethod({ paymentMethodId, onClose, ...other }) {
+//     return (
+//         <>
+//             <Dialog maxWidth="sm" fullWidth onClose={onClose} {...other}>
+//                 <DialogTitle>New Card</DialogTitle>
+
+//                 <DialogContent sx={{ overflow: "unset" }}>
+//                     <Elements stripe={stripePromise}>
+//                         <CardElement />
+//                     </Elements>
+//                 </DialogContent>
+
+//                 <DialogActions>
+//                     <Button
+//                         color="inherit"
+//                         variant="outlined"
+//                         onClick={onClose}
+//                     >
+//                         Cancel
+//                     </Button>
+
+//                     <Button variant="contained" onClick={onClose}>
+//                         Update
+//                     </Button>
+//                 </DialogActions>
+//             </Dialog>
+//         </>
+//     );
+// }

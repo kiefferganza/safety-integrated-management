@@ -107,7 +107,11 @@ function CheckoutForm({ nameUser }) {
     };
 
     return (
-        <form id="payment-form" onSubmit={handleSubmit}>
+        <form
+            id="payment-form"
+            onSubmit={handleSubmit}
+            style={{ width: "100%" }}
+        >
             <Grid
                 container
                 rowSpacing={{ xs: 5, md: 0 }}

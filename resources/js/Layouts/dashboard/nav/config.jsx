@@ -85,7 +85,7 @@ const navConfig = [
         items: [
             // COMPANY INFORMATION
             {
-                title: "company information",
+                title: "Control Panel",
                 path: PATH_DASHBOARD.companyInformation.register,
                 icon: ICONS.companyInformation,
                 routeNames: [
@@ -125,7 +125,7 @@ const navConfig = [
             },
             // USER
             {
-                title: "user",
+                title: "account",
                 path: PATH_DASHBOARD.user.root,
                 icon: ICONS.user,
                 routeNames: [
@@ -150,7 +150,7 @@ const navConfig = [
                     //     routeNames: ["management.user.cards"],
                     // },
                     {
-                        title: "list",
+                        title: "user list",
                         gate: "user_show",
                         path: PATH_DASHBOARD.user.list,
                         routeNames: [

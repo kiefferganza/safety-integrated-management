@@ -190,37 +190,12 @@ class UsersController extends Controller
 			"department" => fn ($query) => 
 				$query->select("department_id","department")->where([["is_deleted", 0], ["sub_id", $user->subscriber_id]]),
 		])->first();
-
-        $billing = Billing::where("sub_id", $user->subscriber_id)->first();
-		$subs = [
-			"clientSecret" => null,
-			"nextInvoice" => now()
-		];
-        if($billing) {
-			try {
-				$stripe = new \Stripe\StripeClient(env("STRIPE_SECRET_KEY"));
-				$subscription = $stripe->subscriptions->retrieve($billing->stripe_subscription_id, [
-					'expand' => ['latest_invoice.payment_intent']
-				]);
-				if($subscription->status !== "active") {
-					$subs = [
-						"clientSecret" => $subscription->latest_invoice->payment_intent->client_secret, 
-						"nextInvoice" => $subscription->current_period_end
-					];
-				}else {
-					$subs["nextInvoice"] = Carbon::parse($subscription->current_period_end);
-				}
-			} catch (\Throwable $th) {
-				//throw $th;
-			}
-		}
 		
 		// $employee->profiles = $user->getMedia('profile')->transform(function($profile) {});
 
 		return Inertia::render("Dashboard/Management/User/index", [ 
 			"employee" => $employee,
-			"trainingTypes" => TrainingType::get(),
-			"subscription" => $subs,
+			"trainingTypes" => TrainingType::get()
 		]);
 	}
 
@@ -465,20 +440,36 @@ class UsersController extends Controller
 		$user = auth()->user();
 		/**
 		 * @var App\Models\User $user
-		 */
-		// $images = $user->can("image_upload_slider") ?
-		// 	Images::where("type", "slider")->get()->transform(function ($img) {
-		// 		$image = $img->getFirstMedia("slider");
-		// 		$path = "images/" . md5($image->id . config('app.key')). "/" .$image->file_name;
-		// 		$img->image = [
-		// 			"name" => $image->name,
-		// 			"url" => URL::route("image", [ "path" => $path, "w" => 400, "h" => 400 ]),
-		// 			"urlBig" => URL::route("image", [ "path" => $path, "w" => 1280 , "h" => 720, "fit" => "crop" ])
-		// 		];
-		// 		return $img;
-		// 	}) : [];
+		*/
+
+		$billing = Billing::where("sub_id", $user->subscriber_id)->first();
+		$subs = [
+			"clientSecret" => null,
+			"nextInvoice" => now(),
+			"status" => "incomplete"
+		];
+        if($billing) {
+			try {
+				$stripe = new \Stripe\StripeClient(env("STRIPE_SECRET_KEY"));
+				$subscription = $stripe->subscriptions->retrieve($billing->stripe_subscription_id, [
+					'expand' => ['latest_invoice.payment_intent']
+				]);
+				if($subscription->status !== "active") {
+					$subs = [
+						"clientSecret" => $subscription->latest_invoice->payment_intent->client_secret, 
+						"nextInvoice" => $subscription->current_period_end,
+						"status" => $subscription->status
+					];
+				}else {
+					$subs["nextInvoice"] = Carbon::parse($subscription->current_period_end);
+					$subs["status"] = $subscription->status;
+				}
+			} catch (\Throwable $th) {
+				//throw $th;
+			}
+		}
 		return Inertia::render("Dashboard/Management/User/Account/index", [
-			"images" => []
+			"subscription" => $subs
 		]);
 	}
 
