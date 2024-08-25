@@ -129,19 +129,38 @@ export default function EmployeeTableRow({
                     </Stack>
                 </TableCell>
 
-                <TableCell align="left">{fDate(row.date_created)}</TableCell>
+                <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
+                    {fDate(row.date_created)}
+                </TableCell>
 
-                <TableCell align="left">{row.position}</TableCell>
+                <TableCell
+                    align="left"
+                    sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }}
+                >
+                    {row.position}
+                </TableCell>
 
-                <TableCell align="left">{row.department}</TableCell>
+                <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
+                    {row.department}
+                </TableCell>
 
-                <TableCell align="left">{row.company_name ?? "N/A"}</TableCell>
+                <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
+                    {row.company_name ?? "N/A"}
+                </TableCell>
 
-                <TableCell align="left">{row.country || "N/A"}</TableCell>
+                <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
+                    {row.country || "N/A"}
+                </TableCell>
 
-                <TableCell align="left">{row.phone_no}</TableCell>
+                <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
+                    {row.phone_no}
+                </TableCell>
 
-                <TableCell align="left">
+                <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
+                    {row.trainings}
+                </TableCell>
+
+                <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
                     <Label
                         variant="soft"
                         color={

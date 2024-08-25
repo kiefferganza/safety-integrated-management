@@ -16,6 +16,7 @@ import {
     TableContainer,
     FormHelperText,
     Typography,
+    Box,
 } from "@mui/material";
 // routes
 import { PATH_DASHBOARD } from "@/routes/paths";
@@ -49,6 +50,7 @@ import { useSwal } from "@/hooks/useSwal";
 import { Inertia } from "@inertiajs/inertia";
 import EmployeeAssignment from "../EmployeeAssignment";
 import usePermission from "@/hooks/usePermission";
+import RenderedPDFViewer from "./PDF/RenderPDFViewer";
 
 // ----------------------------------------------------------------------
 
@@ -61,6 +63,7 @@ const TABLE_HEAD = [
     // { id: 'nationality', label: 'Nationality', align: 'left' },
     { id: "country", label: "Country", align: "left" },
     { id: "phone_no", label: "Phone No.", align: "left" },
+    { id: "trainings", label: "Trainings", align: "left" },
     { id: "is_active", label: "Status", align: "left" },
     { id: "" },
 ];
@@ -96,6 +99,7 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
         defaultOrder: "desc",
     });
 
+    const [openPDF, setOpenPDF] = useState(false);
     const [openAssign, setOpenAssign] = useState(false);
     const [empAssignData, setEmpAssignData] = useState(null);
 
@@ -162,19 +166,24 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
         (!dataFiltered.length && !!filterStartDate);
 
     const getLengthByStatus = (status) =>
-        tableData.filter((item) => item.status === status).length;
+        dataFiltered.filter((item) => item.status === status).length;
 
     const getPercentByStatus = (status) =>
         (getLengthByStatus(status) / dataFiltered.length) * 100;
 
     const getUnassignedEmployeeLength = () =>
-        tableData.filter((item) => !item.user_id).length;
+        dataFiltered.filter((item) => !item.user_id).length;
 
     const getPercentUnassignedEmployee = () =>
         (getUnassignedEmployeeLength() / dataFiltered.length) * 100;
 
     const TABS = [
-        { value: "all", label: "All", color: "info", count: tableData.length },
+        {
+            value: "all",
+            label: "All",
+            color: "info",
+            count: dataFiltered.length,
+        },
         {
             value: "active",
             label: "Active",
@@ -363,6 +372,19 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
         }
     };
 
+    const analytics = {
+        total: [dataFiltered.length, 100],
+        active: [getLengthByStatus("active"), getPercentByStatus("active")],
+        inactive: [
+            getLengthByStatus("inactive"),
+            getPercentByStatus("inactive"),
+        ],
+        unassigned: [
+            getUnassignedEmployeeLength(),
+            getPercentUnassignedEmployee(),
+        ],
+    };
+
     const canCreate = hasPermission("employee_create");
     const canDelete = hasPermission("employee_delete");
     const canEditAll = hasPermission("employee_access");
@@ -389,16 +411,33 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                         },
                     ]}
                     action={
-                        canCreate ? (
-                            <Button
-                                href={PATH_DASHBOARD.employee.new}
-                                component={Link}
-                                variant="contained"
-                                startIcon={<Iconify icon="eva:plus-fill" />}
-                            >
-                                New Employee
-                            </Button>
-                        ) : null
+                        <Box display="flex" gap={1.5}>
+                            <Box>
+                                <Button
+                                    target="_blank"
+                                    variant="contained"
+                                    onClick={() => {
+                                        setOpenPDF(true);
+                                    }}
+                                >
+                                    View as PDF
+                                </Button>
+                            </Box>
+                            <Box>
+                                {canCreate ? (
+                                    <Button
+                                        href={PATH_DASHBOARD.employee.new}
+                                        component={Link}
+                                        variant="contained"
+                                        startIcon={
+                                            <Iconify icon="eva:plus-fill" />
+                                        }
+                                    >
+                                        New Employee
+                                    </Button>
+                                ) : null}
+                            </Box>
+                        </Box>
                     }
                 />
 
@@ -417,32 +456,32 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                         >
                             <EmployeeAnalytic
                                 title="Total"
-                                total={dataFiltered.length}
-                                percent={100}
+                                total={analytics.total[0]}
+                                percent={analytics.total[1]}
                                 icon="material-symbols:supervisor-account"
                                 color={theme.palette.info.main}
                             />
 
                             <EmployeeAnalytic
                                 title="Active"
-                                total={getLengthByStatus("active")}
-                                percent={getPercentByStatus("active")}
+                                total={analytics.active[0]}
+                                percent={analytics.active[1]}
                                 icon="mdi:account-badge"
                                 color={theme.palette.success.main}
                             />
 
                             <EmployeeAnalytic
                                 title="Inactive"
-                                total={getLengthByStatus("inactive")}
-                                percent={getPercentByStatus("inactive")}
+                                total={analytics.inactive[0]}
+                                percent={analytics.inactive[1]}
                                 icon="mdi:account-clock"
                                 color={theme.palette.warning.main}
                             />
 
                             <EmployeeAnalytic
                                 title="Unassigned"
-                                total={getUnassignedEmployeeLength()}
-                                percent={getPercentUnassignedEmployee()}
+                                total={analytics.unassigned[0]}
+                                percent={analytics.unassigned[1]}
                                 icon="mdi:account-cancel"
                                 color={theme.palette.error.main}
                             />
@@ -581,6 +620,9 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                                                 .map((row) => row.id)
                                         )
                                     }
+                                    sx={{
+                                        "&>tr th": { whiteSpace: "nowrap" },
+                                    }}
                                 />
 
                                 <TableBody>
@@ -730,6 +772,18 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                     </Button>
                 }
             />
+            {openPDF && (
+                <RenderedPDFViewer
+                    props={{
+                        employees: dataFiltered,
+                        analytics,
+                    }}
+                    open={openPDF}
+                    handleClose={() => {
+                        setOpenPDF(false);
+                    }}
+                />
+            )}
         </>
     );
 }
@@ -774,7 +828,7 @@ function applyFilter({
 
     if (filterDepartment !== "all") {
         inputData = inputData.filter(
-            (employee) => employee.department.trim() === filterDepartment
+            (employee) => employee.department?.trim() === filterDepartment
         );
     }
 

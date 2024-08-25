@@ -16,7 +16,6 @@ import { useSwal } from "@/hooks/useSwal";
 import { Inertia } from "@inertiajs/inertia";
 
 const EmployeeAssignment = ({ open, onClose, employee, unassignedUsers }) => {
-    console.log(unassignedUsers);
     const { load, stop } = useSwal();
     const [selectedUser, setSelectedUser] = useState("");
     const name = getEmployeeName(employee);

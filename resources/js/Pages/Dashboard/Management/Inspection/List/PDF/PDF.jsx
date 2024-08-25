@@ -424,7 +424,7 @@ const PDF = (props) => (
                                         },
                                     ]}
                                 >
-                                    <Text>A,D, = Active Days</Text>
+                                    <Text>A.D. = Active Days</Text>
                                 </View>
                                 <View
                                     style={[

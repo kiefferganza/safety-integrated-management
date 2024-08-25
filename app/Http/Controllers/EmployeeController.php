@@ -44,6 +44,10 @@ class EmployeeController extends Controller
 			->leftJoin("tbl_department", "tbl_employees.department", "tbl_department.department_id")
 			->leftJoin("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 			->leftJoin("tbl_company", "tbl_employees.company", "tbl_company.company_id")
+			->with([
+				"participated_trainings" => fn ($q) =>
+					$q->select("title", "type", "date_expired", "training_date", "training_hrs", "tbl_training_trainees.employee_id", "tbl_training_trainees.training_id")->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id")->where("tbl_trainings.is_deleted", 0),
+			])
 			// ->join("tbl_nationalities", "tbl_employees.nationality", "tbl_nationalities.id")
 			->where([
 				["tbl_employees.sub_id", $user->subscriber_id],
@@ -66,6 +70,12 @@ class EmployeeController extends Controller
 						"small" => URL::route("image", ["path" => $path, "w" => 128, "h" => 128, "fit" => "crop"])
 					];
 				}
+
+				$employee->trainings = 0;
+				if($employee->participated_trainings) {
+					$employee->trainings = count($employee->participated_trainings);
+				}
+
 				return $employee;
 			});
 
