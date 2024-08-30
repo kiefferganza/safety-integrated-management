@@ -25,8 +25,6 @@ const shortLabelDate = ([start, end]) => {
         const isSameMonths =
             startDate && endDate ? isSameMonth(startDate, endDate) : false;
 
-        console.log(isSameMonths, isSameDays);
-
         return isCurrentYear
             ? isSameMonths
                 ? isSameDays

@@ -157,7 +157,7 @@ export default function EmployeeTableRow({
                 </TableCell>
 
                 <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
-                    {row.trainings}
+                    {row?.totalTrainings ?? 0}
                 </TableCell>
 
                 <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>

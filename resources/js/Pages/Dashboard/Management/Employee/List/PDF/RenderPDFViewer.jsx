@@ -5,6 +5,7 @@ import {
     IconButton,
     DialogActions,
     CircularProgress,
+    Typography,
 } from "@mui/material";
 import { useRenderPDF } from "@/hooks/useRenderPDF";
 import Iconify from "@/Components/iconify";
@@ -67,10 +68,18 @@ export default function RenderedPDFViewer({
                             height={1}
                             width={1}
                             display="flex"
+                            flexDirection="column"
                             alignItems="center"
                             justifyContent="center"
                         >
-                            <CircularProgress size={32} color="inherit" />
+                            <CircularProgress size={32} color="info" />
+                            <Typography
+                                variant="caption"
+                                color="gray"
+                                sx={{ mt: 1 }}
+                            >
+                                Loading...
+                            </Typography>
                         </Box>
                     ) : (
                         <iframe

@@ -808,7 +808,7 @@ class TrainingController extends Controller
 
 	public function courses() {
     $user = auth()->user();
-		$courses = TrainingCourses::whereNull("type")->where('user_id', $user->subscriber_id)->get();
+		$courses = TrainingCourses::whereNull("type")->where('sub_id', $user->subscriber_id)->get();
 		return Inertia::render("Dashboard/Management/Training/Register/index", [
 			"courses" => $courses
 		]);

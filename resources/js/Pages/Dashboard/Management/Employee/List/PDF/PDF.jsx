@@ -1,5 +1,13 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { Page, View, Text, Image, Document } from "@react-pdf/renderer";
+import {
+    Page,
+    View,
+    Text,
+    Image,
+    Document,
+    Svg,
+    Circle,
+} from "@react-pdf/renderer";
 // utils
 import { styles } from "./PDFStyles";
 import { format } from "date-fns";
@@ -207,199 +215,412 @@ export function PDF(props) {
                         styles.w1,
                         styles.bl,
                         styles.bt,
-                        styles.bgOffPrimary,
                         { padding: 0 },
                     ]}
                     fixed
                 >
                     <View
                         style={[
-                            styles.pl4,
                             styles.br,
                             {
                                 flexGrow: 0,
-                                paddingTop: 4,
-                                paddingBottom: 4,
-                                flexBasis: 25,
+                                flexBasis: 20,
                             },
                         ]}
                     >
-                        <Text
-                            style={[
-                                styles.bold,
-                                { color: "#363636", lineHeight: 1 },
-                            ]}
-                        >
-                            No.
-                        </Text>
+                        <View style={{ marginVertical: "auto" }}>
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    {
+                                        color: "#2a2a2a",
+                                        lineHeight: 1,
+                                        textAlign: "center",
+                                    },
+                                ]}
+                            >
+                                No.
+                            </Text>
+                        </View>
                     </View>
                     <View
                         style={[
-                            styles.pl4,
                             styles.br,
                             {
                                 flexGrow: 0,
-                                paddingTop: 4,
-                                paddingBottom: 4,
-                                flexBasis: 140,
-                            },
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                styles.bold,
-                                { color: "#363636", lineHeight: 1 },
-                            ]}
-                        >
-                            Name
-                        </Text>
-                    </View>
-                    <View
-                        style={[
-                            styles.pl4,
-                            styles.br,
-                            {
-                                flexGrow: 0,
-                                paddingTop: 4,
-                                paddingBottom: 4,
                                 flexBasis: 90,
                             },
                         ]}
                     >
-                        <Text
-                            style={[
-                                styles.bold,
-                                { color: "#363636", lineHeight: 1 },
-                            ]}
-                        >
-                            Position
-                        </Text>
+                        <View style={{ marginVertical: "auto" }}>
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    {
+                                        color: "#2a2a2a",
+                                        lineHeight: 1,
+                                        textAlign: "center",
+                                    },
+                                ]}
+                            >
+                                Name
+                            </Text>
+                        </View>
                     </View>
                     <View
                         style={[
-                            styles.pl4,
                             styles.br,
                             {
                                 flexGrow: 0,
-                                paddingTop: 4,
-                                paddingBottom: 4,
-                                flexBasis: 110,
+                                flexBasis: 65,
                             },
                         ]}
                     >
-                        <Text
-                            style={[
-                                styles.bold,
-                                { color: "#363636", lineHeight: 1 },
-                            ]}
-                        >
-                            Department
-                        </Text>
+                        <View style={{ marginVertical: "auto" }}>
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    {
+                                        color: "#2a2a2a",
+                                        lineHeight: 1,
+                                        textAlign: "center",
+                                    },
+                                ]}
+                            >
+                                Position
+                            </Text>
+                        </View>
                     </View>
                     <View
                         style={[
-                            styles.pl4,
                             styles.br,
                             {
                                 flexGrow: 0,
-                                paddingTop: 4,
-                                paddingBottom: 4,
-                                flexBasis: 80,
+                                flexBasis: 75,
                             },
                         ]}
                     >
-                        <Text
-                            style={[
-                                styles.bold,
-                                { color: "#363636", lineHeight: 1 },
-                            ]}
-                        >
-                            Company
-                        </Text>
+                        <View style={{ marginVertical: "auto" }}>
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    {
+                                        color: "#2a2a2a",
+                                        lineHeight: 1,
+                                        textAlign: "center",
+                                    },
+                                ]}
+                            >
+                                Department
+                            </Text>
+                        </View>
                     </View>
                     <View
                         style={[
-                            styles.pl4,
                             styles.br,
                             {
                                 flexGrow: 0,
-                                paddingTop: 4,
-                                paddingBottom: 4,
-                                flexBasis: 50,
+                                flexBasis: 60,
                             },
                         ]}
                     >
-                        <Text
-                            style={[
-                                styles.bold,
-                                { color: "#363636", lineHeight: 1 },
-                            ]}
-                        >
-                            Country
-                        </Text>
+                        <View style={{ marginVertical: "auto" }}>
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    {
+                                        color: "#2a2a2a",
+                                        lineHeight: 1,
+                                        textAlign: "center",
+                                    },
+                                ]}
+                            >
+                                Company
+                            </Text>
+                        </View>
                     </View>
                     <View
                         style={[
-                            styles.pl4,
                             styles.br,
                             {
                                 flexGrow: 0,
-                                paddingTop: 4,
-                                paddingBottom: 4,
-                                flexBasis: 95,
+                                flexBasis: 215,
                             },
                         ]}
                     >
-                        <Text
-                            style={[
-                                styles.bold,
-                                { color: "#363636", lineHeight: 1 },
-                            ]}
-                        >
-                            Phone No.
-                        </Text>
+                        <View style={[{ width: 215, paddingBottom: 4 }]}>
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    {
+                                        color: "#2a2a2a",
+                                        lineHeight: 1,
+                                        paddingVertical: 2,
+                                        textAlign: "center",
+                                    },
+                                ]}
+                            >
+                                Third Party Training
+                            </Text>
+                        </View>
+                        <View style={[{ flexDirection: "row" }, styles.bt]}>
+                            <View
+                                style={[
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        flexBasis: 15,
+                                    },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        {
+                                            fontSize: 6.5,
+                                            color: "#4c4c54",
+                                            lineHeight: 1.15,
+                                            textAlign: "center",
+                                        },
+                                    ]}
+                                >
+                                    SF
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        flexBasis: 30,
+                                    },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        {
+                                            fontSize: 6.5,
+                                            color: "#4c4c54",
+                                            lineHeight: 1.15,
+                                            textAlign: "center",
+                                        },
+                                    ]}
+                                >
+                                    WHFPR
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.br,
+                                    { flexGrow: 0, flexBasis: 29 },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        {
+                                            fontSize: 6.5,
+                                            color: "#4c4c54",
+                                            lineHeight: 1.15,
+                                            textAlign: "center",
+                                        },
+                                    ]}
+                                >
+                                    STEDM
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.br,
+                                    { flexGrow: 0, flexBasis: 35 },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        {
+                                            fontSize: 6.5,
+                                            color: "#4c4c54",
+                                            lineHeight: 1.15,
+                                            textAlign: "center",
+                                        },
+                                    ]}
+                                >
+                                    CSER-L3
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.br,
+                                    { flexGrow: 0, flexBasis: 15 },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        {
+                                            fontSize: 6.5,
+                                            color: "#4c4c54",
+                                            lineHeight: 1.15,
+                                            textAlign: "center",
+                                        },
+                                    ]}
+                                >
+                                    BS
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.br,
+                                    { flexGrow: 0, flexBasis: 15 },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        {
+                                            fontSize: 6.5,
+                                            color: "#4c4c54",
+                                            lineHeight: 1.15,
+                                            textAlign: "center",
+                                        },
+                                    ]}
+                                >
+                                    PA
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.br,
+                                    { flexGrow: 0, flexBasis: 20 },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        {
+                                            fontSize: 6.5,
+                                            color: "#4c4c54",
+                                            lineHeight: 1.15,
+                                            textAlign: "center",
+                                        },
+                                    ]}
+                                >
+                                    DDT
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.br,
+                                    { flexGrow: 0, flexBasis: 15 },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        {
+                                            fontSize: 6.5,
+                                            color: "#4c4c54",
+                                            lineHeight: 1.15,
+                                            textAlign: "center",
+                                        },
+                                    ]}
+                                >
+                                    FF
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.br,
+                                    { flexGrow: 0, flexBasis: 15 },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        {
+                                            fontSize: 6.5,
+                                            color: "#4c4c54",
+                                            lineHeight: 1.15,
+                                            textAlign: "center",
+                                        },
+                                    ]}
+                                >
+                                    SN
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.br,
+                                    { flexGrow: 0, flexBasis: 10 },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        {
+                                            fontSize: 6.5,
+                                            color: "#4c4c54",
+                                            lineHeight: 1.15,
+                                            textAlign: "center",
+                                        },
+                                    ]}
+                                >
+                                    E
+                                </Text>
+                            </View>
+                            <View style={[{ flexGrow: 0, flexBasis: 15 }]}>
+                                <Text
+                                    style={[
+                                        styles.bold,
+                                        {
+                                            fontSize: 6.5,
+                                            color: "#4c4c54",
+                                            lineHeight: 1.15,
+                                            textAlign: "center",
+                                        },
+                                    ]}
+                                >
+                                    TT
+                                </Text>
+                            </View>
+                        </View>
                     </View>
                     <View
                         style={[
-                            styles.pl4,
                             styles.br,
                             {
                                 flexGrow: 0,
-                                paddingTop: 4,
-                                paddingBottom: 4,
-                                flexBasis: 50,
+                                flexBasis: 40,
                             },
                         ]}
                     >
-                        <Text
-                            style={[
-                                styles.bold,
-                                { color: "#363636", lineHeight: 1 },
-                            ]}
-                        >
-                            Trainings
-                        </Text>
-                    </View>
-                    <View
-                        style={[
-                            styles.pl4,
-                            styles.br,
-                            {
-                                flexGrow: 0,
-                                paddingTop: 4,
-                                paddingBottom: 4,
-                                flexBasis: 50,
-                            },
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                styles.bold,
-                                { color: "#363636", lineHeight: 1 },
-                            ]}
-                        >
-                            Status
-                        </Text>
+                        <View style={{ marginVertical: "auto" }}>
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    {
+                                        color: "#2a2a2a",
+                                        textAlign: "center",
+                                    },
+                                ]}
+                            >
+                                Employee
+                            </Text>
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    {
+                                        color: "#2a2a2a",
+                                        lineHeight: 1,
+                                        textAlign: "center",
+                                    },
+                                ]}
+                            >
+                                Status
+                            </Text>
+                        </View>
                     </View>
                 </View>
 
@@ -417,18 +638,21 @@ export function PDF(props) {
                         >
                             <View
                                 style={[
-                                    styles.pl4,
                                     styles.br,
                                     {
                                         flexGrow: 0,
                                         paddingVertical: 4,
-                                        flexBasis: 25,
+                                        flexBasis: 20,
                                     },
                                 ]}
                             >
                                 <Text
                                     style={[
-                                        { color: "#363636", lineHeight: 1 },
+                                        {
+                                            color: "#363636",
+                                            lineHeight: 1,
+                                            textAlign: "center",
+                                        },
                                     ]}
                                 >
                                     {idx + 1}
@@ -436,51 +660,6 @@ export function PDF(props) {
                             </View>
                             <View
                                 style={[
-                                    styles.pl4,
-                                    styles.br,
-                                    {
-                                        flexGrow: 0,
-                                        flexBasis: 140,
-                                        position: "relative",
-                                        paddingVertical: 4,
-                                    },
-                                ]}
-                            >
-                                <View
-                                    style={[
-                                        styles.avatar,
-                                        {
-                                            position: "absolute",
-                                            left: 2,
-                                            top: 2,
-                                        },
-                                    ]}
-                                >
-                                    <Image
-                                        style={styles.avatarImg}
-                                        src={
-                                            emp.profile?.thumbnail
-                                                ? emp.profile.thumbnail
-                                                : window.location.origin +
-                                                  "/image/assets/images/default-profile.jpg?w=128&h=128&fit=crop"
-                                        }
-                                    />
-                                </View>
-                                <Text
-                                    style={[
-                                        {
-                                            marginLeft: 9,
-                                            color: "#363636",
-                                            lineHeight: 1,
-                                        },
-                                    ]}
-                                >
-                                    {emp.fullname}
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.pl4,
                                     styles.br,
                                     {
                                         flexGrow: 0,
@@ -494,7 +673,30 @@ export function PDF(props) {
                                         {
                                             color: "#363636",
                                             lineHeight: 1,
+                                            textAlign: "center",
+                                        },
+                                    ]}
+                                >
+                                    {emp.fullname}
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    styles.br,
+                                    {
+                                        flexGrow: 0,
+                                        paddingVertical: 4,
+                                        flexBasis: 65,
+                                    },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        {
+                                            color: "#363636",
+                                            lineHeight: 1,
                                             textTransform: "capitalize",
+                                            textAlign: "center",
                                         },
                                     ]}
                                 >
@@ -503,18 +705,21 @@ export function PDF(props) {
                             </View>
                             <View
                                 style={[
-                                    styles.pl4,
                                     styles.br,
                                     {
                                         flexGrow: 0,
                                         paddingVertical: 4,
-                                        flexBasis: 110,
+                                        flexBasis: 75,
                                     },
                                 ]}
                             >
                                 <Text
                                     style={[
-                                        { color: "#363636", lineHeight: 1 },
+                                        {
+                                            color: "#363636",
+                                            lineHeight: 1,
+                                            textAlign: "center",
+                                        },
                                     ]}
                                 >
                                     {emp.department ?? ""}
@@ -527,7 +732,7 @@ export function PDF(props) {
                                     {
                                         flexGrow: 0,
                                         paddingVertical: 4,
-                                        flexBasis: 80,
+                                        flexBasis: 60,
                                     },
                                 ]}
                             >
@@ -541,65 +746,222 @@ export function PDF(props) {
                             </View>
                             <View
                                 style={[
-                                    styles.pl4,
                                     styles.br,
                                     {
                                         flexGrow: 0,
-                                        paddingVertical: 4,
-                                        flexBasis: 50,
+                                        flexBasis: 215,
+                                        flexDirection: "row",
                                     },
                                 ]}
                             >
-                                <Text
+                                <View
                                     style={[
-                                        { color: "#363636", lineHeight: 1 },
+                                        styles.br,
+                                        {
+                                            flexGrow: 0,
+                                            flexBasis: 15,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        },
                                     ]}
                                 >
-                                    {emp.country ?? ""}
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.pl4,
-                                    styles.br,
-                                    {
-                                        flexGrow: 0,
-                                        paddingVertical: 4,
-                                        flexBasis: 95,
-                                    },
-                                ]}
-                            >
-                                <Text
+                                    <SvgCircle
+                                        color={
+                                            !!emp.trainings["SF"]
+                                                ? "#02a94d"
+                                                : undefined
+                                        }
+                                    />
+                                </View>
+                                <View
                                     style={[
-                                        { color: "#363636", lineHeight: 1 },
+                                        styles.br,
+                                        {
+                                            flexGrow: 0,
+                                            flexBasis: 30,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        },
                                     ]}
                                 >
-                                    {emp.phone_no}
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.pl4,
-                                    styles.br,
-                                    {
-                                        flexGrow: 0,
-                                        paddingVertical: 4,
-                                        flexBasis: 50,
-                                    },
-                                ]}
-                            >
-                                <Text
+                                    <SvgCircle
+                                        color={
+                                            !!emp.trainings["WHFPR"]
+                                                ? "#02a94d"
+                                                : undefined
+                                        }
+                                    />
+                                </View>
+                                <View
                                     style={[
-                                        { color: "#363636", lineHeight: 1 },
+                                        styles.br,
+                                        {
+                                            flexGrow: 0,
+                                            flexBasis: 29,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        },
                                     ]}
                                 >
-                                    {emp.trainings}
-                                </Text>
+                                    <SvgCircle
+                                        color={
+                                            !!emp.trainings["STEDM"]
+                                                ? "#02a94d"
+                                                : undefined
+                                        }
+                                    />
+                                </View>
+                                <View
+                                    style={[
+                                        styles.br,
+                                        {
+                                            flexGrow: 0,
+                                            flexBasis: 35,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        },
+                                    ]}
+                                >
+                                    <SvgCircle
+                                        color={
+                                            !!emp.trainings["CSER-L3"]
+                                                ? "#02a94d"
+                                                : undefined
+                                        }
+                                    />
+                                </View>
+                                <View
+                                    style={[
+                                        styles.br,
+                                        {
+                                            flexGrow: 0,
+                                            flexBasis: 15,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        },
+                                    ]}
+                                >
+                                    <SvgCircle
+                                        color={
+                                            !!emp.trainings["BS"]
+                                                ? "#02a94d"
+                                                : undefined
+                                        }
+                                    />
+                                </View>
+                                <View
+                                    style={[
+                                        styles.br,
+                                        {
+                                            flexGrow: 0,
+                                            flexBasis: 15,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        },
+                                    ]}
+                                >
+                                    <SvgCircle
+                                        color={
+                                            !!emp.trainings["PA"]
+                                                ? "#02a94d"
+                                                : undefined
+                                        }
+                                    />
+                                </View>
+                                <View
+                                    style={[
+                                        styles.br,
+                                        {
+                                            flexGrow: 0,
+                                            flexBasis: 20,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        },
+                                    ]}
+                                >
+                                    <SvgCircle
+                                        color={
+                                            !!emp.trainings["DDT"]
+                                                ? "#02a94d"
+                                                : undefined
+                                        }
+                                    />
+                                </View>
+                                <View
+                                    style={[
+                                        styles.br,
+                                        {
+                                            flexGrow: 0,
+                                            flexBasis: 15,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        },
+                                    ]}
+                                >
+                                    <SvgCircle
+                                        color={
+                                            !!emp.trainings["FF"]
+                                                ? "#02a94d"
+                                                : undefined
+                                        }
+                                    />
+                                </View>
+                                <View
+                                    style={[
+                                        styles.br,
+                                        { flexGrow: 0, flexBasis: 15 },
+                                    ]}
+                                >
+                                    <Text
+                                        style={[
+                                            {
+                                                color: "#363636",
+                                                lineHeight: 0,
+                                                textAlign: "center",
+                                                marginVertical: "auto",
+                                            },
+                                        ]}
+                                    >
+                                        {emp.trainings["SN"]}
+                                    </Text>
+                                </View>
+                                <View
+                                    style={[
+                                        styles.br,
+                                        { flexGrow: 0, flexBasis: 10 },
+                                    ]}
+                                >
+                                    <Text
+                                        style={[
+                                            {
+                                                color: "#363636",
+                                                lineHeight: 0,
+                                                textAlign: "center",
+                                                marginVertical: "auto",
+                                            },
+                                        ]}
+                                    >
+                                        {emp.trainings["E"]}
+                                    </Text>
+                                </View>
+                                <View style={[{ flexGrow: 0, flexBasis: 15 }]}>
+                                    <Text
+                                        style={[
+                                            {
+                                                color: "#363636",
+                                                lineHeight: 0,
+                                                textAlign: "center",
+                                                marginVertical: "auto",
+                                            },
+                                        ]}
+                                    >
+                                        {emp.trainings["TT"]}
+                                    </Text>
+                                </View>
                             </View>
 
                             <View
                                 style={[
-                                    styles.pl4,
                                     styles.br,
                                     emp.status === "active"
                                         ? styles.bgSuccess
@@ -609,7 +971,7 @@ export function PDF(props) {
                                     {
                                         flexGrow: 0,
                                         paddingVertical: 4,
-                                        flexBasis: 50,
+                                        flexBasis: 40,
                                     },
                                 ]}
                             >
@@ -620,6 +982,7 @@ export function PDF(props) {
                                             color: "#f0f0f0",
                                             textTransform: "capitalize",
                                             lineHeight: 1,
+                                            textAlign: "center",
                                         },
                                     ]}
                                 >
@@ -628,6 +991,201 @@ export function PDF(props) {
                             </View>
                         </View>
                     ))}
+                </View>
+
+                <View
+                    style={[
+                        styles.mt16,
+                        {
+                            flexDirection: "row",
+                            alignSelf: "flex-end",
+                            maxWidth: "60%",
+                        },
+                    ]}
+                    fixed
+                >
+                    <View style={styles.mr16}>
+                        <Text style={[styles.subtitle2]}>Legend</Text>
+                    </View>
+                    <View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                Safety Foundation
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                SF
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                Working at Height, Fall Protection & Rescue
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                WHFPR
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                Scaffolding Technician Erection, Dismantling &
+                                Modification
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                STEDM
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                Confined Space Entry & Rescue Level 3
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                CSER-L3
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                Banksman Slinger
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                BS
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                PA
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                PA
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                DDT
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                DDT
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                Fire Fighting
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                FF
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                Soon to Expire
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                SN
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                Expired
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                E
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                Total Trainings
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                TT
+                            </Text>
+                        </View>
+                    </View>
                 </View>
 
                 <View style={[styles.gridContainer, styles.footer]} fixed>
@@ -678,5 +1236,13 @@ export function PDF(props) {
                 </View>
             </Page>
         </Document>
+    );
+}
+
+function SvgCircle({ color = "#f90000" }) {
+    return (
+        <Svg width="5" height="5">
+            <Circle cx={2.5} cy={2.5} r={2.5} fill={color} />
+        </Svg>
     );
 }
