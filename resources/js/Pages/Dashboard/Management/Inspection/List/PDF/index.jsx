@@ -12,13 +12,13 @@ const index = ({ inspections, info }) => {
     return (
         <>
             <Head>
-                <title>Inspection Tracker Report</title>
+                <title>Inspection Closedout Tracker Report</title>
             </Head>
             <Suspense fallback={<LoadingScreen />}>
                 <Box height="100vh" overflow="clip">
                     {!isRendered && <LoadingScreen />}
                     <PDF
-                        title="Inspection Tracker Report"
+                        title="Inspection Closedout Tracker Report"
                         inspections={inspections}
                         info={info}
                         rendered={() => {

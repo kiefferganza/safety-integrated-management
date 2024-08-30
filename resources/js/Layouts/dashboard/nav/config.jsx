@@ -362,7 +362,7 @@ const navConfig = [
                 ],
                 children: [
                     {
-                        title: "Tracker",
+                        title: "Task",
                         path: PATH_DASHBOARD.inspection.tracker,
                         routeNames: ["inspection.management.tracker"],
                     },

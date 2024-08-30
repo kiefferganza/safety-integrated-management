@@ -25,11 +25,16 @@ const shortLabelDate = ([start, end]) => {
         const isSameMonths =
             startDate && endDate ? isSameMonth(startDate, endDate) : false;
 
+        console.log(isSameMonths, isSameDays);
+
         return isCurrentYear
             ? isSameMonths
                 ? isSameDays
                     ? fDate(endDate, "MMMM dd, yyyy")
-                    : `${fDate(endDate, "MMMM yyyy")}`
+                    : `${fDate(startDate, "MMMM dd")}-${fDate(
+                          endDate,
+                          "dd yyyy"
+                      )}`
                 : `${fDate(startDate, "MMMM")} - ${fDate(endDate, "MMMM yyyy")}`
             : `${fDate(startDate, "MMMM dd yyyy")} - ${fDate(
                   endDate,
@@ -87,7 +92,7 @@ export function PDF({ data = [], filterDate, logo }) {
     const checkBreakPoint = (index) => startIndices.indexOf(index);
     return (
         <Document
-            title={`Safety Officer & PA's DOR${
+            title={`Safety Officer & PA's DOR Tracker${
                 filterDate ? ` - ${shortLabelDate(filterDate)}` : ""
             }`}
         >

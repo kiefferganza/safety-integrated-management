@@ -1,30 +1,10 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { Page, View, Text, Image, Document } from "@react-pdf/renderer";
 // utils
-// import { fDate } from '@/utils/formatTime';
-
-import { styles, colors } from "./PDFStyles";
-import FileSVG from "@/Components/pdf-svg/FileSVG";
+import { styles } from "./PDFStyles";
 import { format } from "date-fns";
-import { fDate } from "@/utils/formatTime";
 
 // ----------------------------------------------------------------------
-function findDuplicatesById(objects) {
-    const seenIds = new Set();
-    const duplicates = [];
-
-    for (const obj of objects) {
-        const id = obj.employee_id;
-
-        if (seenIds.has(id)) {
-            duplicates.push(obj);
-        } else {
-            seenIds.add(id);
-        }
-    }
-
-    return duplicates;
-}
 
 const FORMATTED_DATE = format(new Date(), "MM/dd/yy");
 const YEAR = new Date().getFullYear();

@@ -13,7 +13,7 @@ export function PDF({
 }) {
     const dateFormattedString = dateLabel(dateTupple[0], dateTupple[1]);
     return (
-        <Document title="Toolbox Talk Tracker">
+        <Document title="Task Delegation Tracker">
             <Page size="A4" style={styles.page}>
                 <View style={styles.mb8} fixed>
                     <View style={[styles.gridContainer, styles.mb8]}>
@@ -27,7 +27,7 @@ export function PDF({
                         }}
                     >
                         <Text style={[styles.h4, { color: "#616161" }]}>
-                            Inspection Tracker
+                            Task Delegation Tracker
                         </Text>
                     </View>
                 </View>
