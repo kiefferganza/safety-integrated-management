@@ -379,7 +379,8 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            lineHeight: 1.15,
+                                            paddingTop: 1,
+                                            lineHeight: 1.265,
                                             textAlign: "center",
                                         },
                                     ]}
@@ -402,7 +403,8 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            lineHeight: 1.15,
+                                            paddingTop: 1,
+                                            lineHeight: 1.265,
                                             textAlign: "center",
                                         },
                                     ]}
@@ -422,7 +424,8 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            lineHeight: 1.15,
+                                            paddingTop: 1,
+                                            lineHeight: 1.265,
                                             textAlign: "center",
                                         },
                                     ]}
@@ -442,7 +445,8 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            lineHeight: 1.15,
+                                            paddingTop: 1,
+                                            lineHeight: 1.265,
                                             textAlign: "center",
                                         },
                                     ]}
@@ -462,7 +466,8 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            lineHeight: 1.15,
+                                            paddingTop: 1,
+                                            lineHeight: 1.265,
                                             textAlign: "center",
                                         },
                                     ]}
@@ -482,7 +487,8 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            lineHeight: 1.15,
+                                            paddingTop: 1,
+                                            lineHeight: 1.265,
                                             textAlign: "center",
                                         },
                                     ]}
@@ -502,7 +508,8 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            lineHeight: 1.15,
+                                            paddingTop: 1,
+                                            lineHeight: 1.265,
                                             textAlign: "center",
                                         },
                                     ]}
@@ -522,7 +529,8 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            lineHeight: 1.15,
+                                            paddingTop: 1,
+                                            lineHeight: 1.265,
                                             textAlign: "center",
                                         },
                                     ]}
@@ -542,7 +550,8 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            lineHeight: 1.15,
+                                            paddingTop: 1,
+                                            lineHeight: 1.265,
                                             textAlign: "center",
                                         },
                                     ]}
@@ -562,7 +571,8 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            lineHeight: 1.15,
+                                            paddingTop: 1,
+                                            lineHeight: 1.265,
                                             textAlign: "center",
                                         },
                                     ]}
@@ -577,7 +587,8 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            lineHeight: 1.15,
+                                            paddingTop: 1,
+                                            lineHeight: 1.265,
                                             textAlign: "center",
                                         },
                                     ]}

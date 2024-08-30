@@ -71,14 +71,15 @@ export default function RenderedPDFViewer({
                             flexDirection="column"
                             alignItems="center"
                             justifyContent="center"
+                            color="gray"
                         >
-                            <CircularProgress size={32} color="info" />
+                            <CircularProgress size={32} color="inherit" />
                             <Typography
                                 variant="caption"
                                 color="gray"
                                 sx={{ mt: 1 }}
                             >
-                                Loading...
+                                Generating PDF...
                             </Typography>
                         </Box>
                     ) : (
