@@ -107,7 +107,7 @@ export function PDF({ data = [], filterDate, logo }) {
                         }}
                     >
                         <Text style={[styles.h3, { color: "#616161" }]}>
-                            Safety Officer & PA's DOR{" "}
+                            Safety Officer & PA's DOR Tracker{" "}
                             {filterDate
                                 ? `- ${shortLabelDate(filterDate)}`
                                 : ""}
