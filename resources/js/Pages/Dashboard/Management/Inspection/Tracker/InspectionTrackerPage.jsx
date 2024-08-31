@@ -216,7 +216,7 @@ export default function InspectionTrackerPage({
                             flexWrap: "wrap",
                         },
                     }}
-                    heading="Inspection Tracker"
+                    heading="Task Delegation List"
                     links={[
                         {
                             name: "Dashboard",
