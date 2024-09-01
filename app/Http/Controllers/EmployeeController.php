@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Employee;
 // use App\Models\Follower;
 use App\Models\Position;
-// use App\Models\TrainingCourses;
+use App\Models\TrainingCourses;
 use App\Models\TrainingTrainees;
 use App\Models\TrainingType;
 use App\Models\User;
@@ -27,7 +27,8 @@ class EmployeeController extends Controller
 		$user = auth()->user();
 		$today = Carbon::now();
 		$lastWeekStart = $today->subWeek(1);
-		// $thirdPartyTrainings = TrainingCourses::select("course_name")->where("sub_id", $user->subscriber_id)->whereNull("type")->get();
+		$thirdPartyTrainings = TrainingCourses::select("id", "course_name", "acronym")->where("sub_id", $user->subscriber_id)->whereNotNull("acronym")->whereNull("type")->get();
+
 		$employees = Employee::select(DB::raw("
 		tbl_employees.user_id,
 		tbl_employees.employee_id,
@@ -49,7 +50,7 @@ class EmployeeController extends Controller
 			->leftJoin("tbl_company", "tbl_employees.company", "tbl_company.company_id")
 			->with([
 				"participated_trainings" => fn ($q) =>
-					$q->select("title", "type", "date_expired", "tbl_training_trainees.employee_id", "tbl_training_trainees.training_id")->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id")->where("tbl_trainings.is_deleted", 0),
+					$q->select("title", "type", "date_expired", "tbl_training_trainees.employee_id", "tbl_training_trainees.training_id")->join("tbl_trainings", "tbl_trainings.training_id", "tbl_training_trainees.training_id")->where("tbl_trainings.is_deleted", 0)->orderBy("date_created", "desc"),
 			])
 			// ->join("tbl_nationalities", "tbl_employees.nationality", "tbl_nationalities.id")
 			->where([
@@ -57,7 +58,7 @@ class EmployeeController extends Controller
 				["tbl_employees.is_deleted", 0]
 			])
 			->get()
-			->transform(function ($employee) use($today, $lastWeekStart)
+			->transform(function ($employee) use($today, $lastWeekStart, $thirdPartyTrainings)
 			{
 				/**
 				 * @var App\Models\Employee $employee
@@ -73,59 +74,43 @@ class EmployeeController extends Controller
 						"small" => URL::route("image", ["path" => $path, "w" => 128, "h" => 128, "fit" => "crop"])
 					];
 				}
-				$employee->totalTrainings = count($employee->participated_trainings) ;
+				$employee->totalTrainings = count($employee->participated_trainings);
 				$trainings = [
-					"SF" => 0,
-					"WHFPR" => 0,
-					"STEDM" => 0,
-					"CSER-L3" => 0,
-					"BS" => 0,
-					"PA" => 0,
-					"DDT" => 0,
-					"FF" => 0,
 					"SN" => 0,
 					"E" => 0,
 					"TT" => $employee->totalTrainings
 				];
+				$thirdParty = $thirdPartyTrainings->mapWithKeys(function($t) {
+					return [$t->acronym => [
+						"name" => $t->course_name,
+						"acronym" => $t->acronym,
+						"expired" => false,
+						"sn" => false,
+						"active" => false,
+					]];
+				})->toArray();
+				
 				if($trainings["TT"]) {
 					foreach ($employee->participated_trainings as $t) {
-						switch(trim($t->title)) {
-							case "Safety Foundation":
-								$trainings["SF"] += 1;
-								break;
-							case "Working at Height":
-								$trainings["WHFPR"] += 1;
-								break;
-							case "Scaffolding":
-								$trainings["STEDM"] += 1;
-								break;
-							case "CS Entry & Rescue Level 3":
-								$trainings["CSER-L3"] += 1;
-								break;
-							case "Banksman Slinger":
-								$trainings["BS"] += 1;
-								break;
-							case "PA":
-								$trainings["PA"] += 1;
-								break;
-							case "DDT":
-								$trainings["DDT"] += 1;
-								break;
-							case "Fire Fighting":
-								$trainings["FF"] += 1;
-								break;
-							default:
-								break;
-						}
-						$date = Carbon::parse($t->date_expired);
-						if($date->between($lastWeekStart, $today)) {
-							$trainings["SN"] += 1;
-						}else if($date->isPast($today)) {
-							$trainings["E"] += 1;
+						$foundTraining = $thirdPartyTrainings->first(function($th) use($t) {
+							return $th->course_name === trim($t->title);
+						});
+						if($foundTraining) {
+							$date = Carbon::parse($t->date_expired);
+							if($date->between($lastWeekStart, $today)) {
+								$thirdParty[$foundTraining->acronym]["sn"] = true;
+								$trainings["SN"] += 1;
+							}else if($date->isPast($today)) {
+								$thirdParty[$foundTraining->acronym]["expired"] = true;
+								$trainings["E"] += 1;
+							}else {
+								$thirdParty[$foundTraining->acronym]["active"] = true;
+							}
 						}
 					}
 				}
 				$employee->trainings = $trainings;
+				$employee->thirdParty = $thirdParty;
 
 				return $employee;
 			});

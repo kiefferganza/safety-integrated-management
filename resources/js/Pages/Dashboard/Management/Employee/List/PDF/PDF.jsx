@@ -224,7 +224,7 @@ export function PDF(props) {
                             styles.br,
                             {
                                 flexGrow: 0,
-                                flexBasis: 20,
+                                flexBasis: 18,
                             },
                         ]}
                     >
@@ -248,7 +248,7 @@ export function PDF(props) {
                             styles.br,
                             {
                                 flexGrow: 0,
-                                flexBasis: 90,
+                                flexBasis: 85,
                             },
                         ]}
                     >
@@ -296,7 +296,7 @@ export function PDF(props) {
                             styles.br,
                             {
                                 flexGrow: 0,
-                                flexBasis: 75,
+                                flexBasis: 65,
                             },
                         ]}
                     >
@@ -320,7 +320,7 @@ export function PDF(props) {
                             styles.br,
                             {
                                 flexGrow: 0,
-                                flexBasis: 60,
+                                flexBasis: 50,
                             },
                         ]}
                     >
@@ -339,23 +339,24 @@ export function PDF(props) {
                             </Text>
                         </View>
                     </View>
-                    <View
-                        style={[
-                            styles.br,
-                            {
-                                flexGrow: 0,
-                                flexBasis: 215,
-                            },
-                        ]}
-                    >
-                        <View style={[{ width: 215, paddingBottom: 4 }]}>
+                    <View style={[styles.br]}>
+                        <View
+                            style={[
+                                {
+                                    paddingBottom: 4,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                },
+                            ]}
+                        >
                             <Text
                                 style={[
                                     styles.bold,
                                     {
                                         color: "#2a2a2a",
                                         lineHeight: 1,
-                                        paddingVertical: 2,
+                                        paddingTop: 2,
                                         textAlign: "center",
                                     },
                                 ]}
@@ -364,96 +365,33 @@ export function PDF(props) {
                             </Text>
                         </View>
                         <View style={[{ flexDirection: "row" }, styles.bt]}>
-                            <View
-                                style={[
-                                    styles.br,
-                                    {
-                                        flexGrow: 0,
-                                        flexBasis: 15,
-                                    },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        styles.bold,
-                                        {
-                                            fontSize: 6.5,
-                                            color: "#4c4c54",
-                                            paddingTop: 1,
-                                            lineHeight: 1.265,
-                                            textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    SF
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.br,
-                                    {
-                                        flexGrow: 0,
-                                        flexBasis: 30,
-                                    },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        styles.bold,
-                                        {
-                                            fontSize: 6.5,
-                                            color: "#4c4c54",
-                                            paddingTop: 1,
-                                            lineHeight: 1.265,
-                                            textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    WHFPR
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.br,
-                                    { flexGrow: 0, flexBasis: 29 },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        styles.bold,
-                                        {
-                                            fontSize: 6.5,
-                                            color: "#4c4c54",
-                                            paddingTop: 1,
-                                            lineHeight: 1.265,
-                                            textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    STEDM
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.br,
-                                    { flexGrow: 0, flexBasis: 35 },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        styles.bold,
-                                        {
-                                            fontSize: 6.5,
-                                            color: "#4c4c54",
-                                            paddingTop: 1,
-                                            lineHeight: 1.265,
-                                            textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    CSER-L3
-                                </Text>
-                            </View>
+                            {Object.values(employees[0]?.thirdParty || {}).map(
+                                (t) => (
+                                    <View
+                                        style={[
+                                            styles.br,
+                                            { paddingHorizontal: 1.5 },
+                                        ]}
+                                        key={t.acronym}
+                                    >
+                                        <Text
+                                            style={[
+                                                styles.bold,
+                                                {
+                                                    fontSize: 6.5,
+                                                    color: "#4c4c54",
+                                                    lineHeight: 1,
+                                                    textAlign: "center",
+                                                    paddingTop: 1,
+                                                    paddingBottom: 2,
+                                                },
+                                            ]}
+                                        >
+                                            {t.acronym}
+                                        </Text>
+                                    </View>
+                                )
+                            )}
                             <View
                                 style={[
                                     styles.br,
@@ -466,93 +404,10 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            paddingTop: 1,
-                                            lineHeight: 1.265,
+                                            lineHeight: 1,
                                             textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    BS
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.br,
-                                    { flexGrow: 0, flexBasis: 15 },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        styles.bold,
-                                        {
-                                            fontSize: 6.5,
-                                            color: "#4c4c54",
                                             paddingTop: 1,
-                                            lineHeight: 1.265,
-                                            textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    PA
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.br,
-                                    { flexGrow: 0, flexBasis: 20 },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        styles.bold,
-                                        {
-                                            fontSize: 6.5,
-                                            color: "#4c4c54",
-                                            paddingTop: 1,
-                                            lineHeight: 1.265,
-                                            textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    DDT
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.br,
-                                    { flexGrow: 0, flexBasis: 15 },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        styles.bold,
-                                        {
-                                            fontSize: 6.5,
-                                            color: "#4c4c54",
-                                            paddingTop: 1,
-                                            lineHeight: 1.265,
-                                            textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    FF
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.br,
-                                    { flexGrow: 0, flexBasis: 15 },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        styles.bold,
-                                        {
-                                            fontSize: 6.5,
-                                            color: "#4c4c54",
-                                            paddingTop: 1,
-                                            lineHeight: 1.265,
-                                            textAlign: "center",
+                                            paddingBottom: 2,
                                         },
                                     ]}
                                 >
@@ -571,25 +426,35 @@ export function PDF(props) {
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            paddingTop: 1,
-                                            lineHeight: 1.265,
+                                            lineHeight: 1,
                                             textAlign: "center",
+                                            paddingTop: 1,
+                                            paddingBottom: 2,
                                         },
                                     ]}
                                 >
                                     E
                                 </Text>
                             </View>
-                            <View style={[{ flexGrow: 0, flexBasis: 15 }]}>
+                            <View
+                                style={[
+                                    {
+                                        minWidth: 15,
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    },
+                                ]}
+                            >
                                 <Text
                                     style={[
                                         styles.bold,
                                         {
                                             fontSize: 6.5,
                                             color: "#4c4c54",
-                                            paddingTop: 1,
-                                            lineHeight: 1.265,
+                                            lineHeight: 1,
                                             textAlign: "center",
+                                            paddingTop: 1,
+                                            paddingBottom: 2,
                                         },
                                     ]}
                                 >
@@ -653,7 +518,7 @@ export function PDF(props) {
                                     {
                                         flexGrow: 0,
                                         paddingVertical: 4,
-                                        flexBasis: 20,
+                                        flexBasis: 18,
                                     },
                                 ]}
                             >
@@ -675,7 +540,7 @@ export function PDF(props) {
                                     {
                                         flexGrow: 0,
                                         paddingVertical: 4,
-                                        flexBasis: 90,
+                                        flexBasis: 85,
                                     },
                                 ]}
                             >
@@ -720,7 +585,7 @@ export function PDF(props) {
                                     {
                                         flexGrow: 0,
                                         paddingVertical: 4,
-                                        flexBasis: 75,
+                                        flexBasis: 65,
                                     },
                                 ]}
                             >
@@ -743,7 +608,8 @@ export function PDF(props) {
                                     {
                                         flexGrow: 0,
                                         paddingVertical: 4,
-                                        flexBasis: 60,
+                                        paddingRight: 1,
+                                        flexBasis: 50,
                                     },
                                 ]}
                             >
@@ -759,164 +625,53 @@ export function PDF(props) {
                                 style={[
                                     styles.br,
                                     {
-                                        flexGrow: 0,
-                                        flexBasis: 215,
                                         flexDirection: "row",
                                     },
                                 ]}
                             >
-                                <View
-                                    style={[
-                                        styles.br,
-                                        {
-                                            flexGrow: 0,
-                                            flexBasis: 15,
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        },
-                                    ]}
-                                >
-                                    <SvgCircle
-                                        color={
-                                            !!emp.trainings["SF"]
-                                                ? "#02a94d"
-                                                : undefined
-                                        }
-                                    />
-                                </View>
-                                <View
-                                    style={[
-                                        styles.br,
-                                        {
-                                            flexGrow: 0,
-                                            flexBasis: 30,
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        },
-                                    ]}
-                                >
-                                    <SvgCircle
-                                        color={
-                                            !!emp.trainings["WHFPR"]
-                                                ? "#02a94d"
-                                                : undefined
-                                        }
-                                    />
-                                </View>
-                                <View
-                                    style={[
-                                        styles.br,
-                                        {
-                                            flexGrow: 0,
-                                            flexBasis: 29,
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        },
-                                    ]}
-                                >
-                                    <SvgCircle
-                                        color={
-                                            !!emp.trainings["STEDM"]
-                                                ? "#02a94d"
-                                                : undefined
-                                        }
-                                    />
-                                </View>
-                                <View
-                                    style={[
-                                        styles.br,
-                                        {
-                                            flexGrow: 0,
-                                            flexBasis: 35,
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        },
-                                    ]}
-                                >
-                                    <SvgCircle
-                                        color={
-                                            !!emp.trainings["CSER-L3"]
-                                                ? "#02a94d"
-                                                : undefined
-                                        }
-                                    />
-                                </View>
-                                <View
-                                    style={[
-                                        styles.br,
-                                        {
-                                            flexGrow: 0,
-                                            flexBasis: 15,
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        },
-                                    ]}
-                                >
-                                    <SvgCircle
-                                        color={
-                                            !!emp.trainings["BS"]
-                                                ? "#02a94d"
-                                                : undefined
-                                        }
-                                    />
-                                </View>
-                                <View
-                                    style={[
-                                        styles.br,
-                                        {
-                                            flexGrow: 0,
-                                            flexBasis: 15,
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        },
-                                    ]}
-                                >
-                                    <SvgCircle
-                                        color={
-                                            !!emp.trainings["PA"]
-                                                ? "#02a94d"
-                                                : undefined
-                                        }
-                                    />
-                                </View>
-                                <View
-                                    style={[
-                                        styles.br,
-                                        {
-                                            flexGrow: 0,
-                                            flexBasis: 20,
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        },
-                                    ]}
-                                >
-                                    <SvgCircle
-                                        color={
-                                            !!emp.trainings["DDT"]
-                                                ? "#02a94d"
-                                                : undefined
-                                        }
-                                    />
-                                </View>
-                                <View
-                                    style={[
-                                        styles.br,
-                                        {
-                                            flexGrow: 0,
-                                            flexBasis: 15,
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        },
-                                    ]}
-                                >
-                                    <SvgCircle
-                                        color={
-                                            !!emp.trainings["FF"]
-                                                ? "#02a94d"
-                                                : undefined
-                                        }
-                                    />
-                                </View>
+                                {Object.values(emp.thirdParty).map((t) => (
+                                    <View
+                                        style={[
+                                            styles.br,
+                                            {
+                                                paddingHorizontal: 1.5,
+                                                position: "relative",
+                                            },
+                                        ]}
+                                        key={t.acronym}
+                                    >
+                                        <Text
+                                            style={[
+                                                styles.bold,
+                                                {
+                                                    fontSize: 6.5,
+                                                    paddingTop: 1,
+                                                    lineHeight: 1,
+                                                    textAlign: "center",
+                                                    opacity: 0,
+                                                },
+                                            ]}
+                                        >
+                                            {t.acronym}
+                                        </Text>
+                                        {(t.sn || t.active || t.expired) && (
+                                            <SvgCircle
+                                                color={
+                                                    t.sn
+                                                        ? "febe00"
+                                                        : t.active
+                                                        ? "#02a94d"
+                                                        : undefined
+                                                }
+                                                style={{
+                                                    position: "absolute",
+                                                    top: "39%",
+                                                    left: "39%",
+                                                }}
+                                            />
+                                        )}
+                                    </View>
+                                ))}
                                 <View
                                     style={[
                                         styles.br,
@@ -955,7 +710,15 @@ export function PDF(props) {
                                         {emp.trainings["E"]}
                                     </Text>
                                 </View>
-                                <View style={[{ flexGrow: 0, flexBasis: 15 }]}>
+                                <View
+                                    style={[
+                                        {
+                                            minWidth: 15,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        },
+                                    ]}
+                                >
                                     <Text
                                         style={[
                                             {
@@ -1013,189 +776,42 @@ export function PDF(props) {
                             maxWidth: "60%",
                         },
                     ]}
-                    fixed
                 >
                     <View style={styles.mr16}>
                         <Text style={[styles.subtitle2]}>Legend</Text>
                     </View>
                     <View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                Safety Foundation
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                SF
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                Working at Height, Fall Protection & Rescue
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                WHFPR
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                Scaffolding Technician Erection, Dismantling &
-                                Modification
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                STEDM
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                Confined Space Entry & Rescue Level 3
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                CSER-L3
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                Banksman Slinger
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                BS
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                PA
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                PA
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                DDT
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                DDT
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                Fire Fighting
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                FF
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                Soon to Expire
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                SN
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                Expired
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                E
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                Total Trainings
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                TT
-                            </Text>
-                        </View>
+                        {Object.values(employees[0]?.thirdParty || {}).map(
+                            (t) => (
+                                <View
+                                    key={t.acronym}
+                                    style={{
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                    }}
+                                >
+                                    <Text style={[styles.subtitle3, styles.w1]}>
+                                        {t.name}
+                                    </Text>
+                                    <Text
+                                        style={[
+                                            styles.subtitle3,
+                                            { width: 15 },
+                                        ]}
+                                    >
+                                        -
+                                    </Text>
+                                    <Text
+                                        style={[
+                                            styles.subtitle3,
+                                            { width: 35 },
+                                        ]}
+                                    >
+                                        {t.acronym}
+                                    </Text>
+                                </View>
+                            )
+                        )}
                     </View>
                 </View>
 
@@ -1250,9 +866,9 @@ export function PDF(props) {
     );
 }
 
-function SvgCircle({ color = "#f90000" }) {
+function SvgCircle({ color = "#f90000", style = {} }) {
     return (
-        <Svg width="5" height="5">
+        <Svg width="5" height="5" style={style}>
             <Circle cx={2.5} cy={2.5} r={2.5} fill={color} />
         </Svg>
     );

@@ -26,7 +26,8 @@ use Inertia\Inertia;
 
 class TrainingController extends Controller
 {
-	public function index() {
+	public function index()
+	{
 
 		return Inertia::render("Dashboard/Management/Training/List/index", [
 			"trainings" => (new TrainingService)->getTrainingByType(2),
@@ -36,30 +37,34 @@ class TrainingController extends Controller
 		]);
 	}
 
-	public function external() {
-		
+	public function external()
+	{
+
 		$trainings =  (new TrainingService())->getTrainingByType(3);
 
-		foreach ($trainings as $training) {
+		foreach ($trainings as $training)
+		{
 			/** @var Training $training */
-			if($training?->external_status?->hasMedia('actions')) {
+			if ($training?->external_status?->hasMedia('actions'))
+			{
 				$reviewerLastFile = $training->external_status->getFirstMedia('actions', ['type' => 'review']);
 				$approverLastFile = $training->external_status->getFirstMedia('actions', ['type' => 'approver']);
-				if($reviewerLastFile) {
+				if ($reviewerLastFile)
+				{
 					$training->external_status->reviewerLatestFile = [
 						'name' => $reviewerLastFile->name,
 						'fileName' => $reviewerLastFile->file_name,
 						'url' => $reviewerLastFile->originalUrl
 					];
 				}
-				if($approverLastFile) {
+				if ($approverLastFile)
+				{
 					$training->external_status->approverLatestFile = [
 						'name' => $approverLastFile->name,
 						'fileName' => $approverLastFile->file_name,
 						'url' => $approverLastFile->originalUrl
 					];
 				}
-
 			}
 		}
 
@@ -71,7 +76,8 @@ class TrainingController extends Controller
 		]);
 	}
 
-	public function induction() {
+	public function induction()
+	{
 
 		return Inertia::render("Dashboard/Management/Training/List/index", [
 			"trainings" => (new TrainingService)->getTrainingByType(4),
@@ -82,13 +88,14 @@ class TrainingController extends Controller
 	}
 
 
-	public function create(Request $request) {
+	public function create(Request $request)
+	{
 		$trainingService = new TrainingService();
 		$courses = TrainingCourses::get();
 		$user = auth()->user();
 		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
-		
-		return Inertia::render("Dashboard/Management/Training/Create/index",[
+
+		return Inertia::render("Dashboard/Management/Training/Create/index", [
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 				->where([
 					["tbl_position.is_deleted", 0],
@@ -109,7 +116,8 @@ class TrainingController extends Controller
 	}
 
 
-	public function store(TrainingRequest $request) {
+	public function store(TrainingRequest $request)
+	{
 		$user = Auth::user();
 		$training = new Training;
 
@@ -140,7 +148,8 @@ class TrainingController extends Controller
 		$training->save();
 		$training_id = $training->training_id;
 
-		if($request->type == "3") {
+		if ($request->type == "3")
+		{
 			$training_external = new TrainingExternal;
 
 			$training_external->training_id = $training_id;
@@ -153,14 +162,16 @@ class TrainingController extends Controller
 
 			$training_external->save();
 
-			TrainingExternalStatus::create(["training_id" => $training->training_id]); 
+			TrainingExternalStatus::create(["training_id" => $training->training_id]);
 		}
 
-		if(!empty($request->trainees)) {
+		if (!empty($request->trainees))
+		{
 			$trainees = [];
 			$files = [];
 
-			foreach ($request->trainees as $trainee) {
+			foreach ($request->trainees as $trainee)
+			{
 				$trainees[] = [
 					"training_id" => (int)$training_id,
 					"employee_id" => (int)$trainee["emp_id"],
@@ -169,10 +180,11 @@ class TrainingController extends Controller
 					"date_joined" => date("Y-m-d H:i:s")
 				];
 
-				if($trainee["src"] !== null) {
+				if ($trainee["src"] !== null)
+				{
 					$file = $trainee["src"]->getClientOriginalName();
 					$extension = pathinfo($file, PATHINFO_EXTENSION);
-					$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
+					$file_name = pathinfo($file, PATHINFO_FILENAME) . "-" . time() . "." . $extension;
 					$trainee["src"]->storeAs('media/training', $file_name, 'public');
 
 					$files[] = [
@@ -184,7 +196,8 @@ class TrainingController extends Controller
 					];
 				}
 			}
-			if(!empty($files)) {
+			if (!empty($files))
+			{
 				TrainingFiles::insert($files);
 			}
 			TrainingTrainees::insert($trainees);
@@ -192,18 +205,20 @@ class TrainingController extends Controller
 		event(new NewTrainingEvent($training));
 
 		return redirect()->back()
-		->with("message", "Training added successfully!")
-		->with("type", "success");
+			->with("message", "Training added successfully!")
+			->with("type", "success");
 	}
 
-	public function edit(Training $training) {
+	public function edit(Training $training)
+	{
 		$trainingService = new TrainingService();
 
 		$relation = [
-			"trainees" => fn ($query) => $query->with("position"),
+			"trainees" => fn($query) => $query->with("position"),
 			"training_files"
 		];
-		if($training->type == 3) {
+		if ($training->type == 3)
+		{
 			$relation[] = "external_details";
 		}
 
@@ -213,12 +228,12 @@ class TrainingController extends Controller
 		return Inertia::render("Dashboard/Management/Training/Edit/index", [
 			"training" => $training->load($relation),
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
-			->where([
-				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0],
-				["tbl_employees.is_active", 0],
-			])
-			->get(),
+				->where([
+					["tbl_position.is_deleted", 0],
+					["tbl_employees.is_deleted", 0],
+					["tbl_employees.is_active", 0],
+				])
+				->get(),
 			"courses" => TrainingCourses::get(),
 			"details" => $trainingService->getTrainingType($training->type),
 			"type" => $trainingService->getTrainingType($training->type),
@@ -226,9 +241,10 @@ class TrainingController extends Controller
 		]);
 	}
 
-	public function update(TrainingRequest $request, Training $training) {
+	public function update(TrainingRequest $request, Training $training)
+	{
 		$user = Auth::user();
-		
+
 		$training->originator = $request->originator;
 		$training->project_code = $request->project_code;
 		$training->discipline = $request->discipline;
@@ -248,14 +264,16 @@ class TrainingController extends Controller
 		$training->training_center = $request->training_center;
 		// $training->increment("revision_no");
 
-		if($training->sequence_no === null) {
+		if ($training->sequence_no === null)
+		{
 			$training->sequence_no = $request->sequence_no;
 		}
 
 
 		$training->save();
 
-		if($request->type == "3") {
+		if ($request->type == "3")
+		{
 			$training_external = TrainingExternal::where("training_id", $training->training_id)->first();
 
 			$training_external->training_id = $training->training_id;
@@ -269,18 +287,23 @@ class TrainingController extends Controller
 			$training_external->save();
 		}
 
-		if(isset($request->deleted_trainees)) {
-			foreach ($request->deleted_trainees as $del_trainee) {
+		if (isset($request->deleted_trainees))
+		{
+			foreach ($request->deleted_trainees as $del_trainee)
+			{
 				TrainingTrainees::find($del_trainee["trainee_id"])->delete();
-				
+
 				$training_files_to_delete = TrainingFiles::where([
 					["training_id", $training->training_id],
 					["emp_id", (int)$del_trainee["employee_id"]]
 				])->get()->toArray();
 
-				if(!empty($training_files_to_delete)) {
-					foreach ($training_files_to_delete as $file_to_delete) {
-						if(Storage::exists("public/media/training/" . $file_to_delete["src"])) {
+				if (!empty($training_files_to_delete))
+				{
+					foreach ($training_files_to_delete as $file_to_delete)
+					{
+						if (Storage::exists("public/media/training/" . $file_to_delete["src"]))
+						{
 							Storage::delete("public/media/training/" . $file_to_delete["src"]);
 						}
 					}
@@ -290,20 +313,26 @@ class TrainingController extends Controller
 			}
 		}
 
-		if(!empty($request->trainees)) {
+		if (!empty($request->trainees))
+		{
 			$trainees = [];
 			$files = [];
 
-			foreach ($request->trainees as $trainee) {
-				if(!isset($trainee["pivot"])) {
+			foreach ($request->trainees as $trainee)
+			{
+				if (!isset($trainee["pivot"]))
+				{
 					// Delete
 					$training_files_to_delete = TrainingFiles::where([
 						["training_id", $training->training_id],
 						["emp_id", (int)$trainee["emp_id"]]
 					])->get()->toArray();
-					if(!empty($training_files_to_delete)) {
-						foreach ($training_files_to_delete as $file_to_delete) {
-							if(Storage::exists("public/media/training/" . $file_to_delete["src"])) {
+					if (!empty($training_files_to_delete))
+					{
+						foreach ($training_files_to_delete as $file_to_delete)
+						{
+							if (Storage::exists("public/media/training/" . $file_to_delete["src"]))
+							{
 								Storage::delete("public/media/training/" . $file_to_delete["src"]);
 							}
 						}
@@ -316,8 +345,9 @@ class TrainingController extends Controller
 						["training_id", $training->training_id],
 						["employee_id", (int)$trainee["emp_id"]]
 					])->first();
-					
-					if(!$tr_trainee) {
+
+					if (!$tr_trainee)
+					{
 						$trainees[] = [
 							"training_id" => (int)$training->training_id,
 							"employee_id" => (int)$trainee["emp_id"],
@@ -326,12 +356,13 @@ class TrainingController extends Controller
 							"date_joined" => date("Y-m-d H:i:s")
 						];
 					}
-					
-	
-					if($trainee["src"] !== null) {
+
+
+					if ($trainee["src"] !== null)
+					{
 						$file = $trainee["src"]->getClientOriginalName();
 						$extension = pathinfo($file, PATHINFO_EXTENSION);
-						$file_name = pathinfo($file, PATHINFO_FILENAME). "-" . time(). "." . $extension;
+						$file_name = pathinfo($file, PATHINFO_FILENAME) . "-" . time() . "." . $extension;
 						$trainee["src"]->storeAs('media/training', $file_name, 'public');
 
 						$tr_file = TrainingFiles::where([
@@ -339,13 +370,17 @@ class TrainingController extends Controller
 							["emp_id", (int)$trainee["emp_id"]]
 						])->first();
 
-						if($tr_file) {
-							if(Storage::exists("public/media/training/" . $tr_file->src)) {
+						if ($tr_file)
+						{
+							if (Storage::exists("public/media/training/" . $tr_file->src))
+							{
 								Storage::delete("public/media/training/" . $tr_file->src);
 							}
 							$tr_file->src = $file_name;
 							$tr_file->save();
-						}else {
+						}
+						else
+						{
 							$files[] = [
 								"src" => $file_name,
 								"training_id" => (int)$training->training_id,
@@ -357,37 +392,45 @@ class TrainingController extends Controller
 					}
 				}
 			}
-			if(!empty($files)) {
+			if (!empty($files))
+			{
 				TrainingFiles::insert($files);
 			}
-			if(!empty($trainees)) {
+			if (!empty($trainees))
+			{
 				TrainingTrainees::insert($trainees);
 			}
 		}
 
 		return redirect()->back()
-		->with("message", "Course updated successfully!")
-		->with("type", "success");
+			->with("message", "Course updated successfully!")
+			->with("type", "success");
 	}
 
 
-	public function destroy(Request $request) {
-    $trainings = Training::whereIn("training_id", $request->ids)->get(['training_id'])->toArray();
+	public function destroy(Request $request)
+	{
+		$trainings = Training::whereIn("training_id", $request->ids)->get(['training_id'])->toArray();
 
 		$training_ids = [];
-		foreach ($trainings as $training) {
+		foreach ($trainings as $training)
+		{
 			$training_ids[] = $training['training_id'];
 		}
 
-		if(!empty($training_ids)) {
+		if (!empty($training_ids))
+		{
 			TrainingTrainees::whereIn("training_id", $training_ids)->delete();
 
 			$training_files = TrainingFiles::whereIn("training_id", $training_ids)
-			->get(["training_files_id","training_id", "src"])->toArray();
+				->get(["training_files_id", "training_id", "src"])->toArray();
 
-			if(!empty($training_files)) {
-				foreach ($training_files as $file) {
-					if(Storage::exists("public/media/training/" . $file["src"])) {
+			if (!empty($training_files))
+			{
+				foreach ($training_files as $file)
+				{
+					if (Storage::exists("public/media/training/" . $file["src"]))
+					{
 						Storage::delete("public/media/training/" . $file["src"]);
 					}
 				}
@@ -395,25 +438,28 @@ class TrainingController extends Controller
 			}
 		}
 
-    foreach ($training_ids as $id) {
-      $training = Training::find($id);
-      $training->clearMediaCollection();
-      $training->delete();
-    }
-		
+		foreach ($training_ids as $id)
+		{
+			$training = Training::find($id);
+			$training->clearMediaCollection();
+			$training->delete();
+		}
+
 		return redirect()->back()
-		->with("message", "Training deleted successfully!")
-		->with("type", "success");
+			->with("message", "Training deleted successfully!")
+			->with("type", "success");
 	}
 
 	// SHOW
-	public function show_in_house(Training $training) {
-		if($training->type !== 1) {
+	public function show_in_house(Training $training)
+	{
+		if ($training->type !== 1)
+		{
 			return redirect()->back();
 		}
 
 		$trainingService = new TrainingService();
-		
+
 		$training = $trainingService->loadTraining($training);
 
 		$training->training_files = $trainingService->transformFiles($training->training_files);
@@ -421,61 +467,68 @@ class TrainingController extends Controller
 		return Inertia::render("Dashboard/Management/Training/View/index", [
 			"training" => $training,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
-			->where([
-				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0],
-				["tbl_employees.is_active", 0],
-			])
-			->get(),
+				->where([
+					["tbl_position.is_deleted", 0],
+					["tbl_employees.is_deleted", 0],
+					["tbl_employees.is_active", 0],
+				])
+				->get(),
 			"module" => "In House",
 			"url" => "in-house"
 		]);
 	}
-	
-	public function show_client(Training $training) {
-		if($training->type !== 2) {
+
+	public function show_client(Training $training)
+	{
+		if ($training->type !== 2)
+		{
 			return redirect()->back();
 		}
 
 		$trainingService = new TrainingService();
-		
+
 		$training = $trainingService->loadTraining($training);
 
 		$training->training_files = $trainingService->transformFiles($training->training_files);
 
-    $user = auth()->user();
-    $rollout_date = Cache::get("training_inhouse_rollout_date:" . $user->subscriber_id);
+		$user = auth()->user();
+		$rollout_date = Cache::get("training_inhouse_rollout_date:" . $user->subscriber_id);
 
-    if(!$rollout_date) {
-      $rollout_date = Training::select('date_created')->where('type', '!=', 1)->orderBy('date_created')->first();
-      if($rollout_date) {
-        Cache::put("training_rollout_date:" . $user->subscriber_id, $rollout_date);
-      }
-    }
+		if (!$rollout_date)
+		{
+			$rollout_date = Training::select('date_created')->where('type', '!=', 1)->orderBy('date_created')->first();
+			if ($rollout_date)
+			{
+				Cache::put("training_rollout_date:" . $user->subscriber_id, $rollout_date);
+			}
+		}
 
 		return Inertia::render("Dashboard/Management/Training/View/index", [
 			"training" => $training,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
-			->where([
-				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0],
-				["tbl_employees.is_active", 0],
-			])
-			->get(),
+				->where([
+					["tbl_position.is_deleted", 0],
+					["tbl_employees.is_deleted", 0],
+					["tbl_employees.is_active", 0],
+				])
+				->get(),
 			"module" => "Client",
 			"url" => "client",
-      "rolloutDate" => $rollout_date->date_created
+			"rolloutDate" => $rollout_date->date_created
 		]);
 	}
 
-	public function show_external(Training $training) {
-		if($training->type !== 3) {
+	public function show_external(Training $training)
+	{
+		if ($training->type !== 3)
+		{
 			return redirect()->back();
 		}
 		$trainingService = new TrainingService();
-		
+
 		$training = $trainingService->loadTraining($training)->load(["external_status"]);
-		if($training->external_status->hasMedia('actions')) {
+		if ($training->external_status->hasMedia('actions'))
+		{
 			$currentFile = $training->external_status->getMedia('actions')->last();
 			$training->external_status->setAttribute('currentFile', [
 				'name' => $currentFile->name,
@@ -487,78 +540,87 @@ class TrainingController extends Controller
 
 		$training->training_files = $trainingService->transformFiles($training->training_files);
 
-    $user = auth()->user();
-    $rollout_date = Cache::get("training_inhouse_rollout_date:" . $user->subscriber_id);
+		$user = auth()->user();
+		$rollout_date = Cache::get("training_inhouse_rollout_date:" . $user->subscriber_id);
 
-    if(!$rollout_date) {
-      $rollout_date = Training::select('date_created')->where('type', '!=', 1)->orderBy('date_created')->first();
-      if($rollout_date) {
-        Cache::put("training_rollout_date:" . $user->subscriber_id, $rollout_date);
-      }
-    }
+		if (!$rollout_date)
+		{
+			$rollout_date = Training::select('date_created')->where('type', '!=', 1)->orderBy('date_created')->first();
+			if ($rollout_date)
+			{
+				Cache::put("training_rollout_date:" . $user->subscriber_id, $rollout_date);
+			}
+		}
 
 		return Inertia::render("Dashboard/Management/Training/View/index", [
 			"training" => $training,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
-			->where([
-				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0],
-				["tbl_employees.is_active", 0],
-			])
-			->get(),
+				->where([
+					["tbl_position.is_deleted", 0],
+					["tbl_employees.is_deleted", 0],
+					["tbl_employees.is_active", 0],
+				])
+				->get(),
 			"module" => "Third Party",
 			"url" => "thirdParty",
-      "rolloutDate" => $rollout_date->date_created
+			"rolloutDate" => $rollout_date->date_created
 		]);
 	}
 
-	public function show_induction(Training $training) {
-		if($training->type !== 4) {
+	public function show_induction(Training $training)
+	{
+		if ($training->type !== 4)
+		{
 			return redirect()->back();
 		}
 		$trainingService = new TrainingService();
-		
+
 		$training = $trainingService->loadTraining($training);
 
 		$training->training_files = $trainingService->transformFiles($training->training_files);
 
-    $user = auth()->user();
-    $rollout_date = Cache::get("training_inhouse_rollout_date:" . $user->subscriber_id);
+		$user = auth()->user();
+		$rollout_date = Cache::get("training_inhouse_rollout_date:" . $user->subscriber_id);
 
-    if(!$rollout_date) {
-      $rollout_date = Training::select('date_created')->where('type', '!=', 1)->orderBy('date_created')->first();
-      if($rollout_date) {
-        Cache::put("training_rollout_date:" . $user->subscriber_id, $rollout_date);
-      }
-    }
+		if (!$rollout_date)
+		{
+			$rollout_date = Training::select('date_created')->where('type', '!=', 1)->orderBy('date_created')->first();
+			if ($rollout_date)
+			{
+				Cache::put("training_rollout_date:" . $user->subscriber_id, $rollout_date);
+			}
+		}
 
 		return Inertia::render("Dashboard/Management/Training/View/index", [
 			"training" => $training,
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
-			->where([
-				["tbl_position.is_deleted", 0],
-				["tbl_employees.is_deleted", 0],
-				["tbl_employees.is_active", 0],
-			])
-			->get(),
+				->where([
+					["tbl_position.is_deleted", 0],
+					["tbl_employees.is_deleted", 0],
+					["tbl_employees.is_active", 0],
+				])
+				->get(),
 			"module" => "Induction",
 			"url" => "induction",
-      "rolloutDate" => $rollout_date->date_created
+			"rolloutDate" => $rollout_date->date_created
 		]);
 	}
 
-	public function external_action(Training $training) {
+	public function external_action(Training $training)
+	{
 		$user = auth()->user();
 
 		$trainingService = new TrainingService();
-		
+
 		$training = $trainingService->loadTraining($training)->load(["external_status", "external_comments"]);
-		
-		if($user->emp_id !== $training->external_details->requested_by) {
+
+		if ($user->emp_id !== $training->external_details->requested_by)
+		{
 			return redirect()->back();
 		}
 
-		if($training->external_status->hasMedia('actions')) {
+		if ($training->external_status->hasMedia('actions'))
+		{
 			$currentFile = $training->external_status->getMedia('actions')->last();
 			$training->external_status->setAttribute('currentFile', [
 				'name' => $currentFile->name,
@@ -571,21 +633,23 @@ class TrainingController extends Controller
 		return Inertia::render("Dashboard/Management/Training/View/ThirdParty/index", [
 			"training" => $training,
 		]);
-		
 	}
 
-	public function external_review(Training $training) {
+	public function external_review(Training $training)
+	{
 		$user = auth()->user();
 
 		$trainingService = new TrainingService();
-		
+
 		$training = $trainingService->loadTraining($training)->load(["external_status", "external_comments"]);
-		
-		if($user->emp_id !== $training->external_details->reviewed_by) {
+
+		if ($user->emp_id !== $training->external_details->reviewed_by)
+		{
 			return redirect()->back();
 		}
 
-		if($training->external_status->hasMedia('actions')) {
+		if ($training->external_status->hasMedia('actions'))
+		{
 			$currentFile = $training->external_status->getMedia('actions')->last();
 			$training->external_status->setAttribute('currentFile', [
 				'name' => $currentFile->name,
@@ -601,19 +665,22 @@ class TrainingController extends Controller
 		]);
 	}
 
-	public function external_approve(Training $training) {
+	public function external_approve(Training $training)
+	{
 		$user = auth()->user();
 
 		$trainingService = new TrainingService();
-		
+
 		$training = $trainingService->loadTraining($training)->load(["external_status", "external_comments"]);
-		
-		if($user->emp_id !== $training->external_details->approved_by) {
+
+		if ($user->emp_id !== $training->external_details->approved_by)
+		{
 			return redirect()->back();
 		}
 
 		$training = $trainingService->loadTraining($training)->load(["external_status", "external_comments"]);
-		if($training->external_status->hasMedia('actions')) {
+		if ($training->external_status->hasMedia('actions'))
+		{
 			$currentFile = $training->external_status->getMedia('actions')->last();
 			$training->external_status->setAttribute('currentFile', [
 				'name' => $currentFile->name,
@@ -627,10 +694,10 @@ class TrainingController extends Controller
 			"training" => $training,
 			"type" => "approve"
 		]);
-		
 	}
 
-	public function external_comment(Training $training, Request $request) {
+	public function external_comment(Training $training, Request $request)
+	{
 		$request->validate([
 			"comment" => ["string", "max:255", "required"],
 			"pages" => ["string", "required"],
@@ -653,16 +720,18 @@ class TrainingController extends Controller
 		$training->save();
 
 		$creator = User::find($training->user_id);
-		if($creator) {
+		if ($creator)
+		{
 			$creator?->notify(new NewTrainingCommentNotification($training, CommentTypeEnums::COMMENTED));
 		}
 
 		return redirect()->back()
-		->with("message", "Comment posted successfully!")
-		->with("type", "success");
+			->with("message", "Comment posted successfully!")
+			->with("type", "success");
 	}
 
-	public function external_comment_status(TrainingExternalComment $trainingComment, Request $request) {
+	public function external_comment_status(TrainingExternalComment $trainingComment, Request $request)
+	{
 		$request->validate([
 			"status" => ["string", "required"]
 		]);
@@ -671,19 +740,21 @@ class TrainingController extends Controller
 		$trainingComment->save();
 
 		return redirect()->back()
-		->with("message", "Comment". $request->status ."successfully!")
-		->with("type", "success");
+			->with("message", "Comment" . $request->status . "successfully!")
+			->with("type", "success");
 	}
 
-	public function external_comment_delete(TrainingExternalComment $trainingComment) {
+	public function external_comment_delete(TrainingExternalComment $trainingComment)
+	{
 		$trainingComment->delete();
 
 		return redirect()->back()
-		->with("message", "Comment deleted successfully!")
-		->with("type", "success");
+			->with("message", "Comment deleted successfully!")
+			->with("type", "success");
 	}
 
-	public function external_reply(TrainingExternalComment $trainingComment, Request $request) {
+	public function external_reply(TrainingExternalComment $trainingComment, Request $request)
+	{
 		$request->validate([
 			"reply" => ["string", "max:255", "required"],
 			"reply_code" => ["string", "required"]
@@ -697,16 +768,18 @@ class TrainingController extends Controller
 		$trainingComment->save();
 
 		$reviewer = User::where('emp_id', $trainingComment->reviewer_id)->first();
-		if($reviewer) {
+		if ($reviewer)
+		{
 			$reviewer?->notify(new NewTrainingCommentNotification($training, CommentTypeEnums::REPLIED));
 		}
 
 		return redirect()->back()
-		->with("message", "Reply posted successfully!")
-		->with("type", "success");
+			->with("message", "Reply posted successfully!")
+			->with("type", "success");
 	}
 
-	public function approveReview(Request $request, Training $training) {
+	public function approveReview(Request $request, Training $training)
+	{
 		$request->validate([
 			"status" => ["string", "required"],
 			"type" => ["string", "required"],
@@ -717,22 +790,30 @@ class TrainingController extends Controller
 		/** @var TrainingExternalStatus $statuses */
 		$statuses = $training->external_status;
 
-		
-		switch ($request->type) {
+
+		switch ($request->type)
+		{
 			case 'review':
-				if($request->remarks) {
+				if ($request->remarks)
+				{
 					$statuses->review_remark = $request->remarks;
 				}
 
-				if($training->external_details->approved_by === null) {
+				if ($training->external_details->approved_by === null)
+				{
 					$statuses->status = 'closed';
 					$statuses->review_status = $request->status;
-					if($request->status === 'A' || $request->status === 'D') {
+					if ($request->status === 'A' || $request->status === 'D')
+					{
 						$statuses->approval_status = 'approved';
-					}else {
+					}
+					else
+					{
 						$statuses->approval_status = 'failed';
 					}
-				}else {
+				}
+				else
+				{
 					$statuses->status = 'for_approval';
 					$statuses->review_status = $request->status;
 					$statuses->approval_status = 'pending';
@@ -747,7 +828,8 @@ class TrainingController extends Controller
 				// }
 				break;
 			case 'approver':
-				if($request->remarks) {
+				if ($request->remarks)
+				{
 					$statuses->approval_remark = $request->remarks;
 				}
 				$statuses->approval_status = $request->status;
@@ -756,22 +838,23 @@ class TrainingController extends Controller
 		}
 
 		$statuses
-		->addMediaFromRequest('file')
-		->withCustomProperties([
-			'type' => $request->type
-		])
-		->toMediaCollection('actions');
+			->addMediaFromRequest('file')
+			->withCustomProperties([
+				'type' => $request->type
+			])
+			->toMediaCollection('actions');
 
 		$statuses->save();
 		$training->save();
 
 		return redirect()->back()
-		->with("message", "Status updated successfully!")
-		->with("type", "success");
+			->with("message", "Status updated successfully!")
+			->with("type", "success");
 	}
 
 
-	public function reuploadActionFile(Request $request, Training $training) {
+	public function reuploadActionFile(Request $request, Training $training)
+	{
 		$request->validate([
 			"type" => ["string", "required"],
 			"file" => ["file", "max:3072", "required"],
@@ -781,11 +864,13 @@ class TrainingController extends Controller
 		/** @var TrainingExternalStatus $statuses */
 		$statuses = $training->external_status;
 
-		if($statuses->hasMedia('actions', ['type' => $request->type])) {
+		if ($statuses->hasMedia('actions', ['type' => $request->type]))
+		{
 			$media = $statuses->getFirstMedia('actions', ['type' => $request->type]);
 			$statuses->deleteMedia($media);
 		}
-		switch ($request->type) {
+		switch ($request->type)
+		{
 			case 'review':
 				$statuses->review_remark = $request->remarks ?? "";
 				break;
@@ -795,83 +880,91 @@ class TrainingController extends Controller
 		}
 		$statuses->save();
 		$statuses
-		->addMediaFromRequest('file')
-		->withCustomProperties([
-			'type' => $request->type
-		])
-		->toMediaCollection('actions');
+			->addMediaFromRequest('file')
+			->withCustomProperties([
+				'type' => $request->type
+			])
+			->toMediaCollection('actions');
 
 		return redirect()->back()
-		->with("message", "File updated successfully!")
-		->with("type", "success");
+			->with("message", "File updated successfully!")
+			->with("type", "success");
 	}
 
-	public function courses() {
-    $user = auth()->user();
+	public function courses()
+	{
+		$user = auth()->user();
 		$courses = TrainingCourses::whereNull("type")->where('sub_id', $user->subscriber_id)->get();
+
 		return Inertia::render("Dashboard/Management/Training/Register/index", [
 			"courses" => $courses
 		]);
 	}
 
-	public function addCourses(Request $request) {
+	public function addCourses(Request $request)
+	{
 		$request->validate([
 			'courses' => ['required', 'array']
 		]);
 		$user = Auth::user();
 		$courses = [];
-		foreach ($request->courses as $course) {
+		foreach ($request->courses as $course)
+		{
 			$courses[] = [
 				'course_name' => $course['course_name'],
-        'type' => null,
+				'acronym' => $course['acronym'],
+				'type' => null,
 				'user_id' => $user->id,
 				'sub_id' => $user->subscriber_id,
-        'last_used' => null,
+				'last_used' => null,
 				'created_at' => now()
 			];
 		}
 		TrainingCourses::insert($courses);
 
 		return redirect()->back()
-		->with('message', 'Course added successfully')
-		->with('type', 'success');
+			->with('message', 'Course added successfully')
+			->with('type', 'success');
 	}
 
-	public function updateCourse(Request $request, TrainingCourses $course) {
+	public function updateCourse(Request $request, TrainingCourses $course)
+	{
 		$request->validate([
-			'course_name' => ['required', 'string']
+			'course_name' => ['string'],
+			'acronym' => ['string']
 		]);
 
 		$course->course_name = $request->course_name;
+		$course->acronym = $request->acronym;
 
-		if(!$course->isDirty('course_name')) {
-			return redirect()->back();
-		}
-		
 		$course->save();
 		return redirect()->back()
-		->with('message', 'Course updated successfully')
-		->with('type', 'success');
+			->with('message', 'Course updated successfully')
+			->with('type', 'success');
 	}
 
-	public function deleteCourse(Request $request) {
+	public function deleteCourse(Request $request)
+	{
 		$request->validate([
 			'ids' => ['array', 'required']
 		]);
-		
+
 		TrainingCourses::whereIn('id', $request->ids)->update(['deleted_at' => now()]);
 
 		return redirect()->back()
-		->with('message', count($request->ids) . ' items deleted sucessfully')
-		->with('type', 'success');
+			->with('message', count($request->ids) . ' items deleted sucessfully')
+			->with('type', 'success');
 	}
 
 
-  public function externalMatrix(Request $request) {
-    $from = $request->from;
+	public function externalMatrix(Request $request)
+	{
+		$from = $request->from;
 		$to = $request->to;
-		if(!$from || !$to) {
-			if(($from && !$to) || (!$from && $to)) {
+		if (!$from || !$to)
+		{
+			if (($from && !$to) || (!$from && $to))
+			{
 				abort(404);
 			}
 			$currentYear = Carbon::now()->year;
@@ -880,20 +973,23 @@ class TrainingController extends Controller
 		}
 
 
-    return Inertia::render("Dashboard/Management/Training/External/Matrix/index", [
-      'from' => $from,
+		return Inertia::render("Dashboard/Management/Training/External/Matrix/index", [
+			'from' => $from,
 			'to' => $to
-    ]);
-  }
+		]);
+	}
 
 
-	public function matrix(Request $request) {
+	public function matrix(Request $request)
+	{
 		$user = auth()->user();
 
 		$from = $request->from;
 		$to = $request->to;
-		if(!$from || !$to) {
-			if(($from && !$to) || (!$from && $to)) {
+		if (!$from || !$to)
+		{
+			if (($from && !$to) || (!$from && $to))
+			{
 				abort(404);
 			}
 			$currentYear = Carbon::now()->year;
@@ -905,49 +1001,55 @@ class TrainingController extends Controller
 
 
 		$yearList = Training::selectRaw('EXTRACT(YEAR FROM training_date) AS year')
-		->distinct()
-		->orderBy('year', 'desc')
-		->get()
-		->pluck('year');
+			->distinct()
+			->orderBy('year', 'desc')
+			->get()
+			->pluck('year');
 
 		$courses = TrainingCourses::select('id', 'course_name')->get();
 
 		$employees = Employee::where('sub_id', $user->subscriber_id)->where('tbl_employees.is_deleted', 0)
-		->select('employee_id', 'firstname', 'lastname', 'tbl_position.position')
-		->has('participated_trainings')
-		->with('participated_trainings', function($q) use($from, $to) {
-			return $q->select([
-					'trainee_id', 
-					'tbl_training_trainees.training_id', 
-					'tbl_training_trainees.employee_id', 
-					'tbl_trainings_files.src', 
-					'tbl_trainings.training_date', 
-					'tbl_trainings.date_expired', 
-					'tbl_trainings.title', 
+			->select('employee_id', 'firstname', 'lastname', 'tbl_position.position')
+			->has('participated_trainings')
+			->with('participated_trainings', function ($q) use ($from, $to)
+			{
+				return $q->select([
+					'trainee_id',
+					'tbl_training_trainees.training_id',
+					'tbl_training_trainees.employee_id',
+					'tbl_trainings_files.src',
+					'tbl_trainings.training_date',
+					'tbl_trainings.date_expired',
+					'tbl_trainings.title',
 					'tbl_trainings.training_hrs'
 				])
-				->where('tbl_trainings.is_deleted', 0)
-				->whereBetween('training_date', [$from, $to])
-				->join('tbl_trainings', 'tbl_trainings.training_id', 'tbl_training_trainees.training_id')
-				->leftJoin(
-					'tbl_trainings_files', function($joinQuery) {
-						return $joinQuery->on('tbl_trainings_files.training_id', '=', 'tbl_training_trainees.training_id')
-						->on('tbl_trainings_files.emp_id', '=', 'tbl_training_trainees.employee_id');
-				});
-		})
-		->leftJoin('tbl_position', 'tbl_position.position_id', 'tbl_employees.position')
-		->get();
+					->where('tbl_trainings.is_deleted', 0)
+					->whereBetween('training_date', [$from, $to])
+					->join('tbl_trainings', 'tbl_trainings.training_id', 'tbl_training_trainees.training_id')
+					->leftJoin(
+						'tbl_trainings_files',
+						function ($joinQuery)
+						{
+							return $joinQuery->on('tbl_trainings_files.training_id', '=', 'tbl_training_trainees.training_id')
+								->on('tbl_trainings_files.emp_id', '=', 'tbl_training_trainees.employee_id');
+						}
+					);
+			})
+			->leftJoin('tbl_position', 'tbl_position.position_id', 'tbl_employees.position')
+			->get();
 
 		$years = collect([]);
-		
+
 		$titles = $courses->pluck('course_name')->toArray();
 		$storage = Storage::disk("public");
 
-		foreach ($employees as $employee) {
+		foreach ($employees as $employee)
+		{
 			$employeeFullName = $employee->fullname;
 			$employeePosition = trim($employee->position);
 			$employeeId = $employee->employee_id;
-			foreach ($employee->participated_trainings as $parTraining) {
+			foreach ($employee->participated_trainings as $parTraining)
+			{
 				$year = Carbon::parse($parTraining->training_date)->year;
 				$existingYear = $years->get($year, collect([
 					[
@@ -960,11 +1062,13 @@ class TrainingController extends Controller
 					]
 				]));
 
-				$employeeData = $existingYear->first(function ($val) use ($employeeId) {
+				$employeeData = $existingYear->first(function ($val) use ($employeeId)
+				{
 					return $val['employee_id'] === $employeeId;
 				});
 
-				if(!$employeeData) {
+				if (!$employeeData)
+				{
 					$existingYear->push([
 						'employee_id' => $employeeId,
 						'fullName' => $employeeFullName,
@@ -974,30 +1078,39 @@ class TrainingController extends Controller
 						'data' => collect([])
 					]);
 				}
-				
+
 				$years->put($year, $existingYear);
-				
+
 				$course = '';
 				$title = $parTraining->title;
-				if($title) {
-					$foundCourse = $courses->first(function ($course) use ($title) {
+				if ($title)
+				{
+					$foundCourse = $courses->first(function ($course) use ($title)
+					{
 						return strtolower(trim($course->course_name)) === strtolower(trim($title));
 					});
-					if($foundCourse) {
+					if ($foundCourse)
+					{
 						$course = $foundCourse->course_name;
-					}else {
+					}
+					else
+					{
 						$course = $title;
 					}
 				}
-				
-				
-				if($course !== '') {
-					$existingYear->transform(function($val) use($employeeId, $parTraining, $storage, $course, $employeePosition) {
-						if($val['employee_id'] === $employeeId && !$val['data']->contains('courseName', $course)) {
-							$isCompleted = $parTraining->src ? $storage->exists("media/training/". $parTraining->src) : false;
+
+
+				if ($course !== '')
+				{
+					$existingYear->transform(function ($val) use ($employeeId, $parTraining, $storage, $course, $employeePosition)
+					{
+						if ($val['employee_id'] === $employeeId && !$val['data']->contains('courseName', $course))
+						{
+							$isCompleted = $parTraining->src ? $storage->exists("media/training/" . $parTraining->src) : false;
 							$expiredDate = Carbon::parse($parTraining->date_expired);
 							$parTraining->expired = false;
-							if(now() >= $expiredDate) {
+							if (now() >= $expiredDate)
+							{
 								$parTraining->expired = true;
 							}
 							$val['data']->push([
@@ -1006,7 +1119,8 @@ class TrainingController extends Controller
 								'isCompleted' => $isCompleted,
 								'position' => $employeePosition,
 							]);
-							if($isCompleted) {
+							if ($isCompleted)
+							{
 								$val['completed_count'] += 1;
 							}
 							$val['total_hrs'] += $parTraining->training_hrs;
@@ -1017,8 +1131,9 @@ class TrainingController extends Controller
 				}
 			}
 		}
-    
-		$years->transform(function($year) {
+
+		$years->transform(function ($year)
+		{
 			return $year->sortBy('fullName')->values();
 		});
 
@@ -1031,5 +1146,4 @@ class TrainingController extends Controller
 			'to' => $to
 		]);
 	}
-
 }
