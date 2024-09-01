@@ -812,6 +812,54 @@ export function PDF(props) {
                                 </View>
                             )
                         )}
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                Soon to Expire
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                SN
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                Expired
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                E
+                            </Text>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Text style={[styles.subtitle3, styles.w1]}>
+                                Total Trainings
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 15 }]}>
+                                -
+                            </Text>
+                            <Text style={[styles.subtitle3, { width: 35 }]}>
+                                TT
+                            </Text>
+                        </View>
                     </View>
                 </View>
 
