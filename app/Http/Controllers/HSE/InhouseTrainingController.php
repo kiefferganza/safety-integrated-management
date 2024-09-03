@@ -278,7 +278,7 @@ class InhouseTrainingController extends Controller
 
 	public function inHouseCourses()
 	{
-		$courses = TrainingCourses::where("type", "in-house")->get();
+		$courses = TrainingCourses::where("type", "in-house")->orderBy("created_at", "desc")->get();
 
 		return Inertia::render("Dashboard/Management/Training/InHouse/Register/index", [
 			"courses" => $courses
@@ -290,6 +290,7 @@ class InhouseTrainingController extends Controller
 	{
 		$request->validate([
 			'course_name' => ['string'],
+			'acronym' => ['string'],
 			'attached_file' => ['file']
 		]);
 
@@ -297,6 +298,7 @@ class InhouseTrainingController extends Controller
 
 		$course = new TrainingCourses();
 		$course->course_name = $request->course_name;
+		$course->acronym = $request->acronym;
 		$course->type = 'in-house';
 		$course->user_id = $user->id;
 		$course->sub_id = $user->subscriber_id;
@@ -314,10 +316,12 @@ class InhouseTrainingController extends Controller
 	{
 		$request->validate([
 			'course_name' => ['string'],
+			'acronym' => ['string'],
 			'attached_file' => ['file', 'nullable']
 		]);
 
 		$course->course_name = $request->course_name;
+		$course->acronym = $request->acronym;
 
 		if ($request->hasFile('attached_file'))
 		{

@@ -70,7 +70,6 @@ const STATUS_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function TrainingInHouseList({ trainings }) {
-    console.log(trainings);
     const [hasPermission] = usePermission();
     const { load, stop } = useSwal();
     const {
@@ -226,7 +225,7 @@ export default function TrainingInHouseList({ trainings }) {
         setFilterStatus(event.target.value);
     };
 
-    const handleFilterStatusTabs = (event, newValue) => {
+    const handleFilterStatusTabs = (_event, newValue) => {
         setPage(0);
         setFilterStatus(newValue);
     };

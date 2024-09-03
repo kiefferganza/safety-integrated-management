@@ -149,7 +149,7 @@ export default function TrainingCoursesListPage({ courses }) {
     const handleOpenAddCourse = () => setOpenAdd(true);
     const handleCloseAddCourse = () => {
         setOpenAdd(false);
-        reset({ courseItem: [{ course_name: "", id: 0 }] });
+        reset({ courseItem: [{ course_name: "", acronym: "", id: 0 }] });
     };
     const handleOpenEditCourse = (course) => {
         setValue("courseItem.0.course_name", course.course_name);
@@ -163,13 +163,29 @@ export default function TrainingCoursesListPage({ courses }) {
     };
 
     const handleCreateCourse = ({ courseItem }) => {
-        const courses = courseItem.map((course) => ({
+        for (let i = 0; i < courses.length; i++) {
+            const c = courses[i];
+            const duplicate = courseItem.some(
+                (ci) => ci.acronym.trim() === c.acronym?.trim()
+            );
+            if (duplicate) {
+                enqueueSnackbar(
+                    `Abbreviation "${c.acronym}" is already taken`,
+                    {
+                        variant: "error",
+                    }
+                );
+                return;
+            }
+        }
+        const newCourses = courseItem.map((course) => ({
             course_name: course.course_name,
+            acronym: course.acronym,
         }));
 
         Inertia.post(
             route("training.management.new_courses"),
-            { courses },
+            { courses: newCourses },
             {
                 onStart: () => {
                     handleCloseAddCourse();
