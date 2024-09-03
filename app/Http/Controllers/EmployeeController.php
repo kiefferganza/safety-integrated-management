@@ -28,6 +28,7 @@ class EmployeeController extends Controller
 		$today = Carbon::now();
 		$lastWeekStart = $today->subWeek(1);
 		$thirdPartyTrainings = TrainingCourses::select("id", "course_name", "acronym")->where("sub_id", $user->subscriber_id)->whereNotNull("acronym")->whereNull("type")->get();
+		$internalTraining = TrainingCourses::select("id", "course_name", "acronym")->where("sub_id", $user->subscriber_id)->whereNotNull("acronym")->where("type", "in-house")->get();
 
 		$employees = Employee::select(DB::raw("
 		tbl_employees.user_id,
@@ -58,7 +59,7 @@ class EmployeeController extends Controller
 				["tbl_employees.is_deleted", 0]
 			])
 			->get()
-			->transform(function ($employee) use($today, $lastWeekStart, $thirdPartyTrainings)
+			->transform(function ($employee) use($today, $lastWeekStart, $thirdPartyTrainings, $internalTraining)
 			{
 				/**
 				 * @var App\Models\Employee $employee
@@ -74,12 +75,28 @@ class EmployeeController extends Controller
 						"small" => URL::route("image", ["path" => $path, "w" => 128, "h" => 128, "fit" => "crop"])
 					];
 				}
-				$employee->totalTrainings = count($employee->participated_trainings);
+				
 				$trainings = [
-					"SN" => 0,
-					"E" => 0,
-					"TT" => $employee->totalTrainings
+					"internal" => [
+						"SN" => 0,
+						"E" => 0,
+						"TT" => 0
+					],
+					"external" => [
+						"SN" => 0,
+						"E" => 0,
+						"TT" => 0
+					]
 				];
+				$internal = $internalTraining->mapWithKeys(function($t) {
+					return [$t->acronym => [
+						"name" => $t->course_name,
+						"acronym" => $t->acronym,
+						"expired" => false,
+						"sn" => false,
+						"active" => false,
+					]];
+				})->toArray();
 				$thirdParty = $thirdPartyTrainings->mapWithKeys(function($t) {
 					return [$t->acronym => [
 						"name" => $t->course_name,
@@ -90,27 +107,53 @@ class EmployeeController extends Controller
 					]];
 				})->toArray();
 				
-				if($trainings["TT"]) {
+				if(count($employee->participated_trainings)) {
 					foreach ($employee->participated_trainings as $t) {
-						$foundTraining = $thirdPartyTrainings->first(function($th) use($t) {
-							return $th->course_name === trim($t->title);
-						});
-						if($foundTraining) {
-							$date = Carbon::parse($t->date_expired);
-							if($date->between($lastWeekStart, $today)) {
-								$thirdParty[$foundTraining->acronym]["sn"] = true;
-								$trainings["SN"] += 1;
-							}else if($date->isPast($today)) {
-								$thirdParty[$foundTraining->acronym]["expired"] = true;
-								$trainings["E"] += 1;
-							}else {
-								$thirdParty[$foundTraining->acronym]["active"] = true;
+						if($t->type === 3 || $t->type === 2) {
+							$foundTraining = $thirdPartyTrainings->first(function($th) use($t) {
+								return $th->course_name === trim($t->title);
+							});
+							if($foundTraining) {
+								$date = Carbon::parse($t->date_expired);
+								if($date->between($lastWeekStart, $today)) {
+									$thirdParty[$foundTraining->acronym]["sn"] = true;
+									$trainings["external"]["TT"] += 1;
+									$trainings["external"]["SN"] += 1;
+								}else if($date->isPast($today)) {
+									$thirdParty[$foundTraining->acronym]["expired"] = true;
+									$trainings["external"]["TT"] += 1;
+									$trainings["external"]["E"] += 1;
+								}else {
+									$thirdParty[$foundTraining->acronym]["active"] = true;
+									$trainings["external"]["TT"] += 1;
+								}
+							}
+						}
+						if($t->type === 1) {
+							$foundTraining = $internalTraining->first(function($th) use($t) {
+								return $th->course_name === trim($t->title);
+							});
+							if($foundTraining) {
+								$date = Carbon::parse($t->date_expired);
+								if($date->between($lastWeekStart, $today)) {
+									$internal[$foundTraining->acronym]["sn"] = true;
+									$trainings["internal"]["TT"] += 1;
+									$trainings["internal"]["SN"] += 1;
+								}else if($date->isPast($today)) {
+									$internal[$foundTraining->acronym]["expired"] = true;
+									$trainings["internal"]["TT"] += 1;
+									$trainings["internal"]["E"] += 1;
+								}else {
+									$internal[$foundTraining->acronym]["active"] = true;
+									$trainings["internal"]["TT"] += 1;
+								}
 							}
 						}
 					}
 				}
 				$employee->trainings = $trainings;
-				$employee->thirdParty = $thirdParty;
+				$employee->thirdPartyTrainings = $thirdParty;
+				$employee->internalTrainings = $internal;
 
 				return $employee;
 			});

@@ -17,8 +17,19 @@ import { format } from "date-fns";
 const FORMATTED_DATE = format(new Date(), "MM/dd/yy");
 const YEAR = new Date().getFullYear();
 export function PDF(props) {
-    const { employees = [], analytics } = props;
+    const { employees = [], type = "thirdParty" } = props;
+    console.log(type, employees);
 
+    const getLengthByStatus = (status) =>
+        employees.filter((item) => item.status === status).length;
+
+    const getUnassignedEmployeeLength = () =>
+        employees.filter((item) => !item.user_id).length;
+
+    const trainings =
+        type === "thirdParty"
+            ? employees[0]?.thirdPartyTrainings
+            : employees[0]?.internalTrainings;
     return (
         <Document title={""}>
             <Page size="A4" style={styles.page}>
@@ -79,7 +90,7 @@ export function PDF(props) {
                                             { fontSize: 8 },
                                         ]}
                                     >
-                                        {analytics.total[0]}
+                                        {employees.length}
                                     </Text>
                                     <Text
                                         style={{
@@ -117,7 +128,7 @@ export function PDF(props) {
                                             { fontSize: 8 },
                                         ]}
                                     >
-                                        {analytics.active[0]}
+                                        {getLengthByStatus("active")}
                                     </Text>
                                     <Text
                                         style={{
@@ -155,7 +166,7 @@ export function PDF(props) {
                                             { fontSize: 8 },
                                         ]}
                                     >
-                                        {analytics.inactive[0]}
+                                        {getLengthByStatus("inactive")}
                                     </Text>
                                     <Text
                                         style={{
@@ -193,7 +204,7 @@ export function PDF(props) {
                                             { fontSize: 8 },
                                         ]}
                                     >
-                                        {analytics.unassigned[0]}
+                                        {getUnassignedEmployeeLength()}
                                     </Text>
                                     <Text
                                         style={{
@@ -209,659 +220,20 @@ export function PDF(props) {
                     </View>
                 </View>
 
-                <View
-                    style={[
-                        styles.tableRow,
-                        styles.w1,
-                        styles.bl,
-                        styles.bt,
-                        { padding: 0 },
-                    ]}
-                    fixed
-                >
-                    <View
-                        style={[
-                            styles.br,
-                            {
-                                flexGrow: 0,
-                                flexBasis: 18,
-                            },
-                        ]}
-                    >
-                        <View style={{ marginVertical: "auto" }}>
-                            <Text
-                                style={[
-                                    styles.bold,
-                                    {
-                                        color: "#2a2a2a",
-                                        lineHeight: 1,
-                                        textAlign: "center",
-                                    },
-                                ]}
-                            >
-                                No.
-                            </Text>
-                        </View>
-                    </View>
-                    <View
-                        style={[
-                            styles.br,
-                            {
-                                flexGrow: 0,
-                                flexBasis: 85,
-                            },
-                        ]}
-                    >
-                        <View style={{ marginVertical: "auto" }}>
-                            <Text
-                                style={[
-                                    styles.bold,
-                                    {
-                                        color: "#2a2a2a",
-                                        lineHeight: 1,
-                                        textAlign: "center",
-                                    },
-                                ]}
-                            >
-                                Name
-                            </Text>
-                        </View>
-                    </View>
-                    <View
-                        style={[
-                            styles.br,
-                            {
-                                flexGrow: 0,
-                                flexBasis: 65,
-                            },
-                        ]}
-                    >
-                        <View style={{ marginVertical: "auto" }}>
-                            <Text
-                                style={[
-                                    styles.bold,
-                                    {
-                                        color: "#2a2a2a",
-                                        lineHeight: 1,
-                                        textAlign: "center",
-                                    },
-                                ]}
-                            >
-                                Position
-                            </Text>
-                        </View>
-                    </View>
-                    <View
-                        style={[
-                            styles.br,
-                            {
-                                flexGrow: 0,
-                                flexBasis: 65,
-                            },
-                        ]}
-                    >
-                        <View style={{ marginVertical: "auto" }}>
-                            <Text
-                                style={[
-                                    styles.bold,
-                                    {
-                                        color: "#2a2a2a",
-                                        lineHeight: 1,
-                                        textAlign: "center",
-                                    },
-                                ]}
-                            >
-                                Department
-                            </Text>
-                        </View>
-                    </View>
-                    <View
-                        style={[
-                            styles.br,
-                            {
-                                flexGrow: 0,
-                                flexBasis: 50,
-                            },
-                        ]}
-                    >
-                        <View style={{ marginVertical: "auto" }}>
-                            <Text
-                                style={[
-                                    styles.bold,
-                                    {
-                                        color: "#2a2a2a",
-                                        lineHeight: 1,
-                                        textAlign: "center",
-                                    },
-                                ]}
-                            >
-                                Company
-                            </Text>
-                        </View>
-                    </View>
-                    <View style={[styles.br]}>
-                        <View
-                            style={[
-                                {
-                                    paddingBottom: 4,
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                },
-                            ]}
-                        >
-                            <Text
-                                style={[
-                                    styles.bold,
-                                    {
-                                        color: "#2a2a2a",
-                                        lineHeight: 1,
-                                        paddingTop: 2,
-                                        textAlign: "center",
-                                    },
-                                ]}
-                            >
-                                Third Party Training
-                            </Text>
-                        </View>
-                        <View style={[{ flexDirection: "row" }, styles.bt]}>
-                            {Object.values(employees[0]?.thirdParty || {}).map(
-                                (t) => (
-                                    <View
-                                        style={[
-                                            styles.br,
-                                            { paddingHorizontal: 1.5 },
-                                        ]}
-                                        key={t.acronym}
-                                    >
-                                        <Text
-                                            style={[
-                                                styles.bold,
-                                                {
-                                                    fontSize: 6.5,
-                                                    color: "#4c4c54",
-                                                    lineHeight: 1,
-                                                    textAlign: "center",
-                                                    paddingTop: 1,
-                                                    paddingBottom: 2,
-                                                },
-                                            ]}
-                                        >
-                                            {t.acronym}
-                                        </Text>
-                                    </View>
-                                )
-                            )}
-                            <View
-                                style={[
-                                    styles.br,
-                                    { flexGrow: 0, flexBasis: 15 },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        styles.bold,
-                                        {
-                                            fontSize: 6.5,
-                                            color: "#4c4c54",
-                                            lineHeight: 1,
-                                            textAlign: "center",
-                                            paddingTop: 1,
-                                            paddingBottom: 2,
-                                        },
-                                    ]}
-                                >
-                                    SN
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.br,
-                                    { flexGrow: 0, flexBasis: 10 },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        styles.bold,
-                                        {
-                                            fontSize: 6.5,
-                                            color: "#4c4c54",
-                                            lineHeight: 1,
-                                            textAlign: "center",
-                                            paddingTop: 1,
-                                            paddingBottom: 2,
-                                        },
-                                    ]}
-                                >
-                                    E
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    {
-                                        minWidth: 15,
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                    },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        styles.bold,
-                                        {
-                                            fontSize: 6.5,
-                                            color: "#4c4c54",
-                                            lineHeight: 1,
-                                            textAlign: "center",
-                                            paddingTop: 1,
-                                            paddingBottom: 2,
-                                        },
-                                    ]}
-                                >
-                                    TT
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                    <View
-                        style={[
-                            styles.br,
-                            {
-                                flexGrow: 0,
-                                flexBasis: 40,
-                            },
-                        ]}
-                    >
-                        <View style={{ marginVertical: "auto" }}>
-                            <Text
-                                style={[
-                                    styles.bold,
-                                    {
-                                        color: "#2a2a2a",
-                                        textAlign: "center",
-                                    },
-                                ]}
-                            >
-                                Employee
-                            </Text>
-                            <Text
-                                style={[
-                                    styles.bold,
-                                    {
-                                        color: "#2a2a2a",
-                                        lineHeight: 1,
-                                        textAlign: "center",
-                                    },
-                                ]}
-                            >
-                                Status
-                            </Text>
-                        </View>
-                    </View>
-                </View>
+                <TableHeader trainings={trainings} type={type} />
 
                 <View>
                     {employees.map((emp, idx) => (
-                        <View
-                            style={[
-                                styles.tableRow,
-                                styles.w1,
-                                styles.bl,
-                                { padding: 0 },
-                            ]}
-                            wrap={false}
+                        <TableRow
                             key={emp.employee_id}
-                        >
-                            <View
-                                style={[
-                                    styles.br,
-                                    {
-                                        flexGrow: 0,
-                                        paddingVertical: 4,
-                                        flexBasis: 18,
-                                    },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        {
-                                            color: "#363636",
-                                            lineHeight: 1,
-                                            textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    {idx + 1}
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.br,
-                                    {
-                                        flexGrow: 0,
-                                        paddingVertical: 4,
-                                        flexBasis: 85,
-                                    },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        {
-                                            color: "#363636",
-                                            lineHeight: 1,
-                                            textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    {emp.fullname}
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.br,
-                                    {
-                                        flexGrow: 0,
-                                        paddingVertical: 4,
-                                        flexBasis: 65,
-                                    },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        {
-                                            color: "#363636",
-                                            lineHeight: 1,
-                                            textTransform: "capitalize",
-                                            textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    {emp.position ?? ""}
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.br,
-                                    {
-                                        flexGrow: 0,
-                                        paddingVertical: 4,
-                                        flexBasis: 65,
-                                    },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        {
-                                            color: "#363636",
-                                            lineHeight: 1,
-                                            textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    {emp.department ?? ""}
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.pl4,
-                                    styles.br,
-                                    {
-                                        flexGrow: 0,
-                                        paddingVertical: 4,
-                                        paddingRight: 1,
-                                        flexBasis: 50,
-                                    },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        { color: "#363636", lineHeight: 1 },
-                                    ]}
-                                >
-                                    {emp.company_name ?? ""}
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.br,
-                                    {
-                                        flexDirection: "row",
-                                    },
-                                ]}
-                            >
-                                {Object.values(emp.thirdParty).map((t) => (
-                                    <View
-                                        style={[
-                                            styles.br,
-                                            {
-                                                paddingHorizontal: 1.5,
-                                                position: "relative",
-                                            },
-                                        ]}
-                                        key={t.acronym}
-                                    >
-                                        <Text
-                                            style={[
-                                                styles.bold,
-                                                {
-                                                    fontSize: 6.5,
-                                                    paddingTop: 1,
-                                                    lineHeight: 1,
-                                                    textAlign: "center",
-                                                    opacity: 0,
-                                                },
-                                            ]}
-                                        >
-                                            {t.acronym}
-                                        </Text>
-                                        {(t.sn || t.active || t.expired) && (
-                                            <SvgCircle
-                                                color={
-                                                    t.sn
-                                                        ? "febe00"
-                                                        : t.active
-                                                        ? "#02a94d"
-                                                        : undefined
-                                                }
-                                                style={{
-                                                    position: "absolute",
-                                                    top: "39%",
-                                                    left: "39%",
-                                                }}
-                                            />
-                                        )}
-                                    </View>
-                                ))}
-                                <View
-                                    style={[
-                                        styles.br,
-                                        { flexGrow: 0, flexBasis: 15 },
-                                    ]}
-                                >
-                                    <Text
-                                        style={[
-                                            {
-                                                color: "#363636",
-                                                lineHeight: 0,
-                                                textAlign: "center",
-                                                marginVertical: "auto",
-                                            },
-                                        ]}
-                                    >
-                                        {emp.trainings["SN"]}
-                                    </Text>
-                                </View>
-                                <View
-                                    style={[
-                                        styles.br,
-                                        { flexGrow: 0, flexBasis: 10 },
-                                    ]}
-                                >
-                                    <Text
-                                        style={[
-                                            {
-                                                color: "#363636",
-                                                lineHeight: 0,
-                                                textAlign: "center",
-                                                marginVertical: "auto",
-                                            },
-                                        ]}
-                                    >
-                                        {emp.trainings["E"]}
-                                    </Text>
-                                </View>
-                                <View
-                                    style={[
-                                        {
-                                            minWidth: 15,
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        },
-                                    ]}
-                                >
-                                    <Text
-                                        style={[
-                                            {
-                                                color: "#363636",
-                                                lineHeight: 0,
-                                                textAlign: "center",
-                                                marginVertical: "auto",
-                                            },
-                                        ]}
-                                    >
-                                        {emp.trainings["TT"]}
-                                    </Text>
-                                </View>
-                            </View>
-
-                            <View
-                                style={[
-                                    styles.br,
-                                    emp.status === "active"
-                                        ? styles.bgSuccess
-                                        : emp.status === "inactive"
-                                        ? styles.bgWarning
-                                        : styles.bgError,
-                                    {
-                                        flexGrow: 0,
-                                        paddingVertical: 4,
-                                        flexBasis: 40,
-                                    },
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        styles.bold,
-                                        {
-                                            color: "#f0f0f0",
-                                            textTransform: "capitalize",
-                                            lineHeight: 1,
-                                            textAlign: "center",
-                                        },
-                                    ]}
-                                >
-                                    {emp.status}
-                                </Text>
-                            </View>
-                        </View>
+                            emp={emp}
+                            idx={idx}
+                            type={type}
+                        />
                     ))}
                 </View>
 
-                <View
-                    style={[
-                        styles.mt16,
-                        {
-                            flexDirection: "row",
-                            alignSelf: "flex-end",
-                            maxWidth: "60%",
-                        },
-                    ]}
-                >
-                    <View style={styles.mr16}>
-                        <Text style={[styles.subtitle2]}>Legend</Text>
-                    </View>
-                    <View>
-                        {Object.values(employees[0]?.thirdParty || {}).map(
-                            (t) => (
-                                <View
-                                    key={t.acronym}
-                                    style={{
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                    }}
-                                >
-                                    <Text style={[styles.subtitle3, styles.w1]}>
-                                        {t.name}
-                                    </Text>
-                                    <Text
-                                        style={[
-                                            styles.subtitle3,
-                                            { width: 15 },
-                                        ]}
-                                    >
-                                        -
-                                    </Text>
-                                    <Text
-                                        style={[
-                                            styles.subtitle3,
-                                            { width: 35 },
-                                        ]}
-                                    >
-                                        {t.acronym}
-                                    </Text>
-                                </View>
-                            )
-                        )}
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                Soon to Expire
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                SN
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                Expired
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                E
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text style={[styles.subtitle3, styles.w1]}>
-                                Total Trainings
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 15 }]}>
-                                -
-                            </Text>
-                            <Text style={[styles.subtitle3, { width: 35 }]}>
-                                TT
-                            </Text>
-                        </View>
-                    </View>
-                </View>
+                <Legend trainings={trainings} />
 
                 <View style={[styles.gridContainer, styles.footer]} fixed>
                     <View style={styles.col4}>
@@ -911,6 +283,612 @@ export function PDF(props) {
                 </View>
             </Page>
         </Document>
+    );
+}
+
+function TableHeader({ trainings = {}, type = "thirdParty" }) {
+    return (
+        <View
+            style={[
+                styles.tableRow,
+                styles.w1,
+                styles.bl,
+                styles.bt,
+                { padding: 0 },
+            ]}
+            fixed
+        >
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        flexBasis: 18,
+                    },
+                ]}
+            >
+                <View style={{ marginVertical: "auto" }}>
+                    <Text
+                        style={[
+                            styles.bold,
+                            {
+                                color: "#2a2a2a",
+                                lineHeight: 1,
+                                textAlign: "center",
+                            },
+                        ]}
+                    >
+                        No.
+                    </Text>
+                </View>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        flexBasis: 85,
+                    },
+                ]}
+            >
+                <View style={{ marginVertical: "auto" }}>
+                    <Text
+                        style={[
+                            styles.bold,
+                            {
+                                color: "#2a2a2a",
+                                lineHeight: 1,
+                                textAlign: "center",
+                            },
+                        ]}
+                    >
+                        Name
+                    </Text>
+                </View>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        flexBasis: 60,
+                    },
+                ]}
+            >
+                <View style={{ marginVertical: "auto" }}>
+                    <Text
+                        style={[
+                            styles.bold,
+                            {
+                                color: "#2a2a2a",
+                                lineHeight: 1,
+                                textAlign: "center",
+                            },
+                        ]}
+                    >
+                        Position
+                    </Text>
+                </View>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        flexBasis: 65,
+                    },
+                ]}
+            >
+                <View style={{ marginVertical: "auto" }}>
+                    <Text
+                        style={[
+                            styles.bold,
+                            {
+                                color: "#2a2a2a",
+                                lineHeight: 1,
+                                textAlign: "center",
+                            },
+                        ]}
+                    >
+                        Department
+                    </Text>
+                </View>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        flexBasis: 50,
+                    },
+                ]}
+            >
+                <View style={{ marginVertical: "auto" }}>
+                    <Text
+                        style={[
+                            styles.bold,
+                            {
+                                color: "#2a2a2a",
+                                lineHeight: 1,
+                                textAlign: "center",
+                            },
+                        ]}
+                    >
+                        Company
+                    </Text>
+                </View>
+            </View>
+            <View style={[styles.br]}>
+                <View
+                    style={[
+                        {
+                            paddingBottom: 4,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        },
+                    ]}
+                >
+                    <Text
+                        style={[
+                            styles.bold,
+                            {
+                                color: "#2a2a2a",
+                                lineHeight: 1,
+                                paddingTop: 2,
+                                textAlign: "center",
+                            },
+                        ]}
+                    >
+                        {type === "thirdParty"
+                            ? "Third Party Training"
+                            : "In House Training"}
+                    </Text>
+                </View>
+                <View style={[{ flexDirection: "row" }, styles.bt]}>
+                    {Object.values(trainings).map((t) => (
+                        <View
+                            style={[styles.br, { paddingHorizontal: 1.5 }]}
+                            key={t.acronym}
+                        >
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    {
+                                        fontSize: 6.5,
+                                        color: "#4c4c54",
+                                        lineHeight: 1,
+                                        textAlign: "center",
+                                        paddingTop: 1,
+                                        paddingBottom: 2,
+                                    },
+                                ]}
+                            >
+                                {t.acronym}
+                            </Text>
+                        </View>
+                    ))}
+                    <View style={[styles.br, { flexGrow: 0, flexBasis: 15 }]}>
+                        <Text
+                            style={[
+                                styles.bold,
+                                {
+                                    fontSize: 6.5,
+                                    color: "#4c4c54",
+                                    lineHeight: 1,
+                                    textAlign: "center",
+                                    paddingTop: 1,
+                                    paddingBottom: 2,
+                                },
+                            ]}
+                        >
+                            SN
+                        </Text>
+                    </View>
+                    <View style={[styles.br, { flexGrow: 0, flexBasis: 10 }]}>
+                        <Text
+                            style={[
+                                styles.bold,
+                                {
+                                    fontSize: 6.5,
+                                    color: "#4c4c54",
+                                    lineHeight: 1,
+                                    textAlign: "center",
+                                    paddingTop: 1,
+                                    paddingBottom: 2,
+                                },
+                            ]}
+                        >
+                            E
+                        </Text>
+                    </View>
+                    <View
+                        style={[
+                            {
+                                minWidth: 15,
+                                alignItems: "center",
+                                justifyContent: "center",
+                            },
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                styles.bold,
+                                {
+                                    fontSize: 6.5,
+                                    color: "#4c4c54",
+                                    lineHeight: 1,
+                                    textAlign: "center",
+                                    paddingTop: 1,
+                                    paddingBottom: 2,
+                                },
+                            ]}
+                        >
+                            TT
+                        </Text>
+                    </View>
+                </View>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        flexBasis: 40,
+                    },
+                ]}
+            >
+                <View style={{ marginVertical: "auto" }}>
+                    <Text
+                        style={[
+                            styles.bold,
+                            {
+                                color: "#2a2a2a",
+                                textAlign: "center",
+                            },
+                        ]}
+                    >
+                        Employee
+                    </Text>
+                    <Text
+                        style={[
+                            styles.bold,
+                            {
+                                color: "#2a2a2a",
+                                lineHeight: 1,
+                                textAlign: "center",
+                            },
+                        ]}
+                    >
+                        Status
+                    </Text>
+                </View>
+            </View>
+        </View>
+    );
+}
+
+function TableRow({ emp, idx, type = "thirdParty" }) {
+    const trainings = Object.values(
+        type === "thirdParty" ? emp.thirdPartyTrainings : emp.internalTrainings
+    );
+    const trainingStatus =
+        emp.trainings[type === "thirdParty" ? "external" : "internal"];
+    return (
+        <View
+            style={[styles.tableRow, styles.w1, styles.bl, { padding: 0 }]}
+            wrap={false}
+        >
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        paddingVertical: 4,
+                        flexBasis: 18,
+                    },
+                ]}
+            >
+                <Text
+                    style={[
+                        {
+                            color: "#363636",
+                            lineHeight: 1,
+                            textAlign: "center",
+                        },
+                    ]}
+                >
+                    {idx + 1}
+                </Text>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        paddingVertical: 4,
+                        flexBasis: 85,
+                    },
+                ]}
+            >
+                <Text
+                    style={[
+                        {
+                            color: "#363636",
+                            lineHeight: 1,
+                            textAlign: "center",
+                        },
+                    ]}
+                >
+                    {emp.fullname}
+                </Text>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        paddingVertical: 4,
+                        flexBasis: 60,
+                    },
+                ]}
+            >
+                <Text
+                    style={[
+                        {
+                            color: "#363636",
+                            lineHeight: 1,
+                            textTransform: "capitalize",
+                            textAlign: "center",
+                        },
+                    ]}
+                >
+                    {emp.position ?? ""}
+                </Text>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        paddingVertical: 4,
+                        flexBasis: 65,
+                    },
+                ]}
+            >
+                <Text
+                    style={[
+                        {
+                            color: "#363636",
+                            lineHeight: 1,
+                            textAlign: "center",
+                        },
+                    ]}
+                >
+                    {emp.department ?? ""}
+                </Text>
+            </View>
+            <View
+                style={[
+                    styles.pl4,
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        paddingVertical: 4,
+                        paddingRight: 1,
+                        flexBasis: 50,
+                    },
+                ]}
+            >
+                <Text style={[{ color: "#363636", lineHeight: 1 }]}>
+                    {emp.company_name ?? ""}
+                </Text>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexDirection: "row",
+                    },
+                ]}
+            >
+                {trainings.map((t) => (
+                    <View
+                        style={[
+                            styles.br,
+                            {
+                                paddingHorizontal: 1.5,
+                                position: "relative",
+                            },
+                        ]}
+                        key={t.acronym}
+                    >
+                        <Text
+                            style={[
+                                styles.bold,
+                                {
+                                    fontSize: 6.5,
+                                    paddingTop: 1,
+                                    lineHeight: 1,
+                                    textAlign: "center",
+                                    opacity: 0,
+                                },
+                            ]}
+                        >
+                            {t.acronym}
+                        </Text>
+                        {(t.sn || t.active || t.expired) && (
+                            <SvgCircle
+                                color={
+                                    t.sn
+                                        ? "febe00"
+                                        : t.active
+                                        ? "#02a94d"
+                                        : undefined
+                                }
+                                style={{
+                                    position: "absolute",
+                                    top: "39%",
+                                    left: "39%",
+                                }}
+                            />
+                        )}
+                    </View>
+                ))}
+                <View style={[styles.br, { flexGrow: 0, flexBasis: 15 }]}>
+                    <Text
+                        style={[
+                            {
+                                color: "#363636",
+                                lineHeight: 0,
+                                textAlign: "center",
+                                marginVertical: "auto",
+                            },
+                        ]}
+                    >
+                        {trainingStatus["SN"]}
+                    </Text>
+                </View>
+                <View style={[styles.br, { flexGrow: 0, flexBasis: 10 }]}>
+                    <Text
+                        style={[
+                            {
+                                color: "#363636",
+                                lineHeight: 0,
+                                textAlign: "center",
+                                marginVertical: "auto",
+                            },
+                        ]}
+                    >
+                        {trainingStatus["E"]}
+                    </Text>
+                </View>
+                <View
+                    style={[
+                        {
+                            minWidth: 15,
+                            alignItems: "center",
+                            justifyContent: "center",
+                        },
+                    ]}
+                >
+                    <Text
+                        style={[
+                            {
+                                color: "#363636",
+                                lineHeight: 0,
+                                textAlign: "center",
+                                marginVertical: "auto",
+                            },
+                        ]}
+                    >
+                        {trainingStatus["TT"]}
+                    </Text>
+                </View>
+            </View>
+
+            <View
+                style={[
+                    styles.br,
+                    emp.status === "active"
+                        ? styles.bgSuccess
+                        : emp.status === "inactive"
+                        ? styles.bgWarning
+                        : styles.bgError,
+                    {
+                        flexGrow: 0,
+                        paddingVertical: 4,
+                        flexBasis: 40,
+                    },
+                ]}
+            >
+                <Text
+                    style={[
+                        styles.bold,
+                        {
+                            color: "#f0f0f0",
+                            textTransform: "capitalize",
+                            lineHeight: 1,
+                            textAlign: "center",
+                        },
+                    ]}
+                >
+                    {emp.status}
+                </Text>
+            </View>
+        </View>
+    );
+}
+
+function Legend({ trainings = {} }) {
+    return (
+        <View
+            style={[
+                styles.mt16,
+                {
+                    flexDirection: "row",
+                    alignSelf: "flex-end",
+                    maxWidth: "60%",
+                },
+            ]}
+        >
+            <View style={styles.mr16}>
+                <Text style={[styles.subtitle2]}>Legend</Text>
+            </View>
+            <View>
+                {Object.values(trainings).map((t) => (
+                    <View
+                        key={t.acronym}
+                        style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <Text style={[styles.subtitle3, styles.w1]}>
+                            {t.name}
+                        </Text>
+                        <Text style={[styles.subtitle3, { width: 15 }]}>-</Text>
+                        <Text style={[styles.subtitle3, { width: 35 }]}>
+                            {t.acronym}
+                        </Text>
+                    </View>
+                ))}
+                <View
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <Text style={[styles.subtitle3, styles.w1]}>
+                        Soon to Expire
+                    </Text>
+                    <Text style={[styles.subtitle3, { width: 15 }]}>-</Text>
+                    <Text style={[styles.subtitle3, { width: 35 }]}>SN</Text>
+                </View>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <Text style={[styles.subtitle3, styles.w1]}>Expired</Text>
+                    <Text style={[styles.subtitle3, { width: 15 }]}>-</Text>
+                    <Text style={[styles.subtitle3, { width: 35 }]}>E</Text>
+                </View>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <Text style={[styles.subtitle3, styles.w1]}>
+                        Total Trainings
+                    </Text>
+                    <Text style={[styles.subtitle3, { width: 15 }]}>-</Text>
+                    <Text style={[styles.subtitle3, { width: 35 }]}>TT</Text>
+                </View>
+            </View>
+        </View>
     );
 }
 

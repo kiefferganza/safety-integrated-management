@@ -30,18 +30,20 @@ Route::get('/', fn() => redirect()->route('dashboard'));
 
 Route::middleware('auth')->prefix('dashboard')->group(function ()
 {
-	Route::get('/', function () {
+	Route::get('/', function ()
+	{
 		return redirect()->route('dashboard');
 	});
 
 	// General
 	Route::get('/hse-dashboard', [DashboardController::class, 'index'])->name('dashboard');
-	Route::get('/employees', fn () => Inertia::render("/General/Employee/index"))->name('general.employee');
+	Route::get('/employees', fn() => Inertia::render("/General/Employee/index"))->name('general.employee');
 
 	/**
 	 * Management - Company Information
 	 */
-	Route::prefix('company-information')->as('management.company_information.')->group(function() {
+	Route::prefix('company-information')->as('management.company_information.')->group(function ()
+	{
 		Route::get('/register', [CompanyInformation::class, 'register'])->name('register');
 		Route::post('/register/new', [CompanyInformation::class, 'store'])->name('store');
 		Route::post('/register/update/{documentProjectDetail}', [CompanyInformation::class, 'update'])->name('update');
@@ -51,12 +53,14 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Employee
 	 */
-	Route::prefix('employee')->as('management.employee.')->group(function() {
+	Route::prefix('employee')->as('management.employee.')->group(function ()
+	{
 		Route::get('/list', [EmployeeController::class, "index"])
 			->middleware("permission:employee_show")
 			->name('list');
 		// CRUD
-		Route::middleware("permission:employee_create")->group(function() {
+		Route::middleware("permission:employee_create")->group(function ()
+		{
 			Route::get('/new', [EmployeeController::class, "create"])->name('create');
 			Route::post('/new', [EmployeeController::class, "store"])->name('new');
 		});
@@ -65,11 +69,13 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::get('/{employee}/profile/trainings', [EmployeeController::class, "profileTrainings"])->name('profileTrainings');
 		Route::get('/{employee}/edit', [EmployeeController::class, "update"])->name('update');
 		Route::post('/{employee}/edit', [EmployeeController::class, "edit"])->name('edit');
-		Route::middleware("permission:employee_delete")->group(function() {
-			Route::delete('/{employee}/delete', [EmployeeController ::class, 'destroy']);
-			Route::post('/delete/delete-multiple', [EmployeeController ::class, 'delete_multiple'])->name('delete-multiple');
+		Route::middleware("permission:employee_delete")->group(function ()
+		{
+			Route::delete('/{employee}/delete', [EmployeeController::class, 'destroy']);
+			Route::post('/delete/delete-multiple', [EmployeeController::class, 'delete_multiple'])->name('delete-multiple');
 		});
-		Route::middleware("permission:employee_access")->group(function() {
+		Route::middleware("permission:employee_access")->group(function ()
+		{
 			Route::post('/deactivate', [EmployeeController::class, "deactivate"])->name("deactivate");
 			Route::post('/activate', [EmployeeController::class, "activate"])->name("activate");
 		});
@@ -77,7 +83,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Employee/Position 
 	 */
-	Route::prefix('position')->as('management.position.')->group(function() {
+	Route::prefix('position')->as('management.position.')->group(function ()
+	{
 		Route::get('/list', [PositionController::class, 'index'])->name('list');
 		// CRUD
 		Route::post('/new', [PositionController::class, 'store'])->name('new');
@@ -88,7 +95,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Employee/Department
 	 */
-	Route::prefix("department")->as('management.department.')->group(function() {
+	Route::prefix("department")->as('management.department.')->group(function ()
+	{
 		Route::get('/list', [DepartmentController::class, 'index'])->name('list');
 		// Crud
 		Route::post('/new', [DepartmentController::class, 'store'])->name('new');
@@ -99,7 +107,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Employee/Company
 	 */
-	Route::prefix('company')->as('management.company.')->group(function() {
+	Route::prefix('company')->as('management.company.')->group(function ()
+	{
 		Route::get('/list', [CompanyController::class, 'index'])->name('list');
 		// CRUD
 		Route::post('/new', [CompanyController::class, 'store'])->name('new');
@@ -111,19 +120,22 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - User
 	 */
-	Route::prefix('user')->as('management.user.')->group(function() {
+	Route::prefix('user')->as('management.user.')->group(function ()
+	{
 		// Route::post('/user/{user_id}/follow', [UsersController::class, 'followUser']);
-		Route::middleware("permission:user_show")->group(function() {
+		Route::middleware("permission:user_show")->group(function ()
+		{
 			Route::get('/profile', [UsersController::class, 'profile'])->name('profile');
 			Route::get('/settings', [UsersController::class, 'settings'])->name('settings');
 			Route::get('/profile/{user:username}', [UsersController::class, "show"])->name('show');
 			Route::get('/cards', [UsersController::class, 'cards'])->name('cards');
 			Route::get('/list', [UsersController::class, 'index'])->name('list');
 		});
-		
+
 		// CRUD
 		// Can update
-		Route::middleware("permission:user_edit")->group(function() {
+		Route::middleware("permission:user_edit")->group(function ()
+		{
 			Route::put('/update-socials', [UsersController::class, 'update_socials'])->name('update_socials');
 			Route::post('/change-password', [UsersController::class, 'change_password'])->name('change_pass');
 			Route::get('/{user:username}/edit', [UsersController::class, 'edit_user'])->name("edit");
@@ -132,12 +144,14 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		// Can delete
 		Route::post('/delete', [UsersController::class, 'destroy'])->name('delete')->middleware('permission:user_delete');
 		// Can create
-		Route::middleware("permission:user_create")->group(function() {
+		Route::middleware("permission:user_create")->group(function ()
+		{
 			Route::get('/new', [UsersController::class, 'create'])->name('new');
 			Route::post('/new', [UsersController::class, 'store'])->name('store');
 		});
 
-		Route::middleware("permission:user_access")->group(function() {
+		Route::middleware("permission:user_access")->group(function ()
+		{
 			Route::put('/{user}/activate',  [UsersController::class, 'activate'])->name("activate");
 			Route::put('/{user}/deactivate',  [UsersController::class, 'deactivate'])->name("deactivate");
 
@@ -148,8 +162,9 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 
 	// IMAGES
-	Route::prefix('image')->as('image.')->group(function() {
-		Route::post('/new/slider', [ImagesController::class, "storeSlider"])->name("storeSlider")->middleware( "permission:image_upload_slider");
+	Route::prefix('image')->as('image.')->group(function ()
+	{
+		Route::post('/new/slider', [ImagesController::class, "storeSlider"])->name("storeSlider")->middleware("permission:image_upload_slider");
 		Route::delete('/delete/{image}', [ImagesController::class, "destroy"])->name("destroy")->middleware("permission:image_upload_delete");
 	});
 
@@ -157,11 +172,13 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Training
 	 */
-	Route::prefix('training')->as('training.management.')->group(function() {
-    	// Lists
-	  Route::middleware("permission:training_show")->group(function() {
-      Route::get('/matrix', [TrainingController::class, 'matrix'])->name('matrix');
-      Route::get('/external/matrix', [TrainingController::class, 'externalMatrix'])->name('external_matrix');
+	Route::prefix('training')->as('training.management.')->group(function ()
+	{
+		// Lists
+		Route::middleware("permission:training_show")->group(function ()
+		{
+			Route::get('/matrix', [TrainingController::class, 'matrix'])->name('matrix');
+			Route::get('/external/matrix', [TrainingController::class, 'externalMatrix'])->name('external_matrix');
 			Route::get('/registered-courses', [TrainingController::class, 'courses'])->name('courses');
 			Route::post('/new-course', [TrainingController::class, 'addCourses'])->name('new_courses');
 			Route::post('/update-course/{course}', [TrainingController::class, 'updateCourse'])->name('update_course');
@@ -207,7 +224,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		});
 
 		// Create
-		Route::middleware("permission:training_create")->group(function() {
+		Route::middleware("permission:training_create")->group(function ()
+		{
 			// Route::post('/testemail', [TrainingController::class, 'sendEmail'])->name('testEmail');
 			Route::get('/new', [TrainingController::class, 'create'])->name('create');
 			Route::post('/create', [TrainingController::class, 'store'])->name('store');
@@ -216,20 +234,22 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/delete', [TrainingController::class, 'destroy'])
 			->middleware("permission:training_delete")
 			->name('destroy');
-		
+
 		// Update
-		Route::middleware("permission:training_edit")->group(function() {
+		Route::middleware("permission:training_edit")->group(function ()
+		{
 			Route::post('/{training}/edit', [TrainingController::class, 'update']);
 			Route::get('/{training}/edit', [TrainingController::class, 'edit'])->name('edit');
 		});
-		
 	});
 
 	/**
 	 * Management - Inspection
 	 */
-	Route::prefix('inspection')->as('inspection.management.')->group(function() {
-		Route::prefix('tracker')->group(function() {
+	Route::prefix('inspection')->as('inspection.management.')->group(function ()
+	{
+		Route::prefix('tracker')->group(function ()
+		{
 			Route::get('/', [InspectionTrackerController::class, "index"])->name('tracker');
 			Route::post("/assign-employee", [InspectionTrackerController::class, "store"])->name("tracker.store");
 			Route::post("/edit-assign-employee/{inspectionTracker}", [InspectionTrackerController::class, "update"])->name("tracker.update");
@@ -238,29 +258,33 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 		Route::get('/site/report', [InspectionController::class, "reportList"])->name('report');
 		// CRUD
-		Route::middleware("permission:inspection_create")->group(function() {
+		Route::middleware("permission:inspection_create")->group(function ()
+		{
 			Route::get('/new', [InspectionController::class, "create"])->name('new');
 			Route::post('/new', [InspectionController::class, "store"])->name('store');
 		});
 		Route::post('/delete', [InspectionController::class, "delete"])
 			->middleware("permission:inspection_delete")
 			->name('delete');
-		Route::middleware("permission:inspection_show")->group(function () {
+		Route::middleware("permission:inspection_show")->group(function ()
+		{
 			Route::get('/site/list', [InspectionController::class, "index"])->name('list');
 			Route::get('/{inspection}', [InspectionController::class, "view"])->name('view');
 		});
 
-		Route::prefix('inspector')->as('inspector.')->group(function() {
+		Route::prefix('inspector')->as('inspector.')->group(function ()
+		{
 			Route::get('/list', [InspectionController::class, "emplooyes"])->name('list');
 			Route::get('/positions', [InspectionController::class, "authorizedPositionList"])->name('positions');
 			Route::post('/positions/create', [InspectionController::class, "addPosition"])->name('positions.create');
 			Route::post('/positions/delete', [InspectionController::class, "deletePosition"])->name('positions.delete');
 		});
-		
-		Route::middleware("permission:inspection_edit")->group(function() {
+
+		Route::middleware("permission:inspection_edit")->group(function ()
+		{
 			Route::get('/{inspection}/edit', [InspectionController::class, "edit"]);
 			Route::post('/{inspection}/edit', [InspectionReportController::class, "update"]);
-			
+
 			Route::post('/{inspection}/update', [InspectionController::class, "updateDetails"])->name('updateDetails');
 
 			Route::get('/{inspection}/review', [InspectionController::class, "review"]);
@@ -271,15 +295,16 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 		Route::post('/pdf/list/post', [InspectionController::class, 'inspection_list_pdf_post'])->name('pdfListPost');
 		Route::get('/pdf/list', [InspectionController::class, 'inspection_list_pdf_get'])->name('pdfListGet');
-
 	});
 
 	/**
 	 * Management - ToolboxTalks
 	 */
-	Route::prefix('toolbox-talks')->as('toolboxtalk.management.')->group(function() {
+	Route::prefix('toolbox-talks')->as('toolboxtalk.management.')->group(function ()
+	{
 		// CRUD
-		Route::middleware("permission:talk_toolbox_show")->group(function() {
+		Route::middleware("permission:talk_toolbox_show")->group(function ()
+		{
 			Route::get('/all', [ToolboxTalkController::class, "index"])->name('all');
 			Route::get('/civil', [ToolboxTalkController::class, "civil_list"])->name('civil');
 			Route::get('/electrical', [ToolboxTalkController::class, "electrical_list"])->name('electrical');
@@ -288,11 +313,13 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::get('/office', [ToolboxTalkController::class, "office_list"])->name('office');
 			Route::get('/{tbt}/view', [ToolboxTalkController::class, "view"])->name('show');
 		});
-		Route::middleware("permission:talk_toolbox_create")->group(function() {
+		Route::middleware("permission:talk_toolbox_create")->group(function ()
+		{
 			Route::get('/new', [ToolboxTalkController::class, "create"])->name('new');
 			Route::post('/new', [ToolboxTalkController::class, "store"])->name('store');
 		});
-		Route::middleware("permission:talk_toolbox_edit")->group(function() {
+		Route::middleware("permission:talk_toolbox_edit")->group(function ()
+		{
 			Route::get('/{tbt}/edit', [ToolboxTalkController::class, "edit"]);
 			Route::post('/{tbt}/edit', [ToolboxTalkController::class, "update"]);
 		});
@@ -306,7 +333,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/statistic/{statistic}/edit', [ToolboxTalkController::class, "updateStatistic"]);
 		Route::delete('/statistic/{statistic}/delete', [ToolboxTalkController::class, "destroyStatistic"]);
 
-		Route::prefix('preplanning')->as('preplanning.')->group(function() {
+		Route::prefix('preplanning')->as('preplanning.')->group(function ()
+		{
 			Route::get("/tbt-tracker", [TbtTrackerController::class, "tracker"])->name('tracker');
 			Route::post("/assign-employee", [TbtTrackerController::class, "assignEmployee"])->name("assignEmployee");
 			Route::post("/edit-assign-employee/{tbtTracker}", [TbtTrackerController::class, "editAssignedEmployee"])->name("editAssignedEmployee");
@@ -317,14 +345,16 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - PPE
 	 */
-	Route::prefix('ppe')->as('ppe.management.')->group(function() {
+	Route::prefix('ppe')->as('ppe.management.')->group(function ()
+	{
 		Route::get('/list', [InventoryController::class, "index"])
 			->middleware("permission:inventory_show")
 			->name('index');
 		Route::post('/delete', [InventoryController::class, "destroy"])
 			->middleware("permission:inventory_delete")
 			->name('destroy');
-		Route::middleware("permission:inventory_create")->group(function() {
+		Route::middleware("permission:inventory_create")->group(function ()
+		{
 			Route::get('/new', [InventoryController::class, "create"])->name('create');
 			Route::post('/new', [InventoryController::class, "store"])->name('store');
 		});
@@ -336,7 +366,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::post('/product/add-remove-stock/{inventory}', [InventoryController::class, "add_remove_stock"])
 			->middleware("permission:stock_addOrRemove");
 
-		Route::middleware("permission:inventory_edit")->group(function() {
+		Route::middleware("permission:inventory_edit")->group(function ()
+		{
 			Route::get('/product/{inventory}/edit', [InventoryController::class, "edit"])->name('edit');
 			Route::post('/product/{inventory}/edit', [InventoryController::class, "update"])->name('update');
 		});
@@ -361,23 +392,28 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 
 
-	Route::prefix('incident')->as('incident.management.')->group(function() {
+	Route::prefix('incident')->as('incident.management.')->group(function ()
+	{
 		Route::get('/report', [IncidentController::class, "reportList"])->name('report');
-		Route::middleware("permission:incident_show")->group(function() {
+		Route::middleware("permission:incident_show")->group(function ()
+		{
 			Route::get('/list', [IncidentController::class, "index"])->name('index');
 			Route::get('/view/{incident:uuid}', [IncidentController::class, "show"])->name('show');
 		});
-		Route::middleware("permission:incident_create")->group(function() {
+		Route::middleware("permission:incident_create")->group(function ()
+		{
 			Route::get('/create', [IncidentController::class, "create"])->name('create');
 			Route::post('/create', [IncidentController::class, "store"])->name('store');
 		});
 
-		Route::middleware("permission:incident_edit")->group(function() {
+		Route::middleware("permission:incident_edit")->group(function ()
+		{
 			Route::get('/edit/{incident:uuid}', [IncidentController::class, "edit"])->name('edit');
 			Route::put('/edit/{incident}', [IncidentController::class, "update"])->name('update');
 		});
 
-		Route::middleware("permission:incident_delete")->group(function() {
+		Route::middleware("permission:incident_delete")->group(function ()
+		{
 			Route::post('/delete', [IncidentController::class, "destroy"])->name('destroy');
 		});
 	});
@@ -387,7 +423,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	/**
 	 * Management - Folder
 	 */
-	Route::prefix('file-manager')->as('files.management.')->group(function() {
+	Route::prefix('file-manager')->as('files.management.')->group(function ()
+	{
 		Route::get('/', [FilePageController::class, "index"])
 			->middleware("permission:folder_show")
 			->name('index');
@@ -410,21 +447,23 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 
 		Route::get('/external', [FilePageController::class, "thirdParty"])->name("external")->middleware("permission:folder_show");
 		Route::get('/{folder}', [DocumentController::class, "index"])->name("document.show")->middleware("permission:folder_show");
-		Route::middleware("permission:file_create")->group(function() {
+		Route::middleware("permission:file_create")->group(function ()
+		{
 			Route::get('/{folder}/new', [DocumentController::class, "create"])->name("create");
 			Route::post('/{folder}/new', [DocumentController::class, "store"]);
-		}); 
+		});
 		Route::post('/document/delete', [DocumentController::class, "destroy"])
 			->middleware("permission:file_delete")
 			->name('document.delete');
-		Route::middleware("permission:file_edit")->group(function() {
+		Route::middleware("permission:file_edit")->group(function ()
+		{
 
 			Route::post('/document/{document}/action', [DocumentController::class, "approve_or_fail_document"]);
 
 			Route::post('/document/{document}/reupload-approval-file', [DocumentController::class, "reupload_submitter_file"])->name('document.reupload_submitter_file');
 
 			Route::post('/document/{document}/{signedFile}/reupload-approval-file', [DocumentController::class, "reupload_approval_file"])->name('document.update-approval-file');
-			
+
 			Route::post('/document/{document}/{signedFile}/reupload-reviewer-file', [DocumentController::class, "reupload_reviewer_file"])->name('document.update-reviewer-file');
 
 			Route::post('/document/{document}/add-comment', [DocumentController::class, "add_comment"]);
@@ -441,11 +480,13 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 	 * Operation
 	 * Name: operation.{page}.{action}
 	 */
-	Route::prefix('operation')->as('operation.')->group(function() {
+	Route::prefix('operation')->as('operation.')->group(function ()
+	{
 		/**
 		 * Operation - Store
 		 */
-		Route::prefix('store')->as('store.')->group(function() {
+		Route::prefix('store')->as('store.')->group(function ()
+		{
 			Route::get('/', [StoreController::class, 'index'])->name('index');
 			Route::get('/view/{store:slug}', [StoreController::class, 'show'])->name('show');
 			Route::get('/create', [StoreController::class, 'create'])->name('create');
@@ -456,7 +497,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			// Stock
 			Route::post('/add-remove-stock/{store}', [StoreController::class, "add_remove_stock"])->name('add_remove_stock');
 			// Report
-			Route::prefix('report')->as('report.')->group(function() {
+			Route::prefix('report')->as('report.')->group(function ()
+			{
 				Route::get('/list', [StoreReportController::class, 'index'])->name('index');
 				Route::get('/view/{storeReport}', [StoreReportController::class, 'show'])->name('show');
 				Route::get('/new/report', [StoreReportController::class, 'create'])->name('create');
@@ -472,5 +514,4 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			});
 		});
 	});
-
 });

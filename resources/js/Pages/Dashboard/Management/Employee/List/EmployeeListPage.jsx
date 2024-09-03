@@ -100,6 +100,7 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
     });
 
     const [openPDF, setOpenPDF] = useState(false);
+    const [PDFTrainingType, setPDFTrainingType] = useState("thirdParty");
     const [openAssign, setOpenAssign] = useState(false);
     const [empAssignData, setEmpAssignData] = useState(null);
 
@@ -116,11 +117,11 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
 
     const [filterEndDate, setFilterEndDate] = useState(null);
 
-    const [filterDepartment, setFilterDepartment] = useState("all");
+    const [filterDepartment, setFilterDepartment] = useState([]);
 
-    const [filterPosition, setFilterPosition] = useState("all");
+    const [filterPosition, setFilterPosition] = useState([]);
 
-    const [filterCompany, setFilterCompany] = useState("all");
+    const [filterCompany, setFilterCompany] = useState([]);
 
     const [filterStartDate, setFilterStartDate] = useState(null);
 
@@ -151,19 +152,12 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
     const isFiltered =
         filterStatus !== "all" ||
         filterName !== "" ||
-        filterDepartment !== "all" ||
-        filterPosition !== "all" ||
-        filterCompany !== "all" ||
+        filterDepartment.length > 0 ||
+        filterPosition.length > 0 ||
+        filterCompany.length > 0 ||
         !!filterStartDate;
 
-    const isNotFound =
-        (!dataFiltered.length && !!filterName) ||
-        (!dataFiltered.length && !!filterStatus) ||
-        (!dataFiltered.length && !!filterDepartment) ||
-        (!dataFiltered.length && !!filterPosition) ||
-        (!dataFiltered.length && !!filterCompany) ||
-        (!dataFiltered.length && !!filterEndDate) ||
-        (!dataFiltered.length && !!filterStartDate);
+    const isNotFound = dataFiltered.length === 0 && isFiltered;
 
     const getLengthByStatus = (status) =>
         dataFiltered.filter((item) => item.status === status).length;
@@ -204,40 +198,27 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
         },
     ];
 
-    const OPTIONS = useMemo(
-        () => ({
-            departments: [
-                "all",
-                ...new Set(
-                    employees
-                        .filter(
-                            (emp) => emp.department && emp.department.trim()
-                        )
-                        .map((emp) => emp.department.trim())
-                ),
-            ],
-            positions: [
-                "all",
-                ...new Set(
-                    employees
-                        .filter((emp) => emp.position && emp.position.trim())
-                        .map((emp) => emp.position.trim())
-                ),
-            ],
-            companies: [
-                "all",
-                ...new Set(
-                    employees
-                        .filter(
-                            (emp) =>
-                                emp?.company_name && emp?.company_name?.trim()
-                        )
-                        .map((emp) => emp.company_name.trim())
-                ),
-            ],
-        }),
-        [employees]
-    );
+    const OPTIONS = useMemo(() => {
+        const departments = new Set([]);
+        const positions = new Set([]);
+        const companies = new Set([]);
+        employees.forEach((emp) => {
+            if (emp.department && emp.department.trim()) {
+                departments.add(emp.department.trim());
+            }
+            if (emp.position && emp.position.trim()) {
+                positions.add(emp.position.trim());
+            }
+            if (emp?.company_name && emp?.company_name?.trim()) {
+                companies.add(emp.company_name.trim());
+            }
+        });
+        return {
+            departments: [...departments],
+            positions: [...positions],
+            companies: [...companies],
+        };
+    }, [employees]);
 
     const handleOpenConfirm = () => {
         setOpenConfirm(true);
@@ -306,10 +287,12 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
     };
 
     const handleResetFilter = () => {
+        setPage(0);
         setFilterName("");
         setFilterStatus("all");
-        setFilterDepartment("all");
-        setFilterPosition("all");
+        setFilterDepartment([]);
+        setFilterPosition([]);
+        setFilterCompany([]);
         setFilterEndDate(null);
         setFilterStartDate(null);
     };
@@ -412,17 +395,6 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                     ]}
                     action={
                         <Box display="flex" gap={1.5}>
-                            <Box>
-                                <Button
-                                    target="_blank"
-                                    variant="contained"
-                                    onClick={() => {
-                                        setOpenPDF(true);
-                                    }}
-                                >
-                                    View as PDF
-                                </Button>
-                            </Box>
                             <Box>
                                 {canCreate ? (
                                     <Button
@@ -546,7 +518,7 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                             onSelectAllRows={(checked) =>
                                 onSelectAllRows(
                                     checked,
-                                    dataFiltered.map((row) => row.id)
+                                    dataFiltered.map((row) => row.employee_id)
                                 )
                             }
                             action={
@@ -576,16 +548,36 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                                             </Button>
                                         </>
                                     )}
-                                    {/* <Tooltip title="Print">
-										<IconButton color="primary">
-											<Iconify icon="eva:printer-fill" />
-										</IconButton>
-									</Tooltip> */}
+                                    <Button
+                                        color="error"
+                                        startIcon={
+                                            <Iconify icon="eva:printer-fill" />
+                                        }
+                                        onClick={() => {
+                                            setPDFTrainingType("thirdParty");
+                                            setOpenPDF(true);
+                                        }}
+                                    >
+                                        Third Party PDF
+                                    </Button>
+
+                                    <Button
+                                        color="info"
+                                        startIcon={
+                                            <Iconify icon="eva:printer-fill" />
+                                        }
+                                        onClick={() => {
+                                            setPDFTrainingType("inHouse");
+                                            setOpenPDF(true);
+                                        }}
+                                    >
+                                        In House PDF
+                                    </Button>
 
                                     {canDelete && (
                                         <Tooltip title="Delete">
                                             <IconButton
-                                                color="primary"
+                                                color="error"
                                                 onClick={handleOpenConfirm}
                                             >
                                                 <Iconify icon="eva:trash-2-outline" />
@@ -772,11 +764,13 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                     </Button>
                 }
             />
-            {openPDF && (
+            {openPDF && selected.length > 0 && (
                 <RenderedPDFViewer
                     props={{
-                        employees: dataFiltered,
-                        analytics,
+                        employees: tableData.filter((data) =>
+                            selected.includes(data.employee_id)
+                        ),
+                        type: PDFTrainingType,
                     }}
                     open={openPDF}
                     handleClose={() => {
@@ -826,21 +820,21 @@ function applyFilter({
         }
     }
 
-    if (filterDepartment !== "all") {
-        inputData = inputData.filter(
-            (employee) => employee.department?.trim() === filterDepartment
+    if (!!filterDepartment.length) {
+        inputData = inputData.filter((employee) =>
+            filterDepartment.includes(employee?.department?.trim())
         );
     }
 
-    if (filterPosition !== "all") {
-        inputData = inputData.filter(
-            (employee) => employee.position.trim() === filterPosition
+    if (!!filterPosition.length) {
+        inputData = inputData.filter((employee) =>
+            filterPosition.includes(employee?.position?.trim())
         );
     }
 
-    if (filterCompany !== "all") {
-        inputData = inputData.filter(
-            (employee) => employee?.company_name?.trim() === filterCompany
+    if (!!filterCompany.length) {
+        inputData = inputData.filter((employee) =>
+            filterCompany.includes(employee?.company_name?.trim())
         );
     }
 
