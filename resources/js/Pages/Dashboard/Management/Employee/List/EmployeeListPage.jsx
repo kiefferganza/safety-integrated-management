@@ -50,7 +50,6 @@ import { useSwal } from "@/hooks/useSwal";
 import { Inertia } from "@inertiajs/inertia";
 import EmployeeAssignment from "../EmployeeAssignment";
 import usePermission from "@/hooks/usePermission";
-import RenderedPDFViewer from "./PDF/RenderPDFViewer";
 
 // ----------------------------------------------------------------------
 
@@ -98,9 +97,6 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
         defaultOrderBy: "date_created",
         defaultOrder: "desc",
     });
-
-    const [openPDF, setOpenPDF] = useState(false);
-    const [PDFTrainingType, setPDFTrainingType] = useState("thirdParty");
     const [openAssign, setOpenAssign] = useState(false);
     const [empAssignData, setEmpAssignData] = useState(null);
 
@@ -536,32 +532,6 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                                             </Button>
                                         </>
                                     )}
-                                    <Button
-                                        color="error"
-                                        startIcon={
-                                            <Iconify icon="eva:printer-fill" />
-                                        }
-                                        onClick={() => {
-                                            setPDFTrainingType("thirdParty");
-                                            setOpenPDF(true);
-                                        }}
-                                    >
-                                        Third Party PDF
-                                    </Button>
-
-                                    <Button
-                                        color="info"
-                                        startIcon={
-                                            <Iconify icon="eva:printer-fill" />
-                                        }
-                                        onClick={() => {
-                                            setPDFTrainingType("inHouse");
-                                            setOpenPDF(true);
-                                        }}
-                                    >
-                                        In House PDF
-                                    </Button>
-
                                     {canDelete && (
                                         <Tooltip title="Delete">
                                             <IconButton
@@ -752,20 +722,6 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                     </Button>
                 }
             />
-            {openPDF && selected.length > 0 && (
-                <RenderedPDFViewer
-                    props={{
-                        employees: employees.filter((data) =>
-                            selected.includes(data.employee_id)
-                        ),
-                        type: PDFTrainingType,
-                    }}
-                    open={openPDF}
-                    handleClose={() => {
-                        setOpenPDF(false);
-                    }}
-                />
-            )}
         </>
     );
 }
