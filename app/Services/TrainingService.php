@@ -35,7 +35,7 @@ class TrainingService {
 
 
 	public function getTrainingByType($type) {
-		$relation = ["training_files", "trainees", "course"];
+		$relation = ["training_files", "trainees", "course", "user_employee" => fn($q) => $q->select("user_id", "firstname", "lastname"),];
 		if($type === 3) {
 			$relation[] = "external_status";
 			$relation["external_details"] = fn($q) => $q->select("approved_by", "reviewed_by", "requested_by", "course_price", "currency", "training_id", "training_ext_id")->with([
