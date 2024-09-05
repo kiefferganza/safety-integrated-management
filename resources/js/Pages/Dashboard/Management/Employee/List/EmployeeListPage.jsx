@@ -109,8 +109,6 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
     const [openActivate, setOpenActivate] = useState(false);
     const [openDeactivate, setOpenDeactivate] = useState(false);
 
-    const [tableData, setTableData] = useState([]);
-
     const [filterName, setFilterName] = useState("");
 
     const [filterStatus, setFilterStatus] = useState("all");
@@ -126,7 +124,7 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
     const [filterStartDate, setFilterStartDate] = useState(null);
 
     const dataFiltered = applyFilter({
-        inputData: tableData,
+        inputData: employees,
         comparator: getComparator(order, orderBy),
         filterName,
         filterDepartment,
@@ -136,16 +134,6 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
         filterEndDate,
         filterCompany,
     });
-
-    useEffect(() => {
-        const data = employees?.map((employee) => ({
-            ...employee,
-            id: employee.employee_id,
-            status: employee.is_active === 0 ? "active" : "inactive",
-            phone_no: employee.phone_no == 0 ? "N/A" : employee.phone_no,
-        }));
-        setTableData(data || []);
-    }, [employees]);
 
     const denseHeight = dense ? 56 : 76;
 
@@ -647,7 +635,7 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                                         emptyRows={emptyRows(
                                             page,
                                             rowsPerPage,
-                                            tableData.length
+                                            employees.length
                                         )}
                                     />
 
@@ -767,7 +755,7 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
             {openPDF && selected.length > 0 && (
                 <RenderedPDFViewer
                     props={{
-                        employees: tableData.filter((data) =>
+                        employees: employees.filter((data) =>
                             selected.includes(data.employee_id)
                         ),
                         type: PDFTrainingType,

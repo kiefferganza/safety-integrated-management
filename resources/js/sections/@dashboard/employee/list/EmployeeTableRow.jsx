@@ -100,7 +100,6 @@ export default function EmployeeTableRow({
             }
         );
     };
-
     return (
         <>
             <TableRow hover selected={selected}>
@@ -153,7 +152,7 @@ export default function EmployeeTableRow({
                 </TableCell>
 
                 <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
-                    {row.phone_no}
+                    {row.phone_no === "0" ? "N/A" : row.phone_no}
                 </TableCell>
 
                 <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>

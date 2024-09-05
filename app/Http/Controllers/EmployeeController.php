@@ -65,6 +65,8 @@ class EmployeeController extends Controller
 				 * @var App\Models\Employee $employee
 				 */
 				$employee->profile = null;
+				$employee->id = $employee->employee_id;
+				$employee->status = $employee->is_active ? "active" : "inactive";
 				$profile = $employee->profile();
 				if ($profile)
 				{
