@@ -24,9 +24,9 @@ export const renderPDF = async (props) => {
                 "@/Pages/Dashboard/Management/Inspection/Tracker/PDF/PDF"
             );
             break;
-        case "employee_list":
+        case "training_tracker":
             PDF_IMPORT = await import(
-                "@/Pages/Dashboard/Management/Employee/List/PDF/PDF"
+                "@/Pages/Dashboard/Management/Training/Tracker/PDF/PDF"
             );
             break;
         default:

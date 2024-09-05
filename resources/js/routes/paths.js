@@ -112,6 +112,7 @@ export const PATH_DASHBOARD = {
 
     training: {
         root: path(ROOTS_DASHBOARD, "/training"),
+        tracker: route("training.management.tracker"),
         induction: path(ROOTS_DASHBOARD, "/training/induction"),
         inHouse: path(ROOTS_DASHBOARD, "/training/in-house"),
         inHouseMatrix: route("training.management.in_house_matrix"),

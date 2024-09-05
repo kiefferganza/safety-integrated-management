@@ -178,6 +178,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::middleware("permission:training_show")->group(function ()
 		{
 			Route::get('/matrix', [TrainingController::class, 'matrix'])->name('matrix');
+			Route::get('/tracker', [TrainingController::class, 'tracker'])->name('tracker');
 			Route::get('/external/matrix', [TrainingController::class, 'externalMatrix'])->name('external_matrix');
 			Route::get('/registered-courses', [TrainingController::class, 'courses'])->name('courses');
 			Route::post('/new-course', [TrainingController::class, 'addCourses'])->name('new_courses');

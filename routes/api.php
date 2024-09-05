@@ -54,6 +54,7 @@ Route::middleware('auth')->as('api.')->group(function ()
 
 	Route::prefix('training')->as('training.')->group(function ()
 	{
+		Route::get('tracker', [TrainingApiController::class, 'tracker'])->name('tracker');
 		Route::get('in-house/matrix', [TrainingApiController::class, 'inhouseMatrix'])->name('inhouse_matrix');
 		Route::get('external/matrix', [TrainingApiController::class, 'externalMatrix'])->name('external_matrix');
 	});

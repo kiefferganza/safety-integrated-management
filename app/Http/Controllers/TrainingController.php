@@ -1146,4 +1146,8 @@ class TrainingController extends Controller
 			'to' => $to
 		]);
 	}
+
+	public function tracker() {
+		return Inertia::render("Dashboard/Management/Training/Tracker/index");
+	}
 }

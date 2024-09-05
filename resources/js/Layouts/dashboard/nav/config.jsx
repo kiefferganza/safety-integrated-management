@@ -234,8 +234,14 @@ const navConfig = [
                     "training.management.external.external_approve",
                     "training.management.external.external_review",
                     "training.management.external.edit",
+                    "training.management.tracker",
                 ],
                 children: [
+                    {
+                        title: "tracker",
+                        path: PATH_DASHBOARD.training.tracker,
+                        routeNames: ["training.management.tracker"],
+                    },
                     {
                         title: "Internal",
                         routeNames: [
