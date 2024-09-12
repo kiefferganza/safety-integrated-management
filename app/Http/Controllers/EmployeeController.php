@@ -61,7 +61,7 @@ class EmployeeController extends Controller
 				 */
 				$employee->profile = null;
 				$employee->id = $employee->employee_id;
-				$employee->status = $employee->is_active ? "active" : "inactive";
+				$employee->status = $employee->is_active === 0 ? "active" : "inactive";
 				$employee->totalTrainings = count($employee->participated_trainings);
 				$profile = $employee->profile();
 				if ($profile)
