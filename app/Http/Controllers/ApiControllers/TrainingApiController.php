@@ -370,7 +370,7 @@ class TrainingApiController extends Controller
 				 * @var App\Models\Employee $employee
 				 */
 				$employee->id = $employee->employee_id;
-				$employee->status = $employee->is_active ? "active" : "inactive";
+				$employee->status = $employee->is_active === 0 ? "active" : "inactive";
 				$employee->profile = null;
 				$profile = $employee->profile();
 				if ($profile)
