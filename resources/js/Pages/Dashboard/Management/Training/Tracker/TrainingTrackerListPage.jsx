@@ -358,7 +358,7 @@ export default function TrainingTrackerListPage({
                                 </Button>
 
                                 <Button
-                                    color="info"
+                                    color="success"
                                     startIcon={
                                         <Iconify icon="eva:printer-fill" />
                                     }
@@ -368,6 +368,19 @@ export default function TrainingTrackerListPage({
                                     }}
                                 >
                                     Internal Training PDF
+                                </Button>
+
+                                <Button
+                                    color="info"
+                                    startIcon={
+                                        <Iconify icon="eva:printer-fill" />
+                                    }
+                                    onClick={() => {
+                                        setPDFTrainingType("client");
+                                        setOpenPDF(true);
+                                    }}
+                                >
+                                    Client Training PDF
                                 </Button>
                             </Stack>
                         }

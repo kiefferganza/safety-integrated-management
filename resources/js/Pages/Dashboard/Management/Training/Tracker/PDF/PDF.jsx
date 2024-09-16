@@ -28,7 +28,9 @@ export function PDF(props) {
     const trainings =
         type === "thirdParty"
             ? employees[0]?.thirdPartyTrainings
-            : employees[0]?.internalTrainings;
+            : type === "inHouse"
+            ? employees[0]?.internalTrainings
+            : employees[0]?.clientTrainings;
     return (
         <Document title={""}>
             <Page size="A4" style={styles.page}>
@@ -443,7 +445,9 @@ function TableHeader({ trainings = {}, type = "thirdParty" }) {
                     >
                         {type === "thirdParty"
                             ? "Third Party Training"
-                            : "In House Training"}
+                            : type === "inHouse"
+                            ? "In House Training"
+                            : "Client Training"}
                     </Text>
                 </View>
                 <View style={[{ flexDirection: "row" }, styles.bt]}>
@@ -571,10 +575,20 @@ function TableHeader({ trainings = {}, type = "thirdParty" }) {
 
 function TableRow({ emp, idx, type = "thirdParty" }) {
     const trainings = Object.values(
-        type === "thirdParty" ? emp.thirdPartyTrainings : emp.internalTrainings
+        type === "thirdParty"
+            ? emp.thirdPartyTrainings
+            : type === "inHouse"
+            ? emp.internalTrainings
+            : emp.clientTrainings
     );
     const trainingStatus =
-        emp.trainings[type === "thirdParty" ? "external" : "internal"];
+        emp.trainings[
+            type === "thirdParty"
+                ? "external"
+                : type === "inHouse"
+                ? "internal"
+                : "client"
+        ];
     return (
         <View
             style={[styles.tableRow, styles.w1, styles.bl, { padding: 0 }]}

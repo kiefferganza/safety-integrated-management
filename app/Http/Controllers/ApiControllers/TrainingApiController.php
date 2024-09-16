@@ -394,7 +394,12 @@ class TrainingApiController extends Controller
 						"SN" => 0,
 						"E" => 0,
 						"TT" => 0
-					]
+					],
+					"client" => [
+						"SN" => 0,
+						"E" => 0,
+						"TT" => 0
+					],
 				];
 				$internal = $internalTraining->mapWithKeys(function ($t)
 				{
@@ -416,12 +421,13 @@ class TrainingApiController extends Controller
 						"active" => false,
 					]];
 				})->toArray();
+				$client = $thirdParty;
 
 				if (count($employee->participated_trainings))
 				{
 					foreach ($employee->participated_trainings as $t)
 					{
-						if ($t->type === 3 || $t->type === 2)
+						if ($t->type === 3)
 						{
 							$foundTraining = $thirdPartyTrainings->first(function ($th) use ($t)
 							{
@@ -446,6 +452,35 @@ class TrainingApiController extends Controller
 								{
 									$thirdParty[$foundTraining->acronym]["active"] = true;
 									$trainings["external"]["TT"] += 1;
+								}
+								$totalTrainings += 1;
+							}
+						}
+						if($t->type === 2)
+						{
+							$foundTraining = $thirdPartyTrainings->first(function ($th) use ($t)
+							{
+								return $th->course_name === trim($t->title);
+							});
+							if ($foundTraining)
+							{
+								$date = Carbon::parse($t->date_expired);
+								if ($date->between($lastWeekStart, $today))
+								{
+									$client[$foundTraining->acronym]["sn"] = true;
+									$trainings["client"]["TT"] += 1;
+									$trainings["client"]["SN"] += 1;
+								}
+								else if ($date->isPast($today))
+								{
+									$client[$foundTraining->acronym]["expired"] = true;
+									$trainings["client"]["TT"] += 1;
+									$trainings["client"]["E"] += 1;
+								}
+								else
+								{
+									$client[$foundTraining->acronym]["active"] = true;
+									$trainings["client"]["TT"] += 1;
 								}
 								$totalTrainings += 1;
 							}
@@ -485,6 +520,7 @@ class TrainingApiController extends Controller
 				$employee->trainings = $trainings;
 				$employee->thirdPartyTrainings = $thirdParty;
 				$employee->internalTrainings = $internal;
+				$employee->clientTrainings = $client;
 
 				return $employee;
 		});
