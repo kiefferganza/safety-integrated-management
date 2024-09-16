@@ -1,20 +1,12 @@
 // @mui
 import { Box, Stack, Divider, Typography } from "@mui/material";
 // components
-import { RHFMuiSelect, RHFSelect, RHFTextField } from "@/Components/hook-form";
+import { RHFMuiSelect, RHFTextField } from "@/Components/hook-form";
 import { useFormContext } from "react-hook-form";
 
 // ----------------------------------------------------------------------
 
-const TYPE_OPTIONS = [
-    { type: 2, label: "Client" },
-    { type: 3, label: "External" },
-    // { type: 4, label: 'Induction' },
-];
-
-const TrainingProjectDetails = ({ isEdit, sequences, projectDetails }) => {
-    const { setValue } = useFormContext();
-
+const TrainingProjectDetails = ({ projectDetails }) => {
     return (
         <Box sx={{ p: 3 }}>
             <Stack
@@ -28,26 +20,6 @@ const TrainingProjectDetails = ({ isEdit, sequences, projectDetails }) => {
                 >
                     Project Detail
                 </Typography>
-                <RHFSelect
-                    disabled={isEdit}
-                    size="small"
-                    name="type"
-                    label="Course Type"
-                    sx={{ width: { xs: "100%", md: 140 } }}
-                    onChange={(e) => {
-                        setValue("type", e.target.value, {
-                            shoudValidate: true,
-                        });
-                        setValue("sequence_no", sequences[e.target.value]);
-                    }}
-                >
-                    <option value=""></option>
-                    {TYPE_OPTIONS.map((option) => (
-                        <option key={option.type} value={option.type}>
-                            {option.label}
-                        </option>
-                    ))}
-                </RHFSelect>
             </Stack>
 
             <Stack

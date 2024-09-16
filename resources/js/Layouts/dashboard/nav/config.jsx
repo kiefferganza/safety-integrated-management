@@ -219,7 +219,8 @@ const navConfig = [
                     "training.management.induction.show",
                     "training.management.external",
                     "training.management.external.show",
-                    "training.management.create",
+                    "training.management.createThirdParty",
+                    "training.management.createClient",
                     "training.management.edit",
                     "training.management.courses",
                     "training.management.matrix",
@@ -241,6 +242,20 @@ const navConfig = [
                         title: "tracker",
                         path: PATH_DASHBOARD.training.tracker,
                         routeNames: ["training.management.tracker"],
+                    },
+                    {
+                        title: "create client",
+                        path: PATH_DASHBOARD.training.createClient,
+                        routeNames: ["training.management.createClient"],
+                    },
+                    {
+                        title: "client",
+                        gate: "training_show",
+                        path: PATH_DASHBOARD.training.client,
+                        routeNames: [
+                            "training.management.client",
+                            "training.management.client.show",
+                        ],
                     },
                     {
                         title: "Internal",
@@ -288,11 +303,9 @@ const navConfig = [
                     {
                         title: "External",
                         routeNames: [
-                            "training.management.client",
-                            "training.management.client.show",
                             "training.management.external",
                             "training.management.external.show",
-                            "training.management.create",
+                            "training.management.createThirdParty",
                             "training.management.edit",
                             "training.management.courses",
                             "training.management.external_matrix",
@@ -304,23 +317,16 @@ const navConfig = [
                             {
                                 title: "create",
                                 gate: "training_create",
-                                path: PATH_DASHBOARD.training.new(2),
-                                routeNames: ["training.management.create"],
+                                path: PATH_DASHBOARD.training.createThirdParty,
+                                routeNames: [
+                                    "training.management.createThirdParty",
+                                ],
                             },
                             {
                                 title: "register",
                                 gate: "training_create",
                                 path: PATH_DASHBOARD.training.register,
                                 routeNames: ["training.management.courses"],
-                            },
-                            {
-                                title: "client",
-                                gate: "training_show",
-                                path: PATH_DASHBOARD.training.client,
-                                routeNames: [
-                                    "training.management.client",
-                                    "training.management.client.show",
-                                ],
                             },
                             {
                                 title: "third party",

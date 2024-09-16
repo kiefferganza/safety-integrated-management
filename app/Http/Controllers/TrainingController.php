@@ -88,14 +88,14 @@ class TrainingController extends Controller
 	}
 
 
-	public function create(Request $request)
+	public function createClient()
 	{
 		$trainingService = new TrainingService();
 		$courses = TrainingCourses::get();
 		$user = auth()->user();
 		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
 
-		return Inertia::render("Dashboard/Management/Training/Create/index", [
+		return Inertia::render("Dashboard/Management/Training/Create/createClient", [
 			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
 				->where([
 					["tbl_position.is_deleted", 0],
@@ -103,14 +103,30 @@ class TrainingController extends Controller
 					["tbl_employees.is_active", 0]
 				])
 				->get(),
-			"type" => $request->query('type') ? $request->query('type') : 2,
 			"courses" => $courses,
-			"sequences" => [
-				"1" => $trainingService->getSequenceNo(1),
-				"2" => $trainingService->getSequenceNo(2),
-				"3" => $trainingService->getSequenceNo(3),
-				"4" => $trainingService->getSequenceNo(4),
-			],
+			"sequence" => $trainingService->getSequenceNo(2),
+			"projectDetails" => $projectDetails,
+		]);
+	}
+
+	public function createThirdParty()
+	{
+		$trainingService = new TrainingService();
+		$courses = TrainingCourses::get();
+		$user = auth()->user();
+		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
+
+		return Inertia::render("Dashboard/Management/Training/Create/createThirdParty", [
+			"personel" =>  Employee::join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+				->where([
+					["tbl_position.is_deleted", 0],
+					["tbl_employees.is_deleted", 0],
+					["tbl_employees.is_active", 0]
+				])
+				->get(),
+			"type" => 3,
+			"courses" => $courses,
+			"sequence" => $trainingService->getSequenceNo(3),
 			"projectDetails" => $projectDetails,
 		]);
 	}

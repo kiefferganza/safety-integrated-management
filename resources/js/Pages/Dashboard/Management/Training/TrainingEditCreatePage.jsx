@@ -20,6 +20,7 @@ const TYPE_OPTIONS = {
 export default function TrainingEditCreatePage({
     isEdit = false,
     details = null,
+    title = "Client",
     currentTraining,
     type,
     projectDetails,
@@ -29,19 +30,21 @@ export default function TrainingEditCreatePage({
     return (
         <>
             <Head>
-                <title>{isEdit ? "Update course" : "New training"}</title>
+                <title>
+                    {isEdit ? "Update course" : `New ${title} Training`}
+                </title>
             </Head>
 
             <Container maxWidth={themeStretch ? false : "lg"}>
                 <CustomBreadcrumbs
-                    heading={isEdit ? "Update course" : "New training"}
+                    heading={isEdit ? "Update course" : `New ${title} Training`}
                     links={[
                         {
                             name: "Dashboard",
                             href: PATH_DASHBOARD.root,
                         },
                         {
-                            name: details ? `${details?.title} List` : "List",
+                            name: `${title} List`,
                             href:
                                 isEdit && details
                                     ? PATH_DASHBOARD.training[details?.url]

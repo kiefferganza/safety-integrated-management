@@ -228,7 +228,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 		Route::middleware("permission:training_create")->group(function ()
 		{
 			// Route::post('/testemail', [TrainingController::class, 'sendEmail'])->name('testEmail');
-			Route::get('/new', [TrainingController::class, 'create'])->name('create');
+			Route::get('/new-third-party', [TrainingController::class, 'createThirdParty'])->name('createThirdParty'); 
+			Route::get('/new-client', [TrainingController::class, 'createClient'])->name('createClient'); 
 			Route::post('/create', [TrainingController::class, 'store'])->name('store');
 		});
 
