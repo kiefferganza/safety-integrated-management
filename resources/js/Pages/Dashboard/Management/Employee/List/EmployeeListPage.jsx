@@ -50,6 +50,7 @@ import { useSwal } from "@/hooks/useSwal";
 import { Inertia } from "@inertiajs/inertia";
 import EmployeeAssignment from "../EmployeeAssignment";
 import usePermission from "@/hooks/usePermission";
+import RenderedPDFViewer from "./PDF/RenderPDFViewer";
 
 // ----------------------------------------------------------------------
 
@@ -97,6 +98,7 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
         defaultOrderBy: "date_created",
         defaultOrder: "desc",
     });
+    const [openPDF, setOpenPDF] = useState(false);
     const [openAssign, setOpenAssign] = useState(false);
     const [empAssignData, setEmpAssignData] = useState(null);
 
@@ -532,6 +534,16 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                                             </Button>
                                         </>
                                     )}
+                                    <Tooltip title="Print">
+                                        <Button
+                                            startIcon={
+                                                <Iconify icon="eva:printer-fill" />
+                                            }
+                                            onClick={() => setOpenPDF(true)}
+                                        >
+                                            View PDF
+                                        </Button>
+                                    </Tooltip>
                                     {canDelete && (
                                         <Tooltip title="Delete">
                                             <IconButton
@@ -722,6 +734,19 @@ export default function EmployeeListPage({ employees, unassignedUsers }) {
                     </Button>
                 }
             />
+            {openPDF && selected.length > 0 && (
+                <RenderedPDFViewer
+                    props={{
+                        employees: employees.filter((data) =>
+                            selected.includes(data.employee_id)
+                        ),
+                    }}
+                    open={openPDF}
+                    handleClose={() => {
+                        setOpenPDF(false);
+                    }}
+                />
+            )}
         </>
     );
 }
