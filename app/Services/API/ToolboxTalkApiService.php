@@ -47,12 +47,15 @@ class ToolboxTalkApiService
  }
 
  public function getEmployees() {
-  return Employee::select("employee_id", "tbl_employees.employee_id as emp_id", "firstname", "lastname", "tbl_position.position", "tbl_employees.user_id")
+  $user = auth()->user();
+  return Employee::select("employee_id", "tbl_employees.employee_id as emp_id", "firstname", "lastname", "tbl_position.position", "tbl_employees.user_id", "tbl_company.company_name")
   ->where([
     ["tbl_employees.is_deleted", 0],
     ["tbl_employees.is_active", 0],
+    ["tbl_employees.sub_id", $user->subscriber_id]
   ])
   ->join("tbl_position", "tbl_position.position_id", "tbl_employees.position")
+  ->leftJoin("tbl_company", "tbl_employees.company", "tbl_company.company_id")
   ->get()
   ->transform(function ($employee)
   {
@@ -82,6 +85,7 @@ class ToolboxTalkApiService
     if($employee) {
       $pre->fullname = $employee->fullname;
       $pre->img = $employee->img;
+      $pre->company_name = $employee->company_name;
       $pre->position = $employee->position;
     }
     // $date = Carbon::parse($pre->date_assigned);
@@ -93,6 +97,7 @@ class ToolboxTalkApiService
         $trackerEmployee->fullname = $emp->fullname;
         $trackerEmployee->img = $emp->img;
         $trackerEmployee->position = $emp->position;
+        $trackerEmployee->company_name = $emp->company_name;
         $trackerEmployee->date_assigned = $pre->date_assigned;
       }
 

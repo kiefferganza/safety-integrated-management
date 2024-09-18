@@ -153,7 +153,7 @@ const index = ({ auth: { user } }) => {
 
         return { total, summary: {}, dateTupple: [], pdfData: [] };
     }, [dataFiltered]);
-
+    console.log(dataFiltered);
     return (
         <>
             <Head>

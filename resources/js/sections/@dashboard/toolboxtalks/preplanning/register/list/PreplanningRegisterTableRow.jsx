@@ -114,6 +114,14 @@ export function PreplanningRegisterTableRow({
                     align="left"
                     sx={{ whiteSpace: "nowrap" }}
                 >
+                    {row?.company_name ?? ""}
+                </TableCell>
+
+                <TableCell
+                    onClick={handleTriggerCollapse}
+                    align="left"
+                    sx={{ whiteSpace: "nowrap" }}
+                >
                     {row.position}
                 </TableCell>
 

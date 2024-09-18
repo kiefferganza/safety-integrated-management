@@ -39,12 +39,12 @@ import {
 } from "@/sections/@dashboard/toolboxtalks/preplanning/register";
 import RegisterEmployeePortal from "@/sections/@dashboard/toolboxtalks/preplanning/register/portal/RegisterEmployeePortal";
 import { Inertia } from "@inertiajs/inertia";
-import { useQueryClient } from "@tanstack/react-query";
 import Label from "@/Components/label/Label";
 
 const TABLE_HEAD = [
     { id: "form_number", label: "CMS Number", align: "left" },
     { id: "fullname", label: "Originator", align: "left" },
+    { id: "company_name", label: "Company", align: "left" },
     { id: "position", label: "Position", align: "left" },
     { id: "date_assgned", label: "Date" },
     { id: "status", label: "Status", align: "left" },
