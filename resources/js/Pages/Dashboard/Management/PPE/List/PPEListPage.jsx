@@ -43,6 +43,7 @@ import Label from "@/Components/label";
 import { PpeTableRow, PpeTableToolbar } from "@/sections/@dashboard/ppe/list";
 import { getInventoryStatus } from "@/utils/formatStatuses";
 import usePermission from "@/hooks/usePermission";
+import RenderedPDFViewer from "./PDF/RenderPDFViewer";
 const { PpeAnalytic } = await import("@/sections/@dashboard/ppe/PpeAnalytic");
 
 // ----------------------------------------------------------------------
@@ -108,6 +109,7 @@ export default function PPEListPage({ inventory }) {
     const [filterEndDate, setFilterEndDate] = useState(null);
 
     const [openConfirm, setOpenConfirm] = useState(false);
+    const [openPDF, setOpenPDF] = useState(false);
 
     useEffect(() => {
         if (inventory?.length) {
@@ -252,7 +254,6 @@ export default function PPEListPage({ inventory }) {
     const canDelete = hasPermission("inventory_delete");
     const canAddRemoveStock = hasPermission("stock_addOrRemove");
     const canViewStock = hasPermission("stock_show");
-    console.log(tableData);
     return (
         <>
             <Container maxWidth={themeStretch ? false : "lg"}>
@@ -397,14 +398,26 @@ export default function PPEListPage({ inventory }) {
                                 )
                             }
                             action={
-                                <Tooltip title="Delete">
-                                    <IconButton
-                                        color="primary"
-                                        onClick={handleOpenConfirm}
-                                    >
-                                        <Iconify icon="eva:trash-2-outline" />
-                                    </IconButton>
-                                </Tooltip>
+                                <Stack direction="row" gap={1}>
+                                    <Tooltip title="Delete">
+                                        <IconButton
+                                            color="primary"
+                                            onClick={handleOpenConfirm}
+                                        >
+                                            <Iconify icon="eva:trash-2-outline" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Print">
+                                        <Button
+                                            startIcon={
+                                                <Iconify icon="eva:printer-fill" />
+                                            }
+                                            onClick={() => setOpenPDF(true)}
+                                        >
+                                            View PDF
+                                        </Button>
+                                    </Tooltip>
+                                </Stack>
                             }
                         />
 
@@ -423,9 +436,13 @@ export default function PPEListPage({ inventory }) {
                                     onSelectAllRows={(checked) =>
                                         onSelectAllRows(
                                             checked,
-                                            dataFiltered.map(
-                                                (row) => row.inventory_id
-                                            )
+                                            dataFiltered
+                                                .slice(
+                                                    page * rowsPerPage,
+                                                    page * rowsPerPage +
+                                                        rowsPerPage
+                                                )
+                                                .map((row) => row.inventory_id)
                                         )
                                     }
                                 />
@@ -513,7 +530,35 @@ export default function PPEListPage({ inventory }) {
                     </Button>
                 }
             />
+            {openPDF && selected.length > 0 && (
+                <PDFRender
+                    ids={selected}
+                    data={dataFiltered}
+                    open={openPDF}
+                    setOpen={setOpenPDF}
+                />
+            )}
         </>
+    );
+}
+
+function PDFRender({ ids, data, open, setOpen }) {
+    const filteredData = [];
+    for (const obj of data) {
+        if (ids.includes(obj.inventory_id)) {
+            filteredData.push(obj);
+        }
+    }
+    return (
+        <RenderedPDFViewer
+            props={{
+                ppe: filteredData,
+            }}
+            open={open}
+            handleClose={() => {
+                setOpen(false);
+            }}
+        />
     );
 }
 

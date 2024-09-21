@@ -35,6 +35,11 @@ export const renderPDF = async (props) => {
                 "@/Pages/Dashboard/Management/Employee/List/PDF/PDF"
             );
             break;
+        case "ppe_list":
+            PDF_IMPORT = await import(
+                "@/Pages/Dashboard/Management/PPE/List/PDF/PDF"
+            );
+            break;
         default:
             PDF_IMPORT = await import(
                 "@/sections/@dashboard/inspection/details/PDF"
