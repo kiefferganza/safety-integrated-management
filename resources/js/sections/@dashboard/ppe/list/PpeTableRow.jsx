@@ -109,7 +109,6 @@ export default function PpeTableRow({
             currencies[item_currency]?.symbol ||
             "IQD";
     }
-    console.log(row);
     return (
         <>
             <TableRow hover selected={selected}>

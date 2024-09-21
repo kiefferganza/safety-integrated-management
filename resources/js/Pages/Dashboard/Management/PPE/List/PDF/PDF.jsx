@@ -286,7 +286,7 @@ export function PDF(props) {
                                 flexGrow: 0,
                                 paddingTop: 4,
                                 paddingBottom: 4,
-                                flexBasis: 140,
+                                flexBasis: 180,
                             },
                         ]}
                     >
@@ -370,7 +370,7 @@ export function PDF(props) {
                                 flexGrow: 0,
                                 paddingTop: 4,
                                 paddingBottom: 4,
-                                flexBasis: 90,
+                                flexBasis: 70,
                             },
                         ]}
                     >
@@ -391,7 +391,7 @@ export function PDF(props) {
                                 flexGrow: 0,
                                 paddingTop: 4,
                                 paddingBottom: 4,
-                                flexBasis: 90,
+                                flexBasis: 70,
                             },
                         ]}
                     >
@@ -528,7 +528,7 @@ function TableRow({ row, idx }) {
                     styles.br,
                     {
                         flexGrow: 0,
-                        flexBasis: 140,
+                        flexBasis: 180,
                         position: "relative",
                         paddingVertical: 4,
                     },
@@ -630,7 +630,7 @@ function TableRow({ row, idx }) {
                     {
                         flexGrow: 0,
                         paddingVertical: 4,
-                        flexBasis: 90,
+                        flexBasis: 70,
                     },
                 ]}
             >
@@ -645,7 +645,7 @@ function TableRow({ row, idx }) {
                     {
                         flexGrow: 0,
                         paddingVertical: 4,
-                        flexBasis: 90,
+                        flexBasis: 70,
                     },
                 ]}
             >
