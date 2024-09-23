@@ -205,6 +205,7 @@ class InspectionController extends Controller
 				$tableName = InspectionService::getTableName($ref);
 				$arr[$title] ??= [
 					"negative" => 0,
+					"inprogress" => 0,
 					"closed" => 0,
 					"positive" => 0,
 					"title" => $title,
@@ -213,11 +214,12 @@ class InspectionController extends Controller
 				];
 				if($item->status === 3) {
 					$arr[$title]["closed"] += 1;
+					$arr[$title]["negative"] += 1;
 				}else {
 					if($score === 1) {
 						$arr[$title]["positive"] += 1;
 					}else {
-						$arr[$title]["negative"] += 1;
+						$arr[$title]["inprogress"] += 1;
 					}
 				}
 			}
