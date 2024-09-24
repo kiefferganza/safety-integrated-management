@@ -309,16 +309,12 @@ export default function TrainingList({ trainings, module, url, type }) {
                     heading={`${module} List`}
                     links={[
                         { name: "Dashboard", href: PATH_DASHBOARD.root },
-                        {
-                            name: module,
-                            href: PATH_DASHBOARD.training.new(type),
-                        },
                         { name: "List" },
                     ]}
                     action={
                         canCreate && (
                             <Button
-                                href={PATH_DASHBOARD.training.new(type)}
+                                href={PATH_DASHBOARD.training.createClient}
                                 component={Link}
                                 preserveScroll
                                 variant="contained"

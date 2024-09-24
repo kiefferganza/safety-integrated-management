@@ -351,15 +351,19 @@ export default function TrainingThirdPartyList({ trainings, url, type }) {
                     links={[
                         { name: "Dashboard", href: PATH_DASHBOARD.root },
                         {
-                            name: "Third Party",
-                            href: PATH_DASHBOARD.training.new(type),
+                            name: "In House",
+                            href: PATH_DASHBOARD.training.inHouse,
                         },
-                        { name: "List" },
+                        {
+                            name: "Client List",
+                            href: PATH_DASHBOARD.training.client,
+                        },
+                        { name: "Third Party List" },
                     ]}
                     action={
                         canCreate && (
                             <Button
-                                href={PATH_DASHBOARD.training.new(type)}
+                                href={PATH_DASHBOARD.training.createThirdParty}
                                 component={Link}
                                 preserveScroll
                                 variant="contained"

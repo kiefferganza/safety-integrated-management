@@ -299,6 +299,14 @@ export default function TrainingInHouseList({ trainings }) {
                             name: "Courses",
                             href: PATH_DASHBOARD.training.inHouseCourses,
                         },
+                        {
+                            name: "Client List",
+                            href: PATH_DASHBOARD.training.client,
+                        },
+                        {
+                            name: "Third Party List",
+                            href: PATH_DASHBOARD.training.thirdParty,
+                        },
                         { name: "In House List" },
                     ]}
                     action={
