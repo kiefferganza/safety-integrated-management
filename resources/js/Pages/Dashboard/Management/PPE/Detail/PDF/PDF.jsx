@@ -288,7 +288,7 @@ function PpeDetailSummary({
                                         {current_stock_qty?.toLocaleString()}
                                     </Text>
                                     <Text style={styles.subtitle4}>
-                                        Minium {min_qty?.toLocaleString()}
+                                        Minimum {min_qty?.toLocaleString()}
                                     </Text>
                                 </View>
                             </View>
