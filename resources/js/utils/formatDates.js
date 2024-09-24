@@ -39,6 +39,42 @@ export function getTrainingStatus (date_expired) {
 	};
 }
 
+export function getThirdPartyTrainingStatus (date_expired, valid) {
+	if(valid) {
+		const dateExpiredTwoWeeksBeforeDate = getLastTwoWeeks(date_expired);
+
+		const start = new Date().setHours(0, 0, 0, 0)
+		const end = new Date(date_expired).setHours(0, 0, 0, 0);
+
+		if (isAfter(start, end) || isEqual(start, end)) {
+			return {
+				text: "Expired",
+				color: "error",
+				rawColor: "#FFAC82"
+			}
+		}
+
+		if (start > dateExpiredTwoWeeksBeforeDate && start < end) {
+			return {
+				text: "Soon to Expire",
+				color: "warning",
+				rawColor: "#FFD666"
+			}
+		}
+
+		return {
+			text: "Valid",
+			color: "success",
+			rawColor: "#86E8AB"
+		};	
+	}
+	return {
+		text: "Pending",
+		color: "warning",
+		rawColor: "#FFD666"
+	};
+}
+
 export function getTrainingActionStatus (externalStatus) {
 	let status = externalStatus;
 	if (typeof status !== "string") {
