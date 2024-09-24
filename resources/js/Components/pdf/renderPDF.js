@@ -4,6 +4,7 @@ export const renderPDF = async (props) => {
     const { pdf } = await import("@react-pdf/renderer");
     let PDF_IMPORT = null;
     switch (props.pdf_type) {
+        // DETAILS
         case "inspection_view":
             PDF_IMPORT = await import(
                 "@/sections/@dashboard/inspection/details/PDF"
@@ -27,6 +28,11 @@ export const renderPDF = async (props) => {
         case "training_tracker":
             PDF_IMPORT = await import(
                 "@/Pages/Dashboard/Management/Training/Tracker/PDF/PDF"
+            );
+            break;
+        case "ppe_view":
+            PDF_IMPORT = await import(
+                "@/Pages/Dashboard/Management/PPE/Detail/PDF/PDF"
             );
             break;
         // LISTS
