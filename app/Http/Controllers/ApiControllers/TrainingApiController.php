@@ -333,6 +333,7 @@ class TrainingApiController extends Controller
 		$today = Carbon::now();
 		$lastWeekStart = $today->subWeek(1);
 		$thirdPartyTrainings = TrainingCourses::select("id", "course_name", "acronym")->where("sub_id", $user->subscriber_id)->whereNotNull("acronym")->whereNull("type")->get();
+		$clientTraining = TrainingCourses::select("id", "course_name", "acronym")->where("sub_id", $user->subscriber_id)->whereNotNull("acronym")->where("type", "client")->get();
 		$internalTraining = TrainingCourses::select("id", "course_name", "acronym")->where("sub_id", $user->subscriber_id)->whereNotNull("acronym")->where("type", "in-house")->get();
 
 		$employees = Employee::select(DB::raw("
@@ -364,7 +365,7 @@ class TrainingApiController extends Controller
 				["tbl_employees.is_deleted", 0]
 			])
 			->get()
-			->transform(function ($employee) use ($today, $lastWeekStart, $thirdPartyTrainings, $internalTraining)
+			->transform(function ($employee) use ($today, $lastWeekStart, $thirdPartyTrainings, $internalTraining, $clientTraining)
 			{
 				/**
 				 * @var App\Models\Employee $employee
@@ -421,7 +422,17 @@ class TrainingApiController extends Controller
 						"active" => false,
 					]];
 				})->toArray();
-				$client = $thirdParty;
+				$clientT = $clientTraining->mapWithKeys(function ($t)
+				{
+					return [$t->acronym => [
+						"name" => $t->course_name,
+						"acronym" => $t->acronym,
+						"expired" => false,
+						"sn" => false,
+						"active" => false,
+					]];
+				})->toArray();
+				$client = $clientT;
 
 				if (count($employee->participated_trainings))
 				{
@@ -458,7 +469,7 @@ class TrainingApiController extends Controller
 						}
 						if($t->type === 2)
 						{
-							$foundTraining = $thirdPartyTrainings->first(function ($th) use ($t)
+							$foundTraining = $clientTraining->first(function ($th) use ($t)
 							{
 								return $th->course_name === trim($t->title);
 							});

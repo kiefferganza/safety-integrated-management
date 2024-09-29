@@ -205,6 +205,10 @@ Route::middleware('auth')->prefix('dashboard')->group(function ()
 			Route::post('/update-in-house-course/{course}', [InhouseTrainingController::class, 'updateInHouseCourse'])->name('update_in_house_course');
 			// End in house
 
+			// CLIENT
+			Route::get('/register-client-course', [TrainingController::class, 'clientCourses'])->name('client_course');
+			Route::post('/register-client-course', [TrainingController::class, 'storeClientCourse'])->name('store_client_course');
+
 
 			// Show
 			Route::get('/client/{training}', [TrainingController::class, 'show_client'])->name('client.show');

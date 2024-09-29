@@ -212,6 +212,7 @@ const navConfig = [
                 icon: ICONS.training,
                 routeNames: [
                     "training.management.client",
+                    "training.management.client_course",
                     "training.management.client.show",
                     "training.management.in_house",
                     "training.management.in_house.show",
@@ -244,17 +245,40 @@ const navConfig = [
                         routeNames: ["training.management.tracker"],
                     },
                     {
-                        title: "create client",
-                        path: PATH_DASHBOARD.training.createClient,
-                        routeNames: ["training.management.createClient"],
-                    },
-                    {
                         title: "client",
-                        gate: "training_show",
-                        path: PATH_DASHBOARD.training.client,
                         routeNames: [
                             "training.management.client",
+                            "training.management.client_course",
                             "training.management.client.show",
+                            "training.management.createClient",
+                        ],
+                        children: [
+                            {
+                                title: "create",
+                                gate: "training_show",
+                                path: PATH_DASHBOARD.training.createClient,
+                                routeNames: [
+                                    "training.management.createClient",
+                                ],
+                            },
+                            {
+                                title: "register",
+                                gate: "training_show",
+                                path: PATH_DASHBOARD.training.clientCourses,
+                                routeNames: [
+                                    "training.management.client_course",
+                                ],
+                            },
+                            {
+                                title: "list",
+                                path: PATH_DASHBOARD.training.client,
+                                gate: "training_show",
+                                routeNames: ["training.management.client"],
+                            },
+                            {
+                                title: "client matrix",
+                                disabled: true,
+                            },
                         ],
                     },
                     {

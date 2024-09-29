@@ -329,7 +329,7 @@ function TableHeader({ trainings = {}, type = "thirdParty" }) {
                 style={[
                     styles.br,
                     {
-                        flexGrow: 0,
+                        flexGrow: 0.33,
                         flexBasis: 85,
                     },
                 ]}
@@ -353,8 +353,8 @@ function TableHeader({ trainings = {}, type = "thirdParty" }) {
                 style={[
                     styles.br,
                     {
-                        flexGrow: 0,
-                        flexBasis: 60,
+                        flexGrow: 0.33,
+                        flexBasis: 65,
                     },
                 ]}
             >
@@ -377,7 +377,7 @@ function TableHeader({ trainings = {}, type = "thirdParty" }) {
                 style={[
                     styles.br,
                     {
-                        flexGrow: 0,
+                        flexGrow: 0.33,
                         flexBasis: 65,
                     },
                 ]}
@@ -507,15 +507,7 @@ function TableHeader({ trainings = {}, type = "thirdParty" }) {
                             E
                         </Text>
                     </View>
-                    <View
-                        style={[
-                            {
-                                minWidth: 15,
-                                alignItems: "center",
-                                justifyContent: "center",
-                            },
-                        ]}
-                    >
+                    <View style={[{ flexGrow: 0, flexBasis: 15 }]}>
                         <Text
                             style={[
                                 styles.bold,
@@ -620,7 +612,7 @@ function TableRow({ emp, idx, type = "thirdParty" }) {
                 style={[
                     styles.br,
                     {
-                        flexGrow: 0,
+                        flexGrow: 0.33,
                         paddingVertical: 4,
                         flexBasis: 85,
                     },
@@ -642,9 +634,9 @@ function TableRow({ emp, idx, type = "thirdParty" }) {
                 style={[
                     styles.br,
                     {
-                        flexGrow: 0,
+                        flexGrow: 0.33,
                         paddingVertical: 4,
-                        flexBasis: 60,
+                        flexBasis: 65,
                     },
                 ]}
             >
@@ -665,7 +657,7 @@ function TableRow({ emp, idx, type = "thirdParty" }) {
                 style={[
                     styles.br,
                     {
-                        flexGrow: 0,
+                        flexGrow: 0.33,
                         paddingVertical: 4,
                         flexBasis: 65,
                     },
@@ -778,15 +770,7 @@ function TableRow({ emp, idx, type = "thirdParty" }) {
                         {trainingStatus["E"]}
                     </Text>
                 </View>
-                <View
-                    style={[
-                        {
-                            minWidth: 15,
-                            alignItems: "center",
-                            justifyContent: "center",
-                        },
-                    ]}
-                >
+                <View style={[{ flexGrow: 0, flexBasis: 15 }]}>
                     <Text
                         style={[
                             {

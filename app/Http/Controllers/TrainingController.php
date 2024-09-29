@@ -91,7 +91,7 @@ class TrainingController extends Controller
 	public function createClient()
 	{
 		$trainingService = new TrainingService();
-		$courses = TrainingCourses::get();
+		$courses = TrainingCourses::where("type", "client")->get();
 		$user = auth()->user();
 		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
 
@@ -112,7 +112,7 @@ class TrainingController extends Controller
 	public function createThirdParty()
 	{
 		$trainingService = new TrainingService();
-		$courses = TrainingCourses::get();
+		$courses = TrainingCourses::whereNull("type")->get();
 		$user = auth()->user();
 		$projectDetails = DocumentProjectDetail::where('sub_id', $user->subscriber_id)->get()->groupBy('title');
 
@@ -1165,5 +1165,40 @@ class TrainingController extends Controller
 
 	public function tracker() {
 		return Inertia::render("Dashboard/Management/Training/Tracker/index");
+	}
+
+	public function clientCourses() {
+		$user = auth()->user();
+		$courses = TrainingCourses::where("type", "client")->where('sub_id', $user->subscriber_id)->orderBy("created_at", "desc")->get();
+
+		return Inertia::render("Dashboard/Management/Training/Client/Register/index", [
+			"courses" => $courses
+		]);
+	}
+
+	public function storeClientCourse(Request $request)
+	{
+		$request->validate([
+			'courses' => ['required', 'array']
+		]);
+		$user = Auth::user();
+		$courses = [];
+		foreach ($request->courses as $course)
+		{
+			$courses[] = [
+				'course_name' => $course['course_name'],
+				'acronym' => $course['acronym'],
+				'type' => "client",
+				'user_id' => $user->id,
+				'sub_id' => $user->subscriber_id,
+				'last_used' => null,
+				'created_at' => now()
+			];
+		}
+		TrainingCourses::insert($courses);
+
+		return redirect()->back()
+			->with('message', 'Course added successfully')
+			->with('type', 'success');
 	}
 }

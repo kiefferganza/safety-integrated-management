@@ -123,6 +123,7 @@ export const PATH_DASHBOARD = {
         register: route("training.management.courses"),
         new: (type) => path(ROOTS_DASHBOARD, `/training/new?type=${type || 2}`),
         createClient: route("training.management.createClient"),
+        clientCourses: route("training.management.client_course"),
         createThirdParty: route("training.management.createThirdParty"),
         matrix: route("training.management.matrix"),
         externalMatrix: route("training.management.external_matrix"),

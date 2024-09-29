@@ -266,8 +266,8 @@ export default function TrainingCoursesListPage({ courses }) {
                             href: PATH_DASHBOARD.root,
                         },
                         {
-                            name: "Create Training",
-                            href: PATH_DASHBOARD.training.new(2),
+                            name: "Create In House Training",
+                            href: PATH_DASHBOARD.training.newInHouse,
                         },
                         {
                             name: "Registered In House Courses",

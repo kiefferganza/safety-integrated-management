@@ -184,7 +184,7 @@ export default function TrainingCoursesListPage({ courses }) {
         }));
 
         Inertia.post(
-            route("training.management.new_courses"),
+            route("training.management.store_client_course"),
             { courses: newCourses },
             {
                 onStart: () => {
@@ -278,8 +278,8 @@ export default function TrainingCoursesListPage({ courses }) {
                             href: PATH_DASHBOARD.root,
                         },
                         {
-                            name: "Create Third Party Training",
-                            href: PATH_DASHBOARD.training.createThirdParty,
+                            name: "Create Client Training",
+                            href: PATH_DASHBOARD.training.createClient,
                         },
                         {
                             name: "Registered Courses",
