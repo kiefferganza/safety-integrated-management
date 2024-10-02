@@ -41,6 +41,12 @@ export function PDF(props) {
             : type === "inHouse"
             ? employees[0]?.internalTrainings
             : employees[0]?.clientTrainings;
+    summaryTotal.activeTotal = {};
+    summaryTotal.expiredTotal = {};
+    summaryTotal.SN = 0;
+    summaryTotal.E = 0;
+    summaryTotal.active = 0;
+    summaryTotal.inactive = 0;
     const legends = {
         SN: 0,
         E: 0,
@@ -940,7 +946,7 @@ function SummaryTotal({ original, legends, trainings, type = "thirdParty" }) {
         }
     });
     return (
-        <View style={styles.bm}>
+        <View style={styles.bm} wrap={false}>
             <SummaryTotalHeader trainings={trainings} />
             <SummaryTotalRow
                 title="Total Train Personnel"
