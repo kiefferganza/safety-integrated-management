@@ -407,9 +407,9 @@ class TrainingApiController extends Controller
 					return [$t->acronym => [
 						"name" => $t->course_name,
 						"acronym" => $t->acronym,
-						"expired" => false,
-						"sn" => false,
-						"active" => false,
+						"expired" => 0,
+						"sn" => 0,
+						"active" => 0,
 					]];
 				})->toArray();
 				$thirdParty = $thirdPartyTrainings->mapWithKeys(function ($t)
@@ -417,9 +417,9 @@ class TrainingApiController extends Controller
 					return [$t->acronym => [
 						"name" => $t->course_name,
 						"acronym" => $t->acronym,
-						"expired" => false,
-						"sn" => false,
-						"active" => false,
+						"expired" => 0,
+						"sn" => 0,
+						"active" => 0,
 					]];
 				})->toArray();
 				$clientT = $clientTraining->mapWithKeys(function ($t)
@@ -427,9 +427,9 @@ class TrainingApiController extends Controller
 					return [$t->acronym => [
 						"name" => $t->course_name,
 						"acronym" => $t->acronym,
-						"expired" => false,
-						"sn" => false,
-						"active" => false,
+						"expired" => 0,
+						"sn" => 0,
+						"active" => 0,
 					]];
 				})->toArray();
 				$client = $clientT;
@@ -449,19 +449,19 @@ class TrainingApiController extends Controller
 								$date = Carbon::parse($t->date_expired);
 								if ($date->between($lastWeekStart, $today))
 								{
-									$thirdParty[$foundTraining->acronym]["sn"] = true;
+									$thirdParty[$foundTraining->acronym]["sn"] += 1;
 									$trainings["external"]["TT"] += 1;
 									$trainings["external"]["SN"] += 1;
 								}
 								else if ($date->isPast($today))
 								{
-									$thirdParty[$foundTraining->acronym]["expired"] = true;
+									$thirdParty[$foundTraining->acronym]["expired"] += 1;
 									$trainings["external"]["TT"] += 1;
 									$trainings["external"]["E"] += 1;
 								}
 								else
 								{
-									$thirdParty[$foundTraining->acronym]["active"] = true;
+									$thirdParty[$foundTraining->acronym]["active"] += 1;
 									$trainings["external"]["TT"] += 1;
 								}
 								$totalTrainings += 1;
@@ -478,19 +478,19 @@ class TrainingApiController extends Controller
 								$date = Carbon::parse($t->date_expired);
 								if ($date->between($lastWeekStart, $today))
 								{
-									$client[$foundTraining->acronym]["sn"] = true;
+									$client[$foundTraining->acronym]["sn"] += 1;
 									$trainings["client"]["TT"] += 1;
 									$trainings["client"]["SN"] += 1;
 								}
 								else if ($date->isPast($today))
 								{
-									$client[$foundTraining->acronym]["expired"] = true;
+									$client[$foundTraining->acronym]["expired"] += 1;
 									$trainings["client"]["TT"] += 1;
 									$trainings["client"]["E"] += 1;
 								}
 								else
 								{
-									$client[$foundTraining->acronym]["active"] = true;
+									$client[$foundTraining->acronym]["active"] += 1;
 									$trainings["client"]["TT"] += 1;
 								}
 								$totalTrainings += 1;
@@ -507,19 +507,19 @@ class TrainingApiController extends Controller
 								$date = Carbon::parse($t->date_expired);
 								if ($date->between($lastWeekStart, $today))
 								{
-									$internal[$foundTraining->acronym]["sn"] = true;
+									$internal[$foundTraining->acronym]["sn"] += 1;
 									$trainings["internal"]["TT"] += 1;
 									$trainings["internal"]["SN"] += 1;
 								}
 								else if ($date->isPast($today))
 								{
-									$internal[$foundTraining->acronym]["expired"] = true;
+									$internal[$foundTraining->acronym]["expired"] += 1;
 									$trainings["internal"]["TT"] += 1;
 									$trainings["internal"]["E"] += 1;
 								}
 								else
 								{
-									$internal[$foundTraining->acronym]["active"] = true;
+									$internal[$foundTraining->acronym]["active"] += 1;
 									$trainings["internal"]["TT"] += 1;
 								}
 								$totalTrainings += 1;

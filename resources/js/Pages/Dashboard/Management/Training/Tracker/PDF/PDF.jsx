@@ -11,11 +11,21 @@ import {
 // utils
 import { styles } from "./PDFStyles";
 import { format } from "date-fns";
+import { useMemo } from "react";
 
 // ----------------------------------------------------------------------
 
+const PER_PAGE = 25;
 const FORMATTED_DATE = format(new Date(), "MM/dd/yy");
 const YEAR = new Date().getFullYear();
+const summaryTotal = {
+    activeTotal: {},
+    expiredTotal: {},
+    SN: 0,
+    E: 0,
+    active: 0,
+    inactive: 0,
+};
 export function PDF(props) {
     const { employees = [], type = "thirdParty" } = props;
 
@@ -31,275 +41,330 @@ export function PDF(props) {
             : type === "inHouse"
             ? employees[0]?.internalTrainings
             : employees[0]?.clientTrainings;
+    const legends = {
+        SN: 0,
+        E: 0,
+    };
+    for (const key in trainings) {
+        if (Object.prototype.hasOwnProperty.call(trainings, key)) {
+            legends[key] = 0;
+            summaryTotal.activeTotal[key] = 0;
+            summaryTotal.expiredTotal[key] = 0;
+        }
+    }
+    const pages = useMemo(() => {
+        if (employees.length > PER_PAGE) {
+            const chunkSize = PER_PAGE;
+            let arr = [];
+            for (let i = 0; i < employees.length; i += chunkSize) {
+                const chunk = employees.slice(i, i + chunkSize);
+                arr.push(chunk);
+            }
+            return arr;
+        } else {
+            return [employees];
+        }
+    }, [employees]);
+
     return (
         <Document title={""}>
-            <Page size="A4" style={styles.page}>
-                <View
-                    style={[
-                        styles.mb16,
-                        { minHeight: 40, alignItems: "flex-start" },
-                    ]}
-                    fixed
-                >
-                    <Image
-                        src={
-                            window.location.origin +
-                            "/image/media/logo/Fiafi-logo.png"
-                        }
-                        style={{ height: 32, padding: 2 }}
-                    />
-                </View>
-                <View style={{ textAlign: "center", marginTop: "-30px" }}>
-                    <Text style={[styles.h2]}>
-                        Employee Training Tracker Report
-                    </Text>
-                </View>
-
-                <View style={styles.mb8}>
+            {pages.map((page, i) => (
+                <Page size="A4" style={styles.page} key={i}>
                     <View
                         style={[
-                            styles.gridContainer,
-                            styles.mb8,
-                            styles.mt8,
-                            styles.pt8,
-                            styles.pb8,
-                            {
-                                border: "1px solid #f5f5f5",
-                                borderRadius: 4,
-                            },
+                            styles.mb16,
+                            { minHeight: 40, alignItems: "flex-start" },
                         ]}
                     >
-                        <View
-                            style={[
-                                styles.gridContainer,
-                                styles.pl4,
-                                {
-                                    alignItems: "center",
-                                    borderRight: "1px solid #f5f5f5",
-                                    width: "100%",
-                                    justifyContent: "flex-start",
-                                },
-                            ]}
-                        >
-                            <View style={[styles.pl4]}>
-                                <Text style={[styles.h6, styles.info]}>
-                                    Total
-                                </Text>
-                                <View style={{ flexDirection: "row" }}>
-                                    <Text
-                                        style={[
-                                            styles.bold,
-                                            styles.pr4,
-                                            { fontSize: 8 },
-                                        ]}
-                                    >
-                                        {employees.length}
-                                    </Text>
-                                    <Text
-                                        style={{
-                                            fontSize: 8,
-                                            color: "#637381",
-                                        }}
-                                    >
-                                        employees
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View
-                            style={[
-                                styles.gridContainer,
-                                styles.pl4,
-                                {
-                                    alignItems: "center",
-                                    borderRight: "1px solid #f5f5f5",
-                                    width: "100%",
-                                    justifyContent: "flex-start",
-                                },
-                            ]}
-                        >
-                            <View style={[styles.pl4]}>
-                                <Text style={[styles.h6, styles.success]}>
-                                    Active
-                                </Text>
-                                <View style={{ flexDirection: "row" }}>
-                                    <Text
-                                        style={[
-                                            styles.bold,
-                                            styles.pr4,
-                                            { fontSize: 8 },
-                                        ]}
-                                    >
-                                        {getLengthByStatus("active")}
-                                    </Text>
-                                    <Text
-                                        style={{
-                                            fontSize: 8,
-                                            color: "#637381",
-                                        }}
-                                    >
-                                        employees
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View
-                            style={[
-                                styles.gridContainer,
-                                styles.pl4,
-                                {
-                                    alignItems: "center",
-                                    borderRight: "1px solid #f5f5f5",
-                                    width: "100%",
-                                    justifyContent: "flex-start",
-                                },
-                            ]}
-                        >
-                            <View style={[styles.pl4]}>
-                                <Text style={[styles.h6, styles.warning]}>
-                                    Inactive
-                                </Text>
-                                <View style={{ flexDirection: "row" }}>
-                                    <Text
-                                        style={[
-                                            styles.bold,
-                                            styles.pr4,
-                                            { fontSize: 8 },
-                                        ]}
-                                    >
-                                        {getLengthByStatus("inactive")}
-                                    </Text>
-                                    <Text
-                                        style={{
-                                            fontSize: 8,
-                                            color: "#637381",
-                                        }}
-                                    >
-                                        employees
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View
-                            style={[
-                                styles.gridContainer,
-                                styles.pl4,
-                                {
-                                    alignItems: "center",
-                                    borderRight: "1px solid #f5f5f5",
-                                    width: "100%",
-                                    justifyContent: "flex-start",
-                                },
-                            ]}
-                        >
-                            <View style={[styles.pl4]}>
-                                <Text style={[styles.h6, styles.error]}>
-                                    Unassigned
-                                </Text>
-                                <View style={{ flexDirection: "row" }}>
-                                    <Text
-                                        style={[
-                                            styles.bold,
-                                            styles.pr4,
-                                            { fontSize: 8 },
-                                        ]}
-                                    >
-                                        {getUnassignedEmployeeLength()}
-                                    </Text>
-                                    <Text
-                                        style={{
-                                            fontSize: 8,
-                                            color: "#637381",
-                                        }}
-                                    >
-                                        employees
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                </View>
-
-                <TableHeader trainings={trainings} type={type} />
-
-                <View>
-                    {employees.map((emp, idx) => (
-                        <TableRow
-                            key={emp.employee_id}
-                            emp={emp}
-                            idx={idx}
-                            type={type}
-                        />
-                    ))}
-                </View>
-
-                <Legend trainings={trainings} />
-
-                <View style={[styles.gridContainer, styles.footer]} fixed>
-                    <View style={styles.col4}>
-                        <Text
-                            style={[
-                                styles.bold,
-                                {
-                                    fontSize: 7,
-                                    textAlign: "left",
-                                    color: "#141414",
-                                },
-                            ]}
-                        >
-                            Uncontrolled Copy if Printed
-                        </Text>
-                    </View>
-                    <View style={styles.col6}>
-                        <Text
-                            style={[
-                                styles.bold,
-                                {
-                                    fontSize: 7,
-                                    textAlign: "center",
-                                    color: "#141414",
-                                },
-                            ]}
-                        >
-                            &copy; FIAFI Group Company, {YEAR}. All Rights
-                            Reserved.
-                        </Text>
-                    </View>
-                    <View style={styles.col4}>
-                        <Text
-                            style={[
-                                styles.bold,
-                                {
-                                    fontSize: 7,
-                                    textAlign: "right",
-                                    color: "#141414",
-                                },
-                            ]}
-                            render={({ pageNumber, totalPages }) =>
-                                `${FORMATTED_DATE} Page ${pageNumber} / ${totalPages}`
+                        <Image
+                            src={
+                                window.location.origin +
+                                "/image/media/logo/Fiafi-logo.png"
                             }
-                        ></Text>
+                            style={{ height: 32, padding: 2 }}
+                        />
                     </View>
-                </View>
-            </Page>
+                    <View style={{ textAlign: "center", marginTop: "-30px" }}>
+                        <Text style={[styles.h4]}>
+                            Employee Training Tracker Report
+                        </Text>
+                    </View>
+
+                    {i === 0 && (
+                        <View style={styles.mb8}>
+                            <View
+                                style={[
+                                    styles.gridContainer,
+                                    styles.mb8,
+                                    styles.mt8,
+                                    styles.pt8,
+                                    styles.pb8,
+                                    {
+                                        border: "1px solid #f5f5f5",
+                                        borderRadius: 4,
+                                    },
+                                ]}
+                            >
+                                <View
+                                    style={[
+                                        styles.gridContainer,
+                                        styles.pl4,
+                                        {
+                                            alignItems: "center",
+                                            borderRight: "1px solid #f5f5f5",
+                                            width: "100%",
+                                            justifyContent: "flex-start",
+                                        },
+                                    ]}
+                                >
+                                    <View style={[styles.pl4]}>
+                                        <Text style={[styles.h6, styles.info]}>
+                                            Total
+                                        </Text>
+                                        <View style={{ flexDirection: "row" }}>
+                                            <Text
+                                                style={[
+                                                    styles.bold,
+                                                    styles.pr4,
+                                                    { fontSize: 8 },
+                                                ]}
+                                            >
+                                                {employees.length}
+                                            </Text>
+                                            <Text
+                                                style={{
+                                                    fontSize: 8,
+                                                    color: "#637381",
+                                                }}
+                                            >
+                                                employees
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </View>
+
+                                <View
+                                    style={[
+                                        styles.gridContainer,
+                                        styles.pl4,
+                                        {
+                                            alignItems: "center",
+                                            borderRight: "1px solid #f5f5f5",
+                                            width: "100%",
+                                            justifyContent: "flex-start",
+                                        },
+                                    ]}
+                                >
+                                    <View style={[styles.pl4]}>
+                                        <Text
+                                            style={[styles.h6, styles.success]}
+                                        >
+                                            Active
+                                        </Text>
+                                        <View style={{ flexDirection: "row" }}>
+                                            <Text
+                                                style={[
+                                                    styles.bold,
+                                                    styles.pr4,
+                                                    { fontSize: 8 },
+                                                ]}
+                                            >
+                                                {getLengthByStatus("active")}
+                                            </Text>
+                                            <Text
+                                                style={{
+                                                    fontSize: 8,
+                                                    color: "#637381",
+                                                }}
+                                            >
+                                                employees
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </View>
+
+                                <View
+                                    style={[
+                                        styles.gridContainer,
+                                        styles.pl4,
+                                        {
+                                            alignItems: "center",
+                                            borderRight: "1px solid #f5f5f5",
+                                            width: "100%",
+                                            justifyContent: "flex-start",
+                                        },
+                                    ]}
+                                >
+                                    <View style={[styles.pl4]}>
+                                        <Text
+                                            style={[styles.h6, styles.warning]}
+                                        >
+                                            Inactive
+                                        </Text>
+                                        <View style={{ flexDirection: "row" }}>
+                                            <Text
+                                                style={[
+                                                    styles.bold,
+                                                    styles.pr4,
+                                                    { fontSize: 8 },
+                                                ]}
+                                            >
+                                                {getLengthByStatus("inactive")}
+                                            </Text>
+                                            <Text
+                                                style={{
+                                                    fontSize: 8,
+                                                    color: "#637381",
+                                                }}
+                                            >
+                                                employees
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </View>
+
+                                <View
+                                    style={[
+                                        styles.gridContainer,
+                                        styles.pl4,
+                                        {
+                                            alignItems: "center",
+                                            borderRight: "1px solid #f5f5f5",
+                                            width: "100%",
+                                            justifyContent: "flex-start",
+                                        },
+                                    ]}
+                                >
+                                    <View style={[styles.pl4]}>
+                                        <Text style={[styles.h6, styles.error]}>
+                                            Unassigned
+                                        </Text>
+                                        <View style={{ flexDirection: "row" }}>
+                                            <Text
+                                                style={[
+                                                    styles.bold,
+                                                    styles.pr4,
+                                                    { fontSize: 8 },
+                                                ]}
+                                            >
+                                                {getUnassignedEmployeeLength()}
+                                            </Text>
+                                            <Text
+                                                style={{
+                                                    fontSize: 8,
+                                                    color: "#637381",
+                                                }}
+                                            >
+                                                employees
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                    )}
+
+                    <TableHeader
+                        trainings={trainings}
+                        type={type}
+                        style={styles.bt}
+                    />
+
+                    <View>
+                        {page.map((emp, idx) => (
+                            <TableRow
+                                key={emp.employee_id}
+                                emp={emp}
+                                idx={idx}
+                                type={type}
+                            />
+                        ))}
+                    </View>
+                    <TableHeader
+                        trainings={trainings}
+                        type={type}
+                        invertedTraining
+                    />
+
+                    <SummaryTotal
+                        original={page}
+                        type={type}
+                        trainings={Object.values(trainings)}
+                        legends={legends}
+                    />
+
+                    {i + 1 === pages.length && <Legend trainings={trainings} />}
+
+                    <View style={[styles.gridContainer, styles.footer]}>
+                        <View style={styles.col4}>
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    {
+                                        fontSize: 7,
+                                        textAlign: "left",
+                                        color: "#141414",
+                                    },
+                                ]}
+                            >
+                                Uncontrolled Copy if Printed
+                            </Text>
+                        </View>
+                        <View style={styles.col6}>
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    {
+                                        fontSize: 7,
+                                        textAlign: "center",
+                                        color: "#141414",
+                                    },
+                                ]}
+                            >
+                                &copy; FIAFI Group Company, {YEAR}. All Rights
+                                Reserved.
+                            </Text>
+                        </View>
+                        <View style={styles.col4}>
+                            <Text
+                                style={[
+                                    styles.bold,
+                                    {
+                                        fontSize: 7,
+                                        textAlign: "right",
+                                        color: "#141414",
+                                    },
+                                ]}
+                            >
+                                {`${FORMATTED_DATE} Page ${i + 1} / ${
+                                    pages.length
+                                }`}
+                            </Text>
+                        </View>
+                    </View>
+                </Page>
+            ))}
         </Document>
     );
 }
 
-function TableHeader({ trainings = {}, type = "thirdParty" }) {
+function TableHeader({
+    trainings = {},
+    type = "thirdParty",
+    style,
+    invertedTraining,
+    ...others
+}) {
     return (
         <View
             style={[
                 styles.tableRow,
                 styles.w1,
                 styles.bl,
-                styles.bt,
+                style,
                 { padding: 0 },
             ]}
-            fixed
+            {...others}
         >
             <View
                 style={[
@@ -421,7 +486,16 @@ function TableHeader({ trainings = {}, type = "thirdParty" }) {
                     </Text>
                 </View>
             </View>
-            <View style={[styles.br]}>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexDirection: invertedTraining
+                            ? "column-reverse"
+                            : "column",
+                    },
+                ]}
+            >
                 <View
                     style={[
                         {
@@ -430,6 +504,7 @@ function TableHeader({ trainings = {}, type = "thirdParty" }) {
                             alignItems: "center",
                             justifyContent: "center",
                         },
+                        invertedTraining ? styles.bt : {},
                     ]}
                 >
                     <Text
@@ -450,7 +525,12 @@ function TableHeader({ trainings = {}, type = "thirdParty" }) {
                             : "Client Training"}
                     </Text>
                 </View>
-                <View style={[{ flexDirection: "row" }, styles.bt]}>
+                <View
+                    style={[
+                        { flexDirection: "row" },
+                        invertedTraining ? {} : styles.bt,
+                    ]}
+                >
                     {Object.values(trainings).map((t) => (
                         <View
                             style={[styles.br, { paddingHorizontal: 1.5 }]}
@@ -581,11 +661,9 @@ function TableRow({ emp, idx, type = "thirdParty" }) {
                 ? "internal"
                 : "client"
         ];
+
     return (
-        <View
-            style={[styles.tableRow, styles.w1, styles.bl, { padding: 0 }]}
-            wrap={false}
-        >
+        <View style={[styles.tableRow, styles.w1, styles.bl, { padding: 0 }]}>
             <View
                 style={[
                     styles.br,
@@ -691,6 +769,7 @@ function TableRow({ emp, idx, type = "thirdParty" }) {
                     {emp.company_name ?? ""}
                 </Text>
             </View>
+
             <View
                 style={[
                     styles.br,
@@ -729,8 +808,10 @@ function TableRow({ emp, idx, type = "thirdParty" }) {
                                 color={
                                     t.sn
                                         ? "febe00"
-                                        : t.active
-                                        ? "#02a94d"
+                                        : t.active > 0
+                                        ? t.sn > 0
+                                            ? "#FFAB00"
+                                            : "#02a94d"
                                         : undefined
                                 }
                                 style={{
@@ -805,7 +886,7 @@ function TableRow({ emp, idx, type = "thirdParty" }) {
                     style={[
                         styles.bold,
                         {
-                            color: "#f0f0f0",
+                            color: "#f2f2f2",
                             textTransform: "capitalize",
                             lineHeight: 1,
                             textAlign: "center",
@@ -813,6 +894,378 @@ function TableRow({ emp, idx, type = "thirdParty" }) {
                     ]}
                 >
                     {emp.status}
+                </Text>
+            </View>
+        </View>
+    );
+}
+
+function SummaryTotal({ original, legends, trainings, type = "thirdParty" }) {
+    const trainingTotals = {
+        ttp: { ...legends },
+        tntp: { ...legends },
+        active: 0,
+        inactive: 0,
+    };
+    original.forEach((arr) => {
+        Object.values(
+            type === "thirdParty"
+                ? arr.thirdPartyTrainings
+                : type === "inHouse"
+                ? arr.internalTrainings
+                : arr.clientTrainings
+        ).forEach((item) => {
+            if (item.acronym in summaryTotal.activeTotal) {
+                summaryTotal.activeTotal[item.acronym] += item.active;
+                summaryTotal.expiredTotal[item.acronym] += item.expired;
+                summaryTotal.SN += item.sn;
+                summaryTotal.E += item.expired;
+            }
+            if (item.acronym in trainingTotals.ttp) {
+                trainingTotals.ttp[item.acronym] += item.active;
+                trainingTotals.ttp.SN += item.sn;
+                trainingTotals.ttp.E += item.expired;
+
+                trainingTotals.tntp[item.acronym] += item.expired;
+                trainingTotals.tntp.SN += item.sn;
+                trainingTotals.tntp.E += item.expired;
+            }
+        });
+        if (arr.status === "active") {
+            summaryTotal.active += 1;
+            trainingTotals.active += 1;
+        } else {
+            summaryTotal.inactive += 1;
+            trainingTotals.inactive += 1;
+        }
+    });
+    return (
+        <View style={styles.bm}>
+            <SummaryTotalHeader trainings={trainings} />
+            <SummaryTotalRow
+                title="Total Train Personnel"
+                trainings={trainings}
+                items={trainingTotals.ttp}
+                status={trainingTotals.active}
+                statusStyle={styles.bgSuccess}
+            />
+            <SummaryTotalRow
+                title="Total Not Train Personnel"
+                trainings={trainings}
+                items={trainingTotals.tntp}
+                status={trainingTotals.inactive}
+                statusStyle={styles.bgWarning}
+            />
+            <View
+                style={[
+                    styles.bl,
+                    styles.bt,
+                    styles.br,
+                    styles.bgOffPrimary,
+                    {
+                        fontSize: 8,
+                        paddingVertical: 4,
+                        width: "100%",
+                        alignItems: "center",
+                    },
+                ]}
+            >
+                <Text
+                    style={[
+                        styles.bold,
+                        {
+                            color: "#363636",
+                            lineHeight: 0,
+                        },
+                    ]}
+                >
+                    Summary Total
+                </Text>
+            </View>
+            <SummaryTotalRow
+                title="Summary Total Train Personnel"
+                trainings={trainings}
+                items={{
+                    ...summaryTotal.activeTotal,
+                    SN: summaryTotal.SN,
+                    E: summaryTotal.E,
+                }}
+                status={summaryTotal.active}
+                statusStyle={styles.bgSuccess}
+            />
+            <SummaryTotalRow
+                title="Summary Total Not Train Personnel"
+                trainings={trainings}
+                items={{
+                    ...summaryTotal.expiredTotal,
+                    SN: summaryTotal.SN,
+                    E: summaryTotal.E,
+                }}
+                status={summaryTotal.inactive}
+                statusStyle={styles.bgWarning}
+            />
+        </View>
+    );
+}
+
+function SummaryTotalHeader({ trainings }) {
+    return (
+        <View
+            style={[
+                styles.bgOffPrimary,
+                styles.mt16,
+                styles.w1,
+                styles.bl,
+                styles.bt,
+                {
+                    flexDirection: "row",
+                    fontSize: 7,
+                },
+            ]}
+        >
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 1,
+                        flexBasis: 165,
+                        paddingVertical: 2,
+                    },
+                ]}
+            ></View>
+            {trainings.map((keys) => (
+                <View
+                    style={[
+                        styles.br,
+                        {
+                            flexGrow: 0,
+                            flexBasis: 42,
+                            paddingVertical: 2,
+                        },
+                    ]}
+                    key={keys.acronym}
+                >
+                    <Text
+                        style={[
+                            styles.bold,
+                            {
+                                color: "#363636",
+                                lineHeight: 0,
+                                textAlign: "center",
+                            },
+                        ]}
+                    >
+                        {keys.acronym}
+                    </Text>
+                </View>
+            ))}
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        flexBasis: 50,
+                        paddingVertical: 2,
+                    },
+                ]}
+            >
+                <Text
+                    style={[
+                        styles.bold,
+                        {
+                            color: "#363636",
+                            lineHeight: 0,
+                            textAlign: "center",
+                        },
+                    ]}
+                >
+                    SN
+                </Text>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        flexBasis: 50,
+                        paddingVertical: 2,
+                    },
+                ]}
+            >
+                <Text
+                    style={[
+                        styles.bold,
+                        {
+                            color: "#363636",
+                            lineHeight: 0,
+                            textAlign: "center",
+                        },
+                    ]}
+                >
+                    E
+                </Text>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        flexBasis: 60,
+                        paddingVertical: 2,
+                    },
+                ]}
+            >
+                <View style={{ marginVertical: "auto" }}>
+                    <Text
+                        style={[
+                            styles.bold,
+                            {
+                                color: "#363636",
+                                lineHeight: 0,
+                                textAlign: "center",
+                            },
+                        ]}
+                    >
+                        Statuses
+                    </Text>
+                </View>
+            </View>
+        </View>
+    );
+}
+
+function SummaryTotalRow({ title, trainings, items, status, statusStyle }) {
+    return (
+        <View
+            style={[
+                styles.w1,
+                styles.bl,
+                styles.bt,
+                {
+                    flexDirection: "row",
+                    fontSize: 7,
+                },
+            ]}
+        >
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 1,
+                        flexBasis: 165,
+                        paddingVertical: 2,
+                    },
+                ]}
+            >
+                {title && (
+                    <Text
+                        style={[
+                            styles.bold,
+                            {
+                                color: "#2a2a2a",
+                                lineHeight: 1,
+                                paddlingLeft: 2,
+                            },
+                        ]}
+                    >
+                        {title}
+                    </Text>
+                )}
+            </View>
+            {trainings.map((keys) => (
+                <View
+                    style={[
+                        styles.br,
+                        {
+                            flexGrow: 0,
+                            flexBasis: 42,
+                            paddingVertical: 2,
+                        },
+                    ]}
+                    key={keys.acronym}
+                >
+                    <Text
+                        style={[
+                            styles.bold,
+                            {
+                                color: "#363636",
+                                lineHeight: 0,
+                                textAlign: "center",
+                            },
+                        ]}
+                    >
+                        {items[keys.acronym] ?? 0}
+                    </Text>
+                </View>
+            ))}
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        flexBasis: 50,
+                        paddingVertical: 2,
+                    },
+                ]}
+            >
+                <Text
+                    style={[
+                        styles.bold,
+                        {
+                            color: "#363636",
+                            lineHeight: 0,
+                            textAlign: "center",
+                        },
+                    ]}
+                >
+                    {items?.SN ?? 0}
+                </Text>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    {
+                        flexGrow: 0,
+                        flexBasis: 50,
+                        paddingVertical: 2,
+                    },
+                ]}
+            >
+                <Text
+                    style={[
+                        styles.bold,
+                        {
+                            color: "#363636",
+                            lineHeight: 0,
+                            textAlign: "center",
+                        },
+                    ]}
+                >
+                    {items.E ?? 0}
+                </Text>
+            </View>
+            <View
+                style={[
+                    styles.br,
+                    statusStyle,
+                    {
+                        flexGrow: 0,
+                        flexBasis: 60,
+                        paddingVertical: 2,
+                    },
+                ]}
+            >
+                <Text
+                    style={[
+                        styles.bold,
+                        {
+                            color: "#f2f2f2",
+                            lineHeight: 0,
+                            textAlign: "center",
+                        },
+                    ]}
+                >
+                    {status}
                 </Text>
             </View>
         </View>
@@ -828,11 +1281,12 @@ function Legend({ trainings = {} }) {
                     flexDirection: "row",
                     alignSelf: "flex-end",
                     maxWidth: "60%",
+                    marginTop: "auto",
                 },
             ]}
         >
             <View style={styles.mr16}>
-                <Text style={[styles.subtitle2]}>Legend</Text>
+                <Text style={[styles.subtitle3, styles.bold]}>Legend</Text>
             </View>
             <View>
                 {Object.values(trainings).map((t) => (
@@ -843,11 +1297,27 @@ function Legend({ trainings = {} }) {
                             justifyContent: "space-between",
                         }}
                     >
-                        <Text style={[styles.subtitle3, styles.w1]}>
+                        <Text
+                            style={[styles.subtitle4, styles.bold, styles.w1]}
+                        >
                             {t.name}
                         </Text>
-                        <Text style={[styles.subtitle3, { width: 15 }]}>-</Text>
-                        <Text style={[styles.subtitle3, { width: 35 }]}>
+                        <Text
+                            style={[
+                                styles.subtitle4,
+                                styles.bold,
+                                { width: 15 },
+                            ]}
+                        >
+                            -
+                        </Text>
+                        <Text
+                            style={[
+                                styles.subtitle4,
+                                styles.bold,
+                                { width: 35 },
+                            ]}
+                        >
                             {t.acronym}
                         </Text>
                     </View>
@@ -858,11 +1328,19 @@ function Legend({ trainings = {} }) {
                         justifyContent: "space-between",
                     }}
                 >
-                    <Text style={[styles.subtitle3, styles.w1]}>
+                    <Text style={[styles.subtitle4, styles.bold, styles.w1]}>
                         Soon to Expire
                     </Text>
-                    <Text style={[styles.subtitle3, { width: 15 }]}>-</Text>
-                    <Text style={[styles.subtitle3, { width: 35 }]}>SN</Text>
+                    <Text
+                        style={[styles.subtitle4, styles.bold, { width: 15 }]}
+                    >
+                        -
+                    </Text>
+                    <Text
+                        style={[styles.subtitle4, styles.bold, { width: 35 }]}
+                    >
+                        SN
+                    </Text>
                 </View>
                 <View
                     style={{
@@ -870,9 +1348,19 @@ function Legend({ trainings = {} }) {
                         justifyContent: "space-between",
                     }}
                 >
-                    <Text style={[styles.subtitle3, styles.w1]}>Expired</Text>
-                    <Text style={[styles.subtitle3, { width: 15 }]}>-</Text>
-                    <Text style={[styles.subtitle3, { width: 35 }]}>E</Text>
+                    <Text style={[styles.subtitle4, styles.bold, styles.w1]}>
+                        Expired
+                    </Text>
+                    <Text
+                        style={[styles.subtitle4, styles.bold, { width: 15 }]}
+                    >
+                        -
+                    </Text>
+                    <Text
+                        style={[styles.subtitle4, styles.bold, { width: 35 }]}
+                    >
+                        E
+                    </Text>
                 </View>
                 <View
                     style={{
@@ -880,11 +1368,19 @@ function Legend({ trainings = {} }) {
                         justifyContent: "space-between",
                     }}
                 >
-                    <Text style={[styles.subtitle3, styles.w1]}>
+                    <Text style={[styles.subtitle4, styles.bold, styles.w1]}>
                         Total Trainings
                     </Text>
-                    <Text style={[styles.subtitle3, { width: 15 }]}>-</Text>
-                    <Text style={[styles.subtitle3, { width: 35 }]}>TT</Text>
+                    <Text
+                        style={[styles.subtitle4, styles.bold, { width: 15 }]}
+                    >
+                        -
+                    </Text>
+                    <Text
+                        style={[styles.subtitle4, styles.bold, { width: 35 }]}
+                    >
+                        TT
+                    </Text>
                 </View>
             </View>
         </View>
