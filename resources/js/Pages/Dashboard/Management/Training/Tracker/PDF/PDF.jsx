@@ -286,11 +286,6 @@ export function PDF(props) {
                             />
                         ))}
                     </View>
-                    <TableHeader
-                        trainings={trainings}
-                        type={type}
-                        invertedTraining
-                    />
 
                     <SummaryTotal
                         original={page}
@@ -946,50 +941,25 @@ function SummaryTotal({ original, legends, trainings, type = "thirdParty" }) {
         }
     });
     return (
-        <View style={styles.bm} wrap={false}>
-            <SummaryTotalHeader trainings={trainings} />
+        <View wrap={false}>
+            <SummaryTotalHeader title="Total" trainings={trainings} />
             <SummaryTotalRow
-                title="Total Train Personnel"
+                title="Train Personnel"
                 trainings={trainings}
                 items={trainingTotals.ttp}
                 status={trainingTotals.active}
                 statusStyle={styles.bgSuccess}
             />
             <SummaryTotalRow
-                title="Total Not Train Personnel"
+                title="Not Train Personnel"
                 trainings={trainings}
                 items={trainingTotals.tntp}
                 status={trainingTotals.inactive}
                 statusStyle={styles.bgWarning}
             />
-            <View
-                style={[
-                    styles.bl,
-                    styles.bt,
-                    styles.br,
-                    styles.bgOffPrimary,
-                    {
-                        fontSize: 8,
-                        paddingVertical: 4,
-                        width: "100%",
-                        alignItems: "center",
-                    },
-                ]}
-            >
-                <Text
-                    style={[
-                        styles.bold,
-                        {
-                            color: "#363636",
-                            lineHeight: 0,
-                        },
-                    ]}
-                >
-                    Summary Total
-                </Text>
-            </View>
+            <SummaryTotalHeader title="Summary Total" trainings={trainings} />
             <SummaryTotalRow
-                title="Summary Total Train Personnel"
+                title="Train Personnel"
                 trainings={trainings}
                 items={{
                     ...summaryTotal.activeTotal,
@@ -1000,7 +970,7 @@ function SummaryTotal({ original, legends, trainings, type = "thirdParty" }) {
                 statusStyle={styles.bgSuccess}
             />
             <SummaryTotalRow
-                title="Summary Total Not Train Personnel"
+                title="Not Train Personnel"
                 trainings={trainings}
                 items={{
                     ...summaryTotal.expiredTotal,
@@ -1014,35 +984,45 @@ function SummaryTotal({ original, legends, trainings, type = "thirdParty" }) {
     );
 }
 
-function SummaryTotalHeader({ trainings }) {
+function SummaryTotalHeader({ title = "", trainings }) {
     return (
         <View
             style={[
                 styles.bgOffPrimary,
                 styles.mt16,
                 styles.w1,
-                styles.bl,
-                styles.bt,
                 {
                     flexDirection: "row",
                     fontSize: 7,
+                    paddingVertical: 4,
                 },
             ]}
         >
             <View
                 style={[
-                    styles.br,
                     {
                         flexGrow: 1,
-                        flexBasis: 165,
+                        flexBasis: 180,
                         paddingVertical: 2,
+                        paddingLeft: 2,
                     },
                 ]}
-            ></View>
+            >
+                <Text
+                    style={[
+                        styles.bold,
+                        {
+                            color: "#363636",
+                            lineHeight: 0,
+                        },
+                    ]}
+                >
+                    {title}
+                </Text>
+            </View>
             {trainings.map((keys) => (
                 <View
                     style={[
-                        styles.br,
                         {
                             flexGrow: 0,
                             flexBasis: 42,
@@ -1067,7 +1047,6 @@ function SummaryTotalHeader({ trainings }) {
             ))}
             <View
                 style={[
-                    styles.br,
                     {
                         flexGrow: 0,
                         flexBasis: 50,
@@ -1090,7 +1069,6 @@ function SummaryTotalHeader({ trainings }) {
             </View>
             <View
                 style={[
-                    styles.br,
                     {
                         flexGrow: 0,
                         flexBasis: 50,
@@ -1111,31 +1089,6 @@ function SummaryTotalHeader({ trainings }) {
                     E
                 </Text>
             </View>
-            <View
-                style={[
-                    styles.br,
-                    {
-                        flexGrow: 0,
-                        flexBasis: 60,
-                        paddingVertical: 2,
-                    },
-                ]}
-            >
-                <View style={{ marginVertical: "auto" }}>
-                    <Text
-                        style={[
-                            styles.bold,
-                            {
-                                color: "#363636",
-                                lineHeight: 0,
-                                textAlign: "center",
-                            },
-                        ]}
-                    >
-                        Statuses
-                    </Text>
-                </View>
-            </View>
         </View>
     );
 }
@@ -1145,8 +1098,6 @@ function SummaryTotalRow({ title, trainings, items, status, statusStyle }) {
         <View
             style={[
                 styles.w1,
-                styles.bl,
-                styles.bt,
                 {
                     flexDirection: "row",
                     fontSize: 7,
@@ -1155,11 +1106,11 @@ function SummaryTotalRow({ title, trainings, items, status, statusStyle }) {
         >
             <View
                 style={[
-                    styles.br,
                     {
                         flexGrow: 1,
-                        flexBasis: 165,
+                        flexBasis: 180,
                         paddingVertical: 2,
+                        paddingLeft: 2,
                     },
                 ]}
             >
@@ -1170,7 +1121,6 @@ function SummaryTotalRow({ title, trainings, items, status, statusStyle }) {
                             {
                                 color: "#2a2a2a",
                                 lineHeight: 1,
-                                paddlingLeft: 2,
                             },
                         ]}
                     >
@@ -1181,7 +1131,6 @@ function SummaryTotalRow({ title, trainings, items, status, statusStyle }) {
             {trainings.map((keys) => (
                 <View
                     style={[
-                        styles.br,
                         {
                             flexGrow: 0,
                             flexBasis: 42,
@@ -1206,7 +1155,6 @@ function SummaryTotalRow({ title, trainings, items, status, statusStyle }) {
             ))}
             <View
                 style={[
-                    styles.br,
                     {
                         flexGrow: 0,
                         flexBasis: 50,
@@ -1229,7 +1177,6 @@ function SummaryTotalRow({ title, trainings, items, status, statusStyle }) {
             </View>
             <View
                 style={[
-                    styles.br,
                     {
                         flexGrow: 0,
                         flexBasis: 50,
@@ -1250,30 +1197,6 @@ function SummaryTotalRow({ title, trainings, items, status, statusStyle }) {
                     {items.E ?? 0}
                 </Text>
             </View>
-            <View
-                style={[
-                    styles.br,
-                    statusStyle,
-                    {
-                        flexGrow: 0,
-                        flexBasis: 60,
-                        paddingVertical: 2,
-                    },
-                ]}
-            >
-                <Text
-                    style={[
-                        styles.bold,
-                        {
-                            color: "#f2f2f2",
-                            lineHeight: 0,
-                            textAlign: "center",
-                        },
-                    ]}
-                >
-                    {status}
-                </Text>
-            </View>
         </View>
     );
 }
@@ -1288,11 +1211,12 @@ function Legend({ trainings = {} }) {
                     alignSelf: "flex-end",
                     maxWidth: "60%",
                     marginTop: "auto",
+                    marginBottom: "auto",
                 },
             ]}
         >
             <View style={styles.mr16}>
-                <Text style={[styles.subtitle3, styles.bold]}>Legend</Text>
+                <Text style={[styles.subtitle4, styles.bold]}>Legend</Text>
             </View>
             <View>
                 {Object.values(trainings).map((t) => (
