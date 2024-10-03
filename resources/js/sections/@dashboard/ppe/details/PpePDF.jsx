@@ -13,6 +13,7 @@ import { getInventoryStatus } from "@/utils/formatStatuses";
 const PER_PAGE = 12;
 
 export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
+    console.log(report);
     const theme = useTheme();
 
     const documents = useMemo(() => {
@@ -46,7 +47,7 @@ export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
               endOfMonth(new Date(report.budget_forcast_date)),
               "dd MMM yyyy"
           )}`
-        : "_______";
+        : "___________";
     return (
         <Document title={title}>
             {documents.map((doc, index) => {
@@ -72,6 +73,8 @@ export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
                                     alignItems: "center",
                                     justifyContent: "center",
                                     flexDirection: "row",
+                                    marginTop: 8,
+                                    marginBottom: 4,
                                 }}
                             >
                                 <Text style={styles.h4}>
@@ -98,7 +101,7 @@ export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
                                             { fontWeight: 700 },
                                         ]}
                                     >
-                                        {report?.form_number || "_______"}
+                                        {report?.form_number || "___________"}
                                     </Text>
                                 </View>
                                 <View
@@ -140,7 +143,9 @@ export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
                                             { fontWeight: 700 },
                                         ]}
                                     >
-                                        {fDate(report?.created_at)}
+                                        {report?.created_at
+                                            ? fDate(report?.created_at)
+                                            : "___________"}
                                     </Text>
                                 </View>
                             </View>
@@ -160,7 +165,8 @@ export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
                                                 { textTransform: "uppercase" },
                                             ]}
                                         >
-                                            {report?.contract_no || "_______"}
+                                            {report?.contract_no ||
+                                                "___________"}
                                         </Text>
                                     </View>
                                 </View>
@@ -176,7 +182,8 @@ export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
                                                 styles.body1,
                                             ]}
                                         >
-                                            {report?.shortLabel || "_______"}
+                                            {report?.shortLabel ||
+                                                "___________"}
                                         </Text>
                                     </View>
                                 </View>
@@ -193,7 +200,8 @@ export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
                                                 { textTransform: "capitalize" },
                                             ]}
                                         >
-                                            {report?.conducted_by || "_______"}
+                                            {report?.conducted_by ||
+                                                "___________"}
                                         </Text>
                                     </View>
                                 </View>
@@ -230,7 +238,7 @@ export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
                                                 { textTransform: "capitalize" },
                                             ]}
                                         >
-                                            {report?.location || "_______"}
+                                            {report?.location || "___________"}
                                         </Text>
                                     </View>
                                 </View>
@@ -248,7 +256,7 @@ export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
                                         >
                                             {report?.submitted_date
                                                 ? fDate(report.submitted_date)
-                                                : "_______"}
+                                                : "___________"}
                                         </Text>
                                     </View>
                                 </View>
@@ -696,14 +704,48 @@ export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
                                     </View>
                                 </View>
                                 <View style={{ flexDirection: "row" }}>
-                                    <View style={{ width: "25%" }}>
-                                        {/* <Text style={[styles.body1, { textAlign: 'center', width: 140 }]}>{report?.submitted?.fullname}</Text>
-										<Text style={[styles.body1, { borderTop: 1, width: 140, textAlign: 'center', paddingTop: 4, lineHeight: 0 }]}>Submitted By</Text>
-										{report?.submitted && (
-											<Text style={[styles.subtitle2, { width: 140, textAlign: 'center', paddingTop: 4 }]}>{report?.submitted?.position}</Text>
-										)} */}
+                                    <View style={{ width: "33.3%" }}>
+                                        <Text
+                                            style={[
+                                                styles.body1,
+                                                {
+                                                    textAlign: "center",
+                                                    width: 140,
+                                                },
+                                            ]}
+                                        >
+                                            {report?.submitted?.fullname}
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                styles.body1,
+                                                {
+                                                    borderTop: 1,
+                                                    width: 140,
+                                                    textAlign: "center",
+                                                    paddingTop: 4,
+                                                    lineHeight: 0,
+                                                },
+                                            ]}
+                                        >
+                                            Requested By
+                                        </Text>
+                                        {report?.submitted && (
+                                            <Text
+                                                style={[
+                                                    styles.subtitle2,
+                                                    {
+                                                        width: 140,
+                                                        textAlign: "center",
+                                                        paddingTop: 4,
+                                                    },
+                                                ]}
+                                            >
+                                                {report?.submitted?.position}
+                                            </Text>
+                                        )}
                                     </View>
-                                    <View style={{ width: "50%" }}>
+                                    <View style={{ width: "33.3%" }}>
                                         <Text
                                             style={[
                                                 styles.body1,
@@ -744,7 +786,7 @@ export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
                                             </Text>
                                         )}
                                     </View>
-                                    <View style={{ width: "50%" }}>
+                                    <View style={{ width: "33.3%" }}>
                                         <Text
                                             style={[
                                                 styles.body1,
@@ -785,7 +827,7 @@ export default function PpePDF({ report, title = "PPE REPORT PREVIEW" }) {
                                             </Text>
                                         )}
                                     </View>
-                                    <View style={{ width: "25%" }}></View>
+                                    {/* <View style={{ width: "25%" }}></View> */}
                                 </View>
                             </View>
                         )}
