@@ -281,7 +281,7 @@ export function PDF(props) {
                             <TableRow
                                 key={emp.employee_id}
                                 emp={emp}
-                                idx={idx}
+                                idx={idx + i * PER_PAGE}
                                 type={type}
                             />
                         ))}
