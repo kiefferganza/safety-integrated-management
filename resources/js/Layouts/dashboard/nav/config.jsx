@@ -380,7 +380,7 @@ const navConfig = [
 
             // Inspection
             {
-                title: "Inspection",
+                title: "DOR",
                 path: PATH_DASHBOARD.inspection.root,
                 icon: ICONS.inspection,
                 routeNames: [
@@ -460,16 +460,16 @@ const navConfig = [
                             },
                         ],
                     },
-                    {
-                        title: "machineries",
-                        path: PATH_DASHBOARD.inspection.machineries,
-                        disabled: true,
-                    },
-                    {
-                        title: "tools & equipments",
-                        path: PATH_DASHBOARD.inspection.toolsAndEquipments,
-                        disabled: true,
-                    },
+                    // {
+                    //     title: "machineries",
+                    //     path: PATH_DASHBOARD.inspection.machineries,
+                    //     disabled: true,
+                    // },
+                    // {
+                    //     title: "tools & equipments",
+                    //     path: PATH_DASHBOARD.inspection.toolsAndEquipments,
+                    //     disabled: true,
+                    // },
                 ],
             },
 
