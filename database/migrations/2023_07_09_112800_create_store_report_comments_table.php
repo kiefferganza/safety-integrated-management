@@ -15,9 +15,8 @@ return new class extends Migration
     {
         Schema::create('store_report_comments', function (Blueprint $table) {
             $table->id();
-			$table->foreignId("store_report_id")->index()->constrained("store_reports")->onDelete("cascade");
+			$table->integer("store_report_id");
 			$table->unsignedInteger('reviewer_id');
-			$table->foreign('reviewer_id')->references('employee_id')->on('tbl_employees');
 			$table->string("comment")->nullable();
 			$table->text("comment_page_section")->nullable();
 			$table->tinyInteger("comment_code")->nullable();

@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('tbl_trainings', function (Blueprint $table) {
-            $table->foreignId('course_id')->nullable()->references('id')->on('training_courses');
-        });
+        // Schema::table('tbl_trainings', function (Blueprint $table) {
+        //     $table->integer('course_id');
+        // });
     }
 
     /**

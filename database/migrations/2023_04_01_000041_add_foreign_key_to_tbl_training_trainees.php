@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-			Schema::disableForeignKeyConstraints();
-			Schema::table('tbl_training_trainees', function (Blueprint $table) {
-				$table->foreign('training_id')->references('training_id')->on('tbl_trainings')->cascadeOnDelete();
-				$table->index('training_id');
-			});
-			Schema::enableForeignKeyConstraints();
+			// Schema::disableForeignKeyConstraints();
+			// Schema::create('tbl_training_trainees', function (Blueprint $table) {
+			// 	$table->foreign('training_id')->references('training_id')->on('tbl_trainings')->cascadeOnDelete();
+			// 	$table->index('training_id');
+			// });
+			// Schema::enableForeignKeyConstraints();
     }
 
     /**

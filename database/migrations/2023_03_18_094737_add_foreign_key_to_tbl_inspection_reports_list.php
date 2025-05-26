@@ -13,14 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('tbl_inspection_reports', function (Blueprint $table) {
-					$table->unsignedBigInteger("inspection_id")->change();
+        Schema::create('tbl_inspection_reports', function (Blueprint $table) {
+					$table->unsignedBigInteger("inspection_id");
         });
 
         Schema::table('tbl_inspection_reports_list', function (Blueprint $table) {
-					$table->unsignedBigInteger("list_id")->change();
-					$table->unsignedBigInteger('inspection_id')->index()->nullable()->change();
-					$table->foreign('inspection_id')->references('inspection_id')->on('tbl_inspection_reports')->onDelete('cascade');
+            if (!Schema::hasColumn('tbl_inspection_reports', 'inspection_id')) {
+                $table->unsignedBigInteger('inspection_id')->index()->nullable()->change();
+                $table->unsignedBigInteger("list_id")->change();
+				$table->foreign('inspection_id')->references('inspection_id')->on('tbl_inspection_reports')->onDelete('cascade');
+            }
+					
         });
     }
 

@@ -15,9 +15,8 @@ return new class extends Migration
     {
         Schema::create('recipients', function (Blueprint $table) {
             $table->id();
-			$table->foreignId('mail_id')->references('id')->on('mails')->cascadeOnDelete();
+			$table->integer('mail_id');
 			$table->integer('user_id');
-			$table->foreign('user_id')->references('user_id')->on('users');
             $table->timestamps();
         });
     }

@@ -16,9 +16,7 @@ return new class extends Migration
         Schema::create('stores', function (Blueprint $table) {
             $table->id();
 			$table->integer('user_id');
-			$table->foreign('user_id')->references('user_id')->on('users');
 			$table->integer('employee_id')->unsigned();
-			$table->foreign('employee_id')->references('employee_id')->on('tbl_employees');
 			$table->integer('subscriber_id');
 			$table->string('slug')->unique('slug');
 			$table->string('name')->unique();

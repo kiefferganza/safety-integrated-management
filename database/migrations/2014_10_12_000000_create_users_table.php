@@ -13,14 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('store_histories', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
-			$table->integer('store_id');
-			$table->enum('type', ['add', 'remove']);
-			$table->unsignedInteger('qty');
-			$table->unsignedInteger('prev_qty');
-			$table->unsignedInteger('requested_by')->nullable();
-			$table->string('location')->nullable();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
             $table->timestamps();
         });
     }
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('store_histories');
+        Schema::dropIfExists('users');
     }
 };

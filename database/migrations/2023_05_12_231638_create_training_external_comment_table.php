@@ -16,9 +16,7 @@ return new class extends Migration
 		Schema::create('training_external_comment', function (Blueprint $table) {
 			$table->id();
 			$table->integer("training_id");
-			$table->foreign('training_id')->references('training_id')->on('tbl_trainings')->onDelete('cascade');
 			$table->integer("reviewer_id")->unsigned();
-			$table->foreign('reviewer_id')->references('employee_id')->on('tbl_employees')->onDelete('cascade');
 			$table->text("comment")->nullable();
 			$table->text("comment_page_section")->nullable();
 			$table->tinyInteger("comment_code")->nullable();

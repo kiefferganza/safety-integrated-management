@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('document_external_approvers', function (Blueprint $table) {
             $table->id();
 			$table->integer('document_id');
-			$table->foreign('document_id')->references('document_id')->on('tbl_documents')->onDelete('cascade');
 			$table->string('firstname')->nullable();
 			$table->string('lastname')->nullable();
 			$table->string('src')->nullable();

@@ -17,13 +17,10 @@ return new class extends Migration
 			$table->id();
 			$table->uuid('uuid')->unique();
 			$table->unsignedInteger('submitted_id');
-			$table->foreign('submitted_id')->references('employee_id')->on('tbl_employees');
 
 			$table->unsignedInteger('reviewer_id');
-			$table->foreign('reviewer_id')->references('employee_id')->on('tbl_employees');
 			
 			$table->unsignedInteger('approver_id');
-			$table->foreign('approver_id')->references('employee_id')->on('tbl_employees');
 
 			$table->string('project_code');
 			$table->string('originator');

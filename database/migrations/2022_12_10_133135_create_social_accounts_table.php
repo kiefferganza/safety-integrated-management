@@ -13,11 +13,12 @@ return new class extends Migration
 	 */
 	public function up()
 	{
-		Schema::table('tbl_employees', function (Blueprint $table) {
-			$table->string("raw_position")->nullable();
-			$table->string("raw_department")->nullable();
-			$table->string("raw_company")->nullable();
-			// $table->index("sub_id");
+		Schema::create('social_accounts', function (Blueprint $table) {
+			$table->id('social_id');
+			$table->unsignedBigInteger('user_id');
+			$table->string('type');
+			$table->string('social_link');
+			$table->timestamps();
 		});
 	}
 
@@ -28,8 +29,6 @@ return new class extends Migration
 	 */
 	public function down()
 	{
-		Schema::table('tbl_employees', function (Blueprint $table) {
-				//
-		});
+		Schema::dropIfExists('social_accounts');
 	}
 };

@@ -13,15 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('store_histories', function (Blueprint $table) {
+        Schema::create('failed_jobs', function (Blueprint $table) {
             $table->id();
-			$table->integer('store_id');
-			$table->enum('type', ['add', 'remove']);
-			$table->unsignedInteger('qty');
-			$table->unsignedInteger('prev_qty');
-			$table->unsignedInteger('requested_by')->nullable();
-			$table->string('location')->nullable();
-            $table->timestamps();
+            $table->string('uuid')->unique();
+            $table->text('connection');
+            $table->text('queue');
+            $table->longText('payload');
+            $table->longText('exception');
+            $table->timestamp('failed_at')->useCurrent();
         });
     }
 
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('store_histories');
+        Schema::dropIfExists('failed_jobs');
     }
 };

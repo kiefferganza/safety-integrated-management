@@ -91,14 +91,14 @@ return new class extends Migration
      */
     public function up()
     {
-        $this->dropForiegnTables();
-        Schema::table("users", function(Blueprint $table) {
-            $table->renameColumn("user_id", "id");
-        });
-        Schema::table("users", function(Blueprint $table) {
-            $table->unsignedInteger("id", true)->change();
-        });
-        $this->setForeignTables();
+        // $this->dropForiegnTables();
+        // Schema::table("users", function(Blueprint $table) {
+        //     $table->renameColumn("user_id", "id");
+        // });
+        // Schema::table("users", function(Blueprint $table) {
+        //     $table->unsignedInteger("id", true)->change();
+        // });
+        // $this->setForeignTables();
     }
 
     /**

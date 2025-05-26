@@ -19,10 +19,8 @@ return new class extends Migration
 			$table->string('email');
 
 			$table->integer('user_id')->nullable();
-			$table->foreign('user_id')->references('user_id')->on('users');
 
 			$table->unsignedInteger('emp_id')->nullable();
-			$table->foreign('emp_id')->references('employee_id')->on('tbl_employees');
 
 			$table->enum('type', ['default', 'blind'])->default('default');
             $table->timestamps();

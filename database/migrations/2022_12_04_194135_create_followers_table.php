@@ -13,11 +13,11 @@ return new class extends Migration
 	 */
 	public function up()
 	{
-		Schema::table('tbl_employees', function (Blueprint $table) {
-			$table->string("raw_position")->nullable();
-			$table->string("raw_department")->nullable();
-			$table->string("raw_company")->nullable();
-			// $table->index("sub_id");
+		Schema::create('followers', function (Blueprint $table) {
+			$table->id('follower_id');
+			$table->timestamps();
+			$table->bigInteger('user_id');
+			$table->bigInteger('following_id');
 		});
 	}
 
@@ -28,8 +28,6 @@ return new class extends Migration
 	 */
 	public function down()
 	{
-		Schema::table('tbl_employees', function (Blueprint $table) {
-				//
-		});
+		Schema::dropIfExists('followers');
 	}
 };

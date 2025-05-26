@@ -16,9 +16,7 @@ return new class extends Migration
         Schema::create('document_external_comments', function (Blueprint $table) {
             $table->id();
 			$table->integer('document_id');
-			$table->foreign('document_id')->references('document_id')->on('tbl_documents')->onDelete('cascade');
 			$table->unsignedBigInteger('approver');
-			$table->foreign('approver')->references('id')->on('document_external_approvers')->onDelete('cascade');
 			$table->string("comment")->nullable();
 			$table->text("comment_page_section")->nullable();
 			$table->tinyInteger("comment_code")->nullable();

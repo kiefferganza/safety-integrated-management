@@ -16,7 +16,6 @@ return new class extends Migration
 		Schema::create('training_external_status', function (Blueprint $table) {
 			$table->id();
 			$table->integer("training_id");
-			$table->foreign('training_id')->references('training_id')->on('tbl_trainings')->onDelete('cascade');
 			$table->string("review_status")->default("pending");
 			$table->string("approval_status")->default("in_review");
 			$table->text("review_remark")->nullable();

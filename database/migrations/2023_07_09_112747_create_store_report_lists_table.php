@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('store_report_lists', function (Blueprint $table) {
             $table->id();
-			$table->foreignId('store_report_id')->index()->constrained('store_reports')->onDelete('cascade');
+			$table->integer('store_report_id');
 			$table->string('name');
 			$table->text("thumbnail")->nullable();
 			$table->integer('qty');

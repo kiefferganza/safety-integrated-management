@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-			Schema::disableForeignKeyConstraints();
-			Schema::table('tbl_employees', function (Blueprint $table) {
-				$table->foreign('user_id')->references('user_id')->on('users')->cascadeOnDelete();
-			});
-			Schema::enableForeignKeyConstraints();
+			// Schema::disableForeignKeyConstraints();
+			// Schema::table('tbl_employees', function (Blueprint $table) {
+			// 	$table->foreign('user_id')->references('user_id')->on('users')->cascadeOnDelete();
+			// });
+			// Schema::enableForeignKeyConstraints();
     }
 
     /**

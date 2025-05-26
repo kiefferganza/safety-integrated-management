@@ -16,9 +16,7 @@ return new class extends Migration
         Schema::create('tbt_trackers', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('created_by');
-			$table->foreign('created_by')->references('id')->on('users');
             $table->unsignedInteger('emp_id');
-            $table->foreign('emp_id')->references('employee_id')->on('tbl_employees');
             $table->string("project_code");
             $table->string("originator");
             $table->string("discipline");

@@ -13,10 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('tbl_documents', function (Blueprint $table) {
-			$table->text("form_number")->nullable()->default(null);
-            $table->foreign("folder_id")->references('folder_id')->on('tbl_folders')->onDelete('cascade');
-        });
+        // Schema::table('tbl_documents', function (Blueprint $table) {
+		// 	$table->text("form_number")->nullable()->default(null);
+        // });
     }
 
     /**
