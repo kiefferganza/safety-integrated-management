@@ -24,8 +24,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(function ()
-{
+
 
 	Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -122,4 +121,3 @@ Route::group(function ()
 	Route::prefix("billing")->as("billing.")->group(function() {
 		Route::get("/cancel-subscription", [BillingController::class, "cancelSubscription"])->name("cancelSubscription");
 	});
-});
