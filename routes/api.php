@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth')->as('api.')->group(function ()
+Route::group(function ()
 {
 
 	Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
