@@ -24,7 +24,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+Route::as('api.')->group(function ()
+{
 
 	Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -121,3 +122,4 @@ use Illuminate\Support\Facades\Route;
 	Route::prefix("billing")->as("billing.")->group(function() {
 		Route::get("/cancel-subscription", [BillingController::class, "cancelSubscription"])->name("cancelSubscription");
 	});
+});
