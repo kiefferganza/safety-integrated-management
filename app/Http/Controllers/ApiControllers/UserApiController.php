@@ -25,7 +25,9 @@ class UserApiController extends Controller
 			cache()->forget("authUser:".$user->id);
 		}
 		
-		return response()->json(["message" => 'Profile image updated successfully!', "type" => 'success'], 200);
+		return redirect()->back()
+		->with("message", "Profile changed successfully!")
+		->with("type", "success");
 	}
 
 	public function profileImages(User $user) {
@@ -86,8 +88,9 @@ class UserApiController extends Controller
 			cache()->forget("authUser:".$user->id);
 		}
 		
-		return response()->json(["message" => 'Profile image updated successfully!', "type" => 'success'], 200);
-
+		return redirect()->back()
+		->with("message", "Profile changed successfully!")
+		->with("type", "success");
 	}
 
 
