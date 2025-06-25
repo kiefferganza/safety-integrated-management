@@ -181,11 +181,12 @@ class User extends Authenticatable implements HasMedia
 		$profile = $this->getProfileMedia();
 		if($profile) {
 			$path = "user/" . md5($profile->id . config('app.key')) . "/" . $profile->file_name;
-			return [
-				"url" => URL::route("image", ["path" => $path]),
-				"thumbnail" => URL::route("image", ["path" => $path, "w" => 40, "h" => 40, "fit" => "crop"]),
-				"small" => URL::route("image", ["path" => $path, "w" => 128, "h" => 128, "fit" => "crop"])
-			];
+
+return [
+    "url" => route("image", ["path" => $path]),
+    "thumbnail" => route("image", ["path" => $path, "w" => 40, "h" => 40, "fit" => "crop"]),
+    "small" => route("image", ["path" => $path, "w" => 128, "h" => 128, "fit" => "crop"]),
+];
 		}
 		return null;
 	}
