@@ -38,7 +38,6 @@ class UserApiService {
 				->toMediaCollection($this->collectionName);
 		} catch (\Throwable $e) {
 			Log::error('Failed to add media: ' . $e->getMessage());
-			dd($e);
 		}
 	}
 
