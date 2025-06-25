@@ -3,6 +3,7 @@
 namespace App\Services\API;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class UserApiService {
 
@@ -30,10 +31,15 @@ class UserApiService {
 	 * @return \Spatie\MediaLibrary\MediaCollections\Models\Media
 	 */
 	public function addImageToUserByCollectionName(User $user, String $value) {
-		return $user
-			->addMediaFromRequest($value)
-			->withCustomProperties(['primary' => true])
-			->toMediaCollection($this->collectionName);
+		try {
+		return	$user
+				->addMediaFromRequest($value)
+				->withCustomProperties(['primary' => true])
+				->toMediaCollection($this->collectionName);
+		} catch (\Throwable $e) {
+			Log::error('Failed to add media: ' . $e->getMessage());
+			dd($e);
+		}
 	}
 
 	public function unsetUserImage(User $user) {
