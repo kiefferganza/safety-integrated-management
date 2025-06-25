@@ -180,7 +180,7 @@ class User extends Authenticatable implements HasMedia
 
 		$profile = $this->getProfileMedia();
 		if($profile) {
-			$path = "user/" . md5($profile->id . config('app.key')) . "/" . $profile->file_name;
+			$path = config('app.url') . "/storage/user/" . md5($profile->id . config('app.key')) . "/" . $profile->file_name;
 
 			return [
 				'url' => $path,
