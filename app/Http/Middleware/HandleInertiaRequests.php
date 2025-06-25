@@ -76,23 +76,23 @@ class HandleInertiaRequests extends Middleware
 				$profile = $user->getFirstMedia("profile", ["primary" => true]);
 				if ($profile)
 				{
-					$path = "user/" . md5($profile->id . config('app.key')) . "/" . $profile->file_name;
+					$path = config('app.url') . "/storage/user/" . md5($profile->id . config('app.key')) . "/" . $profile->file_name;
 					$userData["profile"] = [
-						"url" => URL::route("image", ["path" => $path]),
-						"thumbnail" => URL::route("image", ["path" => $path, "w" => 40, "h" => 40, "fit" => "crop"]),
-						"small" => URL::route("image", ["path" => $path, "w" => 128, "h" => 128, "fit" => "crop"])
+						'url' => $path,
+				'thumbnail' => $path . '?w=40&h=40&fit=crop',
+				'small' => $path . '?w=128&h=128&fit=crop',
 					];
 				}
 
 				$cover = $user->getFirstMedia("cover", ["primary" => true]);
 				if ($cover)
 				{
-					$path = "user/" . md5($cover->id . config('app.key')) . "/" . $cover->file_name;
+					$path = config('app.url') . "/storage/user/" . md5($cover->id . config('app.key')) . "/" . $cover->file_name;
 					$userData["cover"]  = [
-						"url" => URL::route("image", ["path" => $path]),
-						"thumbnail" => URL::route("image", ["path" => $path, "w" => 40, "h" => 40, "fit" => "crop"]),
-						"small" => URL::route("image", ["path" => $path, "w" => 128, "h" => 128, "fit" => "crop"]),
-						"cover" => URL::route("image", ["path" => $path, "w" => 1200, "h" => 280, "fit" => "crop"]),
+						'url' => $path,
+				'thumbnail' => $path . '?w=40&h=40&fit=crop',
+				'small' => $path . '?w=128&h=128&fit=crop',
+				"cover" => $path . '?w=1200&h=280&fit=crop',
 					];
 				}
 				$user->password = null;
