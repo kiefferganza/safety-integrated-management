@@ -43,10 +43,11 @@ class UserApiController extends Controller
 					"name" => $media->file_name,
 					"alt" => $media->collection_name,
 					"properties" => $media->custom_properties,
-					"url" => URL::route("image", [ "path" => $path ]),
-					"thumbnail" => URL::route("image", [ "path" => $path, "w" => 40, "h" => 40, "fit" => "crop" ]),
-					"small" => URL::route("image", [ "path" => $path, "w" => 128, "h" => 128, "fit" => "crop" ]),
-					"medium" => URL::route("image", [ "path" => $path, "w" => 360, "h" => 360, "fit" => "crop"])
+					'url' => $path,
+					'thumbnail' => $path . '?w=40&h=40&fit=crop',
+					'small' => $path . '?w=128&h=128&fit=crop',
+					"medium" => $path . '?w=360&h=360&fit=crop'
+
 				];
 				return $transformedData ;
 			});
