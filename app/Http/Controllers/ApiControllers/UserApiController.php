@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\API\UserApiService;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
 class UserApiController extends Controller
@@ -79,7 +80,8 @@ class UserApiController extends Controller
 		$request->validate([
 			"profile_pic" => ['required', 'file', 'mimes:jpeg,png,jpg,webp', 'max:3072']
 		]);
-
+		Log::info("Updating profile image for user: ".$user->id);
+		Log::info("Request data: ", $request->all());
 		if($request->hasFile('profile_pic')) {
 			$userApiService = new UserApiService("profile");
 			$userApiService
