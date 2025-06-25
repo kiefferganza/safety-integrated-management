@@ -80,9 +80,8 @@ class UserApiController extends Controller
 		$request->validate([
 			"profile_pic" => ['required', 'file', 'mimes:jpeg,png,jpg,webp', 'max:3072']
 		]);
-		Log::info("Updating profile image for user: ".$user->id);
-		Log::info("Request data: ", $request->all());
 		if($request->hasFile('profile_pic')) {
+			Log::error('No file found in request!');
 			$userApiService = new UserApiService("profile");
 			$userApiService
 				->unsetUserImage($user)
