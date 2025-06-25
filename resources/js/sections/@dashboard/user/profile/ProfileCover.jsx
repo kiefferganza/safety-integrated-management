@@ -62,38 +62,38 @@ export default function ProfileCover({
 
     const handleDrop = useCallback(
         (acceptedFiles) => {
-            const file = acceptedFiles[0];
-
-            if (file) {
-                Inertia.post(
-                    route("api.user.update_profile_image", user?.id),
-                    { profile_pic: file },
-                    {
-                        preserveScroll: true,
-                        onStart() {
-                            if (typeof setOpenBackdrop === "function") {
-                                setOpenBackdrop(true);
-                            }
-                        },
-                        onFinish() {
-                            if (typeof setOpenBackdrop === "function") {
-                                const newFile = Object.assign(file, {
-                                    preview: URL.createObjectURL(file),
-                                });
-                                setProfileImage(newFile);
-                                setOpenBackdrop(false);
-                                queryClient.invalidateQueries({
-                                    queryKey: ["user.profile_images", user.id],
-                                    force: true,
-                                });
-                            }
-                        },
-                    }
-                );
-            }
+          const file = acceptedFiles[0];
+      
+          if (file) {
+            const formData = new FormData();
+            formData.append("profile_pic", file);
+      
+            Inertia.post(route("api.user.update_profile_image", user?.id), formData, {
+              preserveScroll: true,
+              forceFormData: true, // optional, but explicit
+              onStart() {
+                if (typeof setOpenBackdrop === "function") {
+                  setOpenBackdrop(true);
+                }
+              },
+              onFinish() {
+                if (typeof setOpenBackdrop === "function") {
+                  const newFile = Object.assign(file, {
+                    preview: URL.createObjectURL(file),
+                  });
+                  setProfileImage(newFile);
+                  setOpenBackdrop(false);
+                  queryClient.invalidateQueries({
+                    queryKey: ["user.profile_images", user.id],
+                    force: true,
+                  });
+                }
+              },
+            });
+          }
         },
         [setProfileImage]
-    );
+      );
 
     const handleDropCover = useCallback(
         (acceptedFiles) => {
